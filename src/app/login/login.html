@@ -1,0 +1,128 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary to-secondary p-4">
+  <div class="card w-full max-w-md bg-base-100 shadow-2xl">
+    <div class="card-body">
+      <!-- Logo/Header -->
+      <div class="text-center mb-6">
+        <div class="inline-block p-3 bg-primary rounded-full mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary-content" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <h2 class="card-title text-3xl font-bold justify-center">Trip Management</h2>
+        <p class="text-base-content/60 mt-2">Sign in to your account</p>
+      </div>
+
+      <!-- Error Alert -->
+      @if (errorMessage()) {
+        <div role="alert" class="alert alert-error mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Login Form -->
+      <form (ngSubmit)="onSubmit()">
+        <!-- Username Input -->
+        <div class="form-control w-full mb-4">
+          <label class="label">
+            <span class="label-text font-semibold">Username</span>
+          </label>
+          <label class="input input-bordered flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70">
+              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+            </svg>
+            <input 
+              type="text" 
+              class="grow" 
+              placeholder="Enter your username"
+              [(ngModel)]="username"
+              name="username"
+              required
+              [disabled]="isLoading()"
+            />
+          </label>
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-control w-full mb-6">
+          <label class="label">
+            <span class="label-text font-semibold">Password</span>
+          </label>
+          <label class="input input-bordered flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70">
+              <path fill-rule="evenodd" d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z" clip-rule="evenodd" />
+            </svg>
+            <input 
+              [type]="showPassword() ? 'text' : 'password'" 
+              class="grow" 
+              placeholder="Enter your password"
+              [(ngModel)]="password"
+              name="password"
+              required
+              [disabled]="isLoading()"
+            />
+            <button 
+              type="button" 
+              class="btn btn-ghost btn-xs btn-circle"
+              (click)="togglePasswordVisibility()"
+              [disabled]="isLoading()"
+            >
+              @if (showPassword()) {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                  <path fill-rule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l10.5 10.5a.75.75 0 1 0 1.06-1.06l-1.322-1.323a7.012 7.012 0 0 0 2.16-3.11.87.87 0 0 0 0-.567A7.003 7.003 0 0 0 4.82 3.76l-1.54-1.54Zm3.196 3.195 1.135 1.136A1.502 1.502 0 0 1 9.45 8.389l1.136 1.135a3 3 0 0 0-4.109-4.109Z" clip-rule="evenodd" />
+                  <path d="m7.812 10.994 1.816 1.816A7.003 7.003 0 0 1 1.38 8.28a.87.87 0 0 1 0-.566 6.985 6.985 0 0 1 1.113-2.039l2.513 2.513a3 3 0 0 0 2.806 2.806Z" />
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+                  <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" />
+                  <path fill-rule="evenodd" d="M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" clip-rule="evenodd" />
+                </svg>
+              }
+            </button>
+          </label>
+          <label class="label">
+            <span class="label-text-alt"></span>
+            <a href="#" class="label-text-alt link link-hover">Forgot password?</a>
+          </label>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="form-control mb-6">
+          <label class="cursor-pointer label justify-start gap-2">
+            <input type="checkbox" class="checkbox checkbox-primary checkbox-sm" />
+            <span class="label-text">Remember me</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-control mt-6">
+          <button 
+            type="submit" 
+            class="btn btn-primary w-full"
+            [disabled]="isLoading()"
+          >
+            @if (isLoading()) {
+              <span class="loading loading-spinner"></span>
+              Signing in...
+            } @else {
+              Sign In
+            }
+          </button>
+        </div>
+      </form>
+
+      <!-- Divider -->
+      <div class="divider">OR</div>
+
+      <!-- Additional Options -->
+      <div class="text-center">
+        <p class="text-sm text-base-content/60">
+          Don't have an account? 
+          <a href="#" class="link link-primary font-semibold">Contact Administrator</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
