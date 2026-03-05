@@ -1,6 +1,6 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 
 interface MenuItem {
@@ -12,7 +12,7 @@ interface MenuItem {
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, NgClass],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

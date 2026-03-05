@@ -1,0 +1,44 @@
+<div class="p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-bold">{{ title() }}</h1>
+        @if(showAddButton()) {
+        <a (click)="onAdd()" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            {{ addText() }}
+        </a>
+        }
+    </div>
+    <div class="card bg-base-100 shadow-lg">
+        <div class="content-container">
+            <div class="card-body content-panel"
+                [class.slide-in-from-left]="!viewDetails()"
+                [class.slide-out-to-left]="viewDetails()"
+                [style.opacity]="viewDetails() ? 0 : 1"
+                [style.pointer-events]="viewDetails() ? 'none' : 'auto'"
+                role="region"
+                aria-label="Main content" 
+                [attr.aria-hidden]="viewDetails()">
+                <ng-content select="main"></ng-content>
+            </div>
+            <div class="card-body content-panel content-panel-overlay"
+                [class.slide-in-from-right]="viewDetails()"
+                [class.slide-out-to-right]="!viewDetails()"
+                [style.opacity]="viewDetails() ? 1 : 0"
+                [style.pointer-events]="viewDetails() ? 'auto' : 'none'"
+                role="region"
+                aria-label="Details form content"
+                [attr.aria-hidden]="!viewDetails()">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl text-gray-500 font-bold">{{ formTitle() }}</h1>
+                    <a (click)="closeDetails()" class="btn btn-danger btn-sm">
+                        Close
+                    </a>
+                </div>
+                <ng-content select="form"></ng-content>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,11 +1,12 @@
-<div class="drawer lg:drawer-open">
+<div class="drawer min-h-screen">
   <input id="my-drawer" type="checkbox" class="drawer-toggle" [checked]="isSidebarOpen()" />
-  <div class="drawer-content flex flex-col">
+  <div class="drawer-content transition-all duration-300" [ngClass]="{'ml-[250px]': isSidebarOpen()}">
     <!-- Navbar -->
-    <div class="navbar bg-base-100 shadow-md sticky top-0 z-10">
-      <div class="flex-none lg:hidden">
+    <div class="navbar bg-base-100 shadow-md sticky top-0 z-3 transition-all duration-300" >
+      <div class="flex-none">
         <label for="my-drawer" class="btn btn-square btn-ghost" (click)="toggleSidebar()">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            class="inline-block w-6 h-6 stroke-current">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
         </label>
@@ -14,17 +15,15 @@
         <span class="text-xl font-bold">Trip Management System</span>
       </div>
       <div class="flex-none gap-2">
-        <!-- Search -->
-        <div class="form-control hidden md:block">
-          <input type="text" placeholder="Search..." class="input input-bordered w-64" />
-        </div>
-        
+
         <!-- Notifications -->
         <div class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
             <div class="indicator">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
               <span class="badge badge-xs badge-primary indicator-item">3</span>
             </div>
@@ -32,26 +31,26 @@
           <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-80">
             <li class="menu-title">Notifications</li>
             <li><a>
-              <div class="flex flex-col gap-1">
-                <span class="font-semibold">Vehicle Permit Expiring</span>
-                <span class="text-xs text-base-content/60">KBZ 123A permit expires in 7 days</span>
-              </div>
-            </a></li>
+                <div class="flex flex-col gap-1">
+                  <span class="font-semibold">Vehicle Permit Expiring</span>
+                  <span class="text-xs text-base-content/60">KBZ 123A permit expires in 7 days</span>
+                </div>
+              </a></li>
             <li><a>
-              <div class="flex flex-col gap-1">
-                <span class="font-semibold">New Trip Pending</span>
-                <span class="text-xs text-base-content/60">Trip to Mombasa awaits approval</span>
-              </div>
-            </a></li>
+                <div class="flex flex-col gap-1">
+                  <span class="font-semibold">New Trip Pending</span>
+                  <span class="text-xs text-base-content/60">Trip to Mombasa awaits approval</span>
+                </div>
+              </a></li>
             <li><a>
-              <div class="flex flex-col gap-1">
-                <span class="font-semibold">Driver License Renewal</span>
-                <span class="text-xs text-base-content/60">John Kamau's license expires soon</span>
-              </div>
-            </a></li>
+                <div class="flex flex-col gap-1">
+                  <span class="font-semibold">Driver License Renewal</span>
+                  <span class="text-xs text-base-content/60">John Kamau's license expires soon</span>
+                </div>
+              </a></li>
           </ul>
         </div>
-        
+
         <!-- User Profile -->
         <div class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar placeholder">
@@ -62,73 +61,78 @@
           <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
             <li class="menu-title">{{ username() }}</li>
             <li><a>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              Profile
-            </a></li>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Profile
+              </a></li>
             <li><a>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Settings
-            </a></li>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Settings
+              </a></li>
             <li><a (click)="logout()">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Logout
-            </a></li>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+              </a></li>
           </ul>
         </div>
       </div>
     </div>
-    
+
     <!-- Page content -->
     <div class="flex-1 bg-base-200">
       <router-outlet></router-outlet>
     </div>
   </div>
-  
+
   <!-- Sidebar -->
-  <div class="drawer-side">
-    <label for="my-drawer" class="drawer-overlay" (click)="toggleSidebar()"></label>
-    <aside class="bg-base-100 w-64 min-h-screen flex flex-col">
+  <div class="drawer-side is-drawer-close:overflow-visible z-0 w-[250px]">
+    <!-- <label for="my-drawer" class="drawer-overlay" (click)="toggleSidebar()"></label> -->
+    <div class="bg-base-100 min-h-screen flex flex-col is-drawer-open:w-64">
       <!-- Logo -->
       <div class="flex items-center gap-3 p-6 border-b border-base-300">
         <div class="p-2 bg-primary rounded-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-content" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-content" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
         <div>
-          <h2 class="text-lg font-bold">TripManage</h2>
+          <h2 class="text-lg font-bold">Trip Manage</h2>
           <p class="text-xs text-base-content/60">Admin Panel</p>
         </div>
       </div>
-      
+
       <!-- Menu Items -->
       <ul class="menu p-4 flex-1">
         @for (item of menuItems; track item.route) {
-          <li>
-            <a 
-              [routerLink]="item.route" 
-              routerLinkActive="active"
-              class="flex items-center gap-3 py-3"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon" />
-              </svg>
-              <span>{{ item.label }}</span>
-              @if (item.badge) {
-                <span class="badge badge-primary badge-sm">{{ item.badge }}</span>
-              }
-            </a>
-          </li>
+        <li>
+          <a [routerLink]="item.route" routerLinkActive="active" class="flex items-center gap-3 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon" />
+            </svg>
+            <span>{{ item.label }}</span>
+            @if (item.badge) {
+            <span class="badge badge-primary badge-sm">{{ item.badge }}</span>
+            }
+          </a>
+        </li>
         }
       </ul>
-      
+
       <!-- Footer -->
       <div class="p-4 border-t border-base-300">
         <div class="text-xs text-base-content/60 text-center">
@@ -136,6 +140,6 @@
           <p>Version 1.0.0</p>
         </div>
       </div>
-    </aside>
+    </div>
   </div>
 </div>

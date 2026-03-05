@@ -1,0 +1,8 @@
+<app-layout [(title)]="title" [(viewDetails)]="viewDetails" [(addText)]="formTitle" (add)="onAdd()">
+    <ng-container ngProjectAs="main">
+        <p>Trips main content</p>
+    </ng-container>
+    <ng-container ngProjectAs="form">
+        <p>Trips form content</p>
+    </ng-container>
+</app-layout>

@@ -22,7 +22,7 @@ export const routes: Routes = [
             },
             {
                 path: 'trips',
-                loadComponent: () => import('./trips/trip-list/trip-list').then(m => m.TripList),
+                loadComponent: () => import('./trips/trips').then(m => m.Trips),
             },
             {
                 path: 'trips/new',
@@ -34,35 +34,35 @@ export const routes: Routes = [
             },
             {
                 path: 'drivers',
-                loadComponent: () => import('./drivers/driver-list/driver-list').then(m => m.DriverList),
+                loadComponent: () => import('./configurations/drivers/driver-list/driver-list').then(m => m.DriverList),
             },
             {
                 path: 'drivers/new',
-                loadComponent: () => import('./drivers/driver-form/driver-form').then(m => m.DriverForm),
+                loadComponent: () => import('./configurations/drivers/driver-form/driver-form').then(m => m.DriverForm),
             },
             {
                 path: 'drivers/:id',
-                loadComponent: () => import('./drivers/driver-detail/driver-detail').then(m => m.DriverDetail),
+                loadComponent: () => import('./configurations/drivers/driver-detail/driver-detail').then(m => m.DriverDetail),
             },
             {
                 path: 'vehicles',
-                loadComponent: () => import('./vehicles/vehicle-list/vehicle-list').then(m => m.VehicleList),
+                loadComponent: () => import('./configurations/vehicles/vehicle-list/vehicle-list').then(m => m.VehicleList),
             },
             {
                 path: 'vehicles/new',
-                loadComponent: () => import('./vehicles/vehicle-form/vehicle-form').then(m => m.VehicleForm),
+                loadComponent: () => import('./configurations/vehicles/vehicle-form/vehicle-form').then(m => m.VehicleForm),
             },
             {
                 path: 'vehicles/:id',
-                loadComponent: () => import('./vehicles/vehicle-detail/vehicle-detail').then(m => m.VehicleDetail),
+                loadComponent: () => import('./configurations/vehicles/vehicle-detail/vehicle-detail').then(m => m.VehicleDetail),
             },
             {
                 path: 'routes',
-                loadComponent: () => import('./routes/route-list/route-list').then(m => m.RouteList),
+                loadComponent: () => import('./configurations/routes/route-list/route-list').then(m => m.RouteList),
             },
             {
                 path: 'routes/new',
-                loadComponent: () => import('./routes/route-form/route-form').then(m => m.RouteForm),
+                loadComponent: () => import('./configurations/routes/route-form/route-form').then(m => m.RouteForm),
             },
             {
                 path: 'expense-categories',
