@@ -1,26 +1,69 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Layout, SplitSize } from '../../../shared/components/layout/layout';
+import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
+import { Driver } from '../../../models/driver.model';
+import { CommonModule } from '@angular/common';
+import { AddDriver } from '../driver-form/add-driver';
+import { DriverService } from '../../../services/driver.service';
 
 @Component({
   selector: 'app-driver-list',
-  imports: [RouterLink],
-  template: `
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold">Drivers</h1>
-        <a routerLink="/drivers/new" class="btn btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Add Driver
-        </a>
-      </div>
-      <div class="card bg-base-100 shadow-lg">
-        <div class="card-body">
-          <p class="text-center text-base-content/60">Driver list will be displayed here</p>
-        </div>
-      </div>
-    </div>
-  `
+  imports: [Layout, DataTable, AddDriver, CommonModule],
+  templateUrl: './driver-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DriverList {}
+export class DriverList {
+  private driverService = inject(DriverService);
+
+  title = signal('Drivers');
+  viewDetails = signal(false);
+  viewType = signal<'add' | 'edit'>('add');
+  formSize = signal<SplitSize>('half');
+  selectedDriverId = signal<string | null>(null);
+
+  // Get data from service
+  drivers = this.driverService.allDrivers;
+  isLoading = this.driverService.loading;
+  activeDriversCount = this.driverService.activeDriversCount;
+
+  // Table configuration
+  tableConfig = signal<TableConfig>({
+    columns: [
+      { key: 'firstName', label: 'First Name', sortable: true },
+      { key: 'lastName', label: 'Last Name', sortable: true },
+      { key: 'email', label: 'Email', sortable: true },
+      { key: 'phone', label: 'Phone', sortable: false },
+      { key: 'isActive', label: 'Status', sortable: true },
+      { key: 'createdAt', label: 'Created', sortable: true },
+    ],
+    pageSize: 10,
+    striped: true,
+    hover: true,
+    bordered: false,
+  });
+
+  onAdd(): void {
+    this.viewType.set('add');
+    this.selectedDriverId.set(null);
+    this.viewDetails.set(true);
+  }
+
+  onRowClick(driver: Driver): void {
+    this.selectedDriverId.set(driver.id);
+    this.viewType.set('edit');
+    this.viewDetails.set(true);
+  }
+
+  onRowSelect(selectedDrivers: Driver[]): void {
+    console.log('Selected drivers:', selectedDrivers);
+  }
+
+  onSortChange(event: { column: string; direction: 'asc' | 'desc' }): void {
+    console.log('Sort changed:', event);
+  }
+
+  onFormSaved(): void {
+    this.viewDetails.set(false);
+    this.selectedDriverId.set(null);
+  }
+}

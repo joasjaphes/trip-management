@@ -13,8 +13,10 @@
 .content-panel-overlay {
 	position: absolute;
 	top: 0;
-	left: 0;
 	right: 0;
+	left: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 .slide-in-from-right {
@@ -47,25 +49,21 @@
 
 @keyframes slideInFromLeft {
 	from {
-		opacity: 0;
-		transform: translateX(-100%);
+		transform: translateX(-20px);
 	}
 
 	to {
-		opacity: 1;
 		transform: translateX(0);
 	}
 }
 
 @keyframes slideOutToLeft {
 	from {
-		opacity: 1;
 		transform: translateX(0);
 	}
 
 	to {
-		opacity: 0;
-		transform: translateX(-100%);
+		transform: translateX(-20px);
 	}
 }
 

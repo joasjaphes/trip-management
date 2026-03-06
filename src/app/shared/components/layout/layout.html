@@ -14,9 +14,10 @@
     <div class="card bg-base-100 shadow-lg">
         <div class="content-container">
             <div class="card-body content-panel"
+                [style.width]="viewDetails() ? mainContentWidth(): '100%'"
                 [class.slide-in-from-left]="!viewDetails()"
                 [class.slide-out-to-left]="viewDetails()"
-                [style.opacity]="viewDetails() ? 0 : 1"
+                [style.opacity]="viewDetails() ? '0.3' : '1'"
                 [style.pointer-events]="viewDetails() ? 'none' : 'auto'"
                 role="region"
                 aria-label="Main content" 
@@ -24,16 +25,17 @@
                 <ng-content select="main"></ng-content>
             </div>
             <div class="card-body content-panel content-panel-overlay"
+                [style.width]="viewDetails() ? formPanelWidth() : '0%'"
                 [class.slide-in-from-right]="viewDetails()"
                 [class.slide-out-to-right]="!viewDetails()"
-                [style.opacity]="viewDetails() ? 1 : 0"
+                [style.opacity]="viewDetails() ? '1' : '0'"
                 [style.pointer-events]="viewDetails() ? 'auto' : 'none'"
                 role="region"
                 aria-label="Details form content"
                 [attr.aria-hidden]="!viewDetails()">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between bg-gray-50 p-4 border-b border-gray-200 mb-4">
                     <h1 class="text-2xl text-gray-500 font-bold">{{ formTitle() }}</h1>
-                    <a (click)="closeDetails()" class="btn btn-danger btn-sm">
+                    <a (click)="closeDetails()" class="btn btn-danger">
                         Close
                     </a>
                 </div>

@@ -1,0 +1,15 @@
+<app-layout [(title)]="title" [(viewDetails)]="viewDetails" (add)="onAdd()" [splitSize]="formSize()">
+    <ng-container ngProjectAs="main">
+        <app-data-table [config]="tableConfig()" [data]="drivers()" [title]="'Drivers List'"
+            (rowClick)="onRowClick($event)" (rowSelect)="onRowSelect($event)"
+            (sortChange)="onSortChange($event)"></app-data-table>
+    </ng-container>
+    <ng-container ngProjectAs="form">
+        @if (viewType() === 'add') {
+            <app-add-driver (onSaved)="onFormSaved()"></app-add-driver>
+        }
+        @if (viewType() === 'edit') {
+            <p class="text-center text-base-content/60">Edit form coming soon</p>
+        }
+    </ng-container>
+</app-layout>

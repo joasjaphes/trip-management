@@ -1,0 +1,58 @@
+<form class="w-full flex flex-col gap-4" (ngSubmit)="onSubmit()">
+    <!-- Error message -->
+    @if (error()) {
+        <div class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l-2-2m0 0l-2-2m2 2l2-2m-2 2l-2 2m2-2l2 2M9 1a8 8 0 018 8v10H1V9a8 8 0 018-8z" />
+            </svg>
+            <span>{{ error() }}</span>
+        </div>
+    }
+
+    <div class="w-full grid grid-cols-2 gap-4">
+        <div class="flex flex-col">
+            <label for="name" class="font-semibold mb-2">Category name</label>
+            <input id="name" type="text" class="input input-bordered w-full focus:outline-none" 
+                [(ngModel)]="categoryName" 
+                [ngModelOptions]="{updateOn: 'blur'}"
+                name="categoryName"
+                aria-required="true" 
+                aria-label="Category Name" 
+                placeholder="Enter category name"
+                [disabled]="isLoading()">
+        </div>
+        <div class="flex flex-col">
+            <label for="description" class="font-semibold mb-2">Category description</label>
+            <input id="description" type="text" class="input input-bordered w-full focus:outline-none" 
+                [(ngModel)]="description"
+                [ngModelOptions]="{updateOn: 'blur'}"
+                name="description"
+                placeholder="Enter category description" 
+                aria-label="Description"
+                [disabled]="isLoading()">
+        </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+        <input type="checkbox" id="isActive" class="checkbox" 
+            [checked]="isActive()"
+            (change)="isActive.set(!isActive())"
+            [disabled]="isLoading()"
+            aria-label="Is Active">
+        <label for="isActive" class="text-sm font-medium">Active</label>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex gap-2 pt-4 border-t">
+        <button type="submit" class="btn btn-primary flex-1" [disabled]="isLoading() || !categoryName().trim()">
+            @if (isLoading()) {
+                <span class="loading loading-spinner"></span>
+            } @else {
+                Save Category
+            }
+        </button>
+        <button type="button" class="btn btn-outline flex-1" (click)="reset()" [disabled]="isLoading()">
+            Reset
+        </button>
+    </div>
+</form>

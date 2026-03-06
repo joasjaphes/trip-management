@@ -1,0 +1,115 @@
+<form class="w-full flex flex-col gap-4" (ngSubmit)="onSubmit()">
+    <!-- Error message -->
+    @if (error()) {
+        <div class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l-2-2m0 0l-2-2m2 2l2-2m-2 2l-2 2m2-2l2 2M9 1a8 8 0 018 8v10H1V9a8 8 0 018-8z" />
+            </svg>
+            <span>{{ error() }}</span>
+        </div>
+    }
+
+    <!-- Registration Information -->
+    <div class="divider">Registration Information</div>
+    <div class="w-full grid grid-cols-2 gap-4">
+        <div class="flex flex-col">
+            <label for="registrationNo" class="font-semibold mb-2">Registration Number</label>
+            <input id="registrationNo" type="text" class="input input-bordered w-full focus:outline-none" 
+                [(ngModel)]="registrationNo" 
+                [ngModelOptions]="{updateOn: 'blur'}"
+                name="registrationNo"
+                aria-required="true" 
+                placeholder="e.g., ABC-1234"
+                [disabled]="isLoading()">
+        </div>
+        <div class="flex flex-col">
+            <label for="year" class="font-semibold mb-2">Year</label>
+            <input id="year" type="number" class="input input-bordered w-full focus:outline-none" 
+                [(ngModel)]="year"
+                [ngModelOptions]="{updateOn: 'blur'}"
+                name="year"
+                placeholder="e.g., 2022"
+                [disabled]="isLoading()">
+        </div>
+    </div>
+
+    <!-- Vehicle Details -->
+    <div class="divider">Vehicle Details</div>
+    <div class="w-full grid grid-cols-3 gap-4">
+        <div class="flex flex-col">
+            <label for="make" class="font-semibold mb-2">Make</label>
+            <input id="make" type="text" class="input input-bordered w-full focus:outline-none" 
+                [(ngModel)]="make"
+                [ngModelOptions]="{updateOn: 'blur'}"
+                name="make"
+                placeholder="e.g., Toyota"
+                [disabled]="isLoading()">
+        </div>
+        <div class="flex flex-col">
+            <label for="model" class="font-semibold mb-2">Model</label>
+            <input id="model" type="text" class="input input-bordered w-full focus:outline-none" 
+                [(ngModel)]="model"
+                [ngModelOptions]="{updateOn: 'blur'}"
+                name="model"
+                placeholder="e.g., Hiace"
+                [disabled]="isLoading()">
+        </div>
+        <div class="flex flex-col">
+            <label for="color" class="font-semibold mb-2">Color</label>
+            <input id="color" type="text" class="input input-bordered w-full focus:outline-none" 
+                [(ngModel)]="color"
+                [ngModelOptions]="{updateOn: 'blur'}"
+                name="color"
+                placeholder="e.g., White"
+                [disabled]="isLoading()">
+        </div>
+    </div>
+
+    <!-- Tank Information -->
+    <div class="divider">Fuel Information</div>
+    <div class="w-full grid grid-cols-2 gap-4">
+        <div class="flex flex-col">
+            <label for="tankCapacity" class="font-semibold mb-2">Tank Capacity (Liters)</label>
+            <input id="tankCapacity" type="number" class="input input-bordered w-full focus:outline-none" 
+                [(ngModel)]="tankCapacity"
+                [ngModelOptions]="{updateOn: 'blur'}"
+                name="tankCapacity"
+                aria-required="true" 
+                placeholder="e.g., 80"
+                [disabled]="isLoading()">
+        </div>
+        <div class="flex flex-col">
+            <label for="mileagePerFullTank" class="font-semibold mb-2">Mileage Per Full Tank (km)</label>
+            <input id="mileagePerFullTank" type="number" class="input input-bordered w-full focus:outline-none" 
+                [(ngModel)]="mileagePerFullTank"
+                [ngModelOptions]="{updateOn: 'blur'}"
+                name="mileagePerFullTank"
+                aria-required="true" 
+                placeholder="e.g., 500"
+                [disabled]="isLoading()">
+        </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+        <input type="checkbox" id="isActive" class="checkbox" 
+            [checked]="isActive()"
+            (change)="isActive.set(!isActive())"
+            [disabled]="isLoading()"
+            aria-label="Is Active">
+        <label for="isActive" class="text-sm font-medium">Active</label>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex gap-2 pt-4 border-t">
+        <button type="submit" class="btn btn-primary flex-1" [disabled]="isLoading() || !registrationNo().trim() || !tankCapacity() || !mileagePerFullTank()">
+            @if (isLoading()) {
+                <span class="loading loading-spinner"></span>
+            } @else {
+                Save Vehicle
+            }
+        </button>
+        <button type="button" class="btn btn-outline flex-1" (click)="reset()" [disabled]="isLoading()">
+            Reset
+        </button>
+    </div>
+</form>

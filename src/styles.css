@@ -2,3 +2,7 @@
 
 @import "tailwindcss";
 @plugin "daisyui";
+
+.primary {
+    --color-primary: #327fa8 !important;
+}

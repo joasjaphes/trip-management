@@ -1,0 +1,15 @@
+<app-layout [(title)]="title" [(viewDetails)]="viewDetails" (add)="onAdd()" [splitSize]="formSize()">
+    <ng-container ngProjectAs="main">
+        <app-data-table [config]="tableConfig()" [data]="routes()" [title]="'Routes List'"
+            (rowClick)="onRowClick($event)" (rowSelect)="onRowSelect($event)"
+            (sortChange)="onSortChange($event)"></app-data-table>
+    </ng-container>
+    <ng-container ngProjectAs="form">
+        @if (viewType() === 'add') {
+            <app-add-route (onSaved)="onFormSaved()"></app-add-route>
+        }
+        @if (viewType() === 'edit') {
+            <p class="text-center text-base-content/60">Edit form coming soon</p>
+        }
+    </ng-container>
+</app-layout>

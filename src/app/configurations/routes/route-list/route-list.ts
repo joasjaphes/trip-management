@@ -1,26 +1,70 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Layout, SplitSize } from '../../../shared/components/layout/layout';
+import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
+import { Route } from '../../../models/route.model';
+import { CommonModule } from '@angular/common';
+import { AddRoute } from '../route-form/add-route';
+import { RouteService } from '../../../services/route.service';
 
 @Component({
   selector: 'app-route-list',
-  imports: [RouterLink],
-  template: `
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold">Routes</h1>
-        <a routerLink="/routes/new" class="btn btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Add Route
-        </a>
-      </div>
-      <div class="card bg-base-100 shadow-lg">
-        <div class="card-body">
-          <p class="text-center text-base-content/60">Route list will be displayed here</p>
-        </div>
-      </div>
-    </div>
-  `
+  imports: [Layout, DataTable, AddRoute, CommonModule],
+  templateUrl: './route-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RouteList {}
+export class RouteList {
+  private routeService = inject(RouteService);
+
+  title = signal('Routes');
+  viewDetails = signal(false);
+  viewType = signal<'add' | 'edit'>('add');
+  formSize = signal<SplitSize>('half');
+  selectedRouteId = signal<string | null>(null);
+
+  // Get data from service
+  routes = this.routeService.allRoutes;
+  isLoading = this.routeService.loading;
+  activeRoutesCount = this.routeService.activeRoutesCount;
+
+  // Table configuration
+  tableConfig = signal<TableConfig>({
+    columns: [
+      { key: 'name', label: 'Route Name', sortable: true },
+      { key: 'startLocation', label: 'Start Location', sortable: true },
+      { key: 'endLocation', label: 'End Location', sortable: true },
+      { key: 'mileage', label: 'Mileage (km)', sortable: true },
+      { key: 'estimatedDuration', label: 'Duration (min)', sortable: true },
+      { key: 'isActive', label: 'Status', sortable: true },
+      { key: 'createdAt', label: 'Created', sortable: true },
+    ],
+    pageSize: 10,
+    striped: true,
+    hover: true,
+    bordered: false,
+  });
+
+  onAdd(): void {
+    this.viewType.set('add');
+    this.selectedRouteId.set(null);
+    this.viewDetails.set(true);
+  }
+
+  onRowClick(route: Route): void {
+    this.selectedRouteId.set(route.id);
+    this.viewType.set('edit');
+    this.viewDetails.set(true);
+  }
+
+  onRowSelect(selectedRoutes: Route[]): void {
+    console.log('Selected routes:', selectedRoutes);
+  }
+
+  onSortChange(event: { column: string; direction: 'asc' | 'desc' }): void {
+    console.log('Sort changed:', event);
+  }
+
+  onFormSaved(): void {
+    this.viewDetails.set(false);
+    this.selectedRouteId.set(null);
+  }
+}
