@@ -35,7 +35,7 @@ export class RouteList {
       { key: 'mileage', label: 'Mileage (km)', sortable: true },
       { key: 'estimatedDuration', label: 'Duration (min)', sortable: true },
       { key: 'isActive', label: 'Status', sortable: true },
-      { key: 'createdAt', label: 'Created', sortable: true },
+      // { key: 'createdAt', label: 'Created', sortable: true },
     ],
     pageSize: 10,
     striped: true,
@@ -64,6 +64,11 @@ export class RouteList {
   }
 
   onFormSaved(): void {
+    this.viewDetails.set(false);
+    this.selectedRouteId.set(null);
+  }
+
+  onCancel(): void {
     this.viewDetails.set(false);
     this.selectedRouteId.set(null);
   }

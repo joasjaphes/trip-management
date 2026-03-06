@@ -6,72 +6,7 @@ import { ExpenseCategory } from '../models/expense-category.model';
 })
 export class ExpenseCategoryService {
   // State
-  private categories = signal<ExpenseCategory[]>([
-    {
-      id: 'cat-001',
-      name: 'Accommodation',
-      description: 'Hotel, hostel, and lodging expenses',
-      isActive: true,
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-02-20'),
-    },
-    {
-      id: 'cat-002',
-      name: 'Transportation',
-      description: 'Flights, trains, buses, and car rentals',
-      isActive: true,
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-02-20'),
-    },
-    {
-      id: 'cat-003',
-      name: 'Food & Dining',
-      description: 'Restaurant meals and groceries',
-      isActive: true,
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-03-01'),
-    },
-    {
-      id: 'cat-004',
-      name: 'Activities & Entertainment',
-      description: 'Tours, attractions, and entertainment',
-      isActive: true,
-      createdAt: new Date('2024-01-20'),
-      updatedAt: new Date('2024-02-15'),
-    },
-    {
-      id: 'cat-005',
-      name: 'Shopping',
-      description: 'Souvenirs, clothes, and retail purchases',
-      isActive: true,
-      createdAt: new Date('2024-02-01'),
-      updatedAt: new Date('2024-02-28'),
-    },
-    {
-      id: 'cat-006',
-      name: 'Utilities & Services',
-      description: 'Internet, laundry, and other services',
-      isActive: true,
-      createdAt: new Date('2024-02-05'),
-      updatedAt: new Date('2024-03-02'),
-    },
-    {
-      id: 'cat-007',
-      name: 'Insurance',
-      description: 'Travel and health insurance',
-      isActive: false,
-      createdAt: new Date('2024-02-10'),
-      updatedAt: new Date('2024-02-10'),
-    },
-    {
-      id: 'cat-008',
-      name: 'Tips & Gratuities',
-      description: 'Tips for service providers',
-      isActive: true,
-      createdAt: new Date('2024-02-15'),
-      updatedAt: new Date('2024-02-25'),
-    },
-  ]);
+  private categories = signal<ExpenseCategory[]>([]);
 
   private isLoading = signal(false);
   private error = signal<string | null>(null);
@@ -105,7 +40,7 @@ export class ExpenseCategoryService {
   /**
    * Create a new category
    */
-  create(name: string, description?: string): void {
+  create(name: string, description?: string, category?: string, isActive?: boolean): void {
     this.isLoading.set(true);
     this.error.set(null);
 
@@ -115,8 +50,9 @@ export class ExpenseCategoryService {
         const newCategory: ExpenseCategory = {
           id: `cat-${Date.now()}`,
           name,
+          category: category || 'GENERAL', // Default category value
           description: description || '',
-          isActive: true,
+          status: isActive ? 'Active' : 'Inactive',
           createdAt: new Date(),
           updatedAt: new Date(),
         };

@@ -21,6 +21,8 @@ export class AddRoute {
   estimatedDuration = signal('');
   isActive = signal(true);
 
+  onCancel = output<void>();
+
   // Output event
   onSaved = output<void>();
 
@@ -53,11 +55,6 @@ export class AddRoute {
   }
 
   reset(): void {
-    this.name.set('');
-    this.mileage.set('');
-    this.startLocation.set('');
-    this.endLocation.set('');
-    this.estimatedDuration.set('');
-    this.isActive.set(true);
+    this.onCancel.emit();
   }
 }

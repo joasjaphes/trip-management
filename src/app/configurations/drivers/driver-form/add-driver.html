@@ -1,12 +1,13 @@
 <form class="w-full flex flex-col gap-4" (ngSubmit)="onSubmit()">
     <!-- Error message -->
     @if (error()) {
-        <div class="alert alert-error">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l-2-2m0 0l-2-2m2 2l2-2m-2 2l-2 2m2-2l2 2M9 1a8 8 0 018 8v10H1V9a8 8 0 018-8z" />
-            </svg>
-            <span>{{ error() }}</span>
-        </div>
+    <div class="alert alert-error">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 14l-2-2m0 0l-2-2m2 2l2-2m-2 2l-2 2m2-2l2 2M9 1a8 8 0 018 8v10H1V9a8 8 0 018-8z" />
+        </svg>
+        <span>{{ error() }}</span>
+    </div>
     }
 
     <!-- Personal Information -->
@@ -14,23 +15,15 @@
     <div class="w-full grid grid-cols-2 gap-4">
         <div class="flex flex-col">
             <label for="firstName" class="font-semibold mb-2">First Name</label>
-            <input id="firstName" type="text" class="input input-bordered w-full focus:outline-none" 
-                [(ngModel)]="firstName" 
-                [ngModelOptions]="{updateOn: 'blur'}"
-                name="firstName"
-                aria-required="true" 
-                placeholder="Enter first name"
-                [disabled]="isLoading()">
+            <input id="firstName" type="text" class="input input-bordered w-full focus:outline-none"
+                [(ngModel)]="firstName" [ngModelOptions]="{updateOn: 'blur'}" name="firstName" aria-required="true"
+                placeholder="Enter first name" [disabled]="isLoading()">
         </div>
         <div class="flex flex-col">
             <label for="lastName" class="font-semibold mb-2">Last Name</label>
-            <input id="lastName" type="text" class="input input-bordered w-full focus:outline-none" 
-                [(ngModel)]="lastName"
-                [ngModelOptions]="{updateOn: 'blur'}"
-                name="lastName"
-                aria-required="true" 
-                placeholder="Enter last name"
-                [disabled]="isLoading()">
+            <input id="lastName" type="text" class="input input-bordered w-full focus:outline-none"
+                [(ngModel)]="lastName" [ngModelOptions]="{updateOn: 'blur'}" name="lastName" aria-required="true"
+                placeholder="Enter last name" [disabled]="isLoading()">
         </div>
     </div>
 
@@ -39,33 +32,22 @@
     <div class="w-full grid grid-cols-2 gap-4">
         <div class="flex flex-col">
             <label for="email" class="font-semibold mb-2">Email</label>
-            <input id="email" type="email" class="input input-bordered w-full focus:outline-none" 
-                [(ngModel)]="email"
-                [ngModelOptions]="{updateOn: 'blur'}"
-                name="email"
-                placeholder="Enter email address"
+            <input id="email" type="email" class="input input-bordered w-full focus:outline-none" [(ngModel)]="email"
+                [ngModelOptions]="{updateOn: 'blur'}" name="email" placeholder="Enter email address"
                 [disabled]="isLoading()">
         </div>
         <div class="flex flex-col">
             <label for="phone" class="font-semibold mb-2">Phone</label>
-            <input id="phone" type="tel" class="input input-bordered w-full focus:outline-none" 
-                [(ngModel)]="phone"
-                [ngModelOptions]="{updateOn: 'blur'}"
-                name="phone"
-                aria-required="true" 
-                placeholder="Enter phone number"
+            <input id="phone" type="tel" class="input input-bordered w-full focus:outline-none" [(ngModel)]="phone"
+                [ngModelOptions]="{updateOn: 'blur'}" name="phone" aria-required="true" placeholder="Enter phone number"
                 [disabled]="isLoading()">
         </div>
     </div>
 
     <div class="w-full">
         <label for="address" class="font-semibold mb-2 block">Address</label>
-        <input id="address" type="text" class="input input-bordered w-full focus:outline-none" 
-            [(ngModel)]="address"
-            [ngModelOptions]="{updateOn: 'blur'}"
-            name="address"
-            placeholder="Enter address"
-            [disabled]="isLoading()">
+        <input id="address" type="text" class="input input-bordered w-full focus:outline-none" [(ngModel)]="address"
+            [ngModelOptions]="{updateOn: 'blur'}" name="address" placeholder="Enter address" [disabled]="isLoading()">
     </div>
 
     <!-- License Information -->
@@ -73,43 +55,34 @@
     <div class="w-full grid grid-cols-2 gap-4">
         <div class="flex flex-col">
             <label for="licenseNumber" class="font-semibold mb-2">License Number</label>
-            <input id="licenseNumber" type="text" class="input input-bordered w-full focus:outline-none" 
-                [(ngModel)]="licenseNumber"
-                [ngModelOptions]="{updateOn: 'blur'}"
-                name="licenseNumber"
-                placeholder="Enter license number"
-                [disabled]="isLoading()">
+            <input id="licenseNumber" type="text" class="input input-bordered w-full focus:outline-none"
+                [(ngModel)]="licenseNumber" [ngModelOptions]="{updateOn: 'blur'}" name="licenseNumber"
+                placeholder="Enter license number" [disabled]="isLoading()">
         </div>
         <div class="flex flex-col">
             <label for="licenseClass" class="font-semibold mb-2">License Class</label>
             <select id="licenseClass" class="select select-bordered w-full focus:outline-none"
-                [(ngModel)]="licenseClass"
-                name="licenseClass"
-                [disabled]="isLoading()">
-                <option>Professional</option>
-                <option>Commercial</option>
-                <option>Passenger</option>
-                <option>HGV</option>
+                [(ngModel)]="licenseClass" name="licenseClass" [disabled]="isLoading()">
+                <option>D</option>
+                <option>E</option>
             </select>
         </div>
     </div>
 
     <div class="flex items-center gap-2">
-        <input type="checkbox" id="isActive" class="checkbox" 
-            [checked]="isActive()"
-            (change)="isActive.set(!isActive())"
-            [disabled]="isLoading()"
-            aria-label="Is Active">
+        <input type="checkbox" id="isActive" class="checkbox" [checked]="isActive()"
+            (change)="isActive.set(!isActive())" [disabled]="isLoading()" aria-label="Is Active">
         <label for="isActive" class="text-sm font-medium">Active</label>
     </div>
 
     <!-- Action buttons -->
     <div class="flex gap-2 pt-4 border-t">
-        <button type="submit" class="btn btn-primary flex-1" [disabled]="isLoading() || !firstName().trim() || !lastName().trim() || !phone().trim()">
+        <button type="submit" class="btn btn-primary flex-1"
+            [disabled]="isLoading() || !firstName().trim() || !lastName().trim() || !phone().trim()">
             @if (isLoading()) {
-                <span class="loading loading-spinner"></span>
+            <span class="loading loading-spinner"></span>
             } @else {
-                Save Driver
+            Save Driver
             }
         </button>
         <button type="button" class="btn btn-outline flex-1" (click)="reset()" [disabled]="isLoading()">

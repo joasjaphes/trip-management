@@ -30,11 +30,11 @@ export class VehicleList {
   tableConfig = signal<TableConfig>({
     columns: [
       { key: 'registrationNo', label: 'Registration', sortable: true },
-      { key: 'make', label: 'Make', sortable: true },
-      { key: 'model', label: 'Model', sortable: true },
+      // { key: 'make', label: 'Make', sortable: true },
+      // { key: 'model', label: 'Model', sortable: true },
       { key: 'year', label: 'Year', sortable: true },
       { key: 'isActive', label: 'Status', sortable: true },
-      { key: 'createdAt', label: 'Created', sortable: true },
+      // { key: 'createdAt', label: 'Created', sortable: true },
     ],
     pageSize: 10,
     striped: true,

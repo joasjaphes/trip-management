@@ -23,44 +23,12 @@
                 [disabled]="isLoading()">
         </div>
         <div class="flex flex-col">
-            <label for="year" class="font-semibold mb-2">Year</label>
+            <label for="year" class="font-semibold mb-2">Registration Year</label>
             <input id="year" type="number" class="input input-bordered w-full focus:outline-none" 
                 [(ngModel)]="year"
                 [ngModelOptions]="{updateOn: 'blur'}"
                 name="year"
                 placeholder="e.g., 2022"
-                [disabled]="isLoading()">
-        </div>
-    </div>
-
-    <!-- Vehicle Details -->
-    <div class="divider">Vehicle Details</div>
-    <div class="w-full grid grid-cols-3 gap-4">
-        <div class="flex flex-col">
-            <label for="make" class="font-semibold mb-2">Make</label>
-            <input id="make" type="text" class="input input-bordered w-full focus:outline-none" 
-                [(ngModel)]="make"
-                [ngModelOptions]="{updateOn: 'blur'}"
-                name="make"
-                placeholder="e.g., Toyota"
-                [disabled]="isLoading()">
-        </div>
-        <div class="flex flex-col">
-            <label for="model" class="font-semibold mb-2">Model</label>
-            <input id="model" type="text" class="input input-bordered w-full focus:outline-none" 
-                [(ngModel)]="model"
-                [ngModelOptions]="{updateOn: 'blur'}"
-                name="model"
-                placeholder="e.g., Hiace"
-                [disabled]="isLoading()">
-        </div>
-        <div class="flex flex-col">
-            <label for="color" class="font-semibold mb-2">Color</label>
-            <input id="color" type="text" class="input input-bordered w-full focus:outline-none" 
-                [(ngModel)]="color"
-                [ngModelOptions]="{updateOn: 'blur'}"
-                name="color"
-                placeholder="e.g., White"
                 [disabled]="isLoading()">
         </div>
     </div>
@@ -88,6 +56,84 @@
                 placeholder="e.g., 500"
                 [disabled]="isLoading()">
         </div>
+    </div>
+
+    <!-- Permits -->
+    <div class="divider">Permits</div>
+    <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Attachment</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (permit of permits(); track permit.id) {
+                    <tr>
+                        <td>{{ permit.description }}</td>
+                        <td>{{ permit.startDate | date: 'mediumDate' }}</td>
+                        <td>{{ permit.endDate | date: 'mediumDate' }}</td>
+                        <td>
+                            @if (permit.attachment) {
+                                <a [href]="permit.attachment" download class="link link-primary text-sm">Download</a>
+                            } @else {
+                                <span class="text-gray-400">-</span>
+                            }
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-error btn-xs" (click)="removePermit(permit.id)" [disabled]="isLoading()">
+                                Remove
+                            </button>
+                        </td>
+                    </tr>
+                }
+                <!-- Input row -->
+                <tr class="bg-base-200">
+                    <td>
+                        <input type="text" class="input input-bordered input-sm w-full focus:outline-none" 
+                            [(ngModel)]="newPermitDescription"
+                            [ngModelOptions]="{standalone: true}"
+                            placeholder="Enter description"
+                            [disabled]="isLoading()">
+                    </td>
+                    <td>
+                        <input type="date" class="input input-bordered input-sm w-full focus:outline-none" 
+                            [(ngModel)]="newPermitStartDate"
+                            [ngModelOptions]="{standalone: true}"
+                            [disabled]="isLoading()">
+                    </td>
+                    <td>
+                        <input type="date" class="input input-bordered input-sm w-full focus:outline-none" 
+                            [(ngModel)]="newPermitEndDate"
+                            [ngModelOptions]="{standalone: true}"
+                            [disabled]="isLoading()">
+                    </td>
+                    <td>
+                        <div class="flex flex-col gap-1">
+                            <input type="file" 
+                                class="file-input file-input-bordered file-input-xs w-full" 
+                                (change)="onFileSelected($event)"
+                                [disabled]="isLoading()"
+                                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                            @if (newPermitFileName()) {
+                                <span class="text-xs text-gray-500">{{ newPermitFileName() }}</span>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-success btn-xs" 
+                            (click)="addPermit()" 
+                            [disabled]="isLoading() || !newPermitDescription().trim() || !newPermitStartDate() || !newPermitEndDate()">
+                            Add
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <div class="flex items-center gap-2">

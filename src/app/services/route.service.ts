@@ -6,41 +6,7 @@ import { Route } from '../models/route.model';
 })
 export class RouteService {
   // State
-  private routes = signal<Route[]>([
-    {
-      id: 'rte-001',
-      name: 'Downtown - Airport Express',
-      mileage: 45,
-      startLocation: 'Downtown Station',
-      endLocation: 'International Airport',
-      estimatedDuration: 60,
-      isActive: true,
-      createdAt: new Date('2024-01-10'),
-      updatedAt: new Date('2024-02-20'),
-    },
-    {
-      id: 'rte-002',
-      name: 'Suburban Loop',
-      mileage: 35,
-      startLocation: 'City Center',
-      endLocation: 'Suburbs',
-      estimatedDuration: 45,
-      isActive: true,
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-02-18'),
-    },
-    {
-      id: 'rte-003',
-      name: 'Beach Road Route',
-      mileage: 52,
-      startLocation: 'City Center',
-      endLocation: 'Beach Resort',
-      estimatedDuration: 70,
-      isActive: true,
-      createdAt: new Date('2024-01-20'),
-      updatedAt: new Date('2024-02-15'),
-    },
-  ]);
+  private routes = signal<Route[]>([]);
 
   private isLoading = signal(false);
   private error = signal<string | null>(null);

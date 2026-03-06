@@ -16,7 +16,7 @@ import { ExpenseCategoryService } from '../../services/expense-category.service'
 export class ExpenseCategories {
   private expenseCategoryService = inject(ExpenseCategoryService);
 
-  title = signal('Expense Categories');
+  title = signal('Expenses');
   viewDetails = signal(false);
   viewType = signal<'add' | 'edit'>('add');
   formSize = signal<SplitSize>('half');
@@ -30,11 +30,9 @@ export class ExpenseCategories {
   // Table configuration
   tableConfig = signal<TableConfig>({
     columns: [
-      { key: 'name', label: 'Category Name', sortable: true },
-      { key: 'description', label: 'Description', sortable: false },
-      { key: 'isActive', label: 'Status', sortable: true },
-      { key: 'createdAt', label: 'Created', sortable: true },
-      { key: 'updatedAt', label: 'Updated', sortable: true },
+      { key: 'name', label: 'Expense Name', sortable: true },
+      { key: 'category', label: 'Category', sortable: false },
+      { key: 'status', label: 'Status', sortable: true },
     ],
     pageSize: 10,
     striped: true,

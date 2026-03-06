@@ -17,6 +17,7 @@ export class AddExpenseCategory {
   categoryName = signal('');
   description = signal('');
   isActive = signal(true);
+  category = signal('GENERAL'); // New category field
 
   // Output event
   onSaved = output<void>();
@@ -32,7 +33,9 @@ export class AddExpenseCategory {
 
     this.expenseCategoryService.create(
       this.categoryName().trim(),
-      this.description().trim()
+      this.description().trim(),
+      this.category().trim(),
+      this.isActive() // Pass the selected category
     );
 
     // Wait for request to complete and reset form

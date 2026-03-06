@@ -18,7 +18,7 @@
             [ngModelOptions]="{updateOn: 'blur'}"
             name="name"
             aria-required="true" 
-            placeholder="e.g., Downtown - Airport Express"
+            placeholder="e.g., Dar es salaam - Lubumbashi"
             [disabled]="isLoading()">
     </div>
 
@@ -31,7 +31,7 @@
                 [(ngModel)]="startLocation"
                 [ngModelOptions]="{updateOn: 'blur'}"
                 name="startLocation"
-                placeholder="e.g., Downtown Station"
+                placeholder="e.g., Dar es salaam Bus Terminal"
                 [disabled]="isLoading()">
         </div>
         <div class="flex flex-col">
@@ -40,7 +40,7 @@
                 [(ngModel)]="endLocation"
                 [ngModelOptions]="{updateOn: 'blur'}"
                 name="endLocation"
-                placeholder="e.g., International Airport"
+                placeholder="e.g., Lubumbashi Central Station"
                 [disabled]="isLoading()">
         </div>
     </div>
@@ -59,12 +59,12 @@
                 [disabled]="isLoading()">
         </div>
         <div class="flex flex-col">
-            <label for="estimatedDuration" class="font-semibold mb-2">Estimated Duration (minutes)</label>
+            <label for="estimatedDuration" class="font-semibold mb-2">Estimated Duration (days)</label>
             <input id="estimatedDuration" type="number" class="input input-bordered w-full focus:outline-none" 
                 [(ngModel)]="estimatedDuration"
                 [ngModelOptions]="{updateOn: 'blur'}"
                 name="estimatedDuration"
-                placeholder="e.g., 60"
+                placeholder="e.g., 2"
                 [disabled]="isLoading()">
         </div>
     </div>
@@ -88,7 +88,7 @@
             }
         </button>
         <button type="button" class="btn btn-outline flex-1" (click)="reset()" [disabled]="isLoading()">
-            Reset
+            Cancel
         </button>
     </div>
 </form>

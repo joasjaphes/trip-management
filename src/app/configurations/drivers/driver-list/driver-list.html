@@ -1,6 +1,6 @@
 <app-layout [(title)]="title" [(viewDetails)]="viewDetails" (add)="onAdd()" [splitSize]="formSize()">
     <ng-container ngProjectAs="main">
-        <app-data-table [config]="tableConfig()" [data]="drivers()" [title]="'Drivers List'"
+        <app-data-table [config]="tableConfig()" [data]="drivers()"
             (rowClick)="onRowClick($event)" (rowSelect)="onRowSelect($event)"
             (sortChange)="onSortChange($event)"></app-data-table>
     </ng-container>

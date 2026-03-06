@@ -6,44 +6,7 @@ import { Driver } from '../models/driver.model';
 })
 export class DriverService {
   // State
-  private drivers = signal<Driver[]>([
-    {
-      id: 'drv-001',
-      firstName: 'John',
-      lastName: 'Smith',
-      email: 'john.smith@example.com',
-      phone: '555-0101',
-      address: '123 Main St, City, State 12345',
-      dateOfBirth: new Date('1985-06-15'),
-      licenseDetails: {
-        licenseNumber: 'DL-123456',
-        issueDate: new Date('2018-05-20'),
-        expiryDate: new Date('2026-05-20'),
-        licenseClass: 'Professional',
-      },
-      isActive: true,
-      createdAt: new Date('2024-01-10'),
-      updatedAt: new Date('2024-02-20'),
-    },
-    {
-      id: 'drv-002',
-      firstName: 'Maria',
-      lastName: 'Garcia',
-      email: 'maria.garcia@example.com',
-      phone: '555-0102',
-      address: '456 Oak Ave, City, State 12345',
-      dateOfBirth: new Date('1990-03-22'),
-      licenseDetails: {
-        licenseNumber: 'DL-789012',
-        issueDate: new Date('2019-07-15'),
-        expiryDate: new Date('2027-07-15'),
-        licenseClass: 'Professional',
-      },
-      isActive: true,
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-02-18'),
-    },
-  ]);
+  private drivers = signal<Driver[]>([]);
 
   private isLoading = signal(false);
   private error = signal<string | null>(null);

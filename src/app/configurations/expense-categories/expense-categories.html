@@ -1,7 +1,6 @@
 <app-layout [(title)]="title" [(viewDetails)]="viewDetails" (add)="onAdd()" [splitSize]="formSize()">
     <ng-container ngProjectAs="main">
-        <app-data-table [config]="tableConfig()" [data]="expenseCategories()" [title]="'Expense Categories List'"
-            (rowClick)="onRowClick($event)" (rowSelect)="onRowSelect($event)"
+        <app-data-table [config]="tableConfig()" [data]="expenseCategories()" (rowClick)="onRowClick($event)" (rowSelect)="onRowSelect($event)"
             (sortChange)="onSortChange($event)"></app-data-table>
     </ng-container>
     <ng-container ngProjectAs="form">

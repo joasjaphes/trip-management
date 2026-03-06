@@ -6,52 +6,7 @@ import { Vehicle } from '../models/vehicle.model';
 })
 export class VehicleService {
   // State
-  private vehicles = signal<Vehicle[]>([
-    {
-      id: 'veh-001',
-      registrationNo: 'ABC-1234',
-      make: 'Toyota',
-      model: 'Hiace',
-      year: 2022,
-      color: 'White',
-      tankCapacity: 80,
-      mileagePerFullTank: 500,
-      currentMileage: 45000,
-      permits: [
-        {
-          id: 'permit-001',
-          description: 'Public Transport License',
-          startDate: new Date('2024-01-01'),
-          endDate: new Date('2025-12-31'),
-        },
-      ],
-      isActive: true,
-      createdAt: new Date('2024-01-10'),
-      updatedAt: new Date('2024-02-20'),
-    },
-    {
-      id: 'veh-002',
-      registrationNo: 'XYZ-5678',
-      make: 'Mercedes',
-      model: 'Sprinter',
-      year: 2023,
-      color: 'Silver',
-      tankCapacity: 100,
-      mileagePerFullTank: 600,
-      currentMileage: 25000,
-      permits: [
-        {
-          id: 'permit-002',
-          description: 'Public Transport License',
-          startDate: new Date('2024-01-01'),
-          endDate: new Date('2025-12-31'),
-        },
-      ],
-      isActive: true,
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-02-18'),
-    },
-  ]);
+  private vehicles = signal<Vehicle[]>([]);
 
   private isLoading = signal(false);
   private error = signal<string | null>(null);
@@ -66,7 +21,7 @@ export class VehicleService {
     () => this.vehicles().filter((v) => v.isActive).length
   );
 
-  constructor() {}
+  constructor() { }
 
   getAll(): Vehicle[] {
     return this.vehicles();
@@ -108,11 +63,11 @@ export class VehicleService {
           vehicles.map((v) =>
             v.id === id
               ? {
-                  ...vehicle,
-                  id,
-                  createdAt: v.createdAt,
-                  updatedAt: new Date(),
-                }
+                ...vehicle,
+                id,
+                createdAt: v.createdAt,
+                updatedAt: new Date(),
+              }
               : v
           )
         );

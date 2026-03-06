@@ -11,25 +11,27 @@
 
     <div class="w-full grid grid-cols-2 gap-4">
         <div class="flex flex-col">
-            <label for="name" class="font-semibold mb-2">Category name</label>
+            <label for="name" class="font-semibold mb-2">Expense name</label>
             <input id="name" type="text" class="input input-bordered w-full focus:outline-none" 
                 [(ngModel)]="categoryName" 
                 [ngModelOptions]="{updateOn: 'blur'}"
                 name="categoryName"
                 aria-required="true" 
-                aria-label="Category Name" 
-                placeholder="Enter category name"
+                aria-label="Expense Name" 
+                placeholder="Enter expense name"
                 [disabled]="isLoading()">
         </div>
         <div class="flex flex-col">
-            <label for="description" class="font-semibold mb-2">Category description</label>
-            <input id="description" type="text" class="input input-bordered w-full focus:outline-none" 
-                [(ngModel)]="description"
+            <label for="category" class="font-semibold mb-2">Expense Category</label>
+            <select name="category" id="category" class="select select-bordered w-full focus:outline-none"
+                [(ngModel)]="category"
                 [ngModelOptions]="{updateOn: 'blur'}"
-                name="description"
-                placeholder="Enter category description" 
-                aria-label="Description"
+                aria-required="true"
+                aria-label="Expense Category"
                 [disabled]="isLoading()">
+                <option value="GENERAL">General Expenses</option>
+                <option value="OTHER">Other Expenses</option>
+            </select>
         </div>
     </div>
 
@@ -48,7 +50,7 @@
             @if (isLoading()) {
                 <span class="loading loading-spinner"></span>
             } @else {
-                Save Category
+                Save Expense
             }
         </button>
         <button type="button" class="btn btn-outline flex-1" (click)="reset()" [disabled]="isLoading()">

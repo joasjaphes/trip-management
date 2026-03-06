@@ -24,7 +24,7 @@
                 [attr.aria-hidden]="viewDetails()">
                 <ng-content select="main"></ng-content>
             </div>
-            <div class="card-body content-panel content-panel-overlay"
+            <div class="card-body content-panel content-panel-overlay overflow-auto scrollbar scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
                 [style.width]="viewDetails() ? formPanelWidth() : '0%'"
                 [class.slide-in-from-right]="viewDetails()"
                 [class.slide-out-to-right]="!viewDetails()"
