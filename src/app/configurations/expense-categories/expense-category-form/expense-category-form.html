@@ -14,7 +14,7 @@
       <div class="mb-6">
         <label class="text-[13px] font-bold text-gray-700 block mb-2">Category Name</label>
         <input type="text" placeholder="e.g. Fuel, Maintenance, Permits" [(ngModel)]="categoryName" name="categoryName"
-               class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+               class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
 
       <!-- Parent Category -->
@@ -22,7 +22,7 @@
         <label class="text-[13px] font-bold text-gray-700 block mb-2">Parent Category (Optional)</label>
         <div class="relative">
           <select [(ngModel)]="parentCategory" name="parentCategory"
-                  class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors appearance-none cursor-pointer">
+                  class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
             <option value="">None (Top Level)</option>
             <option value="fleet-operations">Fleet Operations</option>
             <option value="logistics">Logistics</option>
@@ -38,7 +38,7 @@
       <div class="mb-8">
         <label class="text-[13px] font-bold text-gray-700 block mb-2">Description</label>
         <textarea placeholder="Describe the types of expenses included in this category..." [(ngModel)]="description" name="description" rows="4"
-                  class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300 resize-none"></textarea>
+                  class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 resize-none"></textarea>
       </div>
 
       <div class="bg-gray-50 border border-gray-100 rounded-xl px-6 py-4 flex items-center justify-between">
@@ -48,13 +48,13 @@
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" [checked]="isActive" (change)="isActive = !isActive" class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f02b3c]"></div>
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f25f2f]"></div>
         </label>
       </div>
     </div>
 
     <div class="flex items-center gap-4 pt-2 pb-8">
-      <button (click)="onSubmit()" class="btn border-none bg-[#f02b3c] hover:bg-[#d62434] text-white px-10 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg flex-1">
+      <button (click)="onSubmit()" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-10 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg flex-1">
         Save Category
       </button>
       <button (click)="goBack()" class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-10 font-bold rounded-lg flex-1">

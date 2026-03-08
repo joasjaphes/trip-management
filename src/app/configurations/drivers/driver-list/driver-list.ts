@@ -80,7 +80,7 @@ export class DriverList {
   getStatusClass(status: string): string {
     switch (status.toLowerCase()) {
       case 'active':
-        return 'bg-[#f02b3c] text-white';
+        return 'bg-[#f25f2f] text-white';
       case 'inactive':
         return 'bg-gray-100 text-gray-600 border border-gray-200';
       default:

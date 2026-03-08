@@ -15,7 +15,7 @@
       <div class="mb-7">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase block mb-2">Route Name</label>
         <input type="text" placeholder="e.g. Northeast Logistics Corridor" [(ngModel)]="routeName" name="routeName"
-               class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+               class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
 
       <!-- Start / End Location -->
@@ -23,14 +23,14 @@
         <div class="flex flex-col gap-2">
           <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Start Location</label>
           <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#f02b3c]">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#f25f2f]">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </span>
             <input type="text" placeholder="City, Region or Warehouse ID" [(ngModel)]="startLocation" name="startLocation"
-                   class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+                   class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           </div>
         </div>
         <div class="flex flex-col gap-2">
@@ -42,7 +42,7 @@
               </svg>
             </span>
             <input type="text" placeholder="City, Region or Destination ID" [(ngModel)]="endLocation" name="endLocation"
-                   class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+                   class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           </div>
         </div>
       </div>
@@ -58,7 +58,7 @@
               </svg>
             </span>
             <input type="text" placeholder="0.00" [(ngModel)]="mileage" name="mileage"
-                   class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+                   class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           </div>
         </div>
         <div class="flex flex-col gap-2">
@@ -70,7 +70,7 @@
               </svg>
             </span>
             <input type="text" placeholder="e.g. 480" [(ngModel)]="estimatedDuration" name="estimatedDuration"
-                   class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+                   class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@
       <div class="flex items-center gap-3">
         <label class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" [checked]="isActive" (change)="isActive = !isActive" class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f02b3c]"></div>
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f25f2f]"></div>
         </label>
         <span class="text-[13px] font-extrabold text-gray-700 uppercase tracking-wider">Active Route</span>
       </div>
@@ -89,7 +89,7 @@
         <button (click)="goBack()" class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-6 font-bold rounded-lg">
           Cancel
         </button>
-        <button (click)="onSubmit()" class="btn border-none bg-[#f02b3c] hover:bg-[#d62434] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg flex items-center gap-2">
+        <button (click)="onSubmit()" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>

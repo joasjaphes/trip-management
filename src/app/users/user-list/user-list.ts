@@ -20,7 +20,7 @@ export class UserList {
 
   getRoleBadgeClass(role: string): string {
     switch (role) {
-      case 'ADMIN': return 'bg-red-50 text-[#f02b3c]';
+      case 'ADMIN': return 'bg-red-50 text-[#f25f2f]';
       case 'MANAGER': return 'bg-blue-50 text-blue-600';
       case 'VIEWER': return 'bg-gray-100 text-gray-500';
       default: return 'bg-gray-100 text-gray-500';

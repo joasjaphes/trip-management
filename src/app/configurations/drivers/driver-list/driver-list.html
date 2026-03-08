@@ -13,7 +13,7 @@
         </svg>
         Export
       </button>
-      <a routerLink="/drivers/new" class="btn border-none bg-[#f02b3c] hover:bg-[#d62434] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-xl">
+      <a routerLink="/drivers/new" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-xl">
         Add New Driver
       </a>
     </div>
@@ -87,7 +87,7 @@
         </button>
         @for (page of [1, 2, 3]; track page) {
           <button class="w-8 h-8 flex items-center justify-center text-[13px] font-bold rounded-lg transition-colors"
-                  [class.bg-[#f02b3c]]="page === currentPage"
+                  [class.bg-[#f25f2f]]="page === currentPage"
                   [class.text-white]="page === currentPage"
                   [class.text-gray-500]="page !== currentPage"
                   [class.hover:bg-gray-100]="page !== currentPage">

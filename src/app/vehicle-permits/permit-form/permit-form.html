@@ -14,12 +14,12 @@
         <div class="flex flex-col gap-2">
           <label class="text-[13px] font-bold text-gray-700">Permit Name</label>
           <input type="text" placeholder="e.g. Oversize Load Annual Permit" [(ngModel)]="permitName" name="permitName"
-                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-[13px] font-bold text-gray-700">Authorizing Body</label>
           <input type="text" placeholder="e.g. Department of Transportation" [(ngModel)]="authorizingBody" name="authorizingBody"
-                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         </div>
       </div>
 
@@ -31,7 +31,7 @@
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" [checked]="isActive" (change)="isActive = !isActive" class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f02b3c]"></div>
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f25f2f]"></div>
         </label>
       </div>
     </div>
@@ -41,7 +41,7 @@
       <button (click)="goBack()" class="text-gray-500 hover:text-gray-800 font-bold text-[14px] tracking-wide transition-colors">
         Cancel
       </button>
-      <button (click)="onSubmit()" class="btn border-none bg-[#f02b3c] hover:bg-[#d62434] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg">
+      <button (click)="onSubmit()" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg">
         Save Permit
       </button>
     </div>

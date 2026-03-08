@@ -23,9 +23,9 @@ export class RouteDetail {
   };
 
   activity = [
-    { label: 'Created On', date: 'Oct 24, 2023 • 08:30 AM', detail: 'By Dispatcher Admin', color: 'bg-[#f02b3c]' },
+    { label: 'Created On', date: 'Oct 24, 2023 • 08:30 AM', detail: 'By Dispatcher Admin', color: 'bg-[#f25f2f]' },
     { label: 'Last Updated', date: 'Oct 25, 2023 • 02:15 PM', detail: 'By System Automation', color: 'bg-gray-300' },
-    { label: 'Route Status Change', date: 'In Transit', detail: '10 mins ago', color: 'bg-[#f02b3c]' },
+    { label: 'Route Status Change', date: 'In Transit', detail: '10 mins ago', color: 'bg-[#f25f2f]' },
   ];
 
   goBack() {

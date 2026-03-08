@@ -6,7 +6,7 @@
       <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight">Vehicles Management</h1>
       <p class="text-[15px] font-medium text-gray-400 mt-1">Real-time monitoring and lifecycle management of your fleet.</p>
     </div>
-    <a routerLink="/vehicles/new" class="btn border-none bg-[#f02b3c] hover:bg-[#d62434] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2">
+    <a routerLink="/vehicles/new" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
       </svg>
@@ -31,7 +31,7 @@
         @for (vehicle of vehiclesList; track vehicle.id) {
         <tr class="border-b border-gray-50 transition-all hover:bg-gray-50 cursor-pointer group">
           <td class="py-5 px-6 flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-red-50 text-[#f02b3c] flex items-center justify-center shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-red-50 text-[#f25f2f] flex items-center justify-center shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
               </svg>
@@ -43,7 +43,7 @@
           <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ vehicle.mileagePerFullTank }}</td>
           <td class="py-5 px-6 text-[14px] font-medium" [class.text-gray-500]="vehicle.status === 'active'" [class.text-amber-500]="vehicle.status === 'expiring'">{{ vehicle.permitExpiry }}</td>
           <td class="py-5 px-6 text-right">
-            <a [routerLink]="['/vehicles', vehicle.id.toLowerCase()]" class="text-[#f02b3c] hover:text-[#d62434] font-bold text-[13px] transition-colors">
+            <a [routerLink]="['/vehicles', vehicle.id.toLowerCase()]" class="text-[#f25f2f] hover:text-[#ff5117] font-bold text-[13px] transition-colors">
               View
             </a>
           </td>
@@ -59,7 +59,7 @@
         <button class="px-3 py-1.5 text-[13px] font-medium text-gray-400 hover:text-gray-700 transition-colors rounded-lg">Previous</button>
         @for (page of [1, 2, 3]; track page) {
           <button class="w-8 h-8 flex items-center justify-center text-[13px] font-bold rounded-lg transition-colors"
-                  [class.bg-[#f02b3c]]="page === currentPage"
+                  [class.bg-[#f25f2f]]="page === currentPage"
                   [class.text-white]="page === currentPage"
                   [class.text-gray-500]="page !== currentPage"
                   [class.hover:bg-gray-100]="page !== currentPage">

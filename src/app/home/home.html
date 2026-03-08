@@ -25,7 +25,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
               <path fill-rule="evenodd" d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z" clip-rule="evenodd" />
             </svg>
-            <span class="absolute top-1.5 right-1.5 flex items-center justify-center w-[16px] h-[16px] text-[9px] font-bold text-white bg-[#f02b3c] border-[1.5px] border-white rounded-full">3</span>
+            <span class="absolute top-1.5 right-1.5 flex items-center justify-center w-[16px] h-[16px] text-[9px] font-bold text-white bg-[#f25f2f] border-[1.5px] border-white rounded-full">3</span>
           </button>
           <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-white border border-gray-200 rounded-2xl w-80 text-gray-800">
             <li class="menu-title text-gray-400 font-bold uppercase tracking-wider text-[11px] px-4 py-2 border-b border-gray-100 mb-1">Notifications</li>
@@ -57,7 +57,7 @@
               </a></li>
             <li><a class="hover:bg-gray-50 rounded-xl px-4 py-3 group leading-tight">
                 <div class="flex flex-col gap-0.5 w-full text-center py-1">
-                  <span class="font-bold text-[12px] text-[#f02b3c]">View All Notifications</span>
+                  <span class="font-bold text-[12px] text-[#f25f2f]">View All Notifications</span>
                 </div>
               </a></li>
           </ul>
@@ -70,7 +70,7 @@
               <span class="text-[13px] font-bold text-gray-800 leading-tight">{{ username() }}</span>
               <span class="text-[11px] font-medium text-gray-400">Logistics Manager</span>
             </div>
-            <div class="w-9 h-9 flex items-center justify-center bg-[#f02b3c] text-white font-bold text-sm rounded-lg shadow-lg">
+            <div class="w-9 h-9 flex items-center justify-center bg-[#f25f2f] text-white font-bold text-sm rounded-lg shadow-lg">
               {{ username().charAt(0).toUpperCase() }}
             </div>
           </div>
@@ -94,7 +94,7 @@
                 </svg>
                 Platform Settings
               </a></li>
-            <li class="mt-2 pt-2 border-t border-gray-100"><a (click)="logout()" class="hover:bg-red-50 text-[#f02b3c] hover:text-[#f02b3c] rounded-xl px-4 py-2.5 font-bold flex items-center gap-3 text-[13px]">
+            <li class="mt-2 pt-2 border-t border-gray-100"><a (click)="logout()" class="hover:bg-red-50 text-[#f25f2f] hover:text-[#f25f2f] rounded-xl px-4 py-2.5 font-bold flex items-center gap-3 text-[13px]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
@@ -117,7 +117,7 @@
     <div class="bg-white min-h-screen flex flex-col w-[250px] border-r border-gray-200">
       <!-- Logo -->
       <div class="flex items-center gap-4 p-6 border-b border-gray-100">
-        <div class="p-2 bg-[#f02b3c] rounded-xl shadow-[0_4px_12px_rgba(240,43,60,0.25)] shrink-0">
+        <div class="p-2 bg-[#f25f2f] rounded-xl shadow-[0_4px_12px_rgba(240,43,60,0.25)] shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
@@ -132,7 +132,7 @@
       <ul class="flex flex-col gap-1 p-4 flex-1">
         @for (item of menuItems; track item.route) {
         <li>
-          <a [routerLink]="item.route" routerLinkActive="bg-[#f02b3c] text-white font-bold rounded-xl shadow-[0_4px_12px_rgba(240,43,60,0.2)]" [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}" class="flex items-center justify-between px-4 py-3.5 text-gray-500 hover:bg-gray-50 hover:text-gray-800 rounded-xl transition-all font-medium group cursor-pointer">
+          <a [routerLink]="item.route" routerLinkActive="bg-[#f25f2f] text-white font-bold rounded-xl shadow-[0_4px_12px_rgba(240,43,60,0.2)]" [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}" class="flex items-center justify-between px-4 py-3.5 text-gray-500 hover:bg-gray-50 hover:text-gray-800 rounded-xl transition-all font-medium group cursor-pointer">
             <div class="flex items-center gap-4">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-[22px] w-[22px] group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon" />
@@ -140,7 +140,7 @@
               <span class="text-[14.5px]">{{ item.label }}</span>
             </div>
             @if (item.badge) {
-              <span class="bg-[#f02b3c] text-white text-[11px] font-bold px-2 py-0.5 rounded-full">{{ item.badge }}</span>
+              <span class="bg-[#f25f2f] text-white text-[11px] font-bold px-2 py-0.5 rounded-full">{{ item.badge }}</span>
             }
           </a>
         </li>
