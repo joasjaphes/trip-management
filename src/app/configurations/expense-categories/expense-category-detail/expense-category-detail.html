@@ -1,0 +1,58 @@
+<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  
+  <div class="max-w-[700px] mx-auto">
+
+    <!-- Back Button -->
+    <button (click)="goBack()" class="flex items-center gap-2 text-gray-400 hover:text-gray-700 font-bold text-[13px] mb-6 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back to Categories
+    </button>
+
+    <div class="space-y-4">
+
+      <div class="bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-sm border-l-4 border-l-[#f02b3c]">
+        <div class="grid grid-cols-2 gap-8">
+          <div>
+            <span class="text-[10px] font-extrabold tracking-widest text-[#f02b3c] uppercase block mb-1.5">Category Name</span>
+            <span class="text-[18px] font-extrabold text-gray-900">{{ category.name }}</span>
+          </div>
+          <div>
+            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1.5">Parent Category</span>
+            <span class="text-[18px] font-extrabold text-gray-900">{{ category.parentCategory }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-sm border-l-4 border-l-gray-200">
+        <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-2">Description</span>
+        <p class="text-[14px] font-medium text-gray-500 leading-relaxed italic">{{ category.description }}</p>
+      </div>
+
+      <div class="bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-sm border-l-4 border-l-gray-200">
+        <div class="grid grid-cols-2 gap-8">
+          <div>
+            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1.5">Status</span>
+            <span class="text-[15px] font-extrabold flex items-center gap-2" [class.text-emerald-600]="category.status === 'Active'" [class.text-gray-500]="category.status !== 'Active'">
+              <span class="w-2.5 h-2.5 rounded-full" [class.bg-emerald-500]="category.status === 'Active'" [class.bg-gray-300]="category.status !== 'Active'"></span>
+              {{ category.status | uppercase }}
+            </span>
+          </div>
+          <div>
+            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1.5">Created Date</span>
+            <span class="text-[15px] font-extrabold text-gray-900 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {{ category.createdDate }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

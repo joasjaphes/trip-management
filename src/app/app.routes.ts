@@ -85,6 +85,14 @@ export const routes: Routes = [
                 loadComponent: () => import('./configurations/expense-categories/expense-categories').then(m => m.ExpenseCategories),
             },
             {
+                path: 'expense-categories/new',
+                loadComponent: () => import('./configurations/expense-categories/expense-category-form/expense-category-form').then(m => m.ExpenseCategoryForm),
+            },
+            {
+                path: 'expense-categories/:id',
+                loadComponent: () => import('./configurations/expense-categories/expense-category-detail/expense-category-detail').then(m => m.ExpenseCategoryDetail),
+            },
+            {
                 path: 'users',
                 loadComponent: () => import('./users/user-list/user-list').then(m => m.UserList),
             }
