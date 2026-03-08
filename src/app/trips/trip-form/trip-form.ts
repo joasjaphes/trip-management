@@ -1,23 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-trip-form',
-  imports: [],
-  template: `
-    <div class="p-6">
-      <h1 class="text-3xl font-bold mb-6">New Trip</h1>
-      <div class="card bg-base-100 shadow-lg">
-        <div class="card-body">
-          <p class="text-center text-base-content/60">Trip form will be displayed here</p>
-          <div class="card-actions justify-end mt-4">
-            <button class="btn btn-ghost" (click)="goBack()">Cancel</button>
-            <button class="btn btn-primary">Save Trip</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './trip-form.html',
 })
 export class TripForm {
   constructor(private router: Router) {}

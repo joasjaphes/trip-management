@@ -1,0 +1,50 @@
+<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  
+  <div class="max-w-[900px] mx-auto">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Add New Permit</h1>
+      <p class="text-[14px] font-medium text-gray-400 mt-1">Provide the regulatory details to register a new vehicle permit in the system.</p>
+    </div>
+
+    <!-- Permit Details Card -->
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="flex flex-col gap-2">
+          <label class="text-[13px] font-bold text-gray-700">Permit Name</label>
+          <input type="text" placeholder="e.g. Oversize Load Annual Permit" [(ngModel)]="permitName" name="permitName"
+                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-[13px] font-bold text-gray-700">Authorizing Body</label>
+          <input type="text" placeholder="e.g. Department of Transportation" [(ngModel)]="authorizingBody" name="authorizingBody"
+                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+        </div>
+      </div>
+
+      <!-- Active Status Toggle -->
+      <div class="flex items-center justify-between pt-6 border-t border-gray-100">
+        <div>
+          <h3 class="text-[15px] font-extrabold text-gray-900">Active Status</h3>
+          <p class="text-[13px] text-gray-400 mt-0.5">Determine if this permit is currently active for dispatching.</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [checked]="isActive" (change)="isActive = !isActive" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f02b3c]"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Form Footer Actions -->
+    <div class="flex items-center justify-end gap-4 pt-2 pb-8">
+      <button (click)="goBack()" class="text-gray-500 hover:text-gray-800 font-bold text-[14px] tracking-wide transition-colors">
+        Cancel
+      </button>
+      <button (click)="onSubmit()" class="btn border-none bg-[#f02b3c] hover:bg-[#d62434] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg">
+        Save Permit
+      </button>
+    </div>
+
+  </div>
+</div>

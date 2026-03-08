@@ -1,0 +1,180 @@
+<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  
+  <div class="max-w-[900px] mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Add New Vehicle</h1>
+      <p class="text-[14px] font-medium text-gray-400 mt-1">Fill in the technical and registration details of the new fleet unit.</p>
+    </div>
+
+    <!-- Registration Information Section -->
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
+      <div class="flex items-center gap-3 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f02b3c]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h2 class="text-[16px] font-extrabold text-gray-900">Registration Information</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <label class="text-[13px] font-bold text-gray-700">Registration Number</label>
+          <input type="text" placeholder="e.g. ABC-1234" [(ngModel)]="registrationNo" name="registrationNo"
+                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-[13px] font-bold text-gray-700">Registration Year</label>
+          <input type="text" placeholder="YYYY" [(ngModel)]="year" name="year"
+                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+        </div>
+      </div>
+    </div>
+
+    <!-- Fuel Information Section -->
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
+      <div class="flex items-center gap-3 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <h2 class="text-[16px] font-extrabold text-gray-900">Fuel Information</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <label class="text-[13px] font-bold text-gray-700">Tank Capacity (Liters)</label>
+          <input type="text" placeholder="e.g. 400" [(ngModel)]="tankCapacity" name="tankCapacity"
+                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-[13px] font-bold text-gray-700">Mileage Per Full Tank (km)</label>
+          <input type="text" placeholder="e.g. 1200" [(ngModel)]="mileagePerFullTank" name="mileagePerFullTank"
+                 class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+        </div>
+      </div>
+    </div>
+
+    <!-- Permits & Documentation Section -->
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f02b3c]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <h2 class="text-[16px] font-extrabold text-gray-900">Permits & Documentation</h2>
+          @if (permits.length > 0) {
+            <span class="bg-[#f02b3c] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">{{ permits.length }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- Already Added Permits List -->
+      @if (permits.length > 0) {
+        <div class="space-y-3 mb-6">
+          @for (permit of permits; track permit.id) {
+            <div class="bg-gray-50 border border-gray-100 rounded-xl px-5 py-4 flex items-center justify-between group hover:border-gray-200 transition-colors">
+              <div class="flex items-center gap-4 flex-1 min-w-0">
+                <div class="w-9 h-9 rounded-lg bg-red-50 text-[#f02b3c] flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="text-[14px] font-bold text-gray-900 truncate">{{ permit.description }}</span>
+                  <span class="text-[12px] text-gray-400">{{ permit.startDate }} → {{ permit.endDate }}
+                    @if (permit.fileName) {
+                      <span class="ml-2 text-gray-300">•</span>
+                      <span class="ml-2 text-blue-500">{{ permit.fileName }}</span>
+                    }
+                  </span>
+                </div>
+              </div>
+              <button type="button" (click)="removePermit(permit.id)" class="text-gray-300 hover:text-[#f02b3c] transition-colors shrink-0 ml-4 opacity-0 group-hover:opacity-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- New Permit Input Form -->
+      <div class="border border-dashed border-gray-200 rounded-xl p-6 bg-gray-50/50">
+        <p class="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-4">Add a Permit</p>
+
+        <div class="space-y-5">
+          <div class="flex flex-col gap-2">
+            <label class="text-[13px] font-bold text-gray-700">Permit Description</label>
+            <input type="text" placeholder="e.g. Interstate Transport License" [(ngModel)]="permitDescription" name="permitDescription"
+                   class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-2">
+              <label class="text-[13px] font-bold text-gray-700">Start Date</label>
+              <div class="relative">
+                <input type="text" placeholder="mm/dd/yyyy" [(ngModel)]="permitStartDate" name="permitStartDate"
+                       class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <label class="text-[13px] font-bold text-gray-700">End Date</label>
+              <div class="relative">
+                <input type="text" placeholder="mm/dd/yyyy" [(ngModel)]="permitEndDate" name="permitEndDate"
+                       class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f02b3c] transition-colors placeholder-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Attachment Upload -->
+          <div class="flex flex-col gap-2">
+            <label class="text-[13px] font-bold text-gray-700">Attachment</label>
+            <label class="cursor-pointer w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl bg-white hover:bg-gray-50 py-6 transition-colors text-gray-400 hover:text-gray-500">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-7 h-7">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <span class="text-[13px] font-medium text-gray-500">Click or drag permit document to upload</span>
+              <span class="text-[11px] text-gray-400">PDF, JPG up to 5MB</span>
+              <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" (change)="onFileSelected($event)">
+            </label>
+            @if (permitFileName) {
+              <span class="text-[12px] text-blue-500 font-medium">📎 {{ permitFileName }}</span>
+            }
+          </div>
+
+          <!-- Add Permit Button -->
+          <button type="button" (click)="addPermit()"
+                  class="w-full flex items-center justify-center gap-2 border-2 border-dashed border-[#f02b3c]/30 rounded-xl py-3 text-[#f02b3c] font-bold text-[14px] hover:bg-red-50 hover:border-[#f02b3c]/50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add This Permit
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Footer Actions -->
+    <div class="flex items-center justify-between pt-2 pb-8">
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="isActive" class="w-4 h-4 rounded border-gray-300 text-[#f02b3c] focus:ring-[#f02b3c]">
+        <label for="isActive" class="text-[13px] font-medium text-gray-500">Active</label>
+      </div>
+      <div class="flex items-center gap-4">
+        <button (click)="reset()" class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-6 font-bold rounded-lg">
+          Reset
+        </button>
+        <button (click)="onSubmit()" class="btn border-none bg-[#f02b3c] hover:bg-[#d62434] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg">
+          Save Vehicle
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

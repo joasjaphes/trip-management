@@ -1,69 +1,50 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { Layout, SplitSize } from '../../../shared/components/layout/layout';
-import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
-import { Vehicle } from '../../../models/vehicle.model';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AddVehicle } from '../vehicle-form/add-vehicle';
-import { VehicleService } from '../../../services/vehicle.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-vehicle-list',
-  imports: [Layout, DataTable, AddVehicle, CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './vehicle-list.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VehicleList {
-  private vehicleService = inject(VehicleService);
+  vehiclesList = [
+    {
+      id: 'TRK-001-20',
+      year: 2020,
+      tankCapacity: '500 L',
+      mileagePerFullTank: '2000 KM',
+      permitExpiry: 'Dec 01, 2024',
+      status: 'active'
+    },
+    {
+      id: 'TRK-002-21',
+      year: 2021,
+      tankCapacity: '450 L',
+      mileagePerFullTank: '1800 KM',
+      permitExpiry: 'Nov 15, 2024',
+      status: 'active'
+    },
+    {
+      id: 'TRK-003-20',
+      year: 2020,
+      tankCapacity: '550 L',
+      mileagePerFullTank: '2200 KM',
+      permitExpiry: 'Jan 10, 2025',
+      status: 'active'
+    },
+    {
+      id: 'TRK-004-19',
+      year: 2019,
+      tankCapacity: '500 L',
+      mileagePerFullTank: '1950 KM',
+      permitExpiry: 'Sep 30, 2024',
+      status: 'expiring'
+    }
+  ];
 
-  title = signal('Vehicles');
-  viewDetails = signal(false);
-  viewType = signal<'add' | 'edit'>('add');
-  formSize = signal<SplitSize>('half');
-  selectedVehicleId = signal<string | null>(null);
-
-  // Get data from service
-  vehicles = this.vehicleService.allVehicles;
-  isLoading = this.vehicleService.loading;
-  activeVehiclesCount = this.vehicleService.activeVehiclesCount;
-
-  // Table configuration
-  tableConfig = signal<TableConfig>({
-    columns: [
-      { key: 'registrationNo', label: 'Registration', sortable: true },
-      // { key: 'make', label: 'Make', sortable: true },
-      // { key: 'model', label: 'Model', sortable: true },
-      { key: 'year', label: 'Year', sortable: true },
-      { key: 'isActive', label: 'Status', sortable: true },
-      // { key: 'createdAt', label: 'Created', sortable: true },
-    ],
-    pageSize: 10,
-    striped: true,
-    hover: true,
-    bordered: false,
-  });
-
-  onAdd(): void {
-    this.viewType.set('add');
-    this.selectedVehicleId.set(null);
-    this.viewDetails.set(true);
-  }
-
-  onRowClick(vehicle: Vehicle): void {
-    this.selectedVehicleId.set(vehicle.id);
-    this.viewType.set('edit');
-    this.viewDetails.set(true);
-  }
-
-  onRowSelect(selectedVehicles: Vehicle[]): void {
-    console.log('Selected vehicles:', selectedVehicles);
-  }
-
-  onSortChange(event: { column: string; direction: 'asc' | 'desc' }): void {
-    console.log('Sort changed:', event);
-  }
-
-  onFormSaved(): void {
-    this.viewDetails.set(false);
-    this.selectedVehicleId.set(null);
-  }
+  currentPage = 1;
+  totalPages = 3;
+  totalVehicles = 124;
 }

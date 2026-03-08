@@ -1,15 +1,107 @@
-<app-layout [(title)]="title" [(viewDetails)]="viewDetails" (add)="onAdd()" [splitSize]="formSize()">
-    <ng-container ngProjectAs="main">
-        <app-data-table [config]="tableConfig()" [data]="drivers()"
-            (rowClick)="onRowClick($event)" (rowSelect)="onRowSelect($event)"
-            (sortChange)="onSortChange($event)"></app-data-table>
-    </ng-container>
-    <ng-container ngProjectAs="form">
-        @if (viewType() === 'add') {
-            <app-add-driver (onSaved)="onFormSaved()"></app-add-driver>
+<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight">Drivers Management</h1>
+      <p class="text-[15px] font-medium text-gray-400 mt-1">Monitor fleet compliance, driver status, and contact information.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-5 font-bold flex items-center gap-2 text-[13px] rounded-xl transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Export
+      </button>
+      <a routerLink="/drivers/new" class="btn border-none bg-[#f02b3c] hover:bg-[#d62434] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-xl">
+        Add New Driver
+      </a>
+    </div>
+  </div>
+
+  <!-- Drivers Table Container -->
+  <div class="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="border-b border-gray-100">
+          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[8%]">Photo</th>
+          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[22%]">Name</th>
+          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[22%]">Phone</th>
+          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[20%]">License Status</th>
+          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[18%]">Status</th>
+          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase text-center w-[10%]"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (driver of driversList; track driver.id) {
+        <tr class="border-b border-gray-50 transition-all hover:bg-gray-50 cursor-pointer group">
+          <!-- Photo Avatar -->
+          <td class="py-4 px-6">
+            <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-[13px] ring-2 ring-gray-100">
+              {{ driver.initials }}
+            </div>
+          </td>
+          <!-- Name + ID -->
+          <td class="py-4 px-6">
+            <div class="flex flex-col">
+              <span class="text-[14px] font-bold text-gray-900">{{ driver.firstName }} {{ driver.lastName }}</span>
+              <span class="text-[12px] text-gray-400">ID: {{ driver.id }}</span>
+            </div>
+          </td>
+          <!-- Phone -->
+          <td class="py-4 px-6 text-[14px] font-medium text-gray-500">{{ driver.phone }}</td>
+          <!-- License Status -->
+          <td class="py-4 px-6">
+            <span class="flex items-center gap-2 text-[13px] font-bold" [ngClass]="getLicenseStatusClass(driver.licenseStatus)">
+              <span class="w-2 h-2 rounded-full" [ngClass]="getLicenseDotClass(driver.licenseStatus)"></span>
+              {{ driver.licenseStatus }}
+            </span>
+          </td>
+          <!-- Status Badge -->
+          <td class="py-4 px-6">
+            <span class="px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase" [ngClass]="getStatusClass(driver.status)">
+              {{ driver.status }}
+            </span>
+          </td>
+          <!-- Actions Menu -->
+          <td class="py-4 px-6 text-center">
+            <a [routerLink]="['/drivers', driver.id.toLowerCase()]" class="text-gray-300 hover:text-gray-600 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+            </a>
+          </td>
+        </tr>
         }
-        @if (viewType() === 'edit') {
-            <p class="text-center text-base-content/60">Edit form coming soon</p>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+      <p class="text-[13px] text-gray-400 font-medium">Showing <span class="font-bold text-gray-600">1-{{ driversList.length }}</span> of <span class="font-bold text-gray-600">{{ totalDrivers }}</span> drivers</p>
+      <div class="flex items-center gap-1">
+        <button class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-700 rounded-lg transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        @for (page of [1, 2, 3]; track page) {
+          <button class="w-8 h-8 flex items-center justify-center text-[13px] font-bold rounded-lg transition-colors"
+                  [class.bg-[#f02b3c]]="page === currentPage"
+                  [class.text-white]="page === currentPage"
+                  [class.text-gray-500]="page !== currentPage"
+                  [class.hover:bg-gray-100]="page !== currentPage">
+            {{ page }}
+          </button>
         }
-    </ng-container>
-</app-layout>
+        <span class="text-gray-400 text-[13px] px-1">...</span>
+        <button class="w-8 h-8 flex items-center justify-center text-[13px] font-bold rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">12</button>
+        <button class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-700 rounded-lg transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

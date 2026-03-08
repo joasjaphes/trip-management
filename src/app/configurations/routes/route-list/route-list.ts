@@ -1,75 +1,35 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { Layout, SplitSize } from '../../../shared/components/layout/layout';
-import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
-import { Route } from '../../../models/route.model';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AddRoute } from '../route-form/add-route';
-import { RouteService } from '../../../services/route.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-route-list',
-  imports: [Layout, DataTable, AddRoute, CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './route-list.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RouteList {
-  private routeService = inject(RouteService);
+  stats = [
+    { label: 'Total Routes', value: '42' },
+    { label: 'Active Lanes', value: '38' },
+    { label: 'Avg. Mileage', value: '645 km' },
+    { label: 'On-Time Rate', value: '94.2%', highlight: true },
+  ];
 
-  title = signal('Routes');
-  viewDetails = signal(false);
-  viewType = signal<'add' | 'edit'>('add');
-  formSize = signal<SplitSize>('half');
-  selectedRouteId = signal<string | null>(null);
+  routesList = [
+    { id: 'RT-4401', name: 'Central Express', start: 'Dar es Salaam', end: 'Dodoma', mileage: '460 km', duration: '6h 30m', status: 'Active' },
+    { id: 'RT-4402', name: 'Northern Corridor', start: 'Dar es Salaam', end: 'Arusha', mileage: '635 km', duration: '8h 15m', status: 'Active' },
+    { id: 'RT-4403', name: 'Lake Zone Shuttle', start: 'Mwanza', end: 'Dar es Salaam', mileage: '1,100 km', duration: '14h 45m', status: 'Inactive' },
+    { id: 'RT-4404', name: 'Southern Highlands', start: 'Dar es Salaam', end: 'Mbeya', mileage: '840 km', duration: '9h 15m', status: 'Active' },
+    { id: 'RT-4405', name: 'Cross-Border Longhaul', start: 'Dar es Salaam', end: 'Lusaka', mileage: '1,850 km', duration: '26h 10m', status: 'Active' },
+  ];
 
-  // Get data from service
-  routes = this.routeService.allRoutes;
-  isLoading = this.routeService.loading;
-  activeRoutesCount = this.routeService.activeRoutesCount;
+  currentPage = 1;
+  totalRoutes = 42;
 
-  // Table configuration
-  tableConfig = signal<TableConfig>({
-    columns: [
-      { key: 'name', label: 'Route Name', sortable: true },
-      { key: 'startLocation', label: 'Start Location', sortable: true },
-      { key: 'endLocation', label: 'End Location', sortable: true },
-      { key: 'mileage', label: 'Mileage (km)', sortable: true },
-      { key: 'estimatedDuration', label: 'Duration (min)', sortable: true },
-      { key: 'isActive', label: 'Status', sortable: true },
-      // { key: 'createdAt', label: 'Created', sortable: true },
-    ],
-    pageSize: 10,
-    striped: true,
-    hover: true,
-    bordered: false,
-  });
-
-  onAdd(): void {
-    this.viewType.set('add');
-    this.selectedRouteId.set(null);
-    this.viewDetails.set(true);
-  }
-
-  onRowClick(route: Route): void {
-    this.selectedRouteId.set(route.id);
-    this.viewType.set('edit');
-    this.viewDetails.set(true);
-  }
-
-  onRowSelect(selectedRoutes: Route[]): void {
-    console.log('Selected routes:', selectedRoutes);
-  }
-
-  onSortChange(event: { column: string; direction: 'asc' | 'desc' }): void {
-    console.log('Sort changed:', event);
-  }
-
-  onFormSaved(): void {
-    this.viewDetails.set(false);
-    this.selectedRouteId.set(null);
-  }
-
-  onCancel(): void {
-    this.viewDetails.set(false);
-    this.selectedRouteId.set(null);
+  getStatusClass(status: string): string {
+    return status.toLowerCase() === 'active'
+      ? 'bg-emerald-100 text-emerald-700'
+      : 'bg-gray-100 text-gray-500 border border-gray-200';
   }
 }

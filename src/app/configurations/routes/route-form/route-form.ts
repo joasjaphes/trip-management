@@ -1,28 +1,30 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-route-form',
-  imports: [],
-  template: `
-    <div class="p-6">
-      <h1 class="text-3xl font-bold mb-6">Add Route</h1>
-      <div class="card bg-base-100 shadow-lg">
-        <div class="card-body">
-          <p class="text-center text-base-content/60">Route form will be displayed here</p>
-          <div class="card-actions justify-end mt-4">
-            <button class="btn btn-ghost" (click)="goBack()">Cancel</button>
-            <button class="btn btn-primary">Save Route</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './route-form.html'
 })
 export class RouteForm {
+  routeName = '';
+  startLocation = '';
+  endLocation = '';
+  mileage = '0.00';
+  estimatedDuration = '';
+  isActive = true;
+
   constructor(private router: Router) {}
-  
+
   goBack() {
+    this.router.navigate(['/routes']);
+  }
+
+  onSubmit() {
+    console.log('Route submitted');
     this.router.navigate(['/routes']);
   }
 }

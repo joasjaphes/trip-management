@@ -1,69 +1,90 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { Layout, SplitSize } from '../../../shared/components/layout/layout';
-import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
-import { Driver } from '../../../models/driver.model';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AddDriver } from '../driver-form/add-driver';
-import { DriverService } from '../../../services/driver.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-driver-list',
-  imports: [Layout, DataTable, AddDriver, CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './driver-list.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriverList {
-  private driverService = inject(DriverService);
+  driversList = [
+    {
+      id: 'DRV-4492',
+      firstName: 'Juma',
+      lastName: 'Mwamba',
+      phone: '+255 712 345 678',
+      licenseStatus: 'Valid',
+      status: 'Active',
+      initials: 'JM'
+    },
+    {
+      id: 'DRV-8821',
+      firstName: 'Amina',
+      lastName: 'Hassan',
+      phone: '+255 754 321 876',
+      licenseStatus: 'Expiring Soon',
+      status: 'Active',
+      initials: 'AH'
+    },
+    {
+      id: 'DRV-3310',
+      firstName: 'Baraka',
+      lastName: 'Kimaro',
+      phone: '+255 689 012 345',
+      licenseStatus: 'Valid',
+      status: 'Inactive',
+      initials: 'BK'
+    },
+    {
+      id: 'DRV-2254',
+      firstName: 'Rehema',
+      lastName: 'Nyerere',
+      phone: '+255 777 654 321',
+      licenseStatus: 'Expired',
+      status: 'Active',
+      initials: 'RN'
+    }
+  ];
 
-  title = signal('Drivers');
-  viewDetails = signal(false);
-  viewType = signal<'add' | 'edit'>('add');
-  formSize = signal<SplitSize>('half');
-  selectedDriverId = signal<string | null>(null);
+  currentPage = 1;
+  totalDrivers = 128;
 
-  // Get data from service
-  drivers = this.driverService.allDrivers;
-  isLoading = this.driverService.loading;
-  activeDriversCount = this.driverService.activeDriversCount;
-
-  // Table configuration
-  tableConfig = signal<TableConfig>({
-    columns: [
-      { key: 'firstName', label: 'First Name', sortable: true },
-      { key: 'lastName', label: 'Last Name', sortable: true },
-      { key: 'email', label: 'Email', sortable: true },
-      { key: 'phone', label: 'Phone', sortable: false },
-      { key: 'isActive', label: 'Status', sortable: true },
-      { key: 'createdAt', label: 'Created', sortable: true },
-    ],
-    pageSize: 10,
-    striped: true,
-    hover: true,
-    bordered: false,
-  });
-
-  onAdd(): void {
-    this.viewType.set('add');
-    this.selectedDriverId.set(null);
-    this.viewDetails.set(true);
+  getLicenseStatusClass(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'valid':
+        return 'text-emerald-600';
+      case 'expiring soon':
+        return 'text-amber-500';
+      case 'expired':
+        return 'text-red-500';
+      default:
+        return 'text-gray-500';
+    }
   }
 
-  onRowClick(driver: Driver): void {
-    this.selectedDriverId.set(driver.id);
-    this.viewType.set('edit');
-    this.viewDetails.set(true);
+  getLicenseDotClass(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'valid':
+        return 'bg-emerald-500';
+      case 'expiring soon':
+        return 'bg-amber-500';
+      case 'expired':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-400';
+    }
   }
 
-  onRowSelect(selectedDrivers: Driver[]): void {
-    console.log('Selected drivers:', selectedDrivers);
-  }
-
-  onSortChange(event: { column: string; direction: 'asc' | 'desc' }): void {
-    console.log('Sort changed:', event);
-  }
-
-  onFormSaved(): void {
-    this.viewDetails.set(false);
-    this.selectedDriverId.set(null);
+  getStatusClass(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'bg-[#f02b3c] text-white';
+      case 'inactive':
+        return 'bg-gray-100 text-gray-600 border border-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-500';
+    }
   }
 }

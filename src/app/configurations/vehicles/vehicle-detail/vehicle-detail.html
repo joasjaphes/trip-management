@@ -1,0 +1,116 @@
+<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  
+  <div class="max-w-[1100px] mx-auto">
+
+    <!-- Back Button -->
+    <button (click)="goBack()" class="flex items-center gap-2 text-gray-400 hover:text-gray-700 font-bold text-[13px] mb-6 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back to Vehicles
+    </button>
+
+    <!-- Top Info Cards Row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+      <!-- Registration Info Card -->
+      <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+        <div class="flex items-center gap-3 mb-5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f02b3c]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <h2 class="text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Registration Info</h2>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">License Plate</span>
+            <span class="text-[22px] font-extrabold text-gray-900">ABC-1234</span>
+          </div>
+          <div>
+            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">VIN</span>
+            <span class="text-[13px] font-bold text-gray-600">YV1RT40A5JA0000</span>
+          </div>
+          <div>
+            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Exp. Date</span>
+            <span class="text-[15px] font-extrabold text-[#f02b3c]">Oct 12, 2024</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fuel Efficiency Card -->
+      <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+        <div class="flex items-center gap-3 mb-5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <h2 class="text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Fuel Efficiency</h2>
+        </div>
+        <div class="flex items-end gap-6 mb-4">
+          <div>
+            <span class="text-[40px] font-extrabold text-gray-900 leading-none">7.4</span>
+            <span class="text-[13px] font-bold text-gray-400 ml-1">MPG AVG</span>
+          </div>
+        </div>
+        <!-- Fuel Bar -->
+        <div class="w-full bg-gray-100 rounded-full h-2.5 mb-3 overflow-hidden">
+          <div class="bg-[#f02b3c] h-2.5 rounded-full" style="width: 82%"></div>
+        </div>
+        <div class="flex items-center justify-between text-[11px]">
+          <div>
+            <span class="font-bold text-gray-400 uppercase tracking-wider">Last Fill</span>
+            <span class="font-extrabold text-gray-700 ml-2">120 Gal</span>
+          </div>
+          <div>
+            <span class="font-bold text-gray-400 uppercase tracking-wider">Current Level</span>
+            <span class="font-extrabold text-[#f02b3c] ml-2">82%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Permits Section -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#f02b3c]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <h2 class="text-[22px] font-extrabold text-gray-900">Active Permits</h2>
+        </div>
+        <button class="text-[#f02b3c] hover:text-[#d62434] transition-colors font-bold text-[13px] tracking-wide">
+          Add New Permit +
+        </button>
+      </div>
+
+      <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-gray-100">
+              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Permit Type</th>
+              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">ID Number</th>
+              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Issued Date</th>
+              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Expiry</th>
+              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (permit of permits; track permit.idNumber) {
+            <tr class="border-b border-gray-50 transition-all hover:bg-gray-50">
+              <td class="py-5 px-6 text-[14px] font-bold text-gray-900">{{ permit.type }}</td>
+              <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.idNumber }}</td>
+              <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.issuedDate }}</td>
+              <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.expiry }}</td>
+              <td class="py-5 px-6 text-right">
+                <span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase" [ngClass]="getStatusClass(permit.status)">
+                  {{ permit.status }}
+                </span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
