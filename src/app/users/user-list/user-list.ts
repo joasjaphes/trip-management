@@ -1,25 +1,42 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-user-list',
-  imports: [],
-  template: `
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold">Users</h1>
-        <button class="btn btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Add User
-        </button>
-      </div>
-      <div class="card bg-base-100 shadow-lg">
-        <div class="card-body">
-          <p class="text-center text-base-content/60">User list will be displayed here</p>
-        </div>
-      </div>
-    </div>
-  `
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  templateUrl: './user-list.html',
 })
-export class UserList {}
+export class UserList {
+  openMenuId: string | null = null;
+
+  usersList = [
+    { id: 'USR-001', username: 'jdoe88', email: 'john.doe@easytrucking.com', firstName: 'John', lastName: 'Doe', role: 'ADMIN', status: 'Active', initials: 'JD' },
+    { id: 'USR-002', username: 'asmith_mgr', email: 'a.smith@easytrucking.com', firstName: 'Alice', lastName: 'Smith', role: 'MANAGER', status: 'Active', initials: 'AS' },
+    { id: 'USR-003', username: 'bwilson', email: 'brian.w@easytrucking.com', firstName: 'Brian', lastName: 'Wilson', role: 'VIEWER', status: 'Inactive', initials: 'BW' },
+    { id: 'USR-004', username: 'kbrown', email: 'k.brown@easytrucking.com', firstName: 'Kelly', lastName: 'Brown', role: 'MANAGER', status: 'Active', initials: 'KB' },
+  ];
+
+  getRoleBadgeClass(role: string): string {
+    switch (role) {
+      case 'ADMIN': return 'bg-red-50 text-[#f02b3c]';
+      case 'MANAGER': return 'bg-blue-50 text-blue-600';
+      case 'VIEWER': return 'bg-gray-100 text-gray-500';
+      default: return 'bg-gray-100 text-gray-500';
+    }
+  }
+
+  getStatusClass(status: string): string {
+    return status === 'Active' ? 'text-emerald-600' : 'text-gray-400';
+  }
+
+  toggleMenu(id: string, event: Event) {
+    event.stopPropagation();
+    this.openMenuId = this.openMenuId === id ? null : id;
+  }
+
+  closeMenu() {
+    this.openMenuId = null;
+  }
+}
