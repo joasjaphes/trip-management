@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { SaveArea } from '../../../../shared/components/save-area/save-area';
 
 interface Permit {
   id: string;
@@ -14,7 +14,7 @@ interface Permit {
 @Component({
   selector: 'app-vehicle-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveArea],
   templateUrl: './vehicle-form.html'
 })
 export class VehicleForm {
@@ -29,11 +29,10 @@ export class VehicleForm {
   permitFileName = '';
 
   permits: Permit[] = [];
-
-  constructor(private router: Router) {}
+  close = output();
 
   goBack() {
-    this.router.navigate(['/vehicles']);
+    this.close.emit();
   }
 
   addPermit() {
@@ -77,7 +76,6 @@ export class VehicleForm {
   }
 
   onSubmit() {
-    console.log('Vehicle submitted', { permits: this.permits });
-    this.router.navigate(['/vehicles']);
+    this.close.emit();
   }
 }

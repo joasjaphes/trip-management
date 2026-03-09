@@ -1,15 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
+import { Layout } from '../../../shared/components/layout/layout';
+import { PermitForm } from './permit-form/permit-form';
 
 @Component({
   selector: 'app-vehicle-permits',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, DataTable, Layout, PermitForm],
   templateUrl: './vehicle-permits.html',
 })
 export class VehiclePermits {
-  permitsList = [
+  title = signal('Permits management');
+  description = signal('Manage and track regulatory permits for your fleet');
+  addText = signal('Add new permit');
+  viewType = signal('');
+  viewDetails = signal(false);
+  formTitle = signal('');
+  formDescription = signal('');
+
+  permits = signal([
     {
       id: 'PRM-001',
       name: 'Oversize Load Permit',
@@ -46,20 +56,40 @@ export class VehiclePermits {
       icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
       iconColor: 'text-amber-600 bg-amber-50'
     }
-  ];
+  ]);
 
-  currentPage = 1;
-  totalPermits = 24;
+  tableConfigurations: TableConfig = {
+    columns: [
+      {
+        key: 'name',
+        label: 'Permit name'
+      },
+      {
+        key: 'authorizingBody',
+        label: 'Authorizing body'
+      },
+      {
+        key: 'status',
+        label: 'Status'
+      },
+      {
+        key: 'createdDate',
+        label: 'Created date'
+      }
+    ]
+  };
 
-  getStatusClass(status: string): string {
-    return status.toLowerCase() === 'active'
-      ? 'text-emerald-600'
-      : 'text-amber-500';
+  onAdd() {
+    this.viewType.set('add');
+    this.formTitle.set('Add new permit');
+    this.formDescription.set('Provide regulatory details for a new vehicle permit.');
+    this.viewDetails.set(true);
   }
 
-  getStatusDotClass(status: string): string {
-    return status.toLowerCase() === 'active'
-      ? 'bg-emerald-500'
-      : 'bg-amber-500';
+  onCloseForm() {
+    this.viewDetails.set(false);
+    this.viewType.set('');
+    this.formTitle.set('');
+    this.formDescription.set('');
   }
 }

@@ -1,15 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { DataTable, TableConfig } from '../../../../shared/components/data-table/data-table';
+import { Layout } from '../../../../shared/components/layout/layout';
+import { DriverForm } from '../driver-form/driver-form';
 
 @Component({
   selector: 'app-driver-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, DataTable, Layout, DriverForm],
   templateUrl: './driver-list.html',
 })
 export class DriverList {
-  driversList = [
+  title = signal('Drivers management');
+  description = signal('Monitor fleet compliance, driver status, and contact information');
+  addText = signal('Add new driver');
+  viewType = signal('');
+  viewDetails = signal(false);
+  formTitle = signal('');
+  formDescription = signal('');
+
+  drivers = signal([
     {
       id: 'DRV-4492',
       firstName: 'Juma',
@@ -46,45 +56,44 @@ export class DriverList {
       status: 'Active',
       initials: 'RN'
     }
-  ];
+  ]);
 
-  currentPage = 1;
-  totalDrivers = 128;
+  tableConfigurations: TableConfig = {
+    columns: [
+      {
+        key: 'firstName',
+        label: 'First name'
+      },
+      {
+        key: 'lastName',
+        label: 'Last name'
+      },
+      {
+        key: 'phone',
+        label: 'Phone'
+      },
+      {
+        key: 'licenseStatus',
+        label: 'License status'
+      },
+      {
+        key: 'status',
+        label: 'Status'
+      }
+    ]
+  };
 
-  getLicenseStatusClass(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'valid':
-        return 'text-emerald-600';
-      case 'expiring soon':
-        return 'text-amber-500';
-      case 'expired':
-        return 'text-red-500';
-      default:
-        return 'text-gray-500';
-    }
+  onAdd() {
+    this.viewType.set('add');
+    this.formTitle.set('Add new driver');
+    this.formDescription.set('Create a new driver profile and license details.');
+    this.viewDetails.set(true);
   }
 
-  getLicenseDotClass(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'valid':
-        return 'bg-emerald-500';
-      case 'expiring soon':
-        return 'bg-amber-500';
-      case 'expired':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-400';
-    }
-  }
-
-  getStatusClass(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return 'bg-[#f25f2f] text-white';
-      case 'inactive':
-        return 'bg-gray-100 text-gray-600 border border-gray-200';
-      default:
-        return 'bg-gray-100 text-gray-500';
-    }
+  onCloseForm() {
+    this.viewDetails.set(false);
+    this.viewType.set('');
+    this.formTitle.set('');
+    this.formDescription.set('');
   }
 }

@@ -1,26 +1,6 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
   
   <div class="max-w-[900px] mx-auto">
-
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full bg-red-50 text-[#f25f2f] flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-          </svg>
-        </div>
-        <h1 class="text-[22px] font-extrabold text-gray-900">Add New Driver</h1>
-      </div>
-      <div class="flex items-center gap-3">
-        <button (click)="goBack()" class="btn btn-ghost border border-gray-200 hover:bg-gray-50 text-gray-500 px-5 font-bold text-[13px] rounded-xl">
-          Cancel
-        </button>
-        <button (click)="onSubmit()" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-xl text-[13px]">
-          Save Driver
-        </button>
-      </div>
-    </div>
 
     <!-- Driver Photo Section -->
     <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-6 flex items-center gap-6">
@@ -168,5 +148,9 @@
       </label>
     </div>
 
+  </div>
+
+  <div>
+    <app-save-area (save)="onSubmit()" (cancel)="goBack()"></app-save-area>
   </div>
 </div>

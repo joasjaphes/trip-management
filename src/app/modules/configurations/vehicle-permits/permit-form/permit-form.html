@@ -1,13 +1,6 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+<div class=" w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
   
   <div class="max-w-[900px] mx-auto">
-
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Add New Permit</h1>
-      <p class="text-[14px] font-medium text-gray-400 mt-1">Provide the regulatory details to register a new vehicle permit in the system.</p>
-    </div>
-
     <!-- Permit Details Card -->
     <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -36,15 +29,7 @@
       </div>
     </div>
 
-    <!-- Form Footer Actions -->
-    <div class="flex items-center justify-end gap-4 pt-2 pb-8">
-      <button (click)="goBack()" class="text-gray-500 hover:text-gray-800 font-bold text-[14px] tracking-wide transition-colors">
-        Cancel
-      </button>
-      <button (click)="onSubmit()" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg">
-        Save Permit
-      </button>
-    </div>
+    <app-save-area [saveText]="'Save Permit'" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
 
   </div>
 </div>

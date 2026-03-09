@@ -172,15 +172,7 @@
       </div>
     </div>
 
-    <!-- Form Footer Actions -->
-    <div class="flex items-center justify-end gap-6 relative z-10 pt-4">
-      <button (click)="goBack()" class="text-gray-500 hover:text-gray-800 font-bold text-[14px] tracking-wide transition-colors">
-        Cancel
-      </button>
-      <button class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)]">
-        Create Trip
-      </button>
-    </div>
+    <app-save-area [saveText]="'Create Trip'" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
 
   </div>
 </div>

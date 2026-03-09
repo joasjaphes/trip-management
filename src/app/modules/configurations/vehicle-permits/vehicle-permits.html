@@ -1,91 +1,11 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
-  
-  <!-- Header -->
-  <div class="flex items-center justify-between mb-8">
-    <div>
-      <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight">Permits Management</h1>
-      <p class="text-[15px] font-medium text-gray-400 mt-1">Manage and track all regulatory permits for your fleet</p>
-    </div>
-    <a routerLink="/vehicle-permits/new" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-      </svg>
-      Add New Permit
-    </a>
-  </div>
-
-  <!-- Permits Table -->
-  <div class="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="border-b border-gray-100">
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[30%]">Permit Name</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[22%]">Authorizing Body</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[15%]">Status</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[20%]">Created Date</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase text-center w-[13%]">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (permit of permitsList; track permit.id) {
-        <tr class="border-b border-gray-50 transition-all hover:bg-gray-50 cursor-pointer group">
-          <!-- Permit Name with Icon -->
-          <td class="py-5 px-6">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" [ngClass]="permit.iconColor">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="permit.icon" />
-                </svg>
-              </div>
-              <span class="text-[14px] font-bold text-gray-900">{{ permit.name }}</span>
-            </div>
-          </td>
-          <!-- Authorizing Body -->
-          <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.authorizingBody }}</td>
-          <!-- Status -->
-          <td class="py-5 px-6">
-            <span class="flex items-center gap-2 text-[13px] font-bold" [ngClass]="getStatusClass(permit.status)">
-              <span class="w-2 h-2 rounded-full" [ngClass]="getStatusDotClass(permit.status)"></span>
-              {{ permit.status }}
-            </span>
-          </td>
-          <!-- Created Date -->
-          <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.createdDate }}</td>
-          <!-- Actions -->
-          <td class="py-5 px-6 text-center">
-            <a [routerLink]="['/vehicle-permits', permit.id.toLowerCase()]" class="text-[#f25f2f] hover:text-[#ff5117] font-bold text-[13px] transition-colors">
-              View
-            </a>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-
-    <!-- Pagination -->
-    <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
-      <p class="text-[13px] text-gray-400 font-medium">Showing <span class="font-bold text-gray-600">1 to {{ permitsList.length }}</span> of <span class="font-bold text-gray-600">{{ totalPermits }}</span> permits</p>
-      <div class="flex items-center gap-1">
-        <button class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-700 rounded-lg transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        @for (page of [1, 2, 3]; track page) {
-          <button class="w-8 h-8 flex items-center justify-center text-[13px] font-bold rounded-lg transition-colors"
-                  [class.bg-[#f25f2f]]="page === currentPage"
-                  [class.text-white]="page === currentPage"
-                  [class.text-gray-500]="page !== currentPage"
-                  [class.hover:bg-gray-100]="page !== currentPage">
-            {{ page }}
-          </button>
-        }
-        <button class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-700 rounded-lg transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+<app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
+  <ng-container ngProjectAs="main">
+    <app-data-table [data]="permits()" [config]="tableConfigurations"></app-data-table>
+  </ng-container>
+  <ng-container ngProjectAs="form">
+    @if (viewType() == 'add') {
+    <app-permit-form (close)="onCloseForm()"></app-permit-form>
+    }
+  </ng-container>
+</app-layout>

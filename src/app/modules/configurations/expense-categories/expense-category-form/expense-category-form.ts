@@ -1,28 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { SaveArea } from '../../../../shared/components/save-area/save-area';
 
 @Component({
   selector: 'app-expense-category-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveArea],
   templateUrl: './expense-category-form.html'
 })
 export class ExpenseCategoryForm {
-  categoryName = '';
-  parentCategory = '';
+  expenseName = '';
+  category = 'GENERAL';
   description = '';
   isActive = true;
-
-  constructor(private router: Router) {}
+  close = output();
 
   goBack() {
-    this.router.navigate(['/expense-categories']);
+    this.close.emit();
   }
 
   onSubmit() {
-    console.log('Category submitted');
-    this.router.navigate(['/expense-categories']);
+    this.close.emit();
   }
 }

@@ -1,15 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { DataTable, TableConfig } from '../../../../shared/components/data-table/data-table';
+import { Layout } from '../../../../shared/components/layout/layout';
+import { VehicleForm } from '../vehicle-form/vehicle-form';
 
 @Component({
   selector: 'app-vehicle-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, DataTable, Layout, VehicleForm],
   templateUrl: './vehicle-list.html',
 })
 export class VehicleList {
-  vehiclesList = [
+  title = signal('Vehicles management');
+  description = signal('Real-time monitoring and lifecycle management of your fleet');
+  addText = signal('Add new vehicle');
+  viewType = signal('');
+  viewDetails = signal(false);
+  formTitle = signal('');
+  formDescription = signal('');
+
+  vehicles = signal([
     {
       id: 'TRK-001-20',
       year: 2020,
@@ -42,9 +52,48 @@ export class VehicleList {
       permitExpiry: 'Sep 30, 2024',
       status: 'expiring'
     }
-  ];
+  ]);
 
-  currentPage = 1;
-  totalPages = 3;
-  totalVehicles = 124;
+  tableConfigurations: TableConfig = {
+    columns: [
+      {
+        key: 'id',
+        label: 'Registration number'
+      },
+      {
+        key: 'year',
+        label: 'Registration year'
+      },
+      {
+        key: 'tankCapacity',
+        label: 'Tank capacity'
+      },
+      {
+        key: 'mileagePerFullTank',
+        label: 'Mileage per full tank'
+      },
+      {
+        key: 'permitExpiry',
+        label: 'Permit expiry'
+      },
+      {
+        key: 'status',
+        label: 'Status'
+      }
+    ]
+  };
+
+  onAdd() {
+    this.viewType.set('add');
+    this.formTitle.set('Add new vehicle');
+    this.formDescription.set('Register a new vehicle and its permit information.');
+    this.viewDetails.set(true);
+  }
+
+  onCloseForm() {
+    this.viewDetails.set(false);
+    this.viewType.set('');
+    this.formTitle.set('');
+    this.formDescription.set('');
+  }
 }

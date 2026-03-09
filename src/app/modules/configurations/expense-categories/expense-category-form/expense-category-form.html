@@ -1,50 +1,32 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
   
   <div class="max-w-[800px] mx-auto">
-
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Add New Category</h1>
-      <p class="text-[14px] font-medium text-gray-400 mt-1">Create a new expense classification for your fleet operations.</p>
-    </div>
-
     <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
 
       <!-- Category Name -->
       <div class="mb-6">
-        <label class="text-[13px] font-bold text-gray-700 block mb-2">Category Name</label>
-        <input type="text" placeholder="e.g. Fuel, Maintenance, Permits" [(ngModel)]="categoryName" name="categoryName"
+        <label class="text-[13px] font-bold text-gray-700 block mb-2">Expense Name</label>
+        <input type="text" placeholder="e.g. Fuel, Maintenance, Permits" [(ngModel)]="expenseName" name="expenseName"
                class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
 
       <!-- Parent Category -->
       <div class="mb-8">
-        <label class="text-[13px] font-bold text-gray-700 block mb-2">Parent Category (Optional)</label>
+        <label class="text-[13px] font-bold text-gray-700 block mb-2">Expense Category</label>
         <div class="relative">
-          <select [(ngModel)]="parentCategory" name="parentCategory"
+          <select [(ngModel)]="category" name="category"
                   class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-            <option value="">None (Top Level)</option>
-            <option value="fleet-operations">Fleet Operations</option>
-            <option value="logistics">Logistics</option>
-            <option value="personnel">Personnel</option>
-            <option value="administrative">Administrative</option>
+            <option value="GENERAL">General Expenses</option>
+            <option value="OTHER">Other Expenses</option>
           </select>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
       </div>
-
-      <div class="mb-8">
-        <label class="text-[13px] font-bold text-gray-700 block mb-2">Description</label>
-        <textarea placeholder="Describe the types of expenses included in this category..." [(ngModel)]="description" name="description" rows="4"
-                  class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 resize-none"></textarea>
-      </div>
-
       <div class="bg-gray-50 border border-gray-100 rounded-xl px-6 py-4 flex items-center justify-between">
         <div>
           <h3 class="text-[15px] font-extrabold text-gray-900">Status</h3>
-          <p class="text-[13px] text-gray-400 mt-0.5">Active categories appear in expense dropdowns</p>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" [checked]="isActive" (change)="isActive = !isActive" class="sr-only peer">
@@ -53,14 +35,7 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-4 pt-2 pb-8">
-      <button (click)="onSubmit()" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-10 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg flex-1">
-        Save Category
-      </button>
-      <button (click)="goBack()" class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-10 font-bold rounded-lg flex-1">
-        Cancel
-      </button>
-    </div>
+    <app-save-area [saveText]="'Save Category'" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
 
   </div>
 </div>

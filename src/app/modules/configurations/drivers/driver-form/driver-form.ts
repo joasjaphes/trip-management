@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { SaveArea } from '../../../../shared/components/save-area/save-area';
 
 @Component({
   selector: 'app-driver-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveArea],
   templateUrl: './driver-form.html'
 })
 export class DriverForm {
@@ -22,15 +22,13 @@ export class DriverForm {
   issuingAuthority = '';
   licenseExpiry = '';
   isActive = true;
-
-  constructor(private router: Router) {}
+  close = output();
 
   goBack() {
-    this.router.navigate(['/drivers']);
+    this.close.emit();
   }
 
   onSubmit() {
-    console.log('Driver submitted');
-    this.router.navigate(['/drivers']);
+    this.close.emit();
   }
 }

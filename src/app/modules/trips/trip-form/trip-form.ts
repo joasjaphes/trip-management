@@ -1,17 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { SaveArea } from '../../../shared/components/save-area/save-area';
 
 @Component({
   selector: 'app-trip-form',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SaveArea],
   templateUrl: './trip-form.html',
 })
 export class TripForm {
-  constructor(private router: Router) {}
-  
+  close = output();
+
   goBack() {
-    this.router.navigate(['/trips']);
+    this.close.emit();
+  }
+
+  onSubmit() {
+    this.close.emit();
   }
 }

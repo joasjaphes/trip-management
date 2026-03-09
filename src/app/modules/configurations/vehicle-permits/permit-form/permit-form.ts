@@ -1,31 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { SaveArea } from '../../../../shared/components/save-area/save-area';
 
 @Component({
   selector: 'app-permit-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveArea],
   templateUrl: './permit-form.html'
 })
 export class PermitForm {
   permitName = '';
   authorizingBody = '';
   isActive = true;
-
-  constructor(private router: Router) {}
+  close = output();
 
   goBack() {
-    this.router.navigate(['/vehicle-permits']);
+    this.close.emit();
   }
 
   onSubmit() {
-    console.log('Permit submitted', {
-      name: this.permitName,
-      authorizingBody: this.authorizingBody,
-      isActive: this.isActive
-    });
-    this.router.navigate(['/vehicle-permits']);
+    this.close.emit();
   }
 }

@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { SaveArea } from '../../../../shared/components/save-area/save-area';
 
 @Component({
   selector: 'app-route-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveArea],
   templateUrl: './route-form.html'
 })
 export class RouteForm {
@@ -16,15 +16,13 @@ export class RouteForm {
   mileage = '0.00';
   estimatedDuration = '';
   isActive = true;
-
-  constructor(private router: Router) {}
+  close = output();
 
   goBack() {
-    this.router.navigate(['/routes']);
+    this.close.emit();
   }
 
   onSubmit() {
-    console.log('Route submitted');
-    this.router.navigate(['/routes']);
+    this.close.emit();
   }
 }

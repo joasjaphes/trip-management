@@ -1,16 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { DataTable, TableConfig } from '../../shared/components/data-table/data-table';
+import { Layout } from '../../shared/components/layout/layout';
+import { TripForm } from './trip-form/trip-form';
 
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, DataTable, Layout, TripForm],
   templateUrl: './trips.html'
 })
 export class Trips {
-  
-  tripsList = [
+  title = signal('Trips management');
+  description = signal('Overview and management of all logistics trips');
+  addText = signal('Add new trip');
+  viewType = signal('');
+  viewDetails = signal(false);
+  formTitle = signal('');
+  formDescription = signal('');
+
+  trips = signal([
     {
       id: 'TRP-8842',
       date: 'Oct 24, 2023',
@@ -51,21 +60,56 @@ export class Trips {
       revenue: '$0.00',
       status: 'Cancelled'
     }
-  ];
+  ]);
 
-  getStatusClass(status: string): string {
-    switch(status.toLowerCase()) {
-      case 'completed':
-        return 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
-      case 'in-progress':
-        return 'bg-blue-500/10 text-blue-500 border border-blue-500/20';
-      case 'pending':
-        return 'bg-amber-500/10 text-amber-500 border border-amber-500/20';
-      case 'cancelled':
-      case 'delayed':
-        return 'bg-red-500/10 text-red-500 border border-red-500/20';
-      default:
-        return 'bg-gray-500/10 text-gray-500 border border-gray-500/20';
-    }
+  tableConfigurations: TableConfig = {
+    columns: [
+      {
+        key: 'id',
+        label: 'Trip ID'
+      },
+      {
+        key: 'date',
+        label: 'Start date'
+      },
+      {
+        key: 'endDate',
+        label: 'End date'
+      },
+      {
+        key: 'vehicle',
+        label: 'Vehicle'
+      },
+      {
+        key: 'driver',
+        label: 'Driver'
+      },
+      {
+        key: 'route',
+        label: 'Route'
+      },
+      {
+        key: 'revenue',
+        label: 'Revenue'
+      },
+      {
+        key: 'status',
+        label: 'Status'
+      }
+    ]
+  };
+
+  onAdd() {
+    this.viewType.set('add');
+    this.formTitle.set('Add new trip');
+    this.formDescription.set('Create and schedule a new logistics trip.');
+    this.viewDetails.set(true);
+  }
+
+  onCloseForm() {
+    this.viewDetails.set(false);
+    this.viewType.set('');
+    this.formTitle.set('');
+    this.formDescription.set('');
   }
 }

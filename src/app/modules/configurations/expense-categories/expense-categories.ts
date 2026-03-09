@@ -1,15 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
+import { Layout } from '../../../shared/components/layout/layout';
+import { ExpenseCategoryForm } from './expense-category-form/expense-category-form';
 
 @Component({
   selector: 'app-expense-categories',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, DataTable, Layout, ExpenseCategoryForm],
   templateUrl: './expense-categories.html',
 })
 export class ExpenseCategories {
-  categoriesList = [
+  title = signal('Expense categories');
+  description = signal('Configure and manage logistics spending classification');
+  addText = signal('Add new category');
+  viewType = signal('');
+  viewDetails = signal(false);
+  formTitle = signal('');
+  formDescription = signal('');
+
+  categories = signal([
     {
       id: 'EXP-001',
       name: 'Fuel & Diesel',
@@ -54,15 +64,44 @@ export class ExpenseCategories {
       icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
       iconColor: 'text-gray-400 bg-gray-100'
     }
-  ];
+  ]);
 
-  totalCategories = 12;
+  tableConfigurations: TableConfig = {
+    columns: [
+      {
+        key: 'name',
+        label: 'Name'
+      },
+      {
+        key: 'categoryType',
+        label: 'Category type'
+      },
+      {
+        key: 'status',
+        label: 'Status'
+      },
+      {
+        key: 'description',
+        label: 'Description'
+      },
+      {
+        key: 'createdDate',
+        label: 'Created date'
+      }
+    ]
+  };
 
-  getStatusClass(status: string): string {
-    return status.toLowerCase() === 'active' ? 'text-emerald-600' : 'text-gray-400';
+  onAdd() {
+    this.viewType.set('add');
+    this.formTitle.set('Add new category');
+    this.formDescription.set('Create a new expense classification for operations.');
+    this.viewDetails.set(true);
   }
 
-  getStatusDotClass(status: string): string {
-    return status.toLowerCase() === 'active' ? 'bg-emerald-500' : 'bg-gray-300';
+  onCloseForm() {
+    this.viewDetails.set(false);
+    this.viewType.set('');
+    this.formTitle.set('');
+    this.formDescription.set('');
   }
 }

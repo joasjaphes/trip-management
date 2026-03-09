@@ -1,75 +1,11 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
-  
-  <!-- Header -->
-  <div class="flex items-center justify-between mb-8">
-    <div>
-      <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight">Routes Management</h1>
-      <p class="text-[15px] font-medium text-gray-400 mt-1">Configure and track operational transport lanes across the region.</p>
-    </div>
-    <a routerLink="/routes/new" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-      </svg>
-      Add New Route
-    </a>
-  </div>
-
-  <!-- Stat Cards -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    @for (stat of stats; track stat.label) {
-    <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-      <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-2">{{ stat.label }}</span>
-      <span class="text-[28px] font-extrabold leading-none" [class.text-emerald-600]="stat.highlight" [class.text-gray-900]="!stat.highlight">{{ stat.value }}</span>
-    </div>
+<app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
+  <ng-container ngProjectAs="main">
+    <app-data-table [data]="routes()" [config]="tableConfigurations"></app-data-table>
+  </ng-container>
+  <ng-container ngProjectAs="form">
+    @if (viewType() == 'add') {
+    <app-route-form (close)="onCloseForm()"></app-route-form>
     }
-  </div>
-
-  <!-- Routes Table -->
-  <div class="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="border-b border-gray-100">
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Route Name</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Start Location</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">End Location</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Mileage</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Est. Duration</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Status</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (route of routesList; track route.id) {
-        <tr class="border-b border-gray-50 transition-all hover:bg-gray-50 cursor-pointer group">
-          <td class="py-5 px-6 text-[14px] font-bold text-gray-900">{{ route.name }}</td>
-          <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ route.start }}</td>
-          <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ route.end }}</td>
-          <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ route.mileage }}</td>
-          <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ route.duration }}</td>
-          <td class="py-5 px-6">
-            <span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase" [ngClass]="getStatusClass(route.status)">
-              {{ route.status }}
-            </span>
-          </td>
-          <td class="py-5 px-6 text-center">
-            <a [routerLink]="['/routes', route.id.toLowerCase()]" class="text-gray-300 hover:text-gray-600 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-              </svg>
-            </a>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-
-    <!-- Pagination -->
-    <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
-      <p class="text-[13px] text-gray-400 font-medium">Showing <span class="font-bold text-gray-600">1-{{ routesList.length }}</span> of <span class="font-bold text-gray-600">{{ totalRoutes }}</span> routes</p>
-      <div class="flex items-center gap-2">
-        <button class="px-4 py-1.5 text-[13px] font-bold text-gray-400 hover:text-gray-700 border border-gray-200 rounded-lg transition-colors">Previous</button>
-        <button class="px-4 py-1.5 text-[13px] font-bold text-gray-400 hover:text-gray-700 border border-gray-200 rounded-lg transition-colors">Next</button>
-      </div>
-    </div>
-  </div>
-</div>
+  </ng-container>
+</app-layout>

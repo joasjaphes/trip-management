@@ -1,12 +1,6 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
   
   <div class="max-w-[900px] mx-auto">
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">Add New Vehicle</h1>
-      <p class="text-[14px] font-medium text-gray-400 mt-1">Fill in the technical and registration details of the new fleet unit.</p>
-    </div>
-
     <!-- Registration Information Section -->
     <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
       <div class="flex items-center gap-3 mb-6">
@@ -160,21 +154,13 @@
       </div>
     </div>
 
-    <!-- Form Footer Actions -->
-    <div class="flex items-center justify-between pt-2 pb-8">
+    <div class="flex items-center justify-between pt-2">
       <div class="flex items-center gap-2">
         <input type="checkbox" id="isActive" class="w-4 h-4 rounded border-gray-300 text-[#f25f2f] focus:ring-[#f25f2f]">
         <label for="isActive" class="text-[13px] font-medium text-gray-500">Active</label>
       </div>
-      <div class="flex items-center gap-4">
-        <button (click)="reset()" class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-6 font-bold rounded-lg">
-          Reset
-        </button>
-        <button (click)="onSubmit()" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg">
-          Save Vehicle
-        </button>
-      </div>
     </div>
+    <app-save-area [saveText]="'Save Vehicle'" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
 
   </div>
 </div>

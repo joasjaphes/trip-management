@@ -1,81 +1,11 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
-  
-  <!-- Header -->
-  <div class="flex items-center justify-between mb-8">
-    <div>
-      <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight">Expense Categories</h1>
-      <p class="text-[15px] font-medium text-gray-400 mt-1">Configure and manage logistics spending classification.</p>
-    </div>
-    <a routerLink="/expense-categories/new" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-      </svg>
-      Add New Category
-    </a>
-  </div>
-
-  <!-- Categories Table -->
-  <div class="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="border-b border-gray-100">
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[18%]">Name</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[14%]">Category Type</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[10%]">Status</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[30%]">Description</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase w-[16%]">Date Created</th>
-          <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase text-center w-[12%]">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (cat of categoriesList; track cat.id) {
-        <tr class="border-b border-gray-50 transition-all hover:bg-gray-50 cursor-pointer group">
-          <!-- Name with Icon -->
-          <td class="py-5 px-6">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" [ngClass]="cat.iconColor">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="cat.icon" />
-                </svg>
-              </div>
-              <span class="text-[14px] font-bold text-gray-900">{{ cat.name }}</span>
-            </div>
-          </td>
-          <!-- Category Type -->
-          <td class="py-5 px-6">
-            <span class="text-[13px] font-bold italic" [ngClass]="cat.typeColor">{{ cat.categoryType }}</span>
-          </td>
-          <!-- Status -->
-          <td class="py-5 px-6">
-            <span class="flex items-center gap-2 text-[13px] font-bold" [ngClass]="getStatusClass(cat.status)">
-              <span class="w-2 h-2 rounded-full" [ngClass]="getStatusDotClass(cat.status)"></span>
-              {{ cat.status }}
-            </span>
-          </td>
-          <!-- Description -->
-          <td class="py-5 px-6 text-[13px] font-medium text-gray-400">{{ cat.description }}</td>
-          <!-- Date Created -->
-          <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ cat.createdDate }}</td>
-          <!-- Actions -->
-          <td class="py-5 px-6 text-center">
-            <a [routerLink]="['/expense-categories', cat.id.toLowerCase()]" class="text-gray-300 hover:text-gray-600 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-              </svg>
-            </a>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-
-    <!-- Pagination -->
-    <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
-      <p class="text-[13px] text-gray-400 font-medium">Showing <span class="font-bold text-gray-600">{{ categoriesList.length }}</span> of <span class="font-bold text-gray-600 italic">{{ totalCategories }}</span> categories</p>
-      <div class="flex items-center gap-2">
-        <button class="px-4 py-1.5 text-[13px] font-medium text-gray-400 hover:text-gray-700 transition-colors">Previous</button>
-        <button class="px-4 py-1.5 text-[13px] font-bold text-gray-700 hover:text-gray-900 transition-colors">Next</button>
-      </div>
-    </div>
-  </div>
-</div>
+<app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
+  <ng-container ngProjectAs="main">
+    <app-data-table [data]="categories()" [config]="tableConfigurations"></app-data-table>
+  </ng-container>
+  <ng-container ngProjectAs="form">
+    @if (viewType() == 'add') {
+    <app-expense-category-form (close)="onCloseForm()"></app-expense-category-form>
+    }
+  </ng-container>
+</app-layout>
