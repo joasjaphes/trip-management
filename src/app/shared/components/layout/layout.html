@@ -1,5 +1,5 @@
-<div class="p-6">
-    <div class="flex items-center justify-between mb-6">
+<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+    <!-- <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold">{{ title() }}</h1>
         @if(showAddButton()) {
         <a (click)="onAdd()" class="btn btn-primary">
@@ -10,34 +10,45 @@
             {{ addText() }}
         </a>
         }
+    </div> -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight">{{title()}}</h1>
+            <p class="text-[15px] font-medium text-gray-400 mt-1">{{description()}}</p>
+        </div>
+        <a (click)="onAdd()"
+            class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            {{addText()}}
+        </a>
     </div>
     <div class="card bg-base-100 shadow-lg">
         <div class="content-container">
-            <div class="card-body content-panel"
-                [style.width]="viewDetails() ? mainContentWidth(): '100%'"
-                [class.slide-in-from-left]="!viewDetails()"
-                [class.slide-out-to-left]="viewDetails()"
-                [style.opacity]="viewDetails() ? '0.3' : '1'"
-                [style.pointer-events]="viewDetails() ? 'none' : 'auto'"
-                role="region"
-                aria-label="Main content" 
-                [attr.aria-hidden]="viewDetails()">
+            <div class="card-body content-panel" [style.width]="viewDetails() ? mainContentWidth(): '100%'"
+                [class.slide-in-from-left]="!viewDetails()" [class.slide-out-to-left]="viewDetails()"
+                [style.opacity]="viewDetails() ? '0.3' : '1'" [style.pointer-events]="viewDetails() ? 'none' : 'auto'"
+                role="region" aria-label="Main content" [attr.aria-hidden]="viewDetails()">
                 <ng-content select="main"></ng-content>
             </div>
-            <div class="card-body content-panel content-panel-overlay overflow-auto scrollbar scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-                [style.width]="viewDetails() ? formPanelWidth() : '0%'"
-                [class.slide-in-from-right]="viewDetails()"
-                [class.slide-out-to-right]="!viewDetails()"
-                [style.opacity]="viewDetails() ? '1' : '0'"
-                [style.pointer-events]="viewDetails() ? 'auto' : 'none'"
-                role="region"
-                aria-label="Details form content"
+            <div class="content-panel  content-panel-overlay card-body px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800"
+                [style.width]="viewDetails() ? formPanelWidth() : '0%'" [class.slide-in-from-right]="viewDetails()"
+                [class.slide-out-to-right]="!viewDetails()" [style.opacity]="viewDetails() ? '1' : '0'"
+                [style.pointer-events]="viewDetails() ? 'auto' : 'none'" role="region" aria-label="Details form content"
                 [attr.aria-hidden]="!viewDetails()">
-                <div class="flex items-center justify-between bg-gray-50 p-4 border-b border-gray-200 mb-4">
-                    <h1 class="text-2xl text-gray-500 font-bold">{{ formTitle() }}</h1>
-                    <a (click)="closeDetails()" class="btn btn-danger">
-                        Close
-                    </a>
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 class="text-[22px] font-extrabold text-gray-900">{{formTitle()}}</h1>
+                        <p class="text-[13px] font-medium text-gray-400 mt-0.5">{{formDescription()}}</p>
+                    </div>
+                    <!-- <div>
+                        <a (click)="closeDetails()" class="btn btn-danger">
+                            Close
+                        </a>
+                    </div> -->
                 </div>
                 <ng-content select="form"></ng-content>
             </div>

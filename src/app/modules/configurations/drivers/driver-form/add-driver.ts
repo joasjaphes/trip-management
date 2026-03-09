@@ -1,8 +1,8 @@
 import { Component, inject, signal, ChangeDetectionStrategy, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DriverService } from '../../../services/driver.service';
-import { Driver, DrivingLicense } from '../../../models/driver.model';
+import { DriverService } from '../../../../services/driver.service';
+import { Driver, DrivingLicense } from '../../../../models/driver.model';
 
 @Component({
   selector: 'app-add-driver',

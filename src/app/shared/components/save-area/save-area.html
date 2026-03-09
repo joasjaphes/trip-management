@@ -1,0 +1,12 @@
+<div class="flex items-center justify-end gap-4 pt-2 pb-8">
+    @if (showCancel()) {
+    <button (click)="onCancel()"
+        class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-8 font-bold rounded-lg">
+        {{cancelText()}}
+    </button>
+    }
+    <button (click)="onSave()"
+        class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg">
+        {{saveText()}}
+    </button>
+</div>

@@ -1,0 +1,8 @@
+{
+    "server": {
+        "url1": "https://tripmanagement.monitafrica.com/api",
+        "url": "http://localhost:3000/api",
+        "imageUrl": "http://localhost:3000"
+    },
+    "version": "1.0.0"
+}

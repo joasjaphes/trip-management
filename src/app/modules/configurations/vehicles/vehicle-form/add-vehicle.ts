@@ -1,8 +1,8 @@
 import { Component, inject, signal, ChangeDetectionStrategy, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { VehicleService } from '../../../services/vehicle.service';
-import { Vehicle, VehiclePermit } from '../../../models/vehicle.model';
+import { VehicleService } from '../../../../services/vehicle.service';
+import { Vehicle, VehiclePermit } from '../../../../models/vehicle.model';
 
 @Component({
   selector: 'app-add-vehicle',

@@ -18,95 +18,95 @@ export const routes: Routes = [
             },
             {
                 path: 'dashboard',
-                loadComponent: () => import('./dashboard/dashboard').then(m => m.Dashboard),
+                loadComponent: () => import('./modules/dashboard/dashboard').then(m => m.Dashboard),
             },
             {
                 path: 'trips',
-                loadComponent: () => import('./trips/trips').then(m => m.Trips),
+                loadComponent: () => import('./modules/trips/trips').then(m => m.Trips),
             },
             {
                 path: 'trips/new',
-                loadComponent: () => import('./trips/trip-form/trip-form').then(m => m.TripForm),
+                loadComponent: () => import('./modules/trips/trip-form/trip-form').then(m => m.TripForm),
             },
             {
                 path: 'trips/:id',
-                loadComponent: () => import('./trips/trip-detail/trip-detail').then(m => m.TripDetail),
+                loadComponent: () => import('./modules/trips/trip-detail/trip-detail').then(m => m.TripDetail),
             },
             {
                 path: 'drivers',
-                loadComponent: () => import('./configurations/drivers/driver-list/driver-list').then(m => m.DriverList),
+                loadComponent: () => import('./modules/configurations/drivers/driver-list/driver-list').then(m => m.DriverList),
             },
             {
                 path: 'drivers/new',
-                loadComponent: () => import('./configurations/drivers/driver-form/driver-form').then(m => m.DriverForm),
+                loadComponent: () => import('./modules/configurations/drivers/driver-form/driver-form').then(m => m.DriverForm),
             },
             {
                 path: 'drivers/:id',
-                loadComponent: () => import('./configurations/drivers/driver-detail/driver-detail').then(m => m.DriverDetail),
+                loadComponent: () => import('./modules/configurations/drivers/driver-detail/driver-detail').then(m => m.DriverDetail),
             },
             {
                 path: 'vehicles',
-                loadComponent: () => import('./configurations/vehicles/vehicle-list/vehicle-list').then(m => m.VehicleList),
+                loadComponent: () => import('./modules/configurations/vehicles/vehicle-list/vehicle-list').then(m => m.VehicleList),
             },
             {
                 path: 'vehicles/new',
-                loadComponent: () => import('./configurations/vehicles/vehicle-form/vehicle-form').then(m => m.VehicleForm),
+                loadComponent: () => import('./modules/configurations/vehicles/vehicle-form/vehicle-form').then(m => m.VehicleForm),
             },
             {
                 path: 'vehicles/:id',
-                loadComponent: () => import('./configurations/vehicles/vehicle-detail/vehicle-detail').then(m => m.VehicleDetail),
+                loadComponent: () => import('./modules/configurations/vehicles/vehicle-detail/vehicle-detail').then(m => m.VehicleDetail),
             },
             {
                 path: 'vehicle-permits',
-                loadComponent: () => import('./vehicle-permits/vehicle-permits').then(m => m.VehiclePermits),
+                loadComponent: () => import('./modules/configurations/vehicle-permits/vehicle-permits').then(m => m.VehiclePermits),
             },
             {
                 path: 'vehicle-permits/new',
-                loadComponent: () => import('./vehicle-permits/permit-form/permit-form').then(m => m.PermitForm),
+                loadComponent: () => import('./modules/configurations/vehicle-permits/permit-form/permit-form').then(m => m.PermitForm),
             },
             {
                 path: 'vehicle-permits/:id',
-                loadComponent: () => import('./vehicle-permits/permit-detail/permit-detail').then(m => m.PermitDetail),
+                loadComponent: () => import('./modules/configurations/vehicle-permits/permit-detail/permit-detail').then(m => m.PermitDetail),
             },
             {
                 path: 'routes',
-                loadComponent: () => import('./configurations/routes/route-list/route-list').then(m => m.RouteList),
+                loadComponent: () => import('./modules/configurations/routes/route-list/route-list').then(m => m.RouteList),
             },
             {
                 path: 'routes/new',
-                loadComponent: () => import('./configurations/routes/route-form/route-form').then(m => m.RouteForm),
+                loadComponent: () => import('./modules/configurations/routes/route-form/route-form').then(m => m.RouteForm),
             },
             {
                 path: 'routes/:id',
-                loadComponent: () => import('./configurations/routes/route-detail/route-detail').then(m => m.RouteDetail),
+                loadComponent: () => import('./modules/configurations/routes/route-detail/route-detail').then(m => m.RouteDetail),
             },
             {
                 path: 'expense-categories',
-                loadComponent: () => import('./configurations/expense-categories/expense-categories').then(m => m.ExpenseCategories),
+                loadComponent: () => import('./modules/configurations/expense-categories/expense-categories').then(m => m.ExpenseCategories),
             },
             {
                 path: 'expense-categories/new',
-                loadComponent: () => import('./configurations/expense-categories/expense-category-form/expense-category-form').then(m => m.ExpenseCategoryForm),
+                loadComponent: () => import('./modules/configurations/expense-categories/expense-category-form/expense-category-form').then(m => m.ExpenseCategoryForm),
             },
             {
                 path: 'expense-categories/:id',
-                loadComponent: () => import('./configurations/expense-categories/expense-category-detail/expense-category-detail').then(m => m.ExpenseCategoryDetail),
+                loadComponent: () => import('./modules/configurations/expense-categories/expense-category-detail/expense-category-detail').then(m => m.ExpenseCategoryDetail),
             },
             {
                 path: 'users',
-                loadComponent: () => import('./users/user-list/user-list').then(m => m.UserList),
+                loadComponent: () => import('./modules/users/user-list/user-list').then(m => m.UserList),
             },
             {
                 path: 'users/new',
-                loadComponent: () => import('./users/user-form/user-form').then(m => m.UserForm),
+                loadComponent: () => import('./modules/users/user-form/user-form').then(m => m.UserForm),
             },
             {
                 path: 'users/:id',
-                loadComponent: () => import('./users/user-detail/user-detail').then(m => m.UserDetail),
+                loadComponent: () => import('./modules/users/user-detail/user-detail').then(m => m.UserDetail),
             },
             {
                 path: 'users/:id/edit',
-                loadComponent: () => import('./users/user-form/user-form').then(m => m.UserForm),
+                loadComponent: () => import('./modules/users/user-form/user-form').then(m => m.UserForm),
             }
         ]
     },

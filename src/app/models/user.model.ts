@@ -3,12 +3,14 @@ export interface User {
   username: string;
   email: string;
   firstName: string;
-  lastName: string;
+  surname: string;
   phone?: string;
   role: UserRole;
   isActive: boolean;
+  status?: string;
   createdAt: Date;
   updatedAt: Date;
+  initials?: string;
 }
 
 export enum UserRole {

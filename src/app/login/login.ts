@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../services/auth.service';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -17,30 +17,19 @@ export class Login {
   errorMessage = signal('');
   showPassword = signal(false);
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private userService: UserService) {}
 
-  onSubmit() {
-    this.errorMessage.set('');
-    
-    if (!this.username() || !this.password()) {
-      this.errorMessage.set('Please enter both username and password');
-      return;
-    }
-
+  async onSubmit() {
     this.isLoading.set(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      // For demo purposes, accept any credentials
-      // In production, this would call an authentication service
-      if (this.username() && this.password()) {
-        this.authService.login(this.username());
-        this.router.navigate(['/dashboard']);
-      } else {
-        this.errorMessage.set('Invalid username or password');
-      }
+    this.errorMessage.set('');
+    try {
+      await this.userService.login(this.username(), this.password());
+      this.router.navigate(['/']);
+    } catch (e) {
+      this.errorMessage.set('Invalid username or password');
+    } finally {
       this.isLoading.set(false);
-    }, 1000);
+    }
   }
 
   togglePasswordVisibility() {

@@ -1,7 +1,7 @@
 import { Component, inject, signal, ChangeDetectionStrategy, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ExpenseCategoryService } from '../../../services/expense-category.service';
+import { ExpenseCategoryService } from '../../../../services/expense-category.service';
 
 @Component({
   selector: 'app-add-expense-category',

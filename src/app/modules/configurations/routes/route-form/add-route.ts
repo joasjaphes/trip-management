@@ -1,8 +1,8 @@
 import { Component, inject, signal, ChangeDetectionStrategy, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouteService } from '../../../services/route.service';
-import { Route } from '../../../models/route.model';
+import { RouteService } from '../../../../services/route.service';
+import { Route } from '../../../../models/route.model';
 
 @Component({
   selector: 'app-add-route',

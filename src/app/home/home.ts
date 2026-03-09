@@ -1,7 +1,8 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
-import { AuthService } from '../services/auth.service';
+import { UserService } from '../services/user.service';
+import { User } from '../models';
 
 interface MenuItem {
   label: string;
@@ -31,18 +32,26 @@ export class Home implements OnInit {
     { label: 'Users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', route: '/users' },
   ];
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit() {
-    this.username.set(this.authService.getUsername());
+    const token = localStorage.getItem('trip-management-token');
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    const currentUser: User = JSON.parse(localStorage.getItem('trip-management-user'));
+    this.username.set(currentUser?.username || '');
+    this.userService.getUsers().then();
+
   }
 
   toggleSidebar() {
     this.isSidebarOpen.set(!this.isSidebarOpen());
   }
 
-  logout() {
-    this.authService.logout();
+  async logout() {
+    await this.userService.logout();
     this.router.navigate(['/login']);
   }
 }

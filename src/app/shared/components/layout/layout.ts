@@ -25,20 +25,21 @@ const SPLIT_SIZES: Record<SplitSize, SplitConfig> = {
 })
 export class Layout {
   // Two-way bound properties
-  title = model();
-  subtitle = model();
+  title = input();
+  description = input('');
   viewDetails = model(false);
   showAddButton = model(true);
-  addText = model('Add New');
-  formTitle = model('Add New Item');
+  addText = input('Add New');
+  formTitle = input('Add New Item');
+  formDescription = input('');
 
   // Split size input
-  splitSize = input<SplitSize>('zero'); // default to 50/50 split
+  splitSize = input<SplitSize>('half'); // default to 50/50 split
 
   // Computed split widths
   splitConfig = computed(() => {
     const size = this.splitSize();
-    return SPLIT_SIZES[size] || SPLIT_SIZES['zero'];
+    return SPLIT_SIZES[size] || SPLIT_SIZES['half'];
   });
 
   mainContentWidth = computed(() => `${this.splitConfig().main}%`);

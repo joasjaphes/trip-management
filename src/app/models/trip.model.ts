@@ -23,7 +23,7 @@ export interface Trip {
 
 export enum TripStatus {
 	PENDING = 'pending',
-	IN_PROGRESS = 'in-progress',
+	IN_PROGRESS = 'inprogress',
 	COMPLETED = 'completed',
 	CANCELLED = 'cancelled'
 }
