@@ -1,16 +1,21 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable, TableConfig } from '../../shared/components/data-table/data-table';
-import { Layout } from '../../shared/components/layout/layout';
+import { Layout, SplitSize } from '../../shared/components/layout/layout';
 import { TripForm } from './trip-form/trip-form';
+import { TripDetail } from './trip-detail/trip-detail';
+import { TripService } from '../../services/trip.service';
+import { Trip } from '../../models/trip.model';
 
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, TripForm],
+  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail],
   templateUrl: './trips.html'
 })
-export class Trips {
+export class Trips implements OnInit {
+  private tripService = inject(TripService);
+
   title = signal('Trips management');
   description = signal('Overview and management of all logistics trips');
   addText = signal('Add new trip');
@@ -18,55 +23,29 @@ export class Trips {
   viewDetails = signal(false);
   formTitle = signal('');
   formDescription = signal('');
+  splitSize = signal<SplitSize>('full');
+  selectedTrip = signal<Trip | undefined>(undefined);
+  showAddButton = signal(true);
 
-  trips = signal([
-    {
-      id: 'TRP-8842',
-      date: 'Oct 24, 2023',
-      endDate: 'Oct 26, 2023',
-      vehicle: 'Volvo FH16 (V-09)',
-      driver: 'Marcus Sterling',
-      route: 'New York',
-      revenue: '$4,250.00',
-      status: 'In-Progress'
-    },
-    {
-      id: 'TRP-8841',
-      date: 'Oct 23, 2023',
-      endDate: 'Oct 24, 2023',
-      vehicle: 'Scania R500 (V-12)',
-      driver: 'Sarah Jenkins',
-      route: 'Phoenix',
-      revenue: '$2,100.00',
-      status: 'Completed'
-    },
-    {
-      id: 'TRP-8840',
-      date: 'Oct 25, 2023',
-      endDate: '-',
-      vehicle: 'Freightliner (V-02)',
-      driver: 'James Wilson',
-      route: 'Atlanta',
-      revenue: '$1,850.00',
-      status: 'Pending'
-    },
-    {
-      id: 'TRP-8839',
-      date: 'Oct 22, 2023',
-      endDate: 'Oct 23, 2023',
-      vehicle: 'Kenworth T680 (V-15)',
-      driver: 'Elena Rodriguez',
-      route: 'Portland',
-      revenue: '$0.00',
-      status: 'Cancelled'
-    }
-  ]);
+  trips = computed(() =>
+    this.tripService.allTrips().map((trip) => ({
+      id: trip.id,
+      date: new Date(trip.tripDate).toLocaleDateString(),
+      endDate: trip.endDate ? new Date(trip.endDate).toLocaleDateString() : '-',
+      vehicle: trip.vehicle?.registrationNo || trip.vehicleId,
+      driver: trip.driver ? `${trip.driver.firstName} ${trip.driver.lastName}` : trip.driverId,
+      route: trip.route?.name || trip.routeId,
+      revenue: `${Number(trip.revenue || 0).toLocaleString()}`,
+      status: trip.status,
+      _trip: trip
+    }))
+  );
 
   tableConfigurations: TableConfig = {
     columns: [
       {
-        key: 'id',
-        label: 'Trip ID'
+        key: 'route',
+        label: 'Route'
       },
       {
         key: 'date',
@@ -85,10 +64,6 @@ export class Trips {
         label: 'Driver'
       },
       {
-        key: 'route',
-        label: 'Route'
-      },
-      {
         key: 'revenue',
         label: 'Revenue'
       },
@@ -96,20 +71,53 @@ export class Trips {
         key: 'status',
         label: 'Status'
       }
-    ]
+    ],
+    actions: {
+      view: true,
+      edit: true,
+      delete: true,
+      more: true
+    }
   };
+
+  async ngOnInit(): Promise<void> {
+    await this.tripService.getAll();
+  }
 
   onAdd() {
     this.viewType.set('add');
     this.formTitle.set('Add new trip');
     this.formDescription.set('Create and schedule a new logistics trip.');
+    this.showAddButton.set(false);
     this.viewDetails.set(true);
   }
 
-  onCloseForm() {
+  onView(row: any) {
+    this.selectedTrip.set(row._trip);
+    this.formTitle.set(`Trip details ( ${row.route} )`);
+    this.formDescription.set(`View detailed information about this trip, including expenses and route details.`);
+    this.viewType.set('detail');
+    this.showAddButton.set(false);
+    this.viewDetails.set(true);
+    // this.splitSize.set('half');
+  }
+
+  async onCloseForm() {
     this.viewDetails.set(false);
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    this.selectedTrip.set(undefined);
+    this.splitSize.set('full');
+    this.showAddButton.set(true);
+    await this.tripService.getAll();
+  }
+
+  onCloseDetail() {
+    this.viewDetails.set(false);
+    this.viewType.set('');
+    this.selectedTrip.set(undefined);
+    this.showAddButton.set(true);
+    this.splitSize.set('full');
   }
 }

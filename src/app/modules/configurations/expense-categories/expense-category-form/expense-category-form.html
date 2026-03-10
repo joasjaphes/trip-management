@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <app-save-area [saveText]="'Save Category'" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
+    <app-save-area [saveText]="'Save Category'" [loading]="loading()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
 
   </div>
 </div>

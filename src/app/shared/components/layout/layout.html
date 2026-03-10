@@ -1,4 +1,4 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800" [()]>
     <!-- <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold">{{ title() }}</h1>
         @if(showAddButton()) {
@@ -16,6 +16,7 @@
             <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight">{{title()}}</h1>
             <p class="text-[15px] font-medium text-gray-400 mt-1">{{description()}}</p>
         </div>
+        @if (showAddButton() && !viewDetails()) {
         <a (click)="onAdd()"
             class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -25,6 +26,7 @@
             </svg>
             {{addText()}}
         </a>
+        }
     </div>
     <div class="card bg-base-100 shadow-lg">
         <div class="content-container">

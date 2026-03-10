@@ -1,0 +1,31 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  <div class="max-w-[900px] mx-auto">
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="flex flex-col gap-2 md:col-span-2">
+          <label class="text-[13px] font-bold text-gray-700">Cargo Type Name</label>
+          <input
+            type="text"
+            placeholder="e.g. Perishable Goods"
+            [(ngModel)]="name"
+            name="name"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+          >
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-6 border-t border-gray-100">
+        <div>
+          <h3 class="text-[15px] font-extrabold text-gray-900">Active Status</h3>
+          <p class="text-[13px] text-gray-400 mt-0.5">Enable this cargo type for trip planning.</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [checked]="isActive" (change)="isActive = !isActive" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f25f2f]"></div>
+        </label>
+      </div>
+    </div>
+
+    <app-save-area [saveText]="'Save Cargo Type'" [loading]="loading()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
+  </div>
+</div>

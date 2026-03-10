@@ -1,5 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { ExpenseCategory } from '../models/expense-category.model';
+import { HttpClientService } from './http-client.service';
+import { CommonService } from './common.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,13 +23,30 @@ export class ExpenseCategoryService {
     () => this.categories().filter((c) => c.isActive).length
   );
 
-  constructor() {}
+  constructor(private http: HttpClientService, private commonService: CommonService) {}
 
   /**
    * Get all categories
    */
-  getAll(): ExpenseCategory[] {
-    return this.categories();
+  async getAll(): Promise<void> {
+    this.isLoading.set(true);
+    this.error.set(null);
+    
+    try {
+      const categories = await this.http.get<ExpenseCategory[]>('expenses');
+      this.categories.set(
+        categories.map((category) => ({
+          ...category,
+          isActive: category.isActive ?? category.status === 'Active',
+          status: category.isActive || category.status === 'Active' ? 'Active' : 'Inactive',
+        }))
+      );
+    } catch (err) {
+      this.error.set(err?.toString() || 'Failed to fetch expense categories');
+      console.error('Failed to fetch expense categories', err);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   /**
@@ -40,28 +59,26 @@ export class ExpenseCategoryService {
   /**
    * Create a new category
    */
-  create(name: string, description?: string, category?: string, isActive?: boolean): void {
+  async create(name: string, description?: string, category?: string, isActive?: boolean): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      // Simulate API delay
-      setTimeout(() => {
-        const newCategory: ExpenseCategory = {
-          id: `cat-${Date.now()}`,
-          name,
-          category: category || 'GENERAL', // Default category value
-          description: description || '',
-          status: isActive ? 'Active' : 'Inactive',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-
-        this.categories.update((cats) => [...cats, newCategory]);
-        this.isLoading.set(false);
-      }, 300);
+      const payload = {
+        id: this.commonService.makeid(),
+        name,
+        category: category || 'GENERAL',
+        description: description || '',
+        isActive: isActive ?? true
+      };
+      
+      await this.http.post('expenses', payload);
+      await this.getAll();
     } catch (err) {
-      this.error.set('Failed to create category');
+      this.error.set(err?.toString() || 'Failed to create category');
+      console.error('Failed to create category', err);
+      throw err;
+    } finally {
       this.isLoading.set(false);
     }
   }
@@ -69,29 +86,27 @@ export class ExpenseCategoryService {
   /**
    * Update an existing category
    */
-  update(id: string, name: string, description?: string, isActive?: boolean): void {
+  async update(id: string, name: string, description?: string, category?: string, isActive?: boolean): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      setTimeout(() => {
-        this.categories.update((cats) =>
-          cats.map((cat) =>
-            cat.id === id
-              ? {
-                  ...cat,
-                  name,
-                  description: description ?? cat.description,
-                  isActive: isActive !== undefined ? isActive : cat.isActive,
-                  updatedAt: new Date(),
-                }
-              : cat
-          )
-        );
-        this.isLoading.set(false);
-      }, 300);
+      const existingCategory = this.getById(id);
+      const payload = {
+        id,
+        name,
+        category: category || existingCategory?.category || 'GENERAL',
+        description: description ?? existingCategory?.description ?? '',
+        isActive: isActive !== undefined ? isActive : (existingCategory?.isActive ?? true)
+      };
+      
+      await this.http.put('expenses', payload);
+      await this.getAll();
     } catch (err) {
-      this.error.set('Failed to update category');
+      this.error.set(err?.toString() || 'Failed to update category');
+      console.error('Failed to update category', err);
+      throw err;
+    } finally {
       this.isLoading.set(false);
     }
   }
@@ -99,17 +114,18 @@ export class ExpenseCategoryService {
   /**
    * Delete a category
    */
-  delete(id: string): void {
+  async delete(id: string): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      setTimeout(() => {
-        this.categories.update((cats) => cats.filter((c) => c.id !== id));
-        this.isLoading.set(false);
-      }, 300);
+      await this.http.delete(`expenses/${id}`);
+      this.categories.update((cats) => cats.filter((c) => c.id !== id));
     } catch (err) {
-      this.error.set('Failed to delete category');
+      this.error.set(err?.toString() || 'Failed to delete category');
+      console.error('Failed to delete category', err);
+      throw err;
+    } finally {
       this.isLoading.set(false);
     }
   }
@@ -117,10 +133,10 @@ export class ExpenseCategoryService {
   /**
    * Toggle active status
    */
-  toggleActive(id: string): void {
+  async toggleActive(id: string): Promise<void> {
     const category = this.getById(id);
     if (category) {
-      this.update(id, category.name, category.description, !category.isActive);
+      await this.update(id, category.name, category.description, category.category, !category.isActive);
     }
   }
 }

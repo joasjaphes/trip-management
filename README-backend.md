@@ -396,6 +396,46 @@ Content-Type: application/json
 
 ---
 
+### Permit Registrations (`/api/permit-registrations`)
+
+#### Get All Permit Registrations
+```http
+GET /api/permit-registrations
+```
+
+#### Get Permit Registration by ID
+```http
+GET /api/permit-registrations/:id
+```
+
+#### Create Permit Registration
+```http
+POST /api/permit-registrations
+Content-Type: application/json
+
+{
+  "id": "permit-reg-id",
+  "name": "Road License",
+  "authorizingBody": "Tanzania Revenue Authority",
+  "isActive": true
+}
+```
+
+#### Update Permit Registration
+```http
+PUT /api/permit-registrations
+Content-Type: application/json
+
+{
+  "id": "permit-reg-id",
+  "name": "Road License",
+  "authorizingBody": "Tanzania Revenue Authority",
+  "isActive": true
+}
+```
+
+---
+
 ### Vehicle Permits (`/api/vehicle-permits`)
 
 #### Get All Vehicle Permits
@@ -578,6 +618,18 @@ Use this file path in fields like `driverPhoto`, `licenseFrontPagePhoto`, `recei
   "licenseClass": "string",
   "licenseFrontPagePhoto": "string",
   "driverPhoto": "string",
+  "isActive": "boolean",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+### Permit Registration Model
+```typescript
+{
+  "id": "string",
+  "name": "string",
+  "authorizingBody": "string",
   "isActive": "boolean",
   "createdAt": "string",
   "updatedAt": "string"

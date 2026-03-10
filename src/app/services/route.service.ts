@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Route } from '../models/route.model';
+import { HttpClientService } from './http-client.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,83 +22,84 @@ export class RouteService {
     () => this.routes().filter((r) => r.isActive).length
   );
 
-  constructor() {}
+  constructor(private http: HttpClientService) {}
 
-  getAll(): Route[] {
-    return this.routes();
+  async getAll(): Promise<void> {
+    this.isLoading.set(true);
+    this.error.set(null);
+    
+    try {
+      const routes = await this.http.get<Route[]>('routes');
+      this.routes.set(routes);
+    } catch (err) {
+      this.error.set(err?.toString() || 'Failed to fetch routes');
+      console.error('Failed to fetch routes', err);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   getById(id: string): Route | undefined {
     return this.routes().find((r) => r.id === id);
   }
 
-  create(route: Omit<Route, 'id' | 'createdAt' | 'updatedAt'>): void {
+  async create(route: Omit<Route,  'createdAt' | 'updatedAt'>): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      setTimeout(() => {
-        const newRoute: Route = {
-          ...route,
-          id: `rte-${Date.now()}`,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-
-        this.routes.update((routes) => [...routes, newRoute]);
-        this.isLoading.set(false);
-      }, 300);
+      await this.http.post('routes', route);
+      await this.getAll();
     } catch (err) {
-      this.error.set('Failed to create route');
+      this.error.set(err?.toString() || 'Failed to create route');
+      console.error('Failed to create route', err);
+      throw err;
+    } finally {
       this.isLoading.set(false);
     }
   }
 
-  update(id: string, route: Omit<Route, 'id' | 'createdAt' | 'updatedAt'>): void {
+  async update(id: string, route: Omit<Route, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      setTimeout(() => {
-        this.routes.update((routes) =>
-          routes.map((r) =>
-            r.id === id
-              ? {
-                  ...route,
-                  id,
-                  createdAt: r.createdAt,
-                  updatedAt: new Date(),
-                }
-              : r
-          )
-        );
-        this.isLoading.set(false);
-      }, 300);
+      const payload = {
+        id,
+        ...route
+      };
+      
+      await this.http.put('routes', payload);
+      await this.getAll();
     } catch (err) {
-      this.error.set('Failed to update route');
+      this.error.set(err?.toString() || 'Failed to update route');
+      console.error('Failed to update route', err);
+      throw err;
+    } finally {
       this.isLoading.set(false);
     }
   }
 
-  delete(id: string): void {
+  async delete(id: string): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      setTimeout(() => {
-        this.routes.update((routes) => routes.filter((r) => r.id !== id));
-        this.isLoading.set(false);
-      }, 300);
+      await this.http.delete(`routes/${id}`);
+      this.routes.update((routes) => routes.filter((r) => r.id !== id));
     } catch (err) {
-      this.error.set('Failed to delete route');
+      this.error.set(err?.toString() || 'Failed to delete route');
+      console.error('Failed to delete route', err);
+      throw err;
+    } finally {
       this.isLoading.set(false);
     }
   }
 
-  toggleActive(id: string): void {
+  async toggleActive(id: string): Promise<void> {
     const route = this.getById(id);
     if (route) {
-      this.update(id, { ...route, isActive: !route.isActive });
+      await this.update(id, { ...route, isActive: !route.isActive });
     }
   }
 }

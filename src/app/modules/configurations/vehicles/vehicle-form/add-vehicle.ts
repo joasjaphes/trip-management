@@ -42,7 +42,7 @@ export class AddVehicle {
 
     const newVehicle: Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'> = {
       registrationNo: this.registrationNo().trim(),
-      year: this.year() ? parseInt(this.year()) : undefined,
+      registrationYear: this.year() ? parseInt(this.year()) : undefined,
       tankCapacity: parseFloat(this.tankCapacity()),
       mileagePerFullTank: parseFloat(this.mileagePerFullTank()),
       permits: this.permits(),

@@ -13,7 +13,9 @@ export interface Trip {
 	driver?: Driver;
 	routeId: string;
 	route?: Route;
+	cargoTypeId?: string;
 	revenue: number;
+	income?: number;
 	expenses: TripExpense[];
 	status: TripStatus;
 	notes?: string;
@@ -31,11 +33,12 @@ export enum TripStatus {
 export interface TripExpense {
 	id: string;
 	tripId: string;
-	categoryId: string;
+	expenseId: string;
+	expenseDescription?: string;
 	category?: ExpenseCategory;
-	description: string;
 	amount: number;
 	receiptAttachment?: string;
-	date: Date;
-	createdAt: Date;
+	date: string;
+	createdAt?: Date;
+	updatedAt?: Date;
 }

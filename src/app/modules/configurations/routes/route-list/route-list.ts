@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable, TableConfig } from '../../../../shared/components/data-table/data-table';
 import { Layout } from '../../../../shared/components/layout/layout';
 import { RouteForm } from '../route-form/route-form';
+import { RouteService } from '../../../../services/route.service';
 
 @Component({
   selector: 'app-route-list',
@@ -10,7 +11,9 @@ import { RouteForm } from '../route-form/route-form';
   imports: [CommonModule, DataTable, Layout, RouteForm],
   templateUrl: './route-list.html',
 })
-export class RouteList {
+export class RouteList implements OnInit {
+  private routeService = inject(RouteService);
+
   title = signal('Routes management');
   description = signal('Configure and track operational transport lanes across the region');
   addText = signal('Add new route');
@@ -19,13 +22,16 @@ export class RouteList {
   formTitle = signal('');
   formDescription = signal('');
 
-  routes = signal([
-    { id: 'RT-4401', name: 'Central Express', start: 'Dar es Salaam', end: 'Dodoma', mileage: '460 km', duration: '6h 30m', status: 'Active' },
-    { id: 'RT-4402', name: 'Northern Corridor', start: 'Dar es Salaam', end: 'Arusha', mileage: '635 km', duration: '8h 15m', status: 'Active' },
-    { id: 'RT-4403', name: 'Lake Zone Shuttle', start: 'Mwanza', end: 'Dar es Salaam', mileage: '1,100 km', duration: '14h 45m', status: 'Inactive' },
-    { id: 'RT-4404', name: 'Southern Highlands', start: 'Dar es Salaam', end: 'Mbeya', mileage: '840 km', duration: '9h 15m', status: 'Active' },
-    { id: 'RT-4405', name: 'Cross-Border Longhaul', start: 'Dar es Salaam', end: 'Lusaka', mileage: '1,850 km', duration: '26h 10m', status: 'Active' },
-  ]);
+  routes = computed(() =>
+    this.routeService.allRoutes().map((route) => ({
+      ...route,
+      start: route.startLocation || '-',
+      end: route.endLocation || '-',
+      mileage: `${route.mileage} km`,
+      duration: route.estimatedDuration ? `${route.estimatedDuration} day(s)` : '-',
+      status: route.isActive ? 'Active' : 'Inactive',
+    }))
+  );
 
   tableConfigurations: TableConfig = {
     columns: [
@@ -56,6 +62,10 @@ export class RouteList {
     ]
   };
 
+  async ngOnInit(): Promise<void> {
+    await this.routeService.getAll();
+  }
+
   onAdd() {
     this.viewType.set('add');
     this.formTitle.set('Add new route');
@@ -63,10 +73,11 @@ export class RouteList {
     this.viewDetails.set(true);
   }
 
-  onCloseForm() {
+  async onCloseForm() {
     this.viewDetails.set(false);
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    await this.routeService.getAll();
   }
 }

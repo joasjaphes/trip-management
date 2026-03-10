@@ -2,17 +2,11 @@
   <!-- Header with Title and Search -->
   <div class="table-header">
     @if (title()) {
-      <h2 class="table-title">{{ title() }}</h2>
+    <h2 class="table-title">{{ title() }}</h2>
     }
     <div class="header-actions">
-      <input
-        type="search"
-        class="search-input"
-        placeholder="Search table..."
-        [value]="''"
-        (input)="onSearch($any($event.target).value)"
-        aria-label="Search table contents"
-      />
+      <input type="search" class="search-input" placeholder="Search table..." [value]="''"
+        (input)="onSearch($any($event.target).value)" aria-label="Search table contents" />
     </div>
   </div>
 
@@ -25,53 +19,39 @@
 
   <!-- Responsive table wrapper -->
   <div class="table-wrapper" role="region" aria-label="Data table">
-    <table
-      class="data-table"
-      [class.striped]="config().striped"
-      [class.hover]="config().hover"
-      [class.bordered]="config().bordered"
-    >
+    <table class="data-table" [class.striped]="config().striped" [class.hover]="config().hover"
+      [class.bordered]="config().bordered">
       <!-- Table Head -->
       <thead>
         <tr>
           <!-- Selection checkbox header -->
-          <th class="col-select">
-            <input
-              type="checkbox"
-              [checked]="isAllSelected()"
-              (change)="onSelectAll($event)"
-              aria-label="Select all rows on current page"
-            />
-          </th>
+          <!-- <th class="col-select">
+            <input type="checkbox" [checked]="isAllSelected()" (change)="onSelectAll($event)"
+              aria-label="Select all rows on current page" />
+          </th> -->
 
           <!-- Column headers -->
           @for (column of config().columns; track column.key) {
-            <th
-              [style.width]="column.width"
-              [class.sortable]="column.sortable"
-              [attr.aria-sort]="
+          <th [style.width]="column.width" [class.sortable]="column.sortable" [attr.aria-sort]="
                 sortColumn() === column.key
                   ? sortDirection() === 'asc'
                     ? 'ascending'
                     : 'descending'
                   : 'none'
-              "
-            >
-              <button
-                *ngIf="column.sortable"
-                class="sort-button"
-                (click)="onSort(column.key)"
-                [attr.aria-label]="
+              ">
+            <button *ngIf="column.sortable" class="sort-button" (click)="onSort(column.key)" [attr.aria-label]="
                   'Sort by ' + column.label + ', current direction: ' + sortDirection()
-                "
-              >
-                <span class="column-label">{{ column.label }}</span>
-                <span class="sort-icon" aria-hidden="true">
-                  {{ getSortIcon(column.key) }}
-                </span>
-              </button>
-              <span *ngIf="!column.sortable">{{ column.label }}</span>
-            </th>
+                ">
+              <span class="column-label">{{ column.label }}</span>
+              <span class="sort-icon" aria-hidden="true">
+                {{ getSortIcon(column.key) }}
+              </span>
+            </button>
+            <span *ngIf="!column.sortable">{{ column.label }}</span>
+          </th>
+          }
+          @if (hasActions()) {
+          <th>Actions</th>
           }
         </tr>
       </thead>
@@ -79,39 +59,49 @@
       <!-- Table Body -->
       <tbody>
         @if (paginatedData().length > 0) {
-          @for (row of paginatedData(); track $index) {
-            <tr
-              class="data-row"
-              (click)="onRowClick(row)"
-              role="button"
-              tabindex="0"
-              (keypress.enter)="onRowClick(row)"
-              (keypress.space)="onRowClick(row)"
-            >
-              <!-- Selection checkbox -->
-              <td class="col-select">
-                <input
-                  type="checkbox"
-                  [checked]="selectedRows().has($index)"
-                  (change)="onSelectRow($index, $event)"
-                  [attr.aria-label]="'Select row ' + ($index + 1)"
-                />
-              </td>
+        @for (row of paginatedData(); track $index) {
+        <tr class="data-row" role="button" tabindex="0">
+          <!-- Selection checkbox -->
+          <!-- <td class="col-select">
+            <input type="checkbox" [checked]="selectedRows().has($index)" (change)="onSelectRow($index, $event)"
+              [attr.aria-label]="'Select row ' + ($index + 1)" />
+          </td> -->
 
-              <!-- Data cells -->
-              @for (column of config().columns; track column.key) {
-                <td [style.width]="column.width">
-                  {{ row[column.key] }}
-                </td>
-              }
-            </tr>
+          <!-- Data cells -->
+          @for (column of config().columns; track column.key) {
+          <td [style.width]="column.width">
+            {{ row[column.key] }}
+          </td>
           }
+          @if (hasActions()) {
+          <td class="col-actions">
+            @if (config().actions?.edit) {
+            <i class="fa-solid fa-pencil" (click)="onEdit(row)" title="Edit"></i>&nbsp;&nbsp;
+            <!-- <button class="action-btn" (click)="onEdit(row)">Edit</button> -->
+            }
+            @if (config().actions?.view) {
+            <i class="fa-solid fa-eye" (click)="onView(row)" title="View"></i>&nbsp;&nbsp;
+            <!-- <button class="action-btn" (click)="onView(row)">View</button> -->
+            }
+            @if (config().actions?.delete) {
+            <i class="fa-solid fa-trash text-red-500" (click)="onDelete(row)" title="Delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <!-- <button class="action-btn" (click)="onDelete(row)">Delete</button> -->
+            }
+            @if (config().actions?.more) {
+            <i class="fa-solid fa-ellipsis-v" (click)="onMore(row)" title="More"></i>
+            <!-- <button class="action-btn" (click)="onMore(row)">More</button> -->
+            }
+          </td>
+          }
+        </tr>
+        }
         } @else {
-          <tr class="empty-row">
-            <td [attr.colspan]="config().columns.length + 1" class="empty-message">
-              <p>No data available</p>
-            </td>
-          </tr>
+        <tr class="empty-row">
+          <td [attr.colspan]="config().columns.length + (hasActions() ? 1 : 0)" class="empty-message">
+            <p>No data available</p>
+          </td>
+        </tr>
         }
       </tbody>
     </table>
@@ -121,13 +111,8 @@
   <div class="table-footer">
     <div class="pagination-info">
       <label for="pageSize">Items per page:</label>
-      <select
-        id="pageSize"
-        class="page-size-select"
-        [value]="'10'"
-        (change)="onPageSizeChange(+$any($event.target).value)"
-        aria-label="Select number of items per page"
-      >
+      <select id="pageSize" class="page-size-select" [value]="'10'"
+        (change)="onPageSizeChange(+$any($event.target).value)" aria-label="Select number of items per page">
         <option value="5">5</option>
         <option value="10">10</option>
         <option value="25">25</option>
@@ -140,64 +125,40 @@
 
     <!-- Pagination controls -->
     @if (totalPages() > 1) {
-      <nav class="pagination" aria-label="Table pagination">
-        <button
-          class="pagination-btn"
-          (click)="onPageChange(0)"
-          [disabled]="currentPage() === 0"
-          aria-label="Go to first page"
-        >
-          « First
-        </button>
-        <button
-          class="pagination-btn"
-          (click)="onPageChange(currentPage() - 1)"
-          [disabled]="currentPage() === 0"
-          aria-label="Go to previous page"
-        >
-          ‹ Prev
-        </button>
+    <nav class="pagination" aria-label="Table pagination">
+      <button class="pagination-btn" (click)="onPageChange(0)" [disabled]="currentPage() === 0"
+        aria-label="Go to first page">
+        « First
+      </button>
+      <button class="pagination-btn" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0"
+        aria-label="Go to previous page">
+        ‹ Prev
+      </button>
 
-        @for (page of pages(); track page) {
-          @if (
-            page === 0 ||
-            page === totalPages() - 1 ||
-            (page >= currentPage() - 1 && page <= currentPage() + 1)
-          ) {
-            <button
-              class="pagination-btn"
-              [class.active]="page === currentPage()"
-              (click)="onPageChange(page)"
-              [attr.aria-label]="'Go to page ' + (page + 1)"
-              [attr.aria-current]="page === currentPage() ? 'page' : null"
-            >
-              {{ page + 1 }}
-            </button>
-          } @else if (
-            (page === 1 && currentPage() > 2) ||
-            (page === totalPages() - 2 && currentPage() < totalPages() - 3)
-          ) {
-            <span class="pagination-ellipsis">...</span>
+      @for (page of pages(); track page) {
+      @if (
+      page === 0 ||
+      page === totalPages() - 1 ||
+      (page >= currentPage() - 1 && page <= currentPage() + 1) ) { <button class="pagination-btn"
+        [class.active]="page === currentPage()" (click)="onPageChange(page)"
+        [attr.aria-label]="'Go to page ' + (page + 1)" [attr.aria-current]="page === currentPage() ? 'page' : null">
+        {{ page + 1 }}
+        </button>
+        } @else if (
+        (page === 1 && currentPage() > 2) ||
+        (page === totalPages() - 2 && currentPage() < totalPages() - 3) ) { <span class="pagination-ellipsis">...</span>
           }
-        }
+          }
 
-        <button
-          class="pagination-btn"
-          (click)="onPageChange(currentPage() + 1)"
-          [disabled]="currentPage() === totalPages() - 1"
-          aria-label="Go to next page"
-        >
-          Next ›
-        </button>
-        <button
-          class="pagination-btn"
-          (click)="onPageChange(totalPages() - 1)"
-          [disabled]="currentPage() === totalPages() - 1"
-          aria-label="Go to last page"
-        >
-          Last »
-        </button>
-      </nav>
+          <button class="pagination-btn" (click)="onPageChange(currentPage() + 1)"
+            [disabled]="currentPage() === totalPages() - 1" aria-label="Go to next page">
+            Next ›
+          </button>
+          <button class="pagination-btn" (click)="onPageChange(totalPages() - 1)"
+            [disabled]="currentPage() === totalPages() - 1" aria-label="Go to last page">
+            Last »
+          </button>
+    </nav>
     }
   </div>
 </div>

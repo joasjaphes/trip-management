@@ -1,20 +1,6 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
-  
-  <div class="max-w-[1200px] mx-auto bg-white border border-gray-100 rounded-2xl p-8 relative overflow-hidden shadow-sm">
-    
-    <!-- Background Watermark -->
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute top-4 right-8 w-40 h-40 text-gray-100 opacity-60 pointer-events-none stroke-[1.5]">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-      <path stroke-linecap="round" stroke-linejoin="round" d="M6 9h12a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2z" />
-    </svg>
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
 
-    <!-- Header Section -->
-    <div class="flex items-center gap-3 mb-10 relative z-10">
-      <div class="w-6 h-6 rounded-full border-2 border-[#f25f2f] text-[#f25f2f] flex items-center justify-center font-bold text-[14px] leading-none shrink-0">
-        +
-      </div>
-      <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">New Trip Details</h2>
-    </div>
+  <div class="bg-white border border-gray-100 rounded-2xl p-8 relative overflow-hidden shadow-sm">
 
     <!-- Main Details Form Grid -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-8 mb-12 relative z-10">
@@ -22,30 +8,37 @@
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Start Date</label>
         <div class="relative">
-          <input type="text" placeholder="mm/dd/yyyy" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
+          <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="tripDate" name="tripDate"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+          </svg> -->
         </div>
       </div>
       <!-- End Date -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">End Date (Est.)</label>
         <div class="relative">
-          <input type="text" placeholder="mm/dd/yyyy" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
+          <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="endDate" name="endDate"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+          </svg> -->
         </div>
       </div>
       <!-- Vehicle -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Vehicle</label>
         <div class="relative">
-          <select class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-            <option value="" disabled selected class="text-gray-300">Select Vehicle</option>
+          <select [(ngModel)]="vehicleId" name="vehicleId"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+            <option value="" disabled>Select Vehicle</option>
+            @for (vehicle of vehicles(); track vehicle.id) {
+            <option [value]="vehicle.id">{{ vehicle.registrationNo }}</option>
+            }
           </select>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -54,10 +47,15 @@
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Driver</label>
         <div class="relative">
-          <select class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-            <option value="" disabled selected class="text-gray-300">Select Driver</option>
+          <select [(ngModel)]="driverId" name="driverId"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+            <option value="" disabled>Select Driver</option>
+            @for (driver of drivers(); track driver.id) {
+            <option [value]="driver.id">{{ driver.firstName }} {{ driver.lastName }}</option>
+            }
           </select>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -67,33 +65,63 @@
       <div class="flex flex-col gap-2 md:col-span-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Route Selection</label>
         <div class="relative">
-          <select class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-            <option value="" disabled selected class="text-gray-300">Select Route</option>
+          <select [(ngModel)]="routeId" name="routeId"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+            <option value="" disabled>Select Route</option>
+            @for (route of routes(); track route.id) {
+            <option [value]="route.id">{{ route.name }}</option>
+            }
           </select>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+      <!-- Cargo Type -->
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Cargo Type</label>
+        <div class="relative">
+          <select [(ngModel)]="cargoTypeId" name="cargoTypeId"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+            <option value="">Select Cargo Type (Optional)</option>
+            @for (cargoType of cargoTypes(); track cargoType.id) {
+            <option [value]="cargoType.id">{{ cargoType.name }}</option>
+            }
+          </select>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
       </div>
       <!-- Projected Revenue -->
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Projected Revenue</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Projected Revenue
+          @if (revenue) {
+          ({{ revenue |number:'1.0-2' }})
+          }
+        </label>
         <div class="relative">
-          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[14px] pointer-events-none">$</div>
-          <input type="text" placeholder="0.00" class="w-full bg-white border border-gray-200 rounded-lg pl-8 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[14px] pointer-events-none">
+            $</div>
+          <input type="number" [(ngModel)]="revenue" name="revenue" placeholder="0.00"
+            class="w-full bg-white border border-gray-200 rounded-lg pl-8 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         </div>
       </div>
       <!-- Status -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Status</label>
         <div class="relative">
-          <select class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-            <option value="pending" selected>pending</option>
-            <option value="in-progress">in-progress</option>
+          <select [(ngModel)]="status" name="status"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+            <option value="pending">pending</option>
+            <option value="inprogress">inprogress</option>
             <option value="completed">completed</option>
             <option value="cancelled">cancelled</option>
           </select>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -102,7 +130,9 @@
       <!-- Notes -->
       <div class="flex flex-col gap-2 md:col-span-4">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Notes</label>
-        <textarea rows="4" placeholder="Add specific trip requirements or cargo details..." class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 resize-none"></textarea>
+        <textarea rows="4" [(ngModel)]="notes" name="notes"
+          placeholder="Add specific trip requirements or cargo details..."
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 resize-none"></textarea>
       </div>
     </div>
 
@@ -113,12 +143,15 @@
     <!-- Header Section -->
     <div class="flex items-center justify-between mb-6 relative z-10">
       <div class="flex items-center gap-3">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-[#f25f2f]">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="w-5 h-5 text-[#f25f2f]">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
         <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">Trip Expenses</h3>
       </div>
-      <button class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide inline-flex items-center gap-2">
+      <button type="button" (click)="addExpenseRow()"
+        class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide inline-flex items-center gap-2">
         + Add Expense
       </button>
     </div>
@@ -132,47 +165,69 @@
     </div>
 
     <!-- Expense Row Instance -->
-    <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-12 gap-x-4 items-center mb-8 relative z-10">
+    @for (expenseRow of expenseRows; track expenseRow.id) {
+    <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-12 gap-x-4 items-center mb-3 relative z-10">
       <!-- Category -->
       <div class="col-span-3 relative">
-        <select class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-          <option value="fuel" selected>Fuel</option>
-          <option value="toll">Toll</option>
-          <option value="food">Food</option>
+        <select [(ngModel)]="expenseRow.expenseId" [name]="'expenseId-' + expenseRow.id"
+          class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+          <option value="" disabled>Select Category</option>
+          @for (category of expenseCategories(); track category.id) {
+          <option [value]="category.id">{{ category.name }}</option>
+          }
         </select>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
       <!-- Amount -->
       <div class="col-span-2">
-        <input type="text" placeholder="0.00" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        <input type="number" [(ngModel)]="expenseRow.amount" [name]="'amount-' + expenseRow.id"
+          placeholder="0.00 (optional)"
+          class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
       <!-- Date -->
       <div class="col-span-3 relative">
-        <input type="text" placeholder="mm/dd/yyyy" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
+        <input type="date" [(ngModel)]="expenseRow.date" [name]="'date-' + expenseRow.id" placeholder="mm/dd/yyyy"
+          class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
+        </svg> -->
       </div>
       <!-- Attachment and Delete Action -->
       <div class="col-span-4 flex items-center gap-3 pr-2">
-        <label class="flex-1 cursor-pointer w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-lg bg-white hover:bg-gray-50 py-2.5 transition-colors text-gray-400 hover:text-[#f25f2f]">
+        <label
+          class="flex-1 cursor-pointer w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-lg bg-white hover:bg-gray-50 py-2.5 transition-colors text-gray-400 hover:text-[#f25f2f]">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
-          <input type="file" class="hidden">
+          <input type="file" class="hidden" (change)="onExpenseAttachmentSelected($event, expenseRow.id)">
         </label>
+        @if (expenseRow.attachment) {
+        <span class="text-[12px] text-blue-500 truncate max-w-[120px]">{{ expenseRow.attachment }}</span>
+        }
         <!-- Trash Icon -->
-        <button class="text-gray-400 hover:text-[#f25f2f] transition-colors shrink-0 p-1">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-[18px] h-[18px]">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        <button type="button" (click)="removeExpenseRow(expenseRow.id)"
+          class="text-gray-400 hover:text-[#f25f2f] transition-colors shrink-0 p-1">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="w-[18px] h-[18px]">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </button>
       </div>
     </div>
+    }
 
-    <app-save-area [saveText]="'Create Trip'" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
+    @if (expenseCategories().length === 0) {
+    <p class="text-[12px] text-amber-600 mb-6">No active expense categories found. Add categories in Configurations
+      first.</p>
+    }
+
+    <app-save-area [saveText]="'Create Trip'" [loading]="loading()" (cancel)="goBack()"
+      (save)="onSubmit()"></app-save-area>
 
   </div>
 </div>

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, model, Output, input, computed, ChangeDetectionStrategy } from '@angular/core';
 
-export type SplitSize = 'zero' | 'half' | 'third' | 'quarter' | 'two-thirds' | 'three-quarters';
+export type SplitSize = 'zero' | 'full' | 'half' | 'third' | 'quarter' | 'two-thirds' | 'three-quarters';
 
 interface SplitConfig {
   main: number; // percentage for main content
@@ -9,6 +9,7 @@ interface SplitConfig {
 
 const SPLIT_SIZES: Record<SplitSize, SplitConfig> = {
   zero: { main: 100, form: 0 },
+  full: { main: 0, form: 100 },
   half: { main: 50, form: 50 },
   third: { main: 66.66, form: 33.33 },
   quarter: { main: 75, form: 25 },

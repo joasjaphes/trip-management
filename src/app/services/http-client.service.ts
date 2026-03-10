@@ -153,6 +153,25 @@ export class HttpClientService {
     }
   }
 
+  async delete(url: string): Promise<any> {
+    try {
+      return await firstValueFrom(
+        this.rootUrl.pipe(
+          mergeMap((root) =>
+            this.http.delete(`${root}/${url}`, { headers: this.authHeaders })
+          )
+        )
+      );
+    } catch (errorResponse) {
+      const errorObject: HttpErrorResponse = errorResponse;
+      if (errorObject?.status >= 500) {
+        throw 'Server error';
+      } else {
+        throw errorObject?.error?.message;
+      }
+    }
+  }
+
   async getFile(url: string) {
     return await firstValueFrom(
       this.rootUrl.pipe(

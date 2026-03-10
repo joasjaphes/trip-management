@@ -1,5 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Driver } from '../models/driver.model';
+import { HttpClientService } from './http-client.service';
+import { CommonService } from './common.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,83 +23,113 @@ export class DriverService {
     () => this.drivers().filter((d) => d.isActive).length
   );
 
-  constructor() {}
+  constructor(private http: HttpClientService, private commonService: CommonService) {}
 
-  getAll(): Driver[] {
-    return this.drivers();
+  async getAll(): Promise<void> {
+    this.isLoading.set(true);
+    this.error.set(null);
+    
+    try {
+      const drivers = await this.http.get<Driver[]>('drivers');
+      this.drivers.set(drivers);
+    } catch (err) {
+      this.error.set(err?.toString() || 'Failed to fetch drivers');
+      console.error('Failed to fetch drivers', err);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   getById(id: string): Driver | undefined {
     return this.drivers().find((d) => d.id === id);
   }
 
-  create(driver: Omit<Driver, 'id' | 'createdAt' | 'updatedAt'>): void {
+  async create(driver: Omit<Driver, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      setTimeout(() => {
-        const newDriver: Driver = {
-          ...driver,
-          id: `drv-${Date.now()}`,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+      const payload = {
+        id: this.commonService.makeid(),
+        firstName: driver.firstName,
+        lastName: driver.lastName,
+        email: driver.email,
+        phone: driver.phone,
+        address: driver.address,
+        dateOfBirth: driver.dateOfBirth,
+        licenseNumber: driver.licenseDetails.licenseNumber,
+        licenseIssueDate: driver.licenseDetails.issueDate,
+        licenseExpiryDate: driver.licenseDetails.expiryDate,
+        licenseClass: driver.licenseDetails.licenseClass,
+        licenseFrontPagePhoto: driver.licenseDetails.frontPagePhoto,
+        driverPhoto: driver.photo,
+        isActive: driver.isActive ?? true,
+      };
 
-        this.drivers.update((drivers) => [...drivers, newDriver]);
-        this.isLoading.set(false);
-      }, 300);
+      await this.http.post('drivers', payload);
+      await this.getAll();
     } catch (err) {
-      this.error.set('Failed to create driver');
+      this.error.set(err?.toString() || 'Failed to create driver');
+      console.error('Failed to create driver', err);
+      throw err;
+    } finally {
       this.isLoading.set(false);
     }
   }
 
-  update(id: string, driver: Omit<Driver, 'id' | 'createdAt' | 'updatedAt'>): void {
+  async update(id: string, driver: Omit<Driver, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      setTimeout(() => {
-        this.drivers.update((drivers) =>
-          drivers.map((d) =>
-            d.id === id
-              ? {
-                  ...driver,
-                  id,
-                  createdAt: d.createdAt,
-                  updatedAt: new Date(),
-                }
-              : d
-          )
-        );
-        this.isLoading.set(false);
-      }, 300);
+      const payload = {
+        id,
+        firstName: driver.firstName,
+        lastName: driver.lastName,
+        email: driver.email,
+        phone: driver.phone,
+        address: driver.address,
+        dateOfBirth: driver.dateOfBirth,
+        licenseNumber: driver.licenseDetails.licenseNumber,
+        licenseIssueDate: driver.licenseDetails.issueDate,
+        licenseExpiryDate: driver.licenseDetails.expiryDate,
+        licenseClass: driver.licenseDetails.licenseClass,
+        licenseFrontPagePhoto: driver.licenseDetails.frontPagePhoto,
+        driverPhoto: driver.photo,
+        isActive: driver.isActive,
+      };
+      
+      await this.http.put('drivers', payload);
+      await this.getAll();
     } catch (err) {
-      this.error.set('Failed to update driver');
+      this.error.set(err?.toString() || 'Failed to update driver');
+      console.error('Failed to update driver', err);
+      throw err;
+    } finally {
       this.isLoading.set(false);
     }
   }
 
-  delete(id: string): void {
+  async delete(id: string): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      setTimeout(() => {
-        this.drivers.update((drivers) => drivers.filter((d) => d.id !== id));
-        this.isLoading.set(false);
-      }, 300);
+      await this.http.delete(`drivers/${id}`);
+      this.drivers.update((drivers) => drivers.filter((d) => d.id !== id));
     } catch (err) {
-      this.error.set('Failed to delete driver');
+      this.error.set(err?.toString() || 'Failed to delete driver');
+      console.error('Failed to delete driver', err);
+      throw err;
+    } finally {
       this.isLoading.set(false);
     }
   }
 
-  toggleActive(id: string): void {
+  async toggleActive(id: string): Promise<void> {
     const driver = this.getById(id);
     if (driver) {
-      this.update(id, { ...driver, isActive: !driver.isActive });
+      await this.update(id, { ...driver, isActive: !driver.isActive });
     }
   }
 }

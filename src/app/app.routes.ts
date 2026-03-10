@@ -85,6 +85,14 @@ export const routes: Routes = [
                 loadComponent: () => import('./modules/configurations/expense-categories/expense-categories').then(m => m.ExpenseCategories),
             },
             {
+                path: 'cargo-types',
+                loadComponent: () => import('./modules/configurations/cargo-types/cargo-types').then(m => m.CargoTypes),
+            },
+            {
+                path: 'cargo-types/new',
+                loadComponent: () => import('./modules/configurations/cargo-types/cargo-type-form/cargo-type-form').then(m => m.CargoTypeForm),
+            },
+            {
                 path: 'expense-categories/new',
                 loadComponent: () => import('./modules/configurations/expense-categories/expense-category-form/expense-category-form').then(m => m.ExpenseCategoryForm),
             },

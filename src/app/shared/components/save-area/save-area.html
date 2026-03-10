@@ -1,12 +1,53 @@
-<div class="flex items-center justify-end gap-4 pt-2 pb-8">
-    @if (showCancel()) {
-    <button (click)="onCancel()"
-        class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-8 font-bold rounded-lg">
-        {{cancelText()}}
-    </button>
+<div class="pt-2 pb-8">
+    @if (confirming()) {
+    <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] text-amber-900">
+        <p class="font-semibold">Confirm action</p>
+        <p class="mt-1">{{ confirmText() }}</p>
+    </div>
     }
-    <button (click)="onSave()"
-        class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg">
-        {{saveText()}}
-    </button>
+
+    <div class="flex items-center justify-end gap-4">
+        @if (showCancel()) {
+        <button (click)="onCancel()" [disabled]="loading()"
+            class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-8 font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+            {{cancelText()}}
+        </button>
+        }
+
+        @if (confirming()) {
+        <button (click)="onCancelConfirm()" [disabled]="loading()"
+            class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-8 font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+            Back
+        </button>
+        <button (click)="onConfirmSave()" [disabled]="loading()"
+            class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+            @if (loading()) {
+            <span class="inline-flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+            </span>
+            } @else {
+            Confirm {{saveText()}}
+            }
+        </button>
+        } @else {
+        <button (click)="onSave()" [disabled]="loading()"
+            class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+            @if (loading()) {
+            <span class="inline-flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+            </span>
+            } @else {
+            {{saveText()}}
+            }
+        </button>
+        }
+    </div>
 </div>

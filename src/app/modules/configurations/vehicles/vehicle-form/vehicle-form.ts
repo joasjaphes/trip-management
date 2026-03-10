@@ -1,7 +1,10 @@
-import { Component, output } from '@angular/core';
+import { Component, computed, inject, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
+import { VehicleService } from '../../../../services/vehicle.service';
+import { PermitRegistrationService } from '../../../../services/permit-registration.service';
+import { VehiclePermitService } from '../../../../services/vehicle-permit.service';
 
 interface Permit {
   id: string;
@@ -17,7 +20,18 @@ interface Permit {
   imports: [CommonModule, FormsModule, SaveArea],
   templateUrl: './vehicle-form.html'
 })
-export class VehicleForm {
+export class VehicleForm implements OnInit {
+  private vehicleService = inject(VehicleService);
+  private permitRegistrationService = inject(PermitRegistrationService);
+  private vehiclePermitService = inject(VehiclePermitService);
+  private isSubmitting = signal(false);
+  loading = computed(() =>
+    this.isSubmitting() || this.vehicleService.loading() || this.vehiclePermitService.loading()
+  );
+  registeredPermits = computed(() =>
+    this.permitRegistrationService.allPermits().filter((permit) => permit.isActive)
+  );
+
   registrationNo = '';
   year = '';
   tankCapacity = '';
@@ -31,16 +45,20 @@ export class VehicleForm {
   permits: Permit[] = [];
   close = output();
 
+  async ngOnInit(): Promise<void> {
+    await this.permitRegistrationService.getAll();
+  }
+
   goBack() {
     this.close.emit();
   }
 
   addPermit() {
-    if (!this.permitDescription.trim() || !this.permitStartDate || !this.permitEndDate) return;
+    if (!this.permitDescription || !this.permitStartDate || !this.permitEndDate) return;
 
     this.permits.push({
       id: crypto.randomUUID(),
-      description: this.permitDescription.trim(),
+      description: this.permitDescription,
       startDate: this.permitStartDate,
       endDate: this.permitEndDate,
       fileName: this.permitFileName,
@@ -75,7 +93,36 @@ export class VehicleForm {
     this.permits = [];
   }
 
-  onSubmit() {
-    this.close.emit();
+  async onSubmit() {
+    this.isSubmitting.set(true);
+    try {
+      const vehicleId = await this.vehicleService.create({
+        registrationNo: this.registrationNo,
+        registrationYear: this.year ? Number(this.year) : undefined,
+        tankCapacity: Number(this.tankCapacity),
+        mileagePerFullTank: Number(this.mileagePerFullTank),
+        currentMileage: undefined,
+        permits: [],
+        isActive: true,
+      });
+
+      await Promise.all(
+        this.permits.map((permit) =>
+          this.vehiclePermitService.create({
+            id: permit.id,
+            description: permit.description,
+            startDate: new Date(permit.startDate),
+            endDate: new Date(permit.endDate),
+            attachment: permit.fileName,
+            vehicleId,
+          })
+        )
+      );
+
+      this.reset();
+      this.close.emit();
+    } finally {
+      this.isSubmitting.set(false);
+    }
   }
 }

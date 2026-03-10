@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable, TableConfig } from '../../../../shared/components/data-table/data-table';
 import { Layout } from '../../../../shared/components/layout/layout';
 import { VehicleForm } from '../vehicle-form/vehicle-form';
+import { VehicleService } from '../../../../services/vehicle.service';
 
 @Component({
   selector: 'app-vehicle-list',
@@ -10,7 +11,9 @@ import { VehicleForm } from '../vehicle-form/vehicle-form';
   imports: [CommonModule, DataTable, Layout, VehicleForm],
   templateUrl: './vehicle-list.html',
 })
-export class VehicleList {
+export class VehicleList implements OnInit {
+  private vehicleService = inject(VehicleService);
+
   title = signal('Vehicles management');
   description = signal('Real-time monitoring and lifecycle management of your fleet');
   addText = signal('Add new vehicle');
@@ -19,40 +22,16 @@ export class VehicleList {
   formTitle = signal('');
   formDescription = signal('');
 
-  vehicles = signal([
-    {
-      id: 'TRK-001-20',
-      year: 2020,
-      tankCapacity: '500 L',
-      mileagePerFullTank: '2000 KM',
-      permitExpiry: 'Dec 01, 2024',
-      status: 'active'
-    },
-    {
-      id: 'TRK-002-21',
-      year: 2021,
-      tankCapacity: '450 L',
-      mileagePerFullTank: '1800 KM',
-      permitExpiry: 'Nov 15, 2024',
-      status: 'active'
-    },
-    {
-      id: 'TRK-003-20',
-      year: 2020,
-      tankCapacity: '550 L',
-      mileagePerFullTank: '2200 KM',
-      permitExpiry: 'Jan 10, 2025',
-      status: 'active'
-    },
-    {
-      id: 'TRK-004-19',
-      year: 2019,
-      tankCapacity: '500 L',
-      mileagePerFullTank: '1950 KM',
-      permitExpiry: 'Sep 30, 2024',
-      status: 'expiring'
-    }
-  ]);
+  vehicles = computed(() =>
+    this.vehicleService.allVehicles().map((vehicle) => ({
+      id: vehicle.registrationNo,
+      registrationYear: vehicle.registrationYear ?? '-',
+      tankCapacity: `${vehicle.tankCapacity} L`,
+      mileagePerFullTank: `${vehicle.mileagePerFullTank} KM`,
+      permitExpiry: this.getPermitExpiry(vehicle.permits),
+      status: vehicle.isActive ? 'active' : 'inactive',
+    }))
+  );
 
   tableConfigurations: TableConfig = {
     columns: [
@@ -61,7 +40,7 @@ export class VehicleList {
         label: 'Registration number'
       },
       {
-        key: 'year',
+        key: 'registrationYear',
         label: 'Registration year'
       },
       {
@@ -83,6 +62,10 @@ export class VehicleList {
     ]
   };
 
+  async ngOnInit(): Promise<void> {
+    await this.vehicleService.getAll();
+  }
+
   onAdd() {
     this.viewType.set('add');
     this.formTitle.set('Add new vehicle');
@@ -90,10 +73,23 @@ export class VehicleList {
     this.viewDetails.set(true);
   }
 
-  onCloseForm() {
+  async onCloseForm() {
     this.viewDetails.set(false);
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    await this.vehicleService.getAll();
+  }
+
+  private getPermitExpiry(permits: { endDate: Date }[] = []): string {
+    if (!permits.length) {
+      return '-';
+    }
+
+    const latestPermit = permits.reduce((latest, current) =>
+      new Date(current.endDate) > new Date(latest.endDate) ? current : latest
+    );
+
+    return new Date(latestPermit.endDate).toLocaleDateString();
   }
 }

@@ -1,11 +1,13 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
-  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [splitSize]="splitSize()" [(showAddButton)]="showAddButton">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="trips()" [config]="tableConfigurations"></app-data-table>
+    <app-data-table [data]="trips()" [config]="tableConfigurations" (view)="onView($event)"></app-data-table>
   </ng-container>
   <ng-container ngProjectAs="form">
     @if (viewType() == 'add') {
     <app-trip-form (close)="onCloseForm()"></app-trip-form>
+    } @else if (viewType() == 'detail') {
+    <app-trip-detail [trip]="selectedTrip()" (close)="onCloseDetail()"></app-trip-detail>
     }
   </ng-container>
 </app-layout>

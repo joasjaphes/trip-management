@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 export interface TableColumn {
   key: string;
@@ -22,11 +23,17 @@ export interface TableConfig {
   striped?: boolean;
   hover?: boolean;
   bordered?: boolean;
+  actions?:{
+    edit?: boolean;
+    delete?: boolean;
+    view?: boolean;
+    more?: boolean;
+  }
 }
 
 @Component({
   selector: 'app-data-table',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule],
   templateUrl: './data-table.html',
   styleUrl: './data-table.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,12 +46,22 @@ export class DataTable {
     striped: true,
     hover: true,
     bordered: false,
+    actions: {
+      edit: false,
+      delete: false,
+      view: false,
+      more: false,
+    },
   });
   data = input<any[]>([]);
   title = input<string>('');
 
   // Outputs
   rowClick = output<any>();
+  edit = output<any>();
+  delete = output<any>();
+  view = output<any>();
+  more = output<any>();
   rowSelect = output<any[]>();
   sortChange = output<{ column: string; direction: 'asc' | 'desc' }>();
 
@@ -55,6 +72,10 @@ export class DataTable {
   currentPage = signal<number>(0);
   selectedRows = signal<Set<number>>(new Set());
   pageSize = signal<number>(10);
+
+  hasActions = computed(() => {
+    return this.config().actions && Object.values(this.config().actions).some((v) => !!v);
+  });
 
   // Computed values
   filteredData = computed(() => {
@@ -194,5 +215,21 @@ export class DataTable {
   getSortIcon(column: string): string {
     if (this.sortColumn() !== column) return '⇅';
     return this.sortDirection() === 'asc' ? '↑' : '↓';
+  }
+
+  onEdit(row: any) {
+    this.edit.emit(row);
+  }
+
+  onDelete(row: any) {
+    this.delete.emit(row);
+  }
+
+  onView(row: any) {
+    this.view.emit(row);
+  }
+
+  onMore(row: any) {
+    this.more.emit(row);
   }
 }

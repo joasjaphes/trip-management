@@ -99,15 +99,23 @@
         <div class="space-y-5">
           <div class="flex flex-col gap-2">
             <label class="text-[13px] font-bold text-gray-700">Permit Description</label>
-            <input type="text" placeholder="e.g. Interstate Transport License" [(ngModel)]="permitDescription" name="permitDescription"
-                   class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+            <select [(ngModel)]="permitDescription" name="permitDescription"
+                    class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+              <option value="" disabled>Select Registered Permit</option>
+              @for (registeredPermit of registeredPermits(); track registeredPermit.id) {
+                <option [value]="registeredPermit.name">{{ registeredPermit.name }}</option>
+              }
+            </select>
+            @if (registeredPermits().length === 0) {
+              <span class="text-[12px] text-amber-600">No active permit registrations found. Create one in Vehicle Permits configuration first.</span>
+            }
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="flex flex-col gap-2">
               <label class="text-[13px] font-bold text-gray-700">Start Date</label>
               <div class="relative">
-                <input type="text" placeholder="mm/dd/yyyy" [(ngModel)]="permitStartDate" name="permitStartDate"
+                <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="permitStartDate" name="permitStartDate"
                        class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -117,7 +125,7 @@
             <div class="flex flex-col gap-2">
               <label class="text-[13px] font-bold text-gray-700">End Date</label>
               <div class="relative">
-                <input type="text" placeholder="mm/dd/yyyy" [(ngModel)]="permitEndDate" name="permitEndDate"
+                <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="permitEndDate" name="permitEndDate"
                        class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -160,7 +168,7 @@
         <label for="isActive" class="text-[13px] font-medium text-gray-500">Active</label>
       </div>
     </div>
-    <app-save-area [saveText]="'Save Vehicle'" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
+    <app-save-area [saveText]="'Save Vehicle'" [loading]="loading()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
 
   </div>
 </div>

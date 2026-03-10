@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataTable, TableConfig } from '../../../../shared/components/data-table/data-table';
 import { Layout } from '../../../../shared/components/layout/layout';
 import { DriverForm } from '../driver-form/driver-form';
+import { DriverService } from '../../../../services/driver.service';
 
 @Component({
   selector: 'app-driver-list',
@@ -10,7 +11,9 @@ import { DriverForm } from '../driver-form/driver-form';
   imports: [CommonModule, DataTable, Layout, DriverForm],
   templateUrl: './driver-list.html',
 })
-export class DriverList {
+export class DriverList implements OnInit {
+  private driverService = inject(DriverService);
+
   title = signal('Drivers management');
   description = signal('Monitor fleet compliance, driver status, and contact information');
   addText = signal('Add new driver');
@@ -19,44 +22,14 @@ export class DriverList {
   formTitle = signal('');
   formDescription = signal('');
 
-  drivers = signal([
-    {
-      id: 'DRV-4492',
-      firstName: 'Juma',
-      lastName: 'Mwamba',
-      phone: '+255 712 345 678',
-      licenseStatus: 'Valid',
-      status: 'Active',
-      initials: 'JM'
-    },
-    {
-      id: 'DRV-8821',
-      firstName: 'Amina',
-      lastName: 'Hassan',
-      phone: '+255 754 321 876',
-      licenseStatus: 'Expiring Soon',
-      status: 'Active',
-      initials: 'AH'
-    },
-    {
-      id: 'DRV-3310',
-      firstName: 'Baraka',
-      lastName: 'Kimaro',
-      phone: '+255 689 012 345',
-      licenseStatus: 'Valid',
-      status: 'Inactive',
-      initials: 'BK'
-    },
-    {
-      id: 'DRV-2254',
-      firstName: 'Rehema',
-      lastName: 'Nyerere',
-      phone: '+255 777 654 321',
-      licenseStatus: 'Expired',
-      status: 'Active',
-      initials: 'RN'
-    }
-  ]);
+  drivers = computed(() =>
+    this.driverService.allDrivers().map((driver) => ({
+      ...driver,
+      licenseStatus: this.getLicenseStatus(driver.licenseDetails?.expiryDate),
+      status: driver.isActive ? 'Active' : 'Inactive',
+      initials: `${driver.firstName?.charAt(0) ?? ''}${driver.lastName?.charAt(0) ?? ''}`.toUpperCase(),
+    }))
+  );
 
   tableConfigurations: TableConfig = {
     columns: [
@@ -72,16 +45,20 @@ export class DriverList {
         key: 'phone',
         label: 'Phone'
       },
-      {
-        key: 'licenseStatus',
-        label: 'License status'
-      },
+      // {
+      //   key: 'licenseStatus',
+      //   label: 'License status'
+      // },
       {
         key: 'status',
         label: 'Status'
       }
     ]
   };
+
+  async ngOnInit(): Promise<void> {
+    await this.driverService.getAll();
+  }
 
   onAdd() {
     this.viewType.set('add');
@@ -90,10 +67,31 @@ export class DriverList {
     this.viewDetails.set(true);
   }
 
-  onCloseForm() {
+  async onCloseForm() {
     this.viewDetails.set(false);
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    await this.driverService.getAll();
+  }
+
+  private getLicenseStatus(expiryDate?: Date): string {
+    if (!expiryDate) {
+      return 'Unknown';
+    }
+
+    const now = new Date();
+    const expiry = new Date(expiryDate);
+    const daysToExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysToExpiry < 0) {
+      return 'Expired';
+    }
+
+    if (daysToExpiry <= 30) {
+      return 'Expiring Soon';
+    }
+
+    return 'Valid';
   }
 }
