@@ -2,3 +2,25 @@
     background-color: black;
     color: white;
 }
+
+.group-menu-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 220ms ease, opacity 220ms ease;
+}
+
+.group-menu-panel.expanded {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+
+.group-menu-content {
+    overflow: hidden;
+    transform: translateY(-6px);
+    transition: transform 220ms ease;
+}
+
+.group-menu-panel.expanded .group-menu-content {
+    transform: translateY(0);
+}

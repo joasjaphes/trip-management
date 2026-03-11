@@ -25,6 +25,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./modules/trips/trips').then(m => m.Trips),
             },
             {
+                path: 'invoicing',
+                loadComponent: () => import('./modules/trips/invoicing/invoicing').then(m => m.Invoicing),
+            },
+            {
                 path: 'trips/new',
                 loadComponent: () => import('./modules/trips/trip-form/trip-form').then(m => m.TripForm),
             },
@@ -103,6 +107,10 @@ export const routes: Routes = [
             {
                 path: 'users',
                 loadComponent: () => import('./modules/users/user-list/user-list').then(m => m.UserList),
+            },
+            {
+                path: 'user-roles',
+                loadComponent: () => import('./modules/users/user-roles/user-roles').then(m => m.UserRoles),
             },
             {
                 path: 'users/new',
