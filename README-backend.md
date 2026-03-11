@@ -1,6 +1,6 @@
 # Trip Management API - Frontend Integration Guide
 
-A comprehensive backend API for managing trips, vehicles, drivers, routes, expenses, and related operations.
+A comprehensive backend API for managing trips, customers, invoices, receipts, vehicles, drivers, routes, expenses, and related operations.
 
 ## Table of Contents
 - [Base Configuration](#base-configuration)
@@ -148,19 +148,34 @@ POST /api/trips
 Content-Type: application/json
 
 {
+  "id": "trip-uid-123",
   "tripDate": "2026-03-07T10:00:00.000Z",
   "endDate": "2026-03-08T10:00:00.000Z",
   "vehicleId": "vehicle-uid-123",
   "driverId": "driver-uid-123",
   "routeId": "route-uid-123",
   "cargoTypeId": "cargo-type-uid-123",
+  "customerName": "Acme Corporation",
+  "customerTIN": "123456789",
+  "customerPhone": "+255700000000",
   "revenue": 1500000,
+  "paidAmount": 0,
   "income": 1200000,
   "status": "pending"
 }
 ```
 
 **Status Options:** `pending`, `inprogress`, `completed`, `cancelled`
+
+When creating a trip, the API checks for an existing customer using `customerTIN`. If no customer exists, it creates one. The trip, customer creation, and invoice creation are saved in a single database transaction.
+
+An invoice is automatically generated for every new trip with:
+- `amount` equal to the trip `revenue`
+- `customer` linked to the trip customer
+- `paidAmount` initialized from trip `paidAmount` (defaults to `0`)
+- `paymentStatus` derived from paid amount (`unpaid`, `partially_paid`, `full_paid`)
+- `description` set to the selected route name
+- `status` defaulting to `draft`
 
 #### Update Trip
 ```http
@@ -175,11 +190,137 @@ Content-Type: application/json
   "driverId": "driver-uid-123",
   "routeId": "route-uid-123",
   "cargoTypeId": "cargo-type-uid-123",
+  "customerName": "Acme Corporation",
+  "customerTIN": "123456789",
+  "customerPhone": "+255700000000",
   "revenue": 1500000,
+  "paidAmount": 200000,
   "income": 1200000,
   "status": "inprogress"
 }
 ```
+
+---
+
+### Customers (`/api/customers`)
+
+#### Get All Customers
+```http
+GET /api/customers
+```
+
+#### Get Customer by ID
+```http
+GET /api/customers/:id
+```
+
+#### Create Customer
+```http
+POST /api/customers
+Content-Type: application/json
+
+{
+  "id": "customer-uid-123",
+  "name": "Acme Corporation",
+  "tin": "123456789",
+  "phone": "+255700000000"
+}
+```
+
+#### Update Customer
+```http
+PUT /api/customers
+Content-Type: application/json
+
+{
+  "id": "customer-uid-123",
+  "name": "Acme Corporation",
+  "tin": "123456789",
+  "phone": "+255700000000"
+}
+```
+
+---
+
+### Invoices (`/api/invoices`)
+
+#### Get All Invoices
+```http
+GET /api/invoices
+```
+
+#### Get Invoice by ID
+```http
+GET /api/invoices/:id
+```
+
+#### Get Invoice by Trip ID
+```http
+GET /api/invoices/trip/:tripId
+```
+
+#### Generate Invoice for Trip
+```http
+POST /api/invoices
+Content-Type: application/json
+
+{
+  "id": "invoice-uid-123",
+  "tripId": "trip-uid-123",
+  "status": "draft",
+  "paidAmount": 0
+}
+```
+
+#### Update Invoice Status
+```http
+PATCH /api/invoices/:id/status
+Content-Type: application/json
+
+{
+  "status": "issued"
+}
+```
+
+**Invoice Status Options:** `draft`, `issued`, `paid`, `cancelled`
+
+**Invoice Payment Status Options:** `unpaid`, `partially_paid`, `full_paid`
+
+---
+
+### Receipts (`/api/receipts`)
+
+#### Get All Receipts
+```http
+GET /api/receipts
+```
+
+#### Get Receipt by ID
+```http
+GET /api/receipts/:id
+```
+
+#### Create Receipt
+```http
+POST /api/receipts
+Content-Type: application/json
+
+{
+  "id": "receipt-uid-123",
+  "invoiceId": "invoice-uid-123",
+  "amount": 100000,
+  "paidAt": "2026-03-10T12:00:00.000Z",
+  "reference": "M-PESA-TX-123",
+  "notes": "First installment",
+  "attachment": "/uploads/receipt-123.jpg"
+}
+```
+
+Creating a receipt updates both invoice and trip payment totals in the same transaction:
+- `invoice.paidAmount` increases by receipt amount
+- `invoice.paymentStatus` is recalculated
+- `invoice.status` becomes `paid` when fully paid
+- `trip.paidAmount` is updated to match the invoice paid amount
 
 ---
 
@@ -578,10 +719,61 @@ Use this file path in fields like `driverPhoto`, `licenseFrontPagePhoto`, `recei
   "driverId": "string",
   "routeId": "string",
   "cargoTypeId": "string",
+  "customerId": "string",
+  "customer": "CustomerModel",
   "revenue": "number",
+  "paidAmount": "number",
   "income": "number",
   "status": "pending | inprogress | completed | cancelled",
   "expenses": "TripExpenseModel[]",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+### Customer Model
+```typescript
+{
+  "id": "string",
+  "name": "string",
+  "tin": "string",
+  "phone": "string | undefined",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+### Invoice Model
+```typescript
+{
+  "id": "string",
+  "invoiceNumber": "string",
+  "tripId": "string",
+  "customerId": "string",
+  "customer": "CustomerModel",
+  "trip": "TripModel",
+  "amount": "number",
+  "paidAmount": "number",
+  "paymentStatus": "unpaid | partially_paid | full_paid",
+  "description": "string | undefined",
+  "status": "draft | issued | paid | cancelled",
+  "issuedAt": "string | undefined",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+### Receipt Model
+```typescript
+{
+  "id": "string",
+  "invoiceId": "string",
+  "invoice": "InvoiceModel",
+  "amount": "number",
+  "paidAt": "string",
+  "reference": "string | undefined",
+  "notes": "string | undefined",
+  "attachment": "string | undefined",
   "createdAt": "string",
   "updatedAt": "string"
 }

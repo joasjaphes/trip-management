@@ -1,0 +1,45 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  <div class="max-w-[800px] mx-auto">
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
+      <div class="mb-6">
+        <label class="text-[13px] font-bold text-gray-700 block mb-2">Customer name</label>
+        <input
+          type="text"
+          placeholder="e.g. Acme Corporation"
+          [(ngModel)]="name"
+          name="name"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+        >
+      </div>
+
+      <div class="mb-6">
+        <label class="text-[13px] font-bold text-gray-700 block mb-2">TIN</label>
+        <input
+          type="text"
+          placeholder="e.g. 123456789"
+          [(ngModel)]="tin"
+          name="tin"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+        >
+      </div>
+
+      <div>
+        <label class="text-[13px] font-bold text-gray-700 block mb-2">Phone (optional)</label>
+        <input
+          type="text"
+          placeholder="e.g. +255700000000"
+          [(ngModel)]="phone"
+          name="phone"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+        >
+      </div>
+    </div>
+
+    <app-save-area
+      [saveText]="'Save customer'"
+      [loading]="loading()"
+      (cancel)="goBack()"
+      (save)="onSubmit()"
+    ></app-save-area>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import { Component, input, output, computed } from '@angular/core';
+import { Component, input, output, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Trip } from '../../../models/trip.model';
 
@@ -10,14 +10,41 @@ import { Trip } from '../../../models/trip.model';
 })
 export class TripDetail {
   trip = input<Trip | undefined>();
+  completing = input(false);
   close = output();
+  complete = output<Trip>();
+  confirmingComplete = signal(false);
   
   totalExpenses = computed(() => {
     return (this.trip()?.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
   });
 
   goBack() {
+    this.confirmingComplete.set(false);
     this.close.emit();
+  }
+
+  canComplete = computed(() => {
+    const status = this.trip()?.status;
+    return status === 'pending' || status === 'inprogress';
+  });
+
+  requestComplete() {
+    this.confirmingComplete.set(true);
+  }
+
+  cancelComplete() {
+    this.confirmingComplete.set(false);
+  }
+
+  confirmComplete() {
+    const trip = this.trip();
+    if (!trip) {
+      return;
+    }
+
+    this.confirmingComplete.set(false);
+    this.complete.emit(trip);
   }
 
   getStatusColor(status: string): string {

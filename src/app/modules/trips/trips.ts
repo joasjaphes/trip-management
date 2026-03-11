@@ -5,7 +5,7 @@ import { Layout, SplitSize } from '../../shared/components/layout/layout';
 import { TripForm } from './trip-form/trip-form';
 import { TripDetail } from './trip-detail/trip-detail';
 import { TripService } from '../../services/trip.service';
-import { Trip } from '../../models/trip.model';
+import { Trip, TripStatus } from '../../models/trip.model';
 
 @Component({
   selector: 'app-trips',
@@ -26,6 +26,7 @@ export class Trips implements OnInit {
   splitSize = signal<SplitSize>('full');
   selectedTrip = signal<Trip | undefined>(undefined);
   showAddButton = signal(true);
+  loading = this.tripService.loading;
 
   trips = computed(() =>
     this.tripService.allTrips().map((trip) => ({
@@ -80,6 +81,15 @@ export class Trips implements OnInit {
     }
   };
 
+  moreActions = computed(() => [
+    {
+      label: 'Review & Complete',
+      key: 'review-complete',
+      icon: 'fa-solid fa-check-circle text-green-500',
+      action: (row: any) => this.onView(row)
+    },
+  ]);
+
   async ngOnInit(): Promise<void> {
     await this.tripService.getAll();
   }
@@ -111,6 +121,19 @@ export class Trips implements OnInit {
     this.splitSize.set('full');
     this.showAddButton.set(true);
     await this.tripService.getAll();
+  }
+
+  async completeTrip(trip: Trip) {
+    if (!trip?.id || trip.status === 'completed') {
+      return;
+    }
+
+    // await this.tripService.updateStatus(trip.id, TripStatus.COMPLETED);
+    await this.tripService.update(trip.id, { ...trip, status: TripStatus.COMPLETED, endDate: new Date() });
+    const refreshedTrip = this.tripService.getById(trip.id);
+    if (refreshedTrip) {
+      this.selectedTrip.set(refreshedTrip);
+    }
   }
 
   onCloseDetail() {

@@ -1,0 +1,126 @@
+<app-layout
+  [title]="title()"
+  [description]="description()"
+  [addText]="addText()"
+  (add)="onAdd()"
+  [(viewDetails)]="viewDetails"
+  [(showAddButton)]="showAddButton"
+  [formTitle]="formTitle()"
+  [formDescription]="formDescription()"
+>
+  <ng-container ngProjectAs="main">
+    <div class="mb-4 rounded-xl border border-gray-100 bg-white px-5 py-4 text-sm text-gray-600">
+      Outstanding amount:
+      <span class="font-extrabold text-[#f25f2f]">
+        {{ totalOutstanding().toLocaleString() }}
+      </span>
+    </div>
+    <app-data-table
+      [data]="invoices()"
+      [config]="tableConfigurations"
+      (view)="onView($event)"
+    ></app-data-table>
+  </ng-container>
+
+  <ng-container ngProjectAs="form">
+    <div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+      @if (selectedInvoice()) {
+        <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm space-y-6">
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-gray-400 uppercase text-[11px] font-extrabold tracking-widest">Invoice #</p>
+              <p class="font-bold text-gray-800">{{ selectedInvoice()?.invoiceNumber || '-' }}</p>
+            </div>
+            <div>
+              <p class="text-gray-400 uppercase text-[11px] font-extrabold tracking-widest">Customer</p>
+              <p class="font-bold text-gray-800">{{ selectedInvoice()?.customer?.name || '-' }}</p>
+            </div>
+            <div>
+              <p class="text-gray-400 uppercase text-[11px] font-extrabold tracking-widest">Trip</p>
+              <p class="font-bold text-gray-800">{{ selectedInvoice()?.trip?.route?.name || selectedInvoice()?.tripId }}</p>
+            </div>
+            <div>
+              <p class="text-gray-400 uppercase text-[11px] font-extrabold tracking-widest">Amount</p>
+              <p class="font-bold text-gray-800">{{ (selectedInvoice()?.amount || 0).toLocaleString() }}</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Status</label>
+            <select
+              [(ngModel)]="selectedStatus"
+              class="mt-2 w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors"
+            >
+              <option value="draft">draft</option>
+              <option value="issued">issued</option>
+              <option value="paid">paid</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              (click)="saveInvoiceStatus()"
+              [disabled]="loading()"
+              class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-extrabold rounded-xl"
+            >
+              Save status
+            </button>
+            <button
+              type="button"
+              (click)="closePanel()"
+              class="btn btn-ghost border border-gray-200 text-gray-500 hover:bg-gray-50 rounded-xl"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm space-y-6">
+          <div>
+            <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Trip</label>
+            <select
+              [(ngModel)]="selectedTripId"
+              class="mt-2 w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors"
+            >
+              <option value="" disabled>Select trip</option>
+              @for (trip of tripsWithoutInvoice(); track trip.id) {
+                <option [value]="trip.id">{{ trip.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Initial status</label>
+            <select
+              [(ngModel)]="generationStatus"
+              class="mt-2 w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors"
+            >
+              <option value="draft">draft</option>
+              <option value="issued">issued</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              (click)="generateInvoice()"
+              [disabled]="!selectedTripId || loading()"
+              class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-extrabold rounded-xl"
+            >
+              Generate invoice
+            </button>
+            <button
+              type="button"
+              (click)="closePanel()"
+              class="btn btn-ghost border border-gray-200 text-gray-500 hover:bg-gray-50 rounded-xl"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </ng-container>
+</app-layout>

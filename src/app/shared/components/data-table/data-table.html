@@ -84,13 +84,32 @@
             <!-- <button class="action-btn" (click)="onView(row)">View</button> -->
             }
             @if (config().actions?.delete) {
-            <i class="fa-solid fa-trash text-red-500" (click)="onDelete(row)" title="Delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+            <i class="fa-solid fa-trash text-red-500" (click)="onDelete(row)"
+              title="Delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
 
             <!-- <button class="action-btn" (click)="onDelete(row)">Delete</button> -->
             }
             @if (config().actions?.more) {
-            <i class="fa-solid fa-ellipsis-v" (click)="onMore(row)" title="More"></i>
-            <!-- <button class="action-btn" (click)="onMore(row)">More</button> -->
+            <div class="more-menu-container" (click)="$event.stopPropagation()">
+              <button type="button" class="more-trigger" (click)="toggleMoreMenu($index, $event)" title="More"
+                aria-haspopup="menu" [attr.aria-expanded]="openMoreMenuRow() === $index">
+                <i class="fa-solid fa-ellipsis-v"></i>
+              </button>
+
+              @if (openMoreMenuRow() === $index) {
+              <div class="more-menu" role="menu">
+                @if (moreActions().length > 0) {
+                @for (action of moreActions(); track action.key) {
+                <button type="button" class="more-menu-item text-gray-500 font-medium" role="menuitem"
+                  (click)="onMoreMenuAction(action, row, $event)">
+                  <i [class]="action.icon || 'fa-solid fa-question-circle'"></i> &nbsp;
+                  {{ action.label }}
+                </button>
+                }
+                }
+              </div>
+              }
+            </div>
             }
           </td>
           }

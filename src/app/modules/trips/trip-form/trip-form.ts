@@ -10,6 +10,7 @@ import { RouteService } from '../../../services/route.service';
 import { TripExpenseService } from '../../../services/trip-expense.service';
 import { TripService } from '../../../services/trip.service';
 import { VehicleService } from '../../../services/vehicle.service';
+import { CustomerService } from '../../../services/customer.service';
 
 type ExpenseDraft = {
   id: string;
@@ -33,6 +34,7 @@ export class TripForm implements OnInit {
   private cargoTypeService = inject(CargoTypeService);
   private expenseCategoryService = inject(ExpenseCategoryService);
   private tripExpenseService = inject(TripExpenseService);
+  private customerService = inject(CustomerService);
 
   close = output();
 
@@ -45,10 +47,14 @@ export class TripForm implements OnInit {
   revenue = '';
   status: TripStatus = TripStatus.PENDING;
   notes = '';
+  customerName = '';
+  customerTIN = '';
+  customerPhone = '';
 
   vehicles = this.vehicleService.allVehicles;
   drivers = this.driverService.allDrivers;
   routes = this.routeService.allRoutes;
+  customers = this.customerService.allCustomers;
   cargoTypes = computed(() =>
     this.cargoTypeService.allCargoTypes().filter((cargoType) => cargoType.isActive)
   );
@@ -68,7 +74,19 @@ export class TripForm implements OnInit {
       this.routeService.getAll(),
       this.cargoTypeService.getAll(),
       this.expenseCategoryService.getAll(),
+      this.customerService.getAll(),
     ]).then();
+  }
+
+  onCustomerNameInput(name: string) {
+    const matched = this.customerService.findByName(name);
+    if (!matched) {
+      return;
+    }
+
+    this.customerName = matched.name;
+    this.customerTIN = matched.tin;
+    this.customerPhone = matched.phone || '';
   }
 
   private createExpenseRow(): ExpenseDraft {
@@ -118,6 +136,9 @@ export class TripForm implements OnInit {
       driverId: this.driverId,
       routeId: this.routeId,
       cargoTypeId: this.cargoTypeId || undefined,
+      customerName: this.customerName || undefined,
+      customerTIN: this.customerTIN || undefined,
+      customerPhone: this.customerPhone || undefined,
       revenue: Number(this.revenue || 0),
       income: Number(this.revenue || 0),
       status: this.status,

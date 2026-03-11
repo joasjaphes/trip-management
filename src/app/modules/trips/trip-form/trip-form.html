@@ -95,6 +95,50 @@
           </svg>
         </div>
       </div>
+
+      <!-- Customer Name (Autocomplete) -->
+      <div class="flex flex-col gap-2 md:col-span-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Name</label>
+        <input
+          type="text"
+          [(ngModel)]="customerName"
+          (ngModelChange)="onCustomerNameInput($event)"
+          name="customerName"
+          list="customer-name-options"
+          placeholder="Select existing customer or type a new name"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+        >
+        <datalist id="customer-name-options">
+          @for (customer of customers(); track customer.id) {
+            <option [value]="customer.name">{{ customer.tin }}</option>
+          }
+        </datalist>
+      </div>
+
+      <!-- Customer TIN -->
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer TIN</label>
+        <input
+          type="text"
+          [(ngModel)]="customerTIN"
+          name="customerTIN"
+          placeholder="e.g. 123456789"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+        >
+      </div>
+
+      <!-- Customer Phone -->
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Phone</label>
+        <input
+          type="text"
+          [(ngModel)]="customerPhone"
+          name="customerPhone"
+          placeholder="e.g. +255700000000"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+        >
+      </div>
+
       <!-- Projected Revenue -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Projected Revenue

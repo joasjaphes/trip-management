@@ -216,6 +216,71 @@
   accent-color: #3b82f6;
 }
 
+.col-actions {
+  position: relative;
+}
+
+.more-menu-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.more-trigger {
+  border: none;
+  background: transparent;
+  color: #4b5563;
+  cursor: pointer;
+  padding: 0.25rem 0.35rem;
+  border-radius: 0.375rem;
+}
+
+.more-trigger:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.more-trigger:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+}
+
+.more-menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  z-index: 20;
+  min-width: 12rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.12);
+  padding: 0.25rem;
+}
+
+.more-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.more-menu-item:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.more-menu-item:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: -1px;
+}
+
 /* Empty State */
 .empty-row {
   background-color: #fafafa !important;

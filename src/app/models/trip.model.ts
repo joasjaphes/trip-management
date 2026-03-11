@@ -2,6 +2,7 @@ import type { Driver } from './driver.model';
 import type { ExpenseCategory } from './expense-category.model';
 import type { Route } from './route.model';
 import type { Vehicle } from './vehicle.model';
+import type { Customer } from './customer.model';
 
 export interface Trip {
 	id: string;
@@ -14,6 +15,11 @@ export interface Trip {
 	routeId: string;
 	route?: Route;
 	cargoTypeId?: string;
+	customerId?: string;
+	customer?: Customer;
+	customerName?: string;
+	customerTIN?: string;
+	customerPhone?: string;
 	revenue: number;
 	income?: number;
 	expenses: TripExpense[];

@@ -5,6 +5,7 @@ import {
   output,
   signal,
   computed,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +24,7 @@ export interface TableConfig {
   striped?: boolean;
   hover?: boolean;
   bordered?: boolean;
-  actions?:{
+  actions?: {
     edit?: boolean;
     delete?: boolean;
     view?: boolean;
@@ -53,6 +54,7 @@ export class DataTable {
       more: false,
     },
   });
+  moreActions = input<{ label: string; key: string; action: (row: any) => void; icon?: string; }[]>([]);
   data = input<any[]>([]);
   title = input<string>('');
 
@@ -72,6 +74,7 @@ export class DataTable {
   currentPage = signal<number>(0);
   selectedRows = signal<Set<number>>(new Set());
   pageSize = signal<number>(10);
+  openMoreMenuRow = signal<number | null>(null);
 
   hasActions = computed(() => {
     return this.config().actions && Object.values(this.config().actions).some((v) => !!v);
@@ -231,5 +234,31 @@ export class DataTable {
 
   onMore(row: any) {
     this.more.emit(row);
+  }
+
+  toggleMoreMenu(index: number, event: Event) {
+    event.stopPropagation();
+    if (this.openMoreMenuRow() === index) {
+      this.openMoreMenuRow.set(null);
+      return;
+    }
+
+    this.openMoreMenuRow.set(index);
+  }
+
+  onMoreMenuAction(
+    action: { label: string; key: string; action: (row: any) => void },
+    row: any,
+    event: Event
+  ) {
+    event.stopPropagation();
+    action.action(row);
+    this.more.emit({ key: action.key, row });
+    this.openMoreMenuRow.set(null);
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.openMoreMenuRow.set(null);
   }
 }

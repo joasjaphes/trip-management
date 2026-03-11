@@ -27,6 +27,46 @@
           </svg>
         </button> -->
       </div>
+      <div class="flex items-center gap-3">
+        <span
+          [class]="'border px-3 py-1 rounded-full text-[11px] font-extrabold tracking-widest uppercase ' + getStatusColor(trip()?.status || 'pending')"
+        >
+          {{ trip()?.status || 'pending' }}
+        </span>
+
+        @if (canComplete()) {
+        @if (!confirmingComplete()) {
+        <button
+          type="button"
+          (click)="requestComplete()"
+          [disabled]="completing()"
+          class="btn border-none bg-emerald-600 hover:bg-emerald-700 text-white px-5 font-extrabold text-[13px] rounded-xl"
+        >
+          Complete Trip
+        </button>
+        } @else {
+        <div class="flex items-center gap-2 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2">
+          <span class="text-[12px] font-bold text-emerald-700">Confirm complete?</span>
+          <button
+            type="button"
+            (click)="confirmComplete()"
+            [disabled]="completing()"
+            class="btn border-none bg-emerald-600 hover:bg-emerald-700 text-white px-3 min-h-0 h-8 text-[12px] rounded-lg"
+          >
+            Yes
+          </button>
+          <button
+            type="button"
+            (click)="cancelComplete()"
+            [disabled]="completing()"
+            class="btn btn-ghost border border-gray-200 text-gray-600 px-3 min-h-0 h-8 text-[12px] rounded-lg"
+          >
+            No
+          </button>
+        </div>
+        }
+        }
+      </div>
     </div>
 
     <!-- Main Content Dual Column Grid -->

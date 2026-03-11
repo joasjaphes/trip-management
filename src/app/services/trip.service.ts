@@ -10,6 +10,9 @@ type TripWritePayload = {
   driverId: string;
   routeId: string;
   cargoTypeId?: string;
+  customerName?: string;
+  customerTIN?: string;
+  customerPhone?: string;
   revenue: number;
   income?: number;
   status: Trip['status'];
