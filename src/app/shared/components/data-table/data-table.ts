@@ -6,10 +6,12 @@ import {
   signal,
   computed,
   HostListener,
+  model,
 } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Placeholder } from '../placeholder/placeholder';
 
 export interface TableColumn {
   key: string;
@@ -35,7 +37,7 @@ export interface TableConfig {
 
 @Component({
   selector: 'app-data-table',
-  imports: [CommonModule, FormsModule, FontAwesomeModule, DecimalPipe],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, DecimalPipe,Placeholder],
   templateUrl: './data-table.html',
   styleUrl: './data-table.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,6 +78,7 @@ export class DataTable {
   selectedRows = signal<Set<number>>(new Set());
   pageSize = signal<number>(10);
   openMoreMenuRow = signal<number | null>(null);
+  loading = input(false);
 
   hasActions = computed(() => {
     return this.config().actions && Object.values(this.config().actions).some((v) => !!v);

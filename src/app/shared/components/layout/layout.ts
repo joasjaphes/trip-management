@@ -1,4 +1,5 @@
 import { Component, EventEmitter, model, Output, input, computed, ChangeDetectionStrategy } from '@angular/core';
+import { ProgressBar } from '../progress-bar/progress-bar';
 
 export type SplitSize = 'zero' | 'full' | 'half' | 'third' | 'quarter' | 'two-thirds' | 'three-quarters';
 
@@ -19,7 +20,7 @@ const SPLIT_SIZES: Record<SplitSize, SplitConfig> = {
 
 @Component({
   selector: 'app-layout',
-  imports: [],
+  imports: [ProgressBar],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

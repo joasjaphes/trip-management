@@ -22,119 +22,127 @@
     <div class="table-scroll">
       <table class="data-table z-0" [class.striped]="config().striped" [class.hover]="config().hover"
         [class.bordered]="config().bordered">
-      <!-- Table Head -->
-      <thead>
-        <tr>
-          <!-- Selection checkbox header -->
-          <!-- <th class="col-select">
+        <!-- Table Head -->
+        <thead>
+          <tr>
+            <!-- Selection checkbox header -->
+            <!-- <th class="col-select">
             <input type="checkbox" [checked]="isAllSelected()" (change)="onSelectAll($event)"
               aria-label="Select all rows on current page" />
           </th> -->
 
-          <!-- Column headers -->
-          @for (column of config().columns; track column.key) {
-          <th [style.width]="column.width" [class.sortable]="column.sortable" [attr.aria-sort]="
+            <!-- Column headers -->
+            @for (column of config().columns; track column.key) {
+            <th [style.width]="column.width" [class.sortable]="column.sortable" [attr.aria-sort]="
                 sortColumn() === column.key
                   ? sortDirection() === 'asc'
                     ? 'ascending'
                     : 'descending'
                   : 'none'
               ">
-            <button *ngIf="column.sortable" class="sort-button" (click)="onSort(column.key)" [attr.aria-label]="
+              <button *ngIf="column.sortable" class="sort-button" (click)="onSort(column.key)" [attr.aria-label]="
                   'Sort by ' + column.label + ', current direction: ' + sortDirection()
                 ">
-              <span class="column-label">{{ column.label }}</span>
-              <span class="sort-icon" aria-hidden="true">
-                {{ getSortIcon(column.key) }}
-              </span>
-            </button>
-            <span *ngIf="!column.sortable">{{ column.label }}</span>
-          </th>
-          }
-          @if (hasActions()) {
-          <th>Actions</th>
-          }
-        </tr>
-      </thead>
+                <span class="column-label">{{ column.label }}</span>
+                <span class="sort-icon" aria-hidden="true">
+                  {{ getSortIcon(column.key) }}
+                </span>
+              </button>
+              <span *ngIf="!column.sortable">{{ column.label }}</span>
+            </th>
+            }
+            @if (hasActions()) {
+            <th>Actions</th>
+            }
+          </tr>
+        </thead>
 
-      <!-- Table Body -->
-      <tbody>
-        @if (paginatedData().length > 0) {
-        @for (row of paginatedData(); track $index) {
-        <tr class="data-row" tabindex="0">
-          <!-- Selection checkbox -->
-          <!-- <td class="col-select">
+        <!-- Table Body -->
+        <tbody>
+          @if(loading()) {
+          <tr class="empty-row">
+            <td [attr.colspan]="config().columns.length + (hasActions() ? 1 : 0)" class="empty-message">
+              <app-placeholder></app-placeholder>
+            </td>
+          </tr>
+          }
+          @else if (paginatedData().length > 0) {
+          @for (row of paginatedData(); track $index) {
+          <tr class="data-row" tabindex="0">
+            <!-- Selection checkbox -->
+            <!-- <td class="col-select">
             <input type="checkbox" [checked]="selectedRows().has($index)" (change)="onSelectRow($index, $event)"
               [attr.aria-label]="'Select row ' + ($index + 1)" />
           </td> -->
 
-          <!-- Data cells -->
-          @for (column of config().columns; track column.key) {
-          <td [style.width]="column.width">
-            @if(column.type === 'status') {
-            <span [class]="getStatusColor(row[column.key])"> {{ row[column.key] }}</span>
-            }@else if(column.type === 'tripStatus') {
-            <span [class]="getTripStatusColor(row[column.key])"> {{ row[column.key] }}</span>
-            }@else if(column.type === 'invoiceStatus') {
-            <span [class]="getInvoiceStatusColor(row[column.key])"> {{ getInvoiceStatusName(row[column.key]) }}</span>
-            }@else if(column.type === 'number') {
-            {{ row[column.key] | number}}
+            <!-- Data cells -->
+            @for (column of config().columns; track column.key) {
+            <td [style.width]="column.width">
+              @if(column.type === 'status') {
+              <span [class]="getStatusColor(row[column.key])"> {{ row[column.key] }}</span>
+              }@else if(column.type === 'tripStatus') {
+              <span [class]="getTripStatusColor(row[column.key])"> {{ row[column.key] }}</span>
+              }@else if(column.type === 'invoiceStatus') {
+              <span [class]="getInvoiceStatusColor(row[column.key])"> {{ getInvoiceStatusName(row[column.key]) }}</span>
+              }@else if(column.type === 'number') {
+              {{ row[column.key] | number}}
+              }
+              @else {
+              {{ row[column.key] }}
+              }
+            </td>
             }
-            @else {
-            {{ row[column.key] }}
-            }
-          </td>
-          }
-          @if (hasActions()) {
-          <td class="col-actions">
-            @if (config().actions?.edit) {
-            <i class="fa-solid fa-pencil" (click)="onEdit(row)" title="Edit"></i>&nbsp;&nbsp;
-            <!-- <button class="action-btn" (click)="onEdit(row)">Edit</button> -->
-            }
-            @if (config().actions?.view) {
-            <i class="fa-solid fa-eye" (click)="onView(row)" title="View"></i>&nbsp;&nbsp;
-            <!-- <button class="action-btn" (click)="onView(row)">View</button> -->
-            }
-            @if (config().actions?.delete) {
-            <i class="fa-solid fa-trash text-red-500" (click)="onDelete(row)"
-              title="Delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+            @if (hasActions()) {
+            <td class="col-actions">
+              @if (config().actions?.edit) {
+              <i class="fa-solid fa-pencil" (click)="onEdit(row)" title="Edit"></i>&nbsp;&nbsp;
+              <!-- <button class="action-btn" (click)="onEdit(row)">Edit</button> -->
+              }
+              @if (config().actions?.view) {
+              <i class="fa-solid fa-eye" (click)="onView(row)" title="View"></i>&nbsp;&nbsp;
+              <!-- <button class="action-btn" (click)="onView(row)">View</button> -->
+              }
+              @if (config().actions?.delete) {
+              <i class="fa-solid fa-trash text-red-500" (click)="onDelete(row)"
+                title="Delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
 
-            <!-- <button class="action-btn" (click)="onDelete(row)">Delete</button> -->
-            }
-            @if (config().actions?.more) {
-            <div class="more-menu-container" (click)="$event.stopPropagation()">
-              <button type="button" class="more-trigger" (click)="toggleMoreMenu($index, $event)" title="More"
-                aria-haspopup="menu" [attr.aria-expanded]="openMoreMenuRow() === $index">
-                <i class="fa-solid fa-ellipsis-v"></i>
-              </button>
-
-              @if (openMoreMenuRow() === $index) {
-              <div class="more-menu" role="menu">
-                @if (moreActions().length > 0) {
-                @for (action of moreActions(); track action.key) {
-                <button type="button" class="more-menu-item text-gray-500 font-medium" role="menuitem"
-                  (click)="onMoreMenuAction(action, row, $event)">
-                  <i [class]="action.icon || 'fa-solid fa-question-circle'"></i> &nbsp;
-                  {{ action.label }}
+              <!-- <button class="action-btn" (click)="onDelete(row)">Delete</button> -->
+              }
+              @if (config().actions?.more) {
+              <div class="more-menu-container" (click)="$event.stopPropagation()">
+                <button type="button" class="more-trigger" (click)="toggleMoreMenu($index, $event)" title="More"
+                  aria-haspopup="menu" [attr.aria-expanded]="openMoreMenuRow() === $index">
+                  <i class="fa-solid fa-ellipsis-v"></i>
                 </button>
-                }
+
+                @if (openMoreMenuRow() === $index) {
+                <div class="more-menu" role="menu">
+                  @if (moreActions().length > 0) {
+                  @for (action of moreActions(); track action.key) {
+                  <button type="button" class="more-menu-item text-gray-500 font-medium" role="menuitem"
+                    (click)="onMoreMenuAction(action, row, $event)">
+                    <i [class]="action.icon || 'fa-solid fa-question-circle'"></i> &nbsp;
+                    {{ action.label }}
+                  </button>
+                  }
+                  }
+                </div>
                 }
               </div>
               }
-            </div>
+            </td>
             }
-          </td>
+          </tr>
           }
-        </tr>
-        }
-        } @else {
-        <tr class="empty-row">
-          <td [attr.colspan]="config().columns.length + (hasActions() ? 1 : 0)" class="empty-message">
-            <p>No data available</p>
-          </td>
-        </tr>
-        }
-      </tbody>
+          }
+          @else {
+          <tr class="empty-row">
+            <td [attr.colspan]="config().columns.length + (hasActions() ? 1 : 0)" class="empty-message">
+              <p>No data available</p>
+            </td>
+          </tr>
+          }
+        </tbody>
       </table>
     </div>
   </div>
