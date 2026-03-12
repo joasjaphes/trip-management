@@ -79,8 +79,8 @@ export class DriverForm {
       this.address = selectedDriver.address ?? '';
       this.licenseNumber = selectedDriver.licenseNumber ?? '';
       this.licenseClass = selectedDriver.licenseClass ?? '';
-      this.licenseExpiry = selectedDriver.licenseExpiry
-        ? new Date(selectedDriver.licenseExpiry).toISOString().slice(0, 10)
+      this.licenseExpiry = selectedDriver.licenseExpiryDate
+        ? new Date(selectedDriver.licenseExpiryDate).toISOString().slice(0, 10)
         : '';
       this.isActive = selectedDriver.isActive;
       // Populate photo URL from existing driver

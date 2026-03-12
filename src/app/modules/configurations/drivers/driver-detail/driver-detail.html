@@ -1,151 +1,151 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
-  
-  <div class="max-w-[900px] mx-auto">
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+	<div class="max-w-[950px] mx-auto">
+		<button
+			(click)="goBack()"
+			class="flex items-center gap-2 text-gray-400 hover:text-gray-700 font-bold text-[13px] mb-6 transition-colors"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+			</svg>
+			Back to Drivers
+		</button>
 
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full bg-red-50 text-[#f25f2f] flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </div>
-        <h1 class="text-[18px] font-extrabold text-gray-900">Driver Profile</h1>
-      </div>
-      <div class="flex items-center gap-3">
-        <button (click)="goBack()" class="btn btn-ghost border border-gray-200 hover:bg-gray-50 text-gray-500 px-4 font-bold text-[13px] rounded-xl flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back
-        </button>
-        <button class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-5 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-xl text-[13px] flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-          </svg>
-          Edit Profile
-        </button>
-      </div>
-    </div>
+		@if (driver(); as currentDriver) {
+			<div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-6">
+				<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+					<div class="flex items-center gap-4">
+						<div class="w-20 h-20 rounded-2xl overflow-hidden bg-[#f25f2f]/10 text-[#f25f2f] flex items-center justify-center text-[24px] font-extrabold">
+							@if (driverPhotoUrl()) {
+								<img [src]="driverPhotoUrl()" [alt]="fullName()" class="w-full h-full object-cover" />
+							} @else {
+								{{ initials() }}
+							}
+						</div>
 
-    <!-- Profile Card -->
-    <div class="flex items-center gap-5 mb-10">
-      <div class="w-20 h-20 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-extrabold text-[24px] ring-4 ring-gray-100 shrink-0">
-        {{ driver.initials }}
-      </div>
-      <div>
-        <h2 class="text-[24px] font-extrabold text-gray-900">{{ driver.name }}</h2>
-        <div class="flex items-center gap-2 mt-1">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span class="text-[13px] font-bold text-emerald-600">{{ driver.status }} Status</span>
-        </div>
-        <p class="text-[13px] text-gray-400 font-mono mt-0.5">ID: {{ driver.id }}</p>
-      </div>
-    </div>
+						<div>
+							<h1 class="text-[28px] font-extrabold text-gray-900 leading-tight">{{ fullName() }}</h1>
+							<p class="text-[14px] text-gray-500 mt-1">Driver ID: <span class="font-semibold text-gray-700">{{ currentDriver.id }}</span></p>
+							<div class="flex items-center gap-2 mt-3">
+								<span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase" [class]="getStatusClass()">
+									{{ currentDriver.isActive ? 'Active' : 'Inactive' }}
+								</span>
+								<span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase" [class]="getLicenseStatusClass()">
+									License: {{ getLicenseStatus() }}
+								</span>
+							</div>
+						</div>
+					</div>
 
-    <!-- Personal Details Section -->
-    <div class="mb-8">
-      <div class="flex items-center gap-3 mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        <h2 class="text-[18px] font-extrabold text-gray-900">Personal Details</h2>
-      </div>
+					<div class="grid grid-cols-2 md:grid-cols-1 gap-3 md:min-w-[210px]">
+						<div class="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3">
+							<p class="text-[11px] font-bold tracking-wider uppercase text-gray-400">License Class</p>
+							<p class="text-[14px] font-bold text-gray-900 mt-1">{{ getLicenseClass() }}</p>
+						</div>
+						<div class="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3">
+							<p class="text-[11px] font-bold tracking-wider uppercase text-gray-400">License Timeline</p>
+							<p class="text-[14px] font-bold text-gray-900 mt-1">{{ getDaysUntilLicenseExpiry() }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
 
-      <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-        <div class="grid grid-cols-2 gap-x-8 gap-y-6">
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Email Address</span>
-            <span class="text-[15px] font-bold text-gray-900">{{ driver.email }}</span>
-          </div>
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Phone Number</span>
-            <span class="text-[15px] font-bold text-gray-900">{{ driver.phone }}</span>
-          </div>
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Date of Birth</span>
-            <span class="text-[15px] font-bold text-gray-900">{{ driver.dateOfBirth }}</span>
-          </div>
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">License Class</span>
-            <span class="text-[15px] font-bold text-gray-900">{{ driver.licenseClass }}</span>
-          </div>
-          <div class="col-span-2">
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Home Address</span>
-            <span class="text-[15px] font-bold text-gray-900">{{ driver.address }}</span>
-          </div>
-          <div class="col-span-2 pt-2 border-t border-gray-100">
-            <span class="text-[10px] font-extrabold tracking-widest text-[#f25f2f] uppercase block mb-1">License Expiry</span>
-            <span class="text-[15px] font-bold text-gray-900">{{ driver.licenseExpiry }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+				<div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+					<div class="flex items-center gap-2 mb-5">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+						</svg>
+						<h2 class="text-[15px] font-extrabold text-gray-900">Personal Information</h2>
+					</div>
 
-    <!-- Assigned Vehicle Section -->
-    <div class="mb-8">
-      <div class="flex items-center gap-3 mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-        </svg>
-        <h2 class="text-[18px] font-extrabold text-gray-900">Assigned Vehicle</h2>
-      </div>
+					<div class="space-y-4">
+						<div class="flex items-center justify-between border-b border-gray-50 pb-3">
+							<span class="text-[13px] text-gray-400">Email</span>
+							<span class="text-[14px] font-semibold text-gray-900">{{ currentDriver.email || 'Not provided' }}</span>
+						</div>
+						<div class="flex items-center justify-between border-b border-gray-50 pb-3">
+							<span class="text-[13px] text-gray-400">Phone</span>
+							<span class="text-[14px] font-semibold text-gray-900">{{ currentDriver.phone || 'Not provided' }}</span>
+						</div>
+						<div class="flex items-center justify-between border-b border-gray-50 pb-3">
+							<span class="text-[13px] text-gray-400">Date of Birth</span>
+							<span class="text-[14px] font-semibold text-gray-900">{{ formatDate(currentDriver.dateOfBirth) }}</span>
+						</div>
+						<div class="flex items-center justify-between">
+							<span class="text-[13px] text-gray-400">Address</span>
+							<span class="text-[14px] font-semibold text-right text-gray-900 max-w-[220px]">{{ currentDriver.address || 'Not provided' }}</span>
+						</div>
+					</div>
+				</div>
 
-      <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-        <h3 class="text-[18px] font-extrabold text-gray-900 mb-1">{{ vehicle.name }}</h3>
-        <p class="text-[13px] text-gray-400 mb-5">Plate: {{ vehicle.plate }} | VIN: {{ vehicle.vin }}</p>
-        <div class="grid grid-cols-3 gap-6 pt-4 border-t border-gray-100">
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-[#f25f2f] uppercase block mb-1">Fuel Level</span>
-            <span class="text-[18px] font-extrabold text-gray-900">{{ vehicle.fuelLevel }}</span>
-          </div>
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Odometer</span>
-            <span class="text-[18px] font-extrabold text-gray-900">{{ vehicle.odometer }}</span>
-          </div>
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Last Service</span>
-            <span class="text-[18px] font-extrabold text-gray-900">{{ vehicle.lastService }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+				<div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+					<div class="flex items-center gap-2 mb-5">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+						</svg>
+						<h2 class="text-[15px] font-extrabold text-gray-900">License Details</h2>
+					</div>
 
-    <!-- Recent Trips Section -->
-    <div class="mb-8">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-          </svg>
-          <h2 class="text-[18px] font-extrabold text-gray-900">Recent Trips</h2>
-        </div>
-        <a routerLink="/trips" class="text-[#f25f2f] hover:text-[#ff5117] font-bold text-[13px] transition-colors">View All</a>
-      </div>
+					<div class="space-y-4">
+						<div class="flex items-center justify-between border-b border-gray-50 pb-3">
+							<span class="text-[13px] text-gray-400">License Number</span>
+							<span class="text-[14px] font-semibold text-gray-900">{{ getLicenseNumber() }}</span>
+						</div>
+						<div class="flex items-center justify-between border-b border-gray-50 pb-3">
+							<span class="text-[13px] text-gray-400">Class</span>
+							<span class="text-[14px] font-semibold text-gray-900">{{ getLicenseClass() }}</span>
+						</div>
+						<div class="flex items-center justify-between border-b border-gray-50 pb-3">
+							<span class="text-[13px] text-gray-400">Expiry Date</span>
+							<span class="text-[14px] font-semibold text-gray-900">{{ formatDate(getLicenseExpiryDate()) }}</span>
+						</div>
+						<div class="flex items-center justify-between">
+							<span class="text-[13px] text-gray-400">Current Status</span>
+							<span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase" [class]="getLicenseStatusClass()">
+								{{ getLicenseStatus() }}
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
 
-      <div class="space-y-3">
-        @for (trip of recentTrips; track trip.date) {
-        <div class="bg-white border border-gray-100 rounded-xl px-6 py-4 flex items-center justify-between shadow-sm hover:border-gray-200 transition-colors">
-          <div class="flex items-center gap-4">
-            <div class="w-9 h-9 rounded-full bg-red-50 text-[#f25f2f] flex items-center justify-center shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            <div>
-              <span class="text-[14px] font-bold text-gray-900">{{ trip.origin }} → {{ trip.destination }}</span>
-              <p class="text-[12px] text-gray-400 mt-0.5">{{ trip.date }} • {{ trip.distance }}</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <span class="text-[13px] font-bold text-gray-700">{{ trip.status }}</span>
-            <p class="text-[12px] text-gray-400 mt-0.5">{{ trip.duration }}</p>
-          </div>
-        </div>
-        }
-      </div>
-    </div>
+			<div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-10">
+				<div class="flex items-center gap-2 mb-4">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+					</svg>
+					<h2 class="text-[15px] font-extrabold text-gray-900">Attachments</h2>
+				</div>
 
-  </div>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+					<div class="rounded-xl border border-gray-100 p-4 bg-gray-50">
+						<p class="text-[12px] font-bold tracking-wider uppercase text-gray-400 mb-3">Driver Photo</p>
+						<div class="w-full h-48 rounded-xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center">
+							@if (driverPhotoUrl()) {
+								<img [src]="driverPhotoUrl()" alt="Driver photo" class="w-full h-full object-cover" />
+							} @else {
+								<span class="text-[13px] text-gray-400">No photo uploaded</span>
+							}
+						</div>
+					</div>
+
+					<div class="rounded-xl border border-gray-100 p-4 bg-gray-50">
+						<p class="text-[12px] font-bold tracking-wider uppercase text-gray-400 mb-3">License Attachment</p>
+						<div class="w-full h-48 rounded-xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center">
+							@if (licensePhotoUrl()) {
+								<img [src]="licensePhotoUrl()" alt="Driver license attachment" class="w-full h-full object-contain" />
+							} @else {
+								<span class="text-[13px] text-gray-400">No attachment uploaded</span>
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		} @else {
+			<div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm text-center">
+				<h2 class="text-[18px] font-extrabold text-gray-900 mb-2">Driver details unavailable</h2>
+				<p class="text-[14px] text-gray-500">The selected driver could not be found.</p>
+			</div>
+		}
+	</div>
 </div>

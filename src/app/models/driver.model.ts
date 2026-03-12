@@ -10,7 +10,7 @@ export interface Driver {
   licenseFrontPagePhoto?: string;
   licenseNumber?: string;
   licenseClass?: string;
-  licenseExpiry?: Date;
+  licenseExpiryDate?: Date;
 
   photo?: string;
   driverPhoto?: string;
