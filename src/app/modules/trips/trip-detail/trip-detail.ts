@@ -1,7 +1,8 @@
-import { Component, input, output, computed, signal, inject } from '@angular/core';
+import { Component, input, output, computed, signal, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Trip, TripExpense } from '../../../models/trip.model';
 import { ExpenseCategoryService } from '../../../services/expense-category.service';
+import { FileUploadService } from '../../../services/file-upload.service';
 
 @Component({
   selector: 'app-trip-detail',
@@ -11,6 +12,7 @@ import { ExpenseCategoryService } from '../../../services/expense-category.servi
 })
 export class TripDetail {
   private expenseCategoryService = inject(ExpenseCategoryService);
+  private fileUploadService = inject(FileUploadService);
 
   trip = input<Trip | undefined>();
   completing = input(false);
@@ -18,13 +20,33 @@ export class TripDetail {
   complete = output<Trip>();
 
   confirmingComplete = signal(false);
+  attachmentPreviewUrls = signal<Record<string, string>>({});
   
   totalExpenses = computed(() => {
     return (this.trip()?.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
   });
 
+  constructor() {
+    effect(() => {
+      void this.loadAttachmentPreviewUrls(this.trip()?.expenses || []);
+    });
+  }
+
   async ngOnInit() {
     await this.expenseCategoryService.getAll();
+  }
+
+  private async loadAttachmentPreviewUrls(expenses: TripExpense[]) {
+    const urls = await Promise.all(
+      expenses.map(async (expense) => {
+        const url = await this.fileUploadService.resolveFileUrl(expense.receiptAttachment);
+        return url ? [expense.id, url] : undefined;
+      })
+    );
+
+    this.attachmentPreviewUrls.set(
+      Object.fromEntries(urls.filter((entry): entry is [string, string] => !!entry))
+    );
   }
 
   goBack() {
@@ -89,5 +111,18 @@ export class TripDetail {
 
   getExpenseCategoryColor(expense: TripExpense): string {
     return this.getCategoryColor(this.getExpenseCategoryName(expense));
+  }
+
+  getExpenseAttachmentName(expense: TripExpense): string {
+    return this.fileUploadService.getFileName(expense.receiptAttachment) || 'View receipt';
+  }
+
+  previewAttachment(expense: TripExpense) {
+    const url = this.attachmentPreviewUrls()[expense.id];
+    if (!url) {
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }

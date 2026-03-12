@@ -25,8 +25,18 @@ export class HttpClientService {
   }
 
   async getImageUrl(url: string): Promise<string> {
+    if (/^https?:\/\//i.test(url)) {
+      return url;
+    }
+
     return await firstValueFrom(
-      this.rootUrl.pipe(map((root) => `${root}/${url}`))
+      this.rootUrl.pipe(
+        map((root) => {
+          const baseUrl = root.replace(/\/api\/?$/, '');
+          const normalizedUrl = url.replace(/^\/+/, '');
+          return `${baseUrl}/${normalizedUrl}`;
+        })
+      )
     );
   }
 

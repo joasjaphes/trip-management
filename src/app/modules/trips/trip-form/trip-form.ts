@@ -11,6 +11,7 @@ import { TripExpenseService } from '../../../services/trip-expense.service';
 import { TripService } from '../../../services/trip.service';
 import { VehicleService } from '../../../services/vehicle.service';
 import { CustomerService } from '../../../services/customer.service';
+import { FileUploadService } from '../../../services/file-upload.service';
 
 type ExpenseDraft = {
   id: string;
@@ -18,6 +19,9 @@ type ExpenseDraft = {
   amount: string;
   date: string;
   attachment?: string;
+  attachmentName?: string;
+  attachmentUrl?: string;
+  isUploading?: boolean;
 };
 
 @Component({
@@ -35,6 +39,7 @@ export class TripForm implements OnInit {
   private expenseCategoryService = inject(ExpenseCategoryService);
   private tripExpenseService = inject(TripExpenseService);
   private customerService = inject(CustomerService);
+  private fileUploadService = inject(FileUploadService);
 
   close = output();
 
@@ -64,6 +69,8 @@ export class TripForm implements OnInit {
       .filter((category) => category.isActive || category.status === 'Active')
   );
   loading = computed(() => this.tripService.loading() || this.tripExpenseService.loading());
+  pendingUploads = signal(0);
+  busy = computed(() => this.loading() || this.pendingUploads() > 0);
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
   actionMessage = signal<string | null>(null);
@@ -99,7 +106,39 @@ export class TripForm implements OnInit {
       amount: '',
       date: '',
       attachment: undefined,
+      attachmentName: undefined,
+      attachmentUrl: undefined,
+      isUploading: false,
     };
+  }
+
+  private updateExpenseRow(rowId: string, updater: (row: ExpenseDraft) => ExpenseDraft) {
+    this.expenseRows = this.expenseRows.map((row) =>
+      row.id === rowId ? updater(row) : row
+    );
+  }
+
+  private async ensureAttachmentUrl(rowId: string): Promise<string | undefined> {
+    const row = this.expenseRows.find((item) => item.id === rowId);
+    if (!row?.attachment) {
+      return undefined;
+    }
+
+    if (row.attachmentUrl) {
+      return row.attachmentUrl;
+    }
+
+    const resolvedUrl = await this.fileUploadService.resolveFileUrl(row.attachment);
+    if (!resolvedUrl) {
+      return undefined;
+    }
+
+    this.updateExpenseRow(rowId, (item) => ({
+      ...item,
+      attachmentUrl: resolvedUrl,
+    }));
+
+    return resolvedUrl;
   }
 
   addExpenseRow() {
@@ -113,18 +152,60 @@ export class TripForm implements OnInit {
     }
   }
 
-  onExpenseAttachmentSelected(event: Event, rowId: string) {
+  async onExpenseAttachmentSelected(event: Event, rowId: string) {
     const input = event.target as HTMLInputElement;
-    const fileName = input.files && input.files[0] ? input.files[0].name : undefined;
+    const file = input.files && input.files[0] ? input.files[0] : undefined;
+    if (!file) {
+      return;
+    }
 
-    this.expenseRows = this.expenseRows.map((row) =>
-      row.id === rowId
-        ? {
-            ...row,
-            attachment: fileName,
-          }
-        : row
-    );
+    if (!file.type.startsWith('image/')) {
+      this.errorMessage.set('Only image attachments are allowed.');
+      input.value = '';
+      return;
+    }
+
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.actionMessage.set(`Uploading ${file.name}...`);
+    this.pendingUploads.update((count) => count + 1);
+    this.updateExpenseRow(rowId, (row) => ({
+      ...row,
+      attachmentName: file.name,
+      isUploading: true,
+    }));
+
+    try {
+      const uploadedFile = await this.fileUploadService.uploadFile(file);
+      this.updateExpenseRow(rowId, (row) => ({
+        ...row,
+        attachment: uploadedFile.filePath,
+        attachmentName: uploadedFile.fileName,
+        attachmentUrl: uploadedFile.fileUrl,
+        isUploading: false,
+      }));
+      this.successMessage.set('Expense attachment uploaded successfully.');
+    } catch (error) {
+      this.updateExpenseRow(rowId, (row) => ({
+        ...row,
+        isUploading: false,
+      }));
+      this.errorMessage.set(String(error || 'Could not upload the attachment. Please try again.'));
+    } finally {
+      this.pendingUploads.update((count) => Math.max(0, count - 1));
+      this.actionMessage.set(null);
+      input.value = '';
+    }
+  }
+
+  async previewAttachment(rowId: string) {
+    const url = await this.ensureAttachmentUrl(rowId);
+    if (!url) {
+      this.errorMessage.set('Attachment preview is not available for this expense.');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   goBack() {
@@ -139,6 +220,11 @@ export class TripForm implements OnInit {
   }
 
   async onSubmit() {
+    if (this.pendingUploads() > 0) {
+      this.errorMessage.set('Wait for expense attachments to finish uploading before saving the trip.');
+      return;
+    }
+
     this.errorMessage.set(null);
     this.successMessage.set(null);
     this.actionMessage.set('Saving trip and expenses...');

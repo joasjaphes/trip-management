@@ -3,18 +3,22 @@
   <div class="bg-white border border-gray-100 rounded-2xl p-8 relative overflow-hidden shadow-sm">
 
     @if (actionMessage()) {
-      <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
-        <span class="loading loading-spinner loading-sm"></span>
-        <span>{{ actionMessage() }}</span>
-      </div>
+    <div
+      class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+      <span class="loading loading-spinner loading-sm"></span>
+      <span>{{ actionMessage() }}</span>
+    </div>
     }
 
     @if (successMessage()) {
-      <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">{{ successMessage() }}</div>
+    <div
+      class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">
+      {{ successMessage() }}</div>
     }
 
     @if (errorMessage()) {
-      <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{ errorMessage() }}</div>
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{
+      errorMessage() }}</div>
     }
 
     <!-- Main Details Form Grid -->
@@ -114,18 +118,12 @@
       <!-- Customer Name (Autocomplete) -->
       <div class="flex flex-col gap-2 md:col-span-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Name</label>
-        <input
-          type="text"
-          [(ngModel)]="customerName"
-          (ngModelChange)="onCustomerNameInput($event)"
-          name="customerName"
-          list="customer-name-options"
-          placeholder="Select existing customer or type a new name"
-          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
-        >
+        <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameInput($event)" name="customerName"
+          list="customer-name-options" placeholder="Select existing customer or type a new name"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         <datalist id="customer-name-options">
           @for (customer of customers(); track customer.id) {
-            <option [value]="customer.name">{{ customer.tin }}</option>
+          <option [value]="customer.name">{{ customer.tin }}</option>
           }
         </datalist>
       </div>
@@ -133,25 +131,15 @@
       <!-- Customer TIN -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer TIN</label>
-        <input
-          type="text"
-          [(ngModel)]="customerTIN"
-          name="customerTIN"
-          placeholder="e.g. 123456789"
-          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
-        >
+        <input type="text" [(ngModel)]="customerTIN" name="customerTIN" placeholder="e.g. 123456789"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
 
       <!-- Customer Phone -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Phone</label>
-        <input
-          type="text"
-          [(ngModel)]="customerPhone"
-          name="customerPhone"
-          placeholder="e.g. +255700000000"
-          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
-        >
+        <input type="text" [(ngModel)]="customerPhone" name="customerPhone" placeholder="e.g. +255700000000"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
 
       <!-- Projected Revenue -->
@@ -209,23 +197,25 @@
         </svg>
         <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">Trip Expenses</h3>
       </div>
-      <button type="button" (click)="addExpenseRow()"
+      <button type="button" (click)="addExpenseRow()" [disabled]="busy()"
         class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide inline-flex items-center gap-2">
         + Add Expense
       </button>
     </div>
 
     <!-- Expenses Row Header -->
-    <div class="grid grid-cols-12 gap-x-4 mb-2 px-2 relative z-10">
+    <div class="grid grid-cols-14 gap-x-4 mb-2 px-2 relative z-10">
       <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Category</div>
       <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Amount</div>
       <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Date</div>
-      <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Attachment</div>
+      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Attachment</div>
+      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Upload</div>
+      <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Delete</div>
     </div>
 
     <!-- Expense Row Instance -->
     @for (expenseRow of expenseRows; track expenseRow.id) {
-    <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-12 gap-x-4 items-center mb-3 relative z-10">
+    <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-14 gap-x-4 items-center mb-3 relative z-10">
       <!-- Category -->
       <div class="col-span-3 relative">
         <select [(ngModel)]="expenseRow.expenseId" [name]="'expenseId-' + expenseRow.id"
@@ -255,20 +245,37 @@
         </svg> -->
       </div>
       <!-- Attachment and Delete Action -->
-      <div class="col-span-4 flex items-center gap-3 pr-2">
+
+      <div class="col-span-2 flex items-center justify-start">
+        @if (expenseRow.attachmentName) {
+        <button type="button" (click)="previewAttachment(expenseRow.id)"
+          class="group flex items-center gap-2 rounded-lg border border-blue-100 bg-white px-2 py-1 hover:border-blue-300"
+          [title]="expenseRow.attachmentName">
+          <img [src]="expenseRow.attachmentUrl || ''" [alt]="expenseRow.attachmentName"
+            class="h-9 w-9 rounded object-cover border border-gray-200 bg-gray-100">
+          <span
+            class="text-[11px] font-semibold text-blue-600 group-hover:text-blue-700 truncate max-w-[70px]">Preview</span>
+        </button>
+        } @else {
+        <span class="text-[11px] font-semibold text-gray-300">No file</span>
+        }
+      </div>
+      <div class="col-span-3 flex items-center gap-3 pr-2">
         <label
           class="flex-1 cursor-pointer w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-lg bg-white hover:bg-gray-50 py-2.5 transition-colors text-gray-400 hover:text-[#f25f2f]">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
-          <input type="file" class="hidden" (change)="onExpenseAttachmentSelected($event, expenseRow.id)">
+          <span class="text-[12px] font-semibold">{{ expenseRow.isUploading ? 'Uploading...' : 'Upload' }}</span>
+          <input type="file" accept="image/*" class="hidden" [disabled]="busy()"
+            (change)="onExpenseAttachmentSelected($event, expenseRow.id)">
         </label>
-        @if (expenseRow.attachment) {
-        <span class="text-[12px] text-blue-500 truncate max-w-[120px]">{{ expenseRow.attachment }}</span>
-        }
-        <!-- Trash Icon -->
-        <button type="button" (click)="removeExpenseRow(expenseRow.id)"
+      </div>
+
+
+      <div class="col-span-1 text-right">
+        <button type="button" (click)="removeExpenseRow(expenseRow.id)" [disabled]="busy()"
           class="text-gray-400 hover:text-[#f25f2f] transition-colors shrink-0 p-1">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
             class="w-[18px] h-[18px]">
@@ -285,7 +292,7 @@
       first.</p>
     }
 
-    <app-save-area [saveText]="'Create Trip'" [loading]="loading()" (cancel)="goBack()"
+    <app-save-area [saveText]="'Create Trip'" [loading]="busy()" (cancel)="goBack()"
       (save)="onSubmit()"></app-save-area>
 
   </div>
