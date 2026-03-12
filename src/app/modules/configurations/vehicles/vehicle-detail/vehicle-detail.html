@@ -1,116 +1,158 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
   
-  <div class="max-w-[1100px] mx-auto">
+  @if (vehicle()) {
+    <div class="w-full">
 
-    <!-- Back Button -->
-    <button (click)="goBack()" class="flex items-center gap-2 text-gray-400 hover:text-gray-700 font-bold text-[13px] mb-6 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-      </svg>
-      Back to Vehicles
-    </button>
-
-    <!-- Top Info Cards Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-      <!-- Registration Info Card -->
-      <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-        <div class="flex items-center gap-3 mb-5">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <h2 class="text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Registration Info</h2>
+      @if (actionMessage()) {
+        <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+          <span class="loading loading-spinner loading-sm"></span>
+          <span>{{ actionMessage() }}</span>
         </div>
-        <div class="grid grid-cols-3 gap-4">
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">License Plate</span>
-            <span class="text-[22px] font-extrabold text-gray-900">ABC-1234</span>
+      }
+
+      @if (errorMessage()) {
+        <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{ errorMessage() }}</div>
+      }
+
+      <!-- Back Button -->
+      <button (click)="goBack()" [disabled]="loading()"
+              class="flex items-center gap-2 text-gray-400 hover:text-gray-700 font-bold text-[13px] mb-6 transition-colors disabled:text-gray-300 disabled:cursor-not-allowed">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Close Details
+      </button>
+
+      <!-- Top Info Cards Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+        <!-- Registration Info Card -->
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center gap-3 mb-5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h2 class="text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Registration Info</h2>
           </div>
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">VIN</span>
-            <span class="text-[13px] font-bold text-gray-600">YV1RT40A5JA0000</span>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Registration #</span>
+              <span class="text-[20px] font-extrabold text-gray-900">{{ vehicle()!.registrationNo }}</span>
+            </div>
+            <div>
+              <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Year</span>
+              <span class="text-[18px] font-extrabold text-gray-900">{{ vehicle()!.registrationYear || '-' }}</span>
+            </div>
           </div>
-          <div>
-            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Exp. Date</span>
-            <span class="text-[15px] font-extrabold text-[#f25f2f]">Oct 12, 2024</span>
+          <div class="mt-4 pt-4 border-t border-gray-100">
+            <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-2">Status</span>
+            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold tracking-widest uppercase"
+                  [ngClass]="vehicle()!.isActive ? 'text-emerald-600 bg-emerald-50' : 'text-gray-600 bg-gray-50'">
+              {{ vehicle()!.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Fuel Information Card -->
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center gap-3 mb-5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <h2 class="text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Fuel Information</h2>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Tank Capacity</span>
+              <span class="text-[18px] font-extrabold text-gray-900">{{ vehicle()!.tankCapacity }} <span class="text-[13px] text-gray-500">Liters</span></span>
+            </div>
+            <div>
+              <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1">Mileage per Full Tank</span>
+              <span class="text-[18px] font-extrabold text-gray-900">{{ vehicle()!.mileagePerFullTank }} <span class="text-[13px] text-gray-500">KM</span></span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Fuel Efficiency Card -->
-      <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-        <div class="flex items-center gap-3 mb-5">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-          <h2 class="text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Fuel Efficiency</h2>
-        </div>
-        <div class="flex items-end gap-6 mb-4">
-          <div>
-            <span class="text-[40px] font-extrabold text-gray-900 leading-none">7.4</span>
-            <span class="text-[13px] font-bold text-gray-400 ml-1">MPG AVG</span>
-          </div>
-        </div>
-        <!-- Fuel Bar -->
-        <div class="w-full bg-gray-100 rounded-full h-2.5 mb-3 overflow-hidden">
-          <div class="bg-[#f25f2f] h-2.5 rounded-full" style="width: 82%"></div>
-        </div>
-        <div class="flex items-center justify-between text-[11px]">
-          <div>
-            <span class="font-bold text-gray-400 uppercase tracking-wider">Last Fill</span>
-            <span class="font-extrabold text-gray-700 ml-2">120 Gal</span>
-          </div>
-          <div>
-            <span class="font-bold text-gray-400 uppercase tracking-wider">Current Level</span>
-            <span class="font-extrabold text-[#f25f2f] ml-2">82%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Active Permits Section -->
-    <div class="mb-8">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-          <h2 class="text-[22px] font-extrabold text-gray-900">Active Permits</h2>
-        </div>
-        <button class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide">
-          Add New Permit +
-        </button>
-      </div>
-
-      <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="border-b border-gray-100">
-              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Permit Type</th>
-              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">ID Number</th>
-              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Issued Date</th>
-              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Expiry</th>
-              <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase text-right">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (permit of permits; track permit.idNumber) {
-            <tr class="border-b border-gray-50 transition-all hover:bg-gray-50">
-              <td class="py-5 px-6 text-[14px] font-bold text-gray-900">{{ permit.type }}</td>
-              <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.idNumber }}</td>
-              <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.issuedDate }}</td>
-              <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.expiry }}</td>
-              <td class="py-5 px-6 text-right">
-                <span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase" [ngClass]="getStatusClass(permit.status)">
-                  {{ permit.status }}
-                </span>
-              </td>
-            </tr>
+      <!-- Permits Section -->
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <h2 class="text-[22px] font-extrabold text-gray-900">Permits</h2>
+            @if (permitDetails().length > 0) {
+              <span class="bg-[#f25f2f] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">{{ permitDetails().length }}</span>
             }
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </div>
+        </div>
 
-  </div>
+        @if (permitDetails().length > 0) {
+          <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-gray-100 bg-gray-50">
+                  <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Description</th>
+                  <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Start Date</th>
+                  <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">End Date</th>
+                  <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase">Attachment</th>
+                  <th class="py-4 px-6 text-[11px] font-extrabold text-gray-400 tracking-widest uppercase text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (permit of permitDetails(); track permit.id) {
+                  <tr class="border-b border-gray-50 transition-all hover:bg-gray-50">
+                    <td class="py-5 px-6 text-[14px] font-bold text-gray-900">{{ permit.description }}</td>
+                    <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.startDate }}</td>
+                    <td class="py-5 px-6 text-[14px] font-medium text-gray-500">{{ permit.endDate }}</td>
+                    <td class="py-5 px-6">
+                      @if (permit.attachmentName) {
+                        <button (click)="previewAttachment(permit.attachment)"
+                                class="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-blue-100 bg-white hover:border-blue-300 text-[12px] font-semibold text-blue-600 transition-colors">
+                          <i class="fas fa-eye"></i> Preview
+                        </button>
+                      } @else {
+                        <span class="text-[13px] text-gray-300">No file</span>
+                      }
+                    </td>
+                    <td class="py-5 px-6 text-right">
+                      <span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase" [ngClass]="getStatusColor(permit.status)">
+                        {{ permit.status }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm text-center">
+            <p class="text-[14px] text-gray-400">No permits registered for this vehicle.</p>
+          </div>
+        }
+      </div>
+
+      <!-- Delete Button -->
+      <!-- <div class="flex items-center justify-end gap-3">
+        <button (click)="goBack()" [disabled]="loading()"
+                class="px-6 py-3 border border-gray-200 rounded-lg font-bold text-[13px] text-gray-700 hover:text-gray-900 hover:border-gray-300 transition-colors disabled:text-gray-300 disabled:cursor-not-allowed disabled:border-gray-100">
+          Close
+        </button>
+        <button (click)="deleteVehicle()" [disabled]="loading()"
+                class="px-6 py-3 border border-red-200 rounded-lg font-bold text-[13px] text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors disabled:text-gray-300 disabled:cursor-not-allowed disabled:border-gray-100">
+          @if (loading()) {
+            <span class="loading loading-spinner loading-sm inline-block"></span>
+          } @else {
+            Delete Vehicle
+          }
+        </button>
+      </div> -->
+
+    </div>
+  } @else {
+    <div class="w-full h-full flex items-center justify-center">
+      <p class="text-[14px] text-gray-400">Select a vehicle to view details</p>
+    </div>
+  }
 </div>

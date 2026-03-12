@@ -1,17 +1,32 @@
-<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
-  
-  <div class="max-w-[700px] mx-auto">
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+
+  @if (permit()) {
+  <div class="w-full">
+
+    @if (actionMessage()) {
+    <div
+      class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+      <span class="loading loading-spinner loading-sm"></span>
+      <span>{{ actionMessage() }}</span>
+    </div>
+    }
+
+    @if (errorMessage()) {
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{
+      errorMessage() }}</div>
+    }
 
     <!-- Back Button -->
-    <button (click)="goBack()" class="flex items-center gap-2 text-gray-400 hover:text-gray-700 font-bold text-[13px] mb-6 transition-colors">
+    <button (click)="goBack()" [disabled]="loading()"
+      class="flex items-center gap-2 text-gray-400 hover:text-gray-700 font-bold text-[13px] mb-6 transition-colors disabled:text-gray-300 disabled:cursor-not-allowed">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
-      Back to Permits
+      Close Details
     </button>
 
     <!-- Permit Title -->
-    <h1 class="text-[26px] font-extrabold text-gray-900 text-center mb-8">{{ permit.name }}</h1>
+    <h1 class="text-[26px] font-extrabold text-gray-900 text-center mb-8">{{ permit()!.name }}</h1>
 
     <!-- Detail Cards Stack -->
     <div class="space-y-4">
@@ -19,12 +34,14 @@
       <!-- Permit Name -->
       <div class="bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-sm flex items-center justify-between">
         <div>
-          <span class="text-[10px] font-extrabold tracking-widest text-[#f25f2f] uppercase block mb-1.5">Permit Name</span>
-          <span class="text-[16px] font-bold text-gray-900">{{ permit.fullName }}</span>
+          <span class="text-[10px] font-extrabold tracking-widest text-[#f25f2f] uppercase block mb-1.5">Permit
+            Name</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ permit()!.name }}</span>
         </div>
         <div class="w-10 h-10 rounded-xl bg-gray-50 text-gray-300 flex items-center justify-center shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
       </div>
@@ -32,12 +49,14 @@
       <!-- Authorizing Body -->
       <div class="bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-sm flex items-center justify-between">
         <div>
-          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1.5">Authorizing Body</span>
-          <span class="text-[16px] font-bold text-gray-900">{{ permit.authorizingBody }}</span>
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1.5">Authorizing
+            Body</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ permit()!.authorizingBody || '-' }}</span>
         </div>
         <div class="w-10 h-10 rounded-xl bg-gray-50 text-gray-300 flex items-center justify-center shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
         </div>
       </div>
@@ -47,13 +66,17 @@
         <div>
           <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1.5">Status</span>
           <span class="text-[16px] font-bold text-gray-900 flex items-center gap-2">
-            {{ permit.status }}
-            <span class="w-2.5 h-2.5 rounded-full" [class.bg-emerald-500]="permit.status === 'Active'" [class.bg-amber-500]="permit.status !== 'Active'"></span>
+            {{ permit()!.isActive ? 'Active' : 'Inactive' }}
+            <span class="w-2.5 h-2.5 rounded-full" [class.bg-emerald-500]="permit()!.isActive"
+              [class.bg-amber-500]="!permit()!.isActive"></span>
           </span>
         </div>
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" [class.bg-emerald-50]="permit.status === 'Active'" [class.text-emerald-500]="permit.status === 'Active'" [class.bg-amber-50]="permit.status !== 'Active'" [class.text-amber-500]="permit.status !== 'Active'">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+          [class.bg-emerald-50]="permit()!.isActive" [class.text-emerald-500]="permit()!.isActive"
+          [class.bg-amber-50]="!permit()!.isActive" [class.text-amber-500]="!permit()!.isActive">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
       </div>
@@ -61,12 +84,14 @@
       <!-- Date Created -->
       <div class="bg-white border border-gray-100 rounded-2xl px-6 py-5 shadow-sm flex items-center justify-between">
         <div>
-          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1.5">Date Created</span>
-          <span class="text-[16px] font-bold text-gray-900">{{ permit.createdDate }}</span>
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase block mb-1.5">Date
+            Created</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ getCreatedDate() }}</span>
         </div>
         <div class="w-10 h-10 rounded-xl bg-gray-50 text-gray-300 flex items-center justify-center shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
       </div>
@@ -74,4 +99,5 @@
     </div>
 
   </div>
+  }
 </div>

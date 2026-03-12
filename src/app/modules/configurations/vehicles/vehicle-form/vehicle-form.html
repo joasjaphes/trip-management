@@ -1,6 +1,6 @@
 <div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
   
-  <div class="max-w-[900px] mx-auto">
+  <div class="w-full">
     @if (actionMessage()) {
       <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
         <span class="loading loading-spinner loading-sm"></span>
@@ -74,107 +74,105 @@
             <span class="bg-[#f25f2f] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">{{ permits.length }}</span>
           }
         </div>
+        <button type="button" (click)="addPermit()" [disabled]="loading()"
+                class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide inline-flex items-center gap-2 disabled:text-gray-300 disabled:cursor-not-allowed">
+          + Add Permit
+        </button>
       </div>
 
-      <!-- Already Added Permits List -->
+      @if (registeredPermits().length === 0) {
+        <p class="text-[12px] text-amber-600 mb-4">No active permit registrations found. Create one in Vehicle Permits configuration first.</p>
+      }
+
+      <!-- Column Headers -->
       @if (permits.length > 0) {
-        <div class="space-y-3 mb-6">
-          @for (permit of permits; track permit.id) {
-            <div class="bg-gray-50 border border-gray-100 rounded-xl px-5 py-4 flex items-center justify-between group hover:border-gray-200 transition-colors">
-              <div class="flex items-center gap-4 flex-1 min-w-0">
-                <div class="w-9 h-9 rounded-lg bg-red-50 text-[#f25f2f] flex items-center justify-center shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <div class="flex flex-col min-w-0">
-                  <span class="text-[14px] font-bold text-gray-900 truncate">{{ permit.description }}</span>
-                  <span class="text-[12px] text-gray-400">{{ permit.startDate }} → {{ permit.endDate }}
-                    @if (permit.fileName) {
-                      <span class="ml-2 text-gray-300">•</span>
-                      <span class="ml-2 text-blue-500">{{ permit.fileName }}</span>
-                    }
-                  </span>
-                </div>
-              </div>
-              <button type="button" (click)="removePermit(permit.id)" class="text-gray-300 hover:text-[#f25f2f] transition-colors shrink-0 ml-4 opacity-0 group-hover:opacity-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </div>
-          }
+        <div class="grid grid-cols-16 gap-x-4 mb-2 px-2">
+          <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Description</div>
+          <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Start Date</div>
+          <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">End Date</div>
+          <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Attachment</div>
+          <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Upload</div>
+          <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Del</div>
         </div>
       }
 
-      <!-- New Permit Input Form -->
-      <div class="border border-dashed border-gray-200 rounded-xl p-6 bg-gray-50/50">
-        <p class="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-4">Add a Permit</p>
+      <!-- Permit Rows -->
+      @for (permit of permits; track permit.id) {
+        <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-16 gap-x-4 items-center mb-3">
 
-        <div class="space-y-5">
-          <div class="flex flex-col gap-2">
-            <label class="text-[13px] font-bold text-gray-700">Permit Description</label>
-            <select [(ngModel)]="permitDescription" name="permitDescription"
-                    class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-              <option value="" disabled>Select Registered Permit</option>
-              @for (registeredPermit of registeredPermits(); track registeredPermit.id) {
-                <option [value]="registeredPermit.name">{{ registeredPermit.name }}</option>
+          <!-- Description -->
+          <div class="col-span-4 relative">
+            <select [(ngModel)]="permit.description" [name]="'permitDesc_' + permit.id"
+                    class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+              <option value="" disabled>Select permit</option>
+              @for (rp of registeredPermits(); track rp.id) {
+                <option [value]="rp.name">{{ rp.name }}</option>
               }
             </select>
-            @if (registeredPermits().length === 0) {
-              <span class="text-[12px] text-amber-600">No active permit registrations found. Create one in Vehicle Permits configuration first.</span>
-            }
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="flex flex-col gap-2">
-              <label class="text-[13px] font-bold text-gray-700">Start Date</label>
-              <div class="relative">
-                <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="permitStartDate" name="permitStartDate"
-                       class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            </div>
-            <div class="flex flex-col gap-2">
-              <label class="text-[13px] font-bold text-gray-700">End Date</label>
-              <div class="relative">
-                <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="permitEndDate" name="permitEndDate"
-                       class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Attachment Upload -->
-          <div class="flex flex-col gap-2">
-            <label class="text-[13px] font-bold text-gray-700">Attachment</label>
-            <label class="cursor-pointer w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl bg-white hover:bg-gray-50 py-6 transition-colors text-gray-400 hover:text-gray-500">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-7 h-7">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-              <span class="text-[13px] font-medium text-gray-500">Click or drag permit document to upload</span>
-              <span class="text-[11px] text-gray-400">PDF, JPG up to 5MB</span>
-              <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" (change)="onFileSelected($event)">
-            </label>
-            @if (permitFileName) {
-              <span class="text-[12px] text-blue-500 font-medium">📎 {{ permitFileName }}</span>
-            }
-          </div>
-
-          <!-- Add Permit Button -->
-          <button type="button" (click)="addPermit()"
-                  class="w-full flex items-center justify-center gap-2 border-2 border-dashed border-[#f25f2f]/30 rounded-xl py-3 text-[#f25f2f] font-bold text-[14px] hover:bg-red-50 hover:border-[#f25f2f]/50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                 class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
-            Add This Permit
-          </button>
+          </div>
+
+          <!-- Start Date -->
+          <div class="col-span-3">
+            <input type="date" [(ngModel)]="permit.startDate" [name]="'permitStart_' + permit.id"
+                   class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+          </div>
+
+          <!-- End Date -->
+          <div class="col-span-3">
+            <input type="date" [(ngModel)]="permit.endDate" [min]="permit.startDate" [disabled]="!permit.startDate" [name]="'permitEnd_' + permit.id"
+                   class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+          </div>
+
+          <!-- Attachment preview -->
+          <div class="col-span-2 flex items-center justify-start">
+            @if (permit.attachmentName) {
+              <button type="button" (click)="previewPermitAttachment(permit.id)"
+                      class="group flex items-center gap-2 rounded-lg border border-blue-100 bg-white px-2 py-1 hover:border-blue-300 cursor-pointer"
+                      [title]="permit.attachmentName">
+                <i class="fas fa-eye"></i>&nbsp;
+                <span class="text-[11px] font-semibold text-blue-600 group-hover:text-blue-700 truncate max-w-[70px]">Preview</span>
+              </button>
+            } @else {
+              <span class="text-[11px] font-semibold text-gray-300">No file</span>
+            }
+          </div>
+
+          <!-- Upload -->
+          <div class="col-span-3 flex items-center gap-2">
+            <label class="flex-1 cursor-pointer w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-lg bg-white hover:bg-gray-50 py-2.5 transition-colors text-gray-400 hover:text-[#f25f2f]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              <span class="text-[12px] font-semibold">{{ permit.isUploading ? 'Uploading...' : 'Upload' }}</span>
+              <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="hidden" [disabled]="loading()"
+                     (change)="onPermitFileSelected($event, permit.id)">
+            </label>
+          </div>
+
+          <!-- Delete -->
+          <div class="col-span-1 text-right">
+            <button type="button" (click)="removePermit(permit.id)" [disabled]="deletingPermitId() === permit.id || loading()"
+                    class="text-gray-400 hover:text-[#f25f2f] transition-colors shrink-0 p-1">
+              @if (deletingPermitId() === permit.id) {
+                <span class="loading loading-spinner loading-sm"></span>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-[18px] h-[18px]">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              }
+            </button>
+          </div>
+
         </div>
-      </div>
+      }
+
+      @if (permits.length === 0) {
+        <p class="text-[13px] text-gray-400 text-center py-6">No permits added yet. Click <span class="font-bold text-[#f25f2f]">+ Add Permit</span> to begin.</p>
+      }
     </div>
 
     <div class="flex items-center justify-between pt-2">
@@ -183,7 +181,7 @@
         <label for="isActive" class="text-[13px] font-medium text-gray-500">Active</label>
       </div>
     </div>
-    <app-save-area [saveText]="'Save Vehicle'" [loading]="loading()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
+    <app-save-area [saveText]="isEditMode ? 'Update Vehicle' : 'Save Vehicle'" [loading]="loading()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
 
   </div>
 </div>

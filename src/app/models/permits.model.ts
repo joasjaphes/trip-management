@@ -3,6 +3,7 @@ export interface Permit {
   name: string;
   authorizingBody?: string;
   isActive: boolean;
+  status?: string;
   createdAt: Date;
   updatedAt: Date;
 }

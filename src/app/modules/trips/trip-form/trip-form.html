@@ -38,7 +38,7 @@
       <div class="flex flex-col gap-2 md:col-span-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">End Date (Est.)</label>
         <div class="relative">
-          <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="endDate" name="endDate"
+          <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="endDate" name="endDate" [min]="tripDate" [disabled]="!tripDate"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -118,7 +118,7 @@
       <!-- Customer Name (Autocomplete) -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Name</label>
-        <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameInput($event)" name="customerName"
+        <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameInput($event)" name="customerName" autocomplete="off"
           list="customer-name-options" placeholder="Select existing customer or type a new name"
           class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         <datalist id="customer-name-options">

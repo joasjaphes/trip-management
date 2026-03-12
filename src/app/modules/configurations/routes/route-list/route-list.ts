@@ -4,6 +4,7 @@ import { DataTable, TableConfig } from '../../../../shared/components/data-table
 import { Layout } from '../../../../shared/components/layout/layout';
 import { RouteForm } from '../route-form/route-form';
 import { RouteService } from '../../../../services/route.service';
+import { Route } from '../../../../models/route.model';
 
 @Component({
   selector: 'app-route-list',
@@ -21,6 +22,8 @@ export class RouteList implements OnInit {
   viewDetails = signal(false);
   formTitle = signal('');
   formDescription = signal('');
+  loading = this.routeService.loading;
+  selectedRoute = signal<Route | undefined>(undefined);
 
   routes = computed(() =>
     this.routeService.allRoutes().map((route) => ({
@@ -57,9 +60,11 @@ export class RouteList implements OnInit {
       },
       {
         key: 'status',
-        label: 'Status'
+        label: 'Status',
+        type: 'status'
       }
-    ]
+    ],
+    actions: { edit: true }
   };
 
   async ngOnInit(): Promise<void> {
@@ -67,9 +72,23 @@ export class RouteList implements OnInit {
   }
 
   onAdd() {
+    this.selectedRoute.set(undefined);
     this.viewType.set('add');
     this.formTitle.set('Add new route');
     this.formDescription.set('Configure a new transport route and timing details.');
+    this.viewDetails.set(true);
+  }
+
+  onEdit(row: { id: string }) {
+    const route = this.routeService.getById(row.id);
+    if (!route) {
+      return;
+    }
+
+    this.selectedRoute.set(route);
+    this.viewType.set('edit');
+    this.formTitle.set('Edit route');
+    this.formDescription.set(`Updating ${route.name}`);
     this.viewDetails.set(true);
   }
 
@@ -78,6 +97,7 @@ export class RouteList implements OnInit {
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    this.selectedRoute.set(undefined);
     await this.routeService.getAll();
   }
 }

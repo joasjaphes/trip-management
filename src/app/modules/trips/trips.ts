@@ -33,6 +33,7 @@ export class Trips implements OnInit {
     this.tripService.allTrips().map((trip) => ({
       id: trip.id,
       tripReferenceNumber: trip.tripReferenceNumber,
+      date: trip.tripDate ? new Date(trip.tripDate).toLocaleDateString() : '-',
       paidAmount: `${Number(trip.paidAmount || 0).toLocaleString()}`,
       endDate: trip.endDate ? new Date(trip.endDate).toLocaleDateString() : '-',
       vehicle: trip.vehicle?.registrationNo || trip.vehicleId,

@@ -1,11 +1,18 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
-  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [splitSize]="splitSize()">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="vehicles()" [config]="tableConfigurations"></app-data-table>
+    <app-data-table [data]="vehicles()" [config]="tableConfigurations" [loading]="loading()"
+      (edit)="onEdit($event)" (view)="onView($event)"></app-data-table>
   </ng-container>
   <ng-container ngProjectAs="form">
-    @if (viewType() == 'add') {
-    <app-vehicle-form (close)="onCloseForm()"></app-vehicle-form>
+    @if (viewType() === 'add') {
+      <app-vehicle-form (close)="onCloseForm()"></app-vehicle-form>
+    }
+    @if (viewType() === 'edit') {
+      <app-vehicle-form [vehicle]="selectedVehicle()" (close)="onCloseForm()"></app-vehicle-form>
+    }
+    @if (viewType() === 'view') {
+      <app-vehicle-detail [vehicle]="selectedVehicle()" (close)="onCloseForm()"></app-vehicle-detail>
     }
   </ng-container>
 </app-layout>

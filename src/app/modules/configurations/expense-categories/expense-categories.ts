@@ -4,6 +4,7 @@ import { DataTable, TableConfig } from '../../../shared/components/data-table/da
 import { Layout } from '../../../shared/components/layout/layout';
 import { ExpenseCategoryForm } from './expense-category-form/expense-category-form';
 import { ExpenseCategoryService } from '../../../services/expense-category.service';
+import { ExpenseCategory } from '../../../models/expense-category.model';
 
 @Component({
   selector: 'app-expense-categories',
@@ -21,6 +22,7 @@ export class ExpenseCategories implements OnInit {
   viewDetails = signal(false);
   formTitle = signal('');
   formDescription = signal('');
+  selectedCategory = signal<ExpenseCategory | undefined>(undefined);
 
   categories = computed(() =>
     this.expenseCategoryService.allCategories().map((category) => ({
@@ -42,7 +44,8 @@ export class ExpenseCategories implements OnInit {
       },
       {
         key: 'status',
-        label: 'Status'
+        label: 'Status',
+        type: 'status'
       },
       // {
       //   key: 'description',
@@ -52,7 +55,8 @@ export class ExpenseCategories implements OnInit {
         key: 'createdDate',
         label: 'Created date'
       }
-    ]
+    ],
+    actions: { edit: true }
   };
 
   async ngOnInit(): Promise<void> {
@@ -60,9 +64,23 @@ export class ExpenseCategories implements OnInit {
   }
 
   onAdd() {
+    this.selectedCategory.set(undefined);
     this.viewType.set('add');
     this.formTitle.set('Add new category');
     this.formDescription.set('Create a new expense classification for operations.');
+    this.viewDetails.set(true);
+  }
+
+  onEdit(row: { id: string }) {
+    const category = this.expenseCategoryService.getById(row.id);
+    if (!category) {
+      return;
+    }
+
+    this.selectedCategory.set(category);
+    this.viewType.set('edit');
+    this.formTitle.set('Edit category');
+    this.formDescription.set(`Updating ${category.name}`);
     this.viewDetails.set(true);
   }
 
@@ -71,6 +89,7 @@ export class ExpenseCategories implements OnInit {
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    this.selectedCategory.set(undefined);
     await this.expenseCategoryService.getAll();
   }
 }

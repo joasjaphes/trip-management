@@ -24,7 +24,7 @@ export class DriverList implements OnInit {
   formTitle = signal('');
   formDescription = signal('');
   selectedDriver = signal<Driver | undefined>(undefined);
-  splitSize = signal<'full' | 'half'>('half');
+  splitSize = signal<'full' | 'half'>('full');
   loading = this.driverService.loading;
 
   drivers = computed(() =>

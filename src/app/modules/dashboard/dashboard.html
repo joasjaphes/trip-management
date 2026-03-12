@@ -104,7 +104,7 @@
                         <span class="capitalize">{{ trip.status }}</span>
                       </span>
                     </td>
-                    <td class="font-bold text-gray-900 py-4">KES {{ trip.revenue.toLocaleString() }}</td>
+                    <td class="font-bold text-gray-900 py-4">TZS {{ trip.revenue.toLocaleString() }}</td>
                   </tr>
                 }
               </tbody>
@@ -114,56 +114,35 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
+    <!-- Trip Status Chart -->
     <div class="space-y-6 flex flex-col w-full">
       <div class="bg-white border border-gray-100 rounded-2xl shadow-sm">
         <div class="p-6">
-          <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-          <div class="space-y-3">
-            <a routerLink="/trips/new" class="w-full flex items-center justify-between bg-[#f25f2f] hover:bg-[#d82231] active:bg-[#bd1826] text-white px-4 py-3.5 rounded-xl font-bold transition-colors shadow-[0_4px_12px_rgba(240,43,60,0.2)]">
-              <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                New Trip
+          <h2 class="text-xl font-bold text-gray-900 mb-6">Trips by Status</h2>
+
+          <div class="flex flex-col items-center gap-6">
+            <div class="relative">
+              <div class="h-52 w-52 rounded-full" [style.background]="tripStatusChartBackground()"></div>
+              <div class="absolute inset-0 m-auto h-28 w-28 rounded-full bg-white border border-gray-100 flex flex-col items-center justify-center">
+                <span class="text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Total Trips</span>
+                <span class="text-[30px] font-extrabold text-gray-900 leading-none mt-1">{{ totalTrips() }}</span>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
-            <a routerLink="/drivers" class="w-full flex items-center justify-between bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 hover:text-gray-900 px-4 py-3.5 rounded-xl font-bold transition-colors">
-              <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                </svg>
-                Add Driver
-              </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
-            <a routerLink="/vehicles" class="w-full flex items-center justify-between bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 hover:text-gray-900 px-4 py-3.5 rounded-xl font-bold transition-colors">
-              <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Add Vehicle
-              </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
-            <a routerLink="/routes" class="w-full flex items-center justify-between bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 hover:text-gray-900 px-4 py-3.5 rounded-xl font-bold transition-colors">
-              <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                Add Route
-              </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
+            </div>
+
+            <div class="w-full space-y-3">
+              @for (row of tripStatusSummary(); track row.key) {
+                <div class="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5">
+                  <div class="flex items-center gap-3">
+                    <span class="h-3 w-3 rounded-full" [style.background]="row.color"></span>
+                    <span class="text-[13px] font-bold text-gray-700">{{ row.label }}</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-[13px] font-extrabold text-gray-900">{{ row.count }}</span>
+                    <span class="ml-2 text-[12px] font-semibold text-gray-400">{{ row.percentage | number:'1.0-0' }}%</span>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
         </div>
       </div>

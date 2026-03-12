@@ -21,7 +21,7 @@ export class DriverForm {
   actionMessage = signal<string | null>(null);
   driver = input<Driver | undefined>();
   isEditMode = computed(() => !!this.driver()?.id);
-
+  today = new Date()
   firstName = '';
   lastName = '';
   email = '';

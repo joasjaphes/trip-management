@@ -1,6 +1,6 @@
 <div class=" w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
   
-  <div class="max-w-[900px] mx-auto">
+  <div class="w-full">
     @if (actionMessage()) {
       <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
         <span class="loading loading-spinner loading-sm"></span>
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <app-save-area [saveText]="'Save Permit'" [loading]="loading()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
+    <app-save-area [saveText]="isEditMode ? 'Update Permit' : 'Save Permit'" [loading]="loading()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
 
   </div>
 </div>

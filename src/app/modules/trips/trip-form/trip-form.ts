@@ -122,7 +122,7 @@ export class TripForm implements OnInit {
       this.routeId = '';
       this.cargoTypeId = '';
       this.revenue = '';
-      this.status = TripStatus.PENDING;
+      this.status = TripStatus.IN_PROGRESS;
       this.notes = '';
       this.customerName = '';
       this.customerTIN = '';
@@ -138,7 +138,7 @@ export class TripForm implements OnInit {
     this.routeId = trip.routeId || '';
     this.cargoTypeId = trip.cargoTypeId || '';
     this.revenue = String(trip.revenue ?? '');
-    this.status = (trip.status || TripStatus.PENDING) as TripStatus;
+    this.status = (trip.status || TripStatus.IN_PROGRESS) as TripStatus;
     this.notes = trip.notes || '';
     this.customerName = trip.customerName || trip.customer?.name || '';
     this.customerTIN = trip.customerTIN || trip.customer?.tin || '';
@@ -319,7 +319,12 @@ export class TripForm implements OnInit {
       let tripId = editingTrip?.id;
 
       if (tripId) {
-        let status = !(this.endDate && this.trip().paidAmount == this.trip().revenue) ? TripStatus.PENDING : this.status;
+        let status = this.status;
+        if (this.endDate && this.trip().paidAmount < this.trip().revenue) {
+          status = TripStatus.PENDING;
+        } else {
+          status = this.status;
+        }
         await this.tripService.update(tripId, {
           ...payload,
           status

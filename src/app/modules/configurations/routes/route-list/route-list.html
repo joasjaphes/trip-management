@@ -1,11 +1,14 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
   [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="routes()" [config]="tableConfigurations"></app-data-table>
+    <app-data-table [data]="routes()" [config]="tableConfigurations" [loading]="loading()" (edit)="onEdit($event)"></app-data-table>
   </ng-container>
   <ng-container ngProjectAs="form">
-    @if (viewType() == 'add') {
+    @if (viewType() === 'add') {
     <app-route-form (close)="onCloseForm()"></app-route-form>
+    }
+    @if (viewType() === 'edit') {
+    <app-route-form [selectedRoute]="selectedRoute()" (close)="onCloseForm()"></app-route-form>
     }
   </ng-container>
 </app-layout>

@@ -1,8 +1,9 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
 import { PermitRegistrationService } from '../../../../services/permit-registration.service';
+import { Permit } from '../../../../models/permits.model';
 
 @Component({
   selector: 'app-permit-form',
@@ -10,8 +11,10 @@ import { PermitRegistrationService } from '../../../../services/permit-registrat
   imports: [CommonModule, FormsModule, SaveArea],
   templateUrl: './permit-form.html'
 })
-export class PermitForm {
+export class PermitForm implements OnInit {
   private permitRegistrationService = inject(PermitRegistrationService);
+  
+  permit = input<Permit | undefined>(undefined);
   loading = this.permitRegistrationService.loading;
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
@@ -21,6 +24,19 @@ export class PermitForm {
   authorizingBody = '';
   isActive = true;
   close = output();
+
+  get isEditMode(): boolean {
+    return !!this.permit()?.id;
+  }
+
+  ngOnInit(): void {
+    const p = this.permit();
+    if (p) {
+      this.permitName = p.name;
+      this.authorizingBody = p.authorizingBody || '';
+      this.isActive = p.isActive;
+    }
+  }
 
   goBack() {
     this.close.emit();
@@ -36,16 +52,25 @@ export class PermitForm {
   async onSubmit() {
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    this.actionMessage.set('Saving permit...');
+    this.actionMessage.set(this.isEditMode ? 'Updating permit...' : 'Saving permit...');
 
     try {
-      await this.permitRegistrationService.create({
-        name: this.permitName,
-        authorizingBody: this.authorizingBody || undefined,
-        isActive: this.isActive,
-      });
+      if (this.isEditMode) {
+        await this.permitRegistrationService.update(this.permit()!.id, {
+          name: this.permitName,
+          authorizingBody: this.authorizingBody || undefined,
+          isActive: this.isActive,
+        });
+        this.successMessage.set('Permit updated successfully.');
+      } else {
+        await this.permitRegistrationService.create({
+          name: this.permitName,
+          authorizingBody: this.authorizingBody || undefined,
+          isActive: this.isActive,
+        });
+        this.successMessage.set('Permit saved successfully.');
+      }
 
-      this.successMessage.set('Permit saved successfully.');
       await this.waitForLoadingToFinish();
       this.close.emit();
     } catch (error) {

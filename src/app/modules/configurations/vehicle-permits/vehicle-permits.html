@@ -1,11 +1,17 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
-  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [splitSize]="splitSize()">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="permits()" [config]="tableConfigurations"></app-data-table>
+    <app-data-table [data]="permits()" [config]="tableConfigurations" (edit)="onEdit($event)" (view)="onView($event)" [loading]="loading()"></app-data-table>
   </ng-container>
   <ng-container ngProjectAs="form">
-    @if (viewType() == 'add') {
-    <app-permit-form (close)="onCloseForm()"></app-permit-form>
+    @if (viewType() === 'add') {
+      <app-permit-form (close)="onCloseForm()"></app-permit-form>
+    }
+    @if (viewType() === 'edit') {
+      <app-permit-form [permit]="selectedPermit()" (close)="onCloseForm()"></app-permit-form>
+    }
+    @if (viewType() === 'view') {
+      <app-permit-detail [permit]="selectedPermit()" (close)="onCloseForm()"></app-permit-detail>
     }
   </ng-container>
 </app-layout>

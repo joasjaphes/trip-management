@@ -1,0 +1,51 @@
+<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  <div class="mb-8">
+    <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight">Expiring Permits Report</h1>
+    <p class="mt-1 text-[15px] font-medium text-gray-400">Permits expiring within the next 30 days, including already expired permits.</p>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{ errorMessage() }}</div>
+  }
+
+  <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-100 bg-gray-50">
+            <th class="px-6 py-4 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Permit</th>
+            <th class="px-6 py-4 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Start Date</th>
+            <th class="px-6 py-4 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">End Date</th>
+            <th class="px-6 py-4 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Days Remaining</th>
+            <th class="px-6 py-4 text-[11px] font-extrabold uppercase tracking-widest text-gray-400 text-right">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-[14px] font-medium text-gray-400">Loading report...</td>
+            </tr>
+          } @else if (permitRows().length === 0) {
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-[14px] font-medium text-gray-400">No expiring permits found in the next 30 days.</td>
+            </tr>
+          } @else {
+            @for (permit of permitRows(); track permit.id) {
+              <tr class="border-b border-gray-50 transition-colors hover:bg-gray-50">
+                <td class="px-6 py-4 text-[14px] font-bold text-gray-900">{{ permit.description }}</td>
+                <td class="px-6 py-4 text-[14px] text-gray-600">{{ permit.startDate | date:'mediumDate' }}</td>
+                <td class="px-6 py-4 text-[14px] text-gray-600">{{ permit.endDate | date:'mediumDate' }}</td>
+                <td class="px-6 py-4 text-[14px] font-bold text-gray-900">{{ permit.daysRemaining }}</td>
+                <td class="px-6 py-4 text-right">
+                  <span class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest" [class]="getStatusClass(permit)">
+                    {{ getStatusLabel(permit) }}
+                  </span>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

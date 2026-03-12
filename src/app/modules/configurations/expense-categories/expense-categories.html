@@ -1,11 +1,14 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
   [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="categories()" [config]="tableConfigurations"></app-data-table>
+    <app-data-table [data]="categories()" [config]="tableConfigurations" (edit)="onEdit($event)"></app-data-table>
   </ng-container>
   <ng-container ngProjectAs="form">
-    @if (viewType() == 'add') {
+    @if (viewType() === 'add') {
     <app-expense-category-form (close)="onCloseForm()"></app-expense-category-form>
+    }
+    @if (viewType() === 'edit') {
+    <app-expense-category-form [selectedCategory]="selectedCategory()" (close)="onCloseForm()"></app-expense-category-form>
     }
   </ng-container>
 </app-layout>

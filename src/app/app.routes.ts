@@ -29,6 +29,18 @@ export const routes: Routes = [
                 loadComponent: () => import('./modules/trips/invoicing/invoicing').then(m => m.Invoicing),
             },
             {
+                path: 'reports/debtors-statement',
+                loadComponent: () => import('./modules/reports/debtors-statement-report/debtors-statement-report').then(m => m.DebtorsStatementReport),
+            },
+            {
+                path: 'reports/trip-status',
+                loadComponent: () => import('./modules/reports/trip-status-report/trip-status-report').then(m => m.TripStatusReport),
+            },
+            {
+                path: 'reports/expiring-permits',
+                loadComponent: () => import('./modules/reports/expiring-permits-report/expiring-permits-report').then(m => m.ExpiringPermitsReport),
+            },
+            {
                 path: 'trips/new',
                 loadComponent: () => import('./modules/trips/trip-form/trip-form').then(m => m.TripForm),
             },

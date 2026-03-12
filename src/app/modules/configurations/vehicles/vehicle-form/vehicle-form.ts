@@ -1,17 +1,26 @@
-import { Component, computed, inject, OnInit, output, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
 import { VehicleService } from '../../../../services/vehicle.service';
 import { PermitRegistrationService } from '../../../../services/permit-registration.service';
 import { VehiclePermitService } from '../../../../services/vehicle-permit.service';
+import { FileUploadService } from '../../../../services/file-upload.service';
+import { Vehicle } from '../../../../models/vehicle.model';
+import { CommonService } from '../../../../services/common.service';
 
-interface Permit {
+interface PermitRow {
   id: string;
+  /** id of the persisted VehiclePermit record (undefined = new/unsaved) */
+  permitRecordId?: string;
   description: string;
   startDate: string;
   endDate: string;
-  fileName: string;
+  /** stored path returned from upload endpoint */
+  attachmentPath?: string;
+  attachmentName?: string;
+  attachmentUrl?: string;
+  isUploading?: boolean;
 }
 
 @Component({
@@ -24,32 +33,86 @@ export class VehicleForm implements OnInit {
   private vehicleService = inject(VehicleService);
   private permitRegistrationService = inject(PermitRegistrationService);
   private vehiclePermitService = inject(VehiclePermitService);
+  private fileUploadService = inject(FileUploadService);
+  private commonService = inject(CommonService);
+
+  /** Pass a vehicle to switch to edit mode */
+  vehicle = input<Vehicle | undefined>(undefined);
+
   private isSubmitting = signal(false);
+  pendingUploads = signal(0);
+
   loading = computed(() =>
-    this.isSubmitting() || this.vehicleService.loading() || this.vehiclePermitService.loading()
+    this.isSubmitting() ||
+    this.pendingUploads() > 0 ||
+    this.vehicleService.loading() ||
+    this.vehiclePermitService.loading()
   );
+
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
   actionMessage = signal<string | null>(null);
+  deletingPermitId = signal<string | null>(null);
+
   registeredPermits = computed(() =>
     this.permitRegistrationService.allPermits().filter((permit) => permit.isActive)
   );
+
+  get isEditMode(): boolean {
+    return !!this.vehicle()?.id;
+  }
 
   registrationNo = '';
   year = '';
   tankCapacity = '';
   mileagePerFullTank = '';
+  isActive = true;
 
-  permitDescription = '';
-  permitStartDate = '';
-  permitEndDate = '';
-  permitFileName = '';
+  permits: PermitRow[] = [];
+  /** track which existing permit record ids were removed, so we can delete them on save */
+  private removedPermitRecordIds: string[] = [];
 
-  permits: Permit[] = [];
   close = output();
 
   async ngOnInit(): Promise<void> {
     await this.permitRegistrationService.getAll();
+    const v = this.vehicle();
+    if (v) {
+      this.populateFromVehicle(v);
+    }
+  }
+
+  private populateFromVehicle(vehicle: Vehicle) {
+    this.registrationNo = vehicle.registrationNo;
+    this.year = vehicle.registrationYear ? String(vehicle.registrationYear) : '';
+    this.tankCapacity = String(vehicle.tankCapacity ?? '');
+    this.mileagePerFullTank = String(vehicle.mileagePerFullTank ?? '');
+    this.isActive = vehicle.isActive;
+
+    this.permits = (vehicle.permits || []).map((p) => ({
+      id: this.commonService.makeid(),
+      permitRecordId: p.id,
+      description: p.description,
+      startDate: p.startDate ? new Date(p.startDate).toISOString().split('T')[0] : '',
+      endDate: p.endDate ? new Date(p.endDate).toISOString().split('T')[0] : '',
+      attachmentPath: p.attachment,
+      attachmentName: this.fileUploadService.getFileName(p.attachment),
+      attachmentUrl: undefined,
+      isUploading: false,
+    }));
+
+    // Resolve attachment URLs in the background
+    void this.hydratePermitUrls();
+  }
+
+  private async hydratePermitUrls() {
+    const hydrated = await Promise.all(
+      this.permits.map(async (p) => ({
+        ...p,
+        attachmentUrl: p.attachmentUrl || await this.fileUploadService.resolveFileUrl(p.attachmentPath),
+      }))
+    );
+    this.permits = hydrated;
   }
 
   goBack() {
@@ -64,30 +127,77 @@ export class VehicleForm implements OnInit {
   }
 
   addPermit() {
-    if (!this.permitDescription || !this.permitStartDate || !this.permitEndDate) return;
-
-    this.permits.push({
-      id: crypto.randomUUID(),
-      description: this.permitDescription,
-      startDate: this.permitStartDate,
-      endDate: this.permitEndDate,
-      fileName: this.permitFileName,
-    });
-
-    this.permitDescription = '';
-    this.permitStartDate = '';
-    this.permitEndDate = '';
-    this.permitFileName = '';
+    this.permits = [
+      ...this.permits,
+      {
+        id: this.commonService.makeid(),
+        description: '',
+        startDate: '',
+        endDate: '',
+        isUploading: false,
+      },
+    ];
   }
 
   removePermit(id: string) {
-    this.permits = this.permits.filter(p => p.id !== id);
+    const permit = this.permits.find((p) => p.id === id);
+    if (permit?.permitRecordId) {
+      this.removedPermitRecordIds.push(permit.permitRecordId);
+    }
+    this.permits = this.permits.filter((p) => p.id !== id);
   }
 
-  onFileSelected(event: Event) {
+  async onPermitFileSelected(event: Event, permitId: string) {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.permitFileName = input.files[0].name;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.errorMessage.set(null);
+    this.actionMessage.set(`Uploading ${file.name}...`);
+    this.pendingUploads.update((c) => c + 1);
+
+    this.permits = this.permits.map((p) =>
+      p.id === permitId ? { ...p, attachmentName: file.name, isUploading: true } : p
+    );
+
+    try {
+      const uploaded = await this.fileUploadService.uploadFile(file);
+      this.permits = this.permits.map((p) =>
+        p.id === permitId
+          ? {
+              ...p,
+              attachmentPath: uploaded.filePath,
+              attachmentName: uploaded.fileName,
+              attachmentUrl: uploaded.fileUrl,
+              isUploading: false,
+            }
+          : p
+      );
+      this.successMessage.set('Permit attachment uploaded.');
+    } catch (err) {
+      this.permits = this.permits.map((p) =>
+        p.id === permitId ? { ...p, isUploading: false } : p
+      );
+      this.errorMessage.set(String(err || 'Upload failed. Please try again.'));
+    } finally {
+      this.pendingUploads.update((c) => c - 1);
+      this.actionMessage.set(null);
+      input.value = '';
+    }
+  }
+
+  async previewPermitAttachment(permitId: string) {
+    const permit = this.permits.find((p) => p.id === permitId);
+    if (!permit) return;
+
+    let url = permit.attachmentUrl;
+    if (!url && permit.attachmentPath) {
+      url = await this.fileUploadService.resolveFileUrl(permit.attachmentPath);
+      this.permits = this.permits.map((p) => (p.id === permitId ? { ...p, attachmentUrl: url } : p));
+    }
+
+    if (url) {
+      window.open(url, '_blank');
     }
   }
 
@@ -96,47 +206,102 @@ export class VehicleForm implements OnInit {
     this.year = '';
     this.tankCapacity = '';
     this.mileagePerFullTank = '';
-    this.permitDescription = '';
-    this.permitStartDate = '';
-    this.permitEndDate = '';
-    this.permitFileName = '';
+    this.isActive = true;
     this.permits = [];
+    this.removedPermitRecordIds = [];
   }
 
   async onSubmit() {
-    if (this.loading()) {
-      return;
-    }
+    if (this.loading()) return;
 
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    this.actionMessage.set('Saving vehicle...');
+
+    const vehiclePayload = {
+      registrationNo: this.registrationNo,
+      registrationYear: this.year ? Number(this.year) : undefined,
+      tankCapacity: Number(this.tankCapacity),
+      mileagePerFullTank: Number(this.mileagePerFullTank),
+      currentMileage: undefined,
+      permits: [],
+      isActive: this.isActive,
+    };
+
     try {
-      const vehicleId = await this.vehicleService.create({
-        registrationNo: this.registrationNo,
-        registrationYear: this.year ? Number(this.year) : undefined,
-        tankCapacity: Number(this.tankCapacity),
-        mileagePerFullTank: Number(this.mileagePerFullTank),
-        currentMileage: undefined,
-        permits: [],
-        isActive: true,
-      });
+      if (this.isEditMode) {
+        // ── Edit mode ──
+        const vehicleId = this.vehicle()!.id;
+        this.actionMessage.set('Updating vehicle...');
+        await this.vehicleService.update(vehicleId, vehiclePayload);
 
-      await Promise.all(
-        this.permits.map((permit) =>
-          this.vehiclePermitService.create({
-            id: permit.id,
-            description: permit.description,
-            startDate: new Date(permit.startDate),
-            endDate: new Date(permit.endDate),
-            attachment: permit.fileName,
-            vehicleId,
-          })
-        )
-      );
+        // Delete removed permits
+        if (this.removedPermitRecordIds.length > 0) {
+          this.actionMessage.set('Removing old permits...');
+          await Promise.all(this.removedPermitRecordIds.map((id) => this.vehiclePermitService.delete(id)));
+          this.removedPermitRecordIds = [];
+        }
 
-      this.successMessage.set('Vehicle saved successfully.');
+        // Save new permits (those without a permitRecordId)
+        const newPermits = this.permits.filter((p) => !p.permitRecordId);
+        if (newPermits.length > 0) {
+          this.actionMessage.set('Saving new permits...');
+          await Promise.all(
+            newPermits.map((p) =>
+              this.vehiclePermitService.create({
+                id: this.commonService.makeid(),
+                description: p.description,
+                startDate: new Date(p.startDate),
+                endDate: new Date(p.endDate),
+                attachment: p.attachmentPath,
+                vehicleId,
+              })
+            )
+          );
+        }
+
+        // Update existing permits that already have a record id
+        const existingPermits = this.permits.filter((p) => !!p.permitRecordId);
+        if (existingPermits.length > 0) {
+          this.actionMessage.set('Updating permits...');
+          await Promise.all(
+            existingPermits.map((p) =>
+              this.vehiclePermitService.update(p.permitRecordId!, {
+                description: p.description,
+                startDate: new Date(p.startDate),
+                endDate: new Date(p.endDate),
+                attachment: p.attachmentPath,
+                vehicleId,
+              })
+            )
+          );
+        }
+
+        this.successMessage.set('Vehicle updated successfully.');
+      } else {
+        // ── Add mode ──
+        this.actionMessage.set('Saving vehicle...');
+        const vehicleId = await this.vehicleService.create(vehiclePayload);
+
+        if (this.permits.length > 0) {
+          this.actionMessage.set('Saving permits...');
+          await Promise.all(
+            this.permits.map((p) =>
+              this.vehiclePermitService.create({
+                id: this.commonService.makeid(),
+                description: p.description,
+                startDate: new Date(p.startDate),
+                endDate: new Date(p.endDate),
+                attachment: p.attachmentPath,
+                vehicleId,
+              })
+            )
+          );
+        }
+
+        this.successMessage.set('Vehicle saved successfully.');
+      }
+
       await this.waitForLoadingToFinish();
       this.reset();
       this.close.emit();
@@ -148,3 +313,4 @@ export class VehicleForm implements OnInit {
     }
   }
 }
+
