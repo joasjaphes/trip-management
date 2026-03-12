@@ -24,7 +24,7 @@
     <!-- Main Details Form Grid -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-8 mb-12 relative z-10">
       <!-- Start Date -->
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 md:col-span-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Start Date</label>
         <div class="relative">
           <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="tripDate" name="tripDate"
@@ -35,7 +35,7 @@
         </div>
       </div>
       <!-- End Date -->
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 md:col-span-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">End Date (Est.)</label>
         <div class="relative">
           <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="endDate" name="endDate"
@@ -81,7 +81,7 @@
       </div>
 
       <!-- Route Selection -->
-      <div class="flex flex-col gap-2 md:col-span-2">
+      <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Route Selection</label>
         <div class="relative">
           <select [(ngModel)]="routeId" name="routeId"
@@ -116,7 +116,7 @@
       </div>
 
       <!-- Customer Name (Autocomplete) -->
-      <div class="flex flex-col gap-2 md:col-span-2">
+      <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Name</label>
         <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameInput($event)" name="customerName"
           list="customer-name-options" placeholder="Select existing customer or type a new name"
@@ -157,7 +157,7 @@
         </div>
       </div>
       <!-- Status -->
-      <div class="flex flex-col gap-2">
+      <!-- <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Status</label>
         <div class="relative">
           <select [(ngModel)]="status" name="status"
@@ -172,7 +172,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
-      </div>
+      </div> -->
 
       <!-- Notes -->
       <div class="flex flex-col gap-2 md:col-span-4">
@@ -249,10 +249,11 @@
       <div class="col-span-2 flex items-center justify-start">
         @if (expenseRow.attachmentName) {
         <button type="button" (click)="previewAttachment(expenseRow.id)"
-          class="group flex items-center gap-2 rounded-lg border border-blue-100 bg-white px-2 py-1 hover:border-blue-300"
+          class="group flex items-center gap-2 rounded-lg border border-blue-100 bg-white px-2 py-1 hover:border-blue-300 cursor-pointer"
           [title]="expenseRow.attachmentName">
-          <img [src]="expenseRow.attachmentUrl || ''" [alt]="expenseRow.attachmentName"
-            class="h-9 w-9 rounded object-cover border border-gray-200 bg-gray-100">
+          <!-- <img [src]="expenseRow.attachmentUrl || ''" [alt]="expenseRow.attachmentName"
+            class="h-9 w-9 rounded object-cover border border-gray-200 bg-gray-100"> -->
+          <i class="fas fa-eye"></i> &nbsp;
           <span
             class="text-[11px] font-semibold text-blue-600 group-hover:text-blue-700 truncate max-w-[70px]">Preview</span>
         </button>
@@ -292,7 +293,7 @@
       first.</p>
     }
 
-    <app-save-area [saveText]="'Create Trip'" [loading]="busy()" (cancel)="goBack()"
+    <app-save-area [saveText]="isEditMode() ? 'Update Trip' : 'Create Trip'" [loading]="busy()" (cancel)="goBack()"
       (save)="onSubmit()"></app-save-area>
 
   </div>

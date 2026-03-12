@@ -8,12 +8,12 @@
   [formDescription]="formDescription()"
 >
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="customers()" [config]="tableConfigurations"></app-data-table>
+    <app-data-table [data]="customers()" [config]="tableConfigurations" (edit)="onEdit($event)"></app-data-table>
   </ng-container>
 
   <ng-container ngProjectAs="form">
-    @if (viewType() === 'add') {
-      <app-customer-form (close)="onCloseForm()"></app-customer-form>
+    @if (viewType() === 'add' || viewType() === 'edit') {
+      <app-customer-form (close)="onCloseForm()" [currentCustomer]="selectedCustomer()"></app-customer-form>
     }
   </ng-container>
 </app-layout>

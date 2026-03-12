@@ -41,6 +41,6 @@
       </div>
     </div>
 
-    <app-save-area [saveText]="'Save Cargo Type'" [loading]="loading()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
+    <app-save-area [saveText]="isEditMode() ? 'Update Cargo Type' : 'Save Cargo Type'" [loading]="saving()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
   </div>
 </div>

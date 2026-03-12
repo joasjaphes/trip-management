@@ -4,6 +4,7 @@ import { DataTable, TableConfig } from '../../../../shared/components/data-table
 import { Layout } from '../../../../shared/components/layout/layout';
 import { DriverForm } from '../driver-form/driver-form';
 import { DriverService } from '../../../../services/driver.service';
+import { Driver } from '../../../../models/driver.model';
 
 @Component({
   selector: 'app-driver-list',
@@ -21,6 +22,7 @@ export class DriverList implements OnInit {
   viewDetails = signal(false);
   formTitle = signal('');
   formDescription = signal('');
+  selectedDriver = signal<Driver | undefined>(undefined);
 
   drivers = computed(() =>
     this.driverService.allDrivers().map((driver) => ({
@@ -51,9 +53,11 @@ export class DriverList implements OnInit {
       // },
       {
         key: 'status',
-        label: 'Status'
+        label: 'Status',
+        type: 'status',
       }
-    ]
+    ],
+    actions: { edit: true },
   };
 
   async ngOnInit(): Promise<void> {
@@ -61,9 +65,19 @@ export class DriverList implements OnInit {
   }
 
   onAdd() {
+    this.selectedDriver.set(undefined);
     this.viewType.set('add');
     this.formTitle.set('Add new driver');
     this.formDescription.set('Create a new driver profile and license details.');
+    this.viewDetails.set(true);
+  }
+
+  onEdit(row: any) {
+    const driver = this.driverService.getById(row.id);
+    this.selectedDriver.set(driver);
+    this.viewType.set('edit');
+    this.formTitle.set('Edit driver');
+    this.formDescription.set(`Editing: ${row.firstName} ${row.lastName}`);
     this.viewDetails.set(true);
   }
 
@@ -72,6 +86,7 @@ export class DriverList implements OnInit {
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    this.selectedDriver.set(undefined);
     await this.driverService.getAll();
   }
 

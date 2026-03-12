@@ -4,6 +4,7 @@ import { DataTable, TableConfig } from '../../../shared/components/data-table/da
 import { Layout } from '../../../shared/components/layout/layout';
 import { CargoTypeService } from '../../../services/cargo-type.service';
 import { CargoTypeForm } from './cargo-type-form/cargo-type-form';
+import { CargoType } from '../../../models/cargo-type.model';
 
 @Component({
   selector: 'app-cargo-types',
@@ -21,6 +22,7 @@ export class CargoTypes implements OnInit {
   viewDetails = signal(false);
   formTitle = signal('');
   formDescription = signal('');
+  selectedCargoType = signal<CargoType | undefined>(undefined);
 
   cargoTypes = computed(() =>
     this.cargoTypeService.allCargoTypes().map((cargoType) => ({
@@ -36,9 +38,10 @@ export class CargoTypes implements OnInit {
   tableConfigurations: TableConfig = {
     columns: [
       { key: 'name', label: 'Name' },
-      { key: 'status', label: 'Status' },
+      { key: 'status', label: 'Status', type: 'status' },
       { key: 'createdDate', label: 'Created date' },
     ],
+    actions: { edit: true },
   };
 
   async ngOnInit(): Promise<void> {
@@ -46,9 +49,19 @@ export class CargoTypes implements OnInit {
   }
 
   onAdd() {
+    this.selectedCargoType.set(undefined);
     this.viewType.set('add');
     this.formTitle.set('Add new cargo type');
     this.formDescription.set('Create a cargo classification for trips.');
+    this.viewDetails.set(true);
+  }
+
+  onEdit(row: any) {
+    const ct = this.cargoTypeService.getById(row.id);
+    this.selectedCargoType.set(ct);
+    this.viewType.set('edit');
+    this.formTitle.set('Edit cargo type');
+    this.formDescription.set(`Editing: ${row.name}`);
     this.viewDetails.set(true);
   }
 
@@ -57,6 +70,7 @@ export class CargoTypes implements OnInit {
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    this.selectedCargoType.set(undefined);
     await this.cargoTypeService.getAll();
   }
 }

@@ -6,6 +6,7 @@ import type { Customer } from './customer.model';
 
 export interface Trip {
 	id: string;
+	tripReferenceNumber?:string;
 	tripDate: Date;
 	endDate?: Date;
 	vehicleId: string;
@@ -21,6 +22,7 @@ export interface Trip {
 	customerTIN?: string;
 	customerPhone?: string;
 	revenue: number;
+	paidAmount?: number;
 	income?: number;
 	expenses: TripExpense[];
 	status: TripStatus;
@@ -30,10 +32,10 @@ export interface Trip {
 }
 
 export enum TripStatus {
-	PENDING = 'pending',
-	IN_PROGRESS = 'inprogress',
-	COMPLETED = 'completed',
-	CANCELLED = 'cancelled'
+	PENDING = 'Pending payment',
+	IN_PROGRESS = 'Inprogress',
+	COMPLETED = 'Completed',
+	CANCELLED = 'Cancelled'
 }
 
 export interface TripExpense {

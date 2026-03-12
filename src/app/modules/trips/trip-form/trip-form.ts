@@ -1,8 +1,8 @@
-import { Component, computed, inject, OnInit, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SaveArea } from '../../../shared/components/save-area/save-area';
-import { TripStatus } from '../../../models/trip.model';
+import { Trip, TripExpense, TripStatus } from '../../../models/trip.model';
 import { CargoTypeService } from '../../../services/cargo-type.service';
 import { DriverService } from '../../../services/driver.service';
 import { ExpenseCategoryService } from '../../../services/expense-category.service';
@@ -12,9 +12,11 @@ import { TripService } from '../../../services/trip.service';
 import { VehicleService } from '../../../services/vehicle.service';
 import { CustomerService } from '../../../services/customer.service';
 import { FileUploadService } from '../../../services/file-upload.service';
+import { CommonService } from '../../../services/common.service';
 
 type ExpenseDraft = {
   id: string;
+  expenseRecordId?: string;
   expenseId: string;
   amount: string;
   date: string;
@@ -27,7 +29,7 @@ type ExpenseDraft = {
 @Component({
   selector: 'app-trip-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea,DecimalPipe],
+  imports: [CommonModule, FormsModule, SaveArea, DecimalPipe],
   templateUrl: './trip-form.html',
 })
 export class TripForm implements OnInit {
@@ -40,7 +42,9 @@ export class TripForm implements OnInit {
   private tripExpenseService = inject(TripExpenseService);
   private customerService = inject(CustomerService);
   private fileUploadService = inject(FileUploadService);
+  private commonService = inject(CommonService);
 
+  trip = input<Trip | undefined>();
   close = output();
 
   tripDate = '';
@@ -50,7 +54,7 @@ export class TripForm implements OnInit {
   routeId = '';
   cargoTypeId = '';
   revenue = '';
-  status: TripStatus = TripStatus.PENDING;
+  status: TripStatus = TripStatus.IN_PROGRESS;
   notes = '';
   customerName = '';
   customerTIN = '';
@@ -74,8 +78,16 @@ export class TripForm implements OnInit {
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
   actionMessage = signal<string | null>(null);
+  isEditMode = computed(() => !!this.trip()?.id);
+  deletedExpenseIds = signal<string[]>([]);
 
   expenseRows: ExpenseDraft[] = [this.createExpenseRow()];
+
+  constructor() {
+    effect(() => {
+      this.populateFormFromTrip(this.trip());
+    });
+  }
 
   ngOnInit() {
     Promise.all([
@@ -99,9 +111,59 @@ export class TripForm implements OnInit {
     this.customerPhone = matched.phone || '';
   }
 
+  private populateFormFromTrip(trip: Trip | undefined) {
+    this.deletedExpenseIds.set([]);
+
+    if (!trip) {
+      this.tripDate = '';
+      this.endDate = '';
+      this.vehicleId = '';
+      this.driverId = '';
+      this.routeId = '';
+      this.cargoTypeId = '';
+      this.revenue = '';
+      this.status = TripStatus.PENDING;
+      this.notes = '';
+      this.customerName = '';
+      this.customerTIN = '';
+      this.customerPhone = '';
+      this.expenseRows = [this.createExpenseRow()];
+      return;
+    }
+    console.log('Populating form with trip data', trip);
+    this.tripDate = trip.tripDate ? new Date(trip.tripDate).toISOString().split('T')[0] : '';
+    this.endDate = trip.endDate ? new Date(trip.endDate).toISOString().split('T')[0] : '';
+    this.vehicleId = trip.vehicleId || '';
+    this.driverId = trip.driverId || '';
+    this.routeId = trip.routeId || '';
+    this.cargoTypeId = trip.cargoTypeId || '';
+    this.revenue = String(trip.revenue ?? '');
+    this.status = (trip.status || TripStatus.PENDING) as TripStatus;
+    this.notes = trip.notes || '';
+    this.customerName = trip.customerName || trip.customer?.name || '';
+    this.customerTIN = trip.customerTIN || trip.customer?.tin || '';
+    this.customerPhone = trip.customerPhone || trip.customer?.phone || '';
+    this.expenseRows = (trip.expenses || []).map((expense) => this.mapExpenseToDraft(expense));
+  }
+
+  private mapExpenseToDraft(expense: TripExpense): ExpenseDraft {
+    return {
+      id: expense.id,
+      expenseRecordId: expense.id,
+      expenseId: expense.expenseId || '',
+      amount: String(expense.amount || ''),
+      date: expense.date ? new Date(expense.date).toISOString().split('T')[0] : '',
+      attachment: expense.receiptAttachment,
+      attachmentName: this.fileUploadService.getFileName(expense.receiptAttachment),
+      attachmentUrl: undefined,
+      isUploading: false,
+    };
+  }
+
   private createExpenseRow(): ExpenseDraft {
     return {
-      id: crypto.randomUUID(),
+      id: this.commonService.makeid(),
+      expenseRecordId: undefined,
       expenseId: '',
       amount: '',
       date: '',
@@ -146,6 +208,13 @@ export class TripForm implements OnInit {
   }
 
   removeExpenseRow(id: string) {
+    const rowToRemove = this.expenseRows.find((row) => row.id === id);
+    if (rowToRemove?.expenseRecordId) {
+      this.deletedExpenseIds.update((ids) =>
+        ids.includes(rowToRemove.expenseRecordId!) ? ids : [...ids, rowToRemove.expenseRecordId!]
+      );
+    }
+
     this.expenseRows = this.expenseRows.filter((row) => row.id !== id);
     if (this.expenseRows.length === 0) {
       this.expenseRows = [this.createExpenseRow()];
@@ -227,10 +296,10 @@ export class TripForm implements OnInit {
 
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    this.actionMessage.set('Saving trip and expenses...');
+    this.actionMessage.set(this.isEditMode() ? 'Updating trip...' : 'Saving trip and expenses...');
 
     try {
-      const tripId = await this.tripService.create({
+      const payload = {
         tripDate: this.tripDate ? new Date(this.tripDate) : new Date(),
         endDate: this.endDate ? new Date(this.endDate) : undefined,
         vehicleId: this.vehicleId,
@@ -244,15 +313,37 @@ export class TripForm implements OnInit {
         income: Number(this.revenue || 0),
         status: this.status,
         notes: this.notes || undefined,
-      });
+      };
+
+      const editingTrip = this.trip();
+      let tripId = editingTrip?.id;
+
+      if (tripId) {
+        let status = !(this.endDate && this.trip().paidAmount == this.trip().revenue) ? TripStatus.PENDING : this.status;
+        await this.tripService.update(tripId, {
+          ...payload,
+          status
+        });
+      } else {
+        tripId = await this.tripService.create(payload);
+      }
+
+      if (!tripId) {
+        throw 'Trip could not be saved.';
+      }
+
+      if (this.isEditMode() && this.deletedExpenseIds().length > 0) {
+        for (const expenseId of this.deletedExpenseIds()) {
+          await this.tripExpenseService.delete(expenseId);
+        }
+      }
 
       const expensesToSave = this.expenseRows.filter((row) => row.expenseId);
 
       await Promise.all(
         expensesToSave.map((row) => {
           const parsedAmount = row.amount ? Number(row.amount) : undefined;
-
-          return this.tripExpenseService.create({
+          const expensePayload = {
             tripId,
             expenseId: row.expenseId,
             amount:
@@ -261,11 +352,19 @@ export class TripForm implements OnInit {
                 : undefined,
             date: row.date || undefined,
             receiptAttachment: row.attachment || undefined,
-          });
+          };
+
+          if (row.expenseRecordId) {
+            return this.tripExpenseService.update(row.expenseRecordId, expensePayload);
+          }
+
+          return this.tripExpenseService.create(expensePayload);
         })
       );
 
-      this.successMessage.set('Trip saved successfully.');
+      this.deletedExpenseIds.set([]);
+
+      this.successMessage.set(this.isEditMode() ? 'Trip updated successfully.' : 'Trip saved successfully.');
       await this.waitForLoadingToFinish();
       this.close.emit();
     } catch (error) {

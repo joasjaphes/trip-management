@@ -8,7 +8,7 @@ import { SaveArea } from '../../../shared/components/save-area/save-area';
 import { CommonService } from '../../../services/common.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 
-type ExpenseDraft = {
+export type ExpenseDraft = {
     id: string;
     expenseRecordId?: string;
     expenseId: string;

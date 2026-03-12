@@ -19,8 +19,9 @@
 
   <!-- Responsive table wrapper -->
   <div class="table-wrapper" role="region" aria-label="Data table">
-    <table class="data-table" [class.striped]="config().striped" [class.hover]="config().hover"
-      [class.bordered]="config().bordered">
+    <div class="table-scroll">
+      <table class="data-table z-0" [class.striped]="config().striped" [class.hover]="config().hover"
+        [class.bordered]="config().bordered">
       <!-- Table Head -->
       <thead>
         <tr>
@@ -60,7 +61,7 @@
       <tbody>
         @if (paginatedData().length > 0) {
         @for (row of paginatedData(); track $index) {
-        <tr class="data-row" role="button" tabindex="0">
+        <tr class="data-row" tabindex="0">
           <!-- Selection checkbox -->
           <!-- <td class="col-select">
             <input type="checkbox" [checked]="selectedRows().has($index)" (change)="onSelectRow($index, $event)"
@@ -134,7 +135,8 @@
         </tr>
         }
       </tbody>
-    </table>
+      </table>
+    </div>
   </div>
 
   <!-- Footer with Pagination -->

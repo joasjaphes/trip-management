@@ -72,6 +72,8 @@ export class Invoicing implements OnInit {
         id: invoice.id,
         invoiceNumber: invoice.invoiceNumber || '-',
         tripRoute: invoice.trip?.route?.name || invoice.tripId,
+        tripNumber: invoice.trip?.tripReferenceNumber || '-',
+        description: invoice.description || '-',
         customer: invoice.customer?.name || '-',
         amount: Number(invoice.amount || 0).toLocaleString(),
         paidAmount: invoice.paidAmount?.toLocaleString() || '0',
@@ -98,7 +100,8 @@ export class Invoicing implements OnInit {
   tableConfigurations: TableConfig = {
     columns: [
       { key: 'invoiceNumber', label: 'Invoice #' },
-      { key: 'tripRoute', label: 'Trip' },
+      { key: 'tripNumber', label: 'Trip #' },
+      { key: 'description', label: 'Description' },
       { key: 'customer', label: 'Customer' },
       { key: 'amount', label: 'Amount' },
       { key: 'paidAmount', label: 'Paid Amount' },

@@ -1,11 +1,11 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
   [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="drivers()" [config]="tableConfigurations"></app-data-table>
+    <app-data-table [data]="drivers()" [config]="tableConfigurations" (edit)="onEdit($event)"></app-data-table>
   </ng-container>
   <ng-container ngProjectAs="form">
-    @if (viewType() == 'add') {
-    <app-driver-form (close)="onCloseForm()"></app-driver-form>
+    @if (viewType() == 'add' || viewType() == 'edit') {
+    <app-driver-form [driver]="selectedDriver()" (close)="onCloseForm()"></app-driver-form>
     }
   </ng-container>
 </app-layout>

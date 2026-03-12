@@ -19,18 +19,37 @@
 
     <!-- Driver Photo Section -->
     <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-6 flex items-center gap-6">
-      <div class="w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-300 shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
+      <div class="w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-300 shrink-0 overflow-hidden">
+        @if (photoUrl()) {
+          <img [src]="photoUrl()" alt="Driver photo" class="w-full h-full object-cover">
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        }
       </div>
-      <div>
+      <div class="flex-1">
         <h3 class="text-[15px] font-bold text-gray-900">Driver Photo</h3>
         <p class="text-[13px] text-gray-400 mt-0.5">Upload a clear front-facing portrait (JPG or PNG, max 5MB)</p>
         <div class="flex items-center gap-3 mt-2">
-          <button class="text-[#f25f2f] font-bold text-[13px] hover:text-[#ff5117] transition-colors">Upload photo</button>
-          <button class="text-gray-400 font-medium text-[13px] hover:text-gray-600 transition-colors">Remove</button>
+          @if (photoIsUploading()) {
+            <span class="text-[13px] text-blue-600 flex items-center gap-1">
+              <span class="loading loading-spinner loading-xs"></span>
+              Uploading...
+            </span>
+          } @else {
+            <label class="text-[#f25f2f] font-bold text-[13px] hover:text-[#ff5117] transition-colors cursor-pointer">
+              Upload photo
+              <input type="file" accept="image/*" (change)="onPhotoSelected($event)" class="hidden" #photoInput>
+            </label>
+            @if (photoUrl()) {
+              <button (click)="removePhoto()" class="text-gray-400 font-medium text-[13px] hover:text-gray-600 transition-colors">Remove</button>
+            }
+          }
         </div>
+        @if (photoFileName()) {
+          <p class="text-[12px] text-gray-500 mt-2">{{ photoFileName() }}</p>
+        }
       </div>
     </div>
 
@@ -132,21 +151,78 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="flex flex-col gap-2">
+          <!-- <div class="flex flex-col gap-2">
             <label class="text-[13px] font-bold text-gray-700">Issuing Authority</label>
             <input type="text" placeholder="e.g. SUMATRA" [(ngModel)]="issuingAuthority" name="issuingAuthority"
                    class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-          </div>
+          </div> -->
           <div class="flex flex-col gap-2">
             <label class="text-[13px] font-bold text-gray-700">Expiry Date</label>
             <div class="relative">
-              <input type="text" placeholder="mm/dd/yyyy" [(ngModel)]="licenseExpiry" name="licenseExpiry"
+              <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="licenseExpiry" name="licenseExpiry"
                      class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
+              <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+              </svg> -->
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- License Attachment Section -->
+    <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="text-[15px] font-bold text-gray-900">License Attachment</h3>
+      </div>
+      
+      <p class="text-[13px] text-gray-600 mb-4">Upload a clear photo of the license showing both front & back page (JPG or PNG, max 5MB)</p>
+      
+      <div class="flex gap-4">
+        <!-- License preview thumbnail -->
+        <div class="w-24 h-32 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300 shrink-0 overflow-hidden border border-gray-200">
+          @if (licenseAttachmentUrl()) {
+            <img [src]="licenseAttachmentUrl()" alt="License attachment" class="w-full h-full object-cover">
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          }
+        </div>
+        
+        <!-- Upload controls -->
+        <div class="flex-1">
+          @if (licenseIsUploading()) {
+            <div class="flex items-center gap-2 text-blue-600">
+              <span class="loading loading-spinner loading-sm"></span>
+              <p class="text-[13px] font-medium">Uploading license attachment...</p>
+            </div>
+          } @else {
+            <div class="space-y-2">
+              <label class="inline-flex items-center gap-2 px-4 py-2 bg-[#f25f2f] text-white rounded-lg font-bold text-[13px] hover:bg-[#ff5117] transition-colors cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Upload Attachment
+                <input type="file" accept="image/*" (change)="onLicenseAttachmentSelected($event)" class="hidden">
+              </label>
+              
+              @if (licenseAttachmentUrl()) {
+                <button (click)="removeLicenseAttachment()" class="block text-[#f25f2f] font-medium text-[13px] hover:text-[#ff5117] transition-colors">
+                  Remove attachment
+                </button>
+              }
+            </div>
+          }
+          
+          @if (licenseFileName()) {
+            <p class="text-[12px] text-gray-600 mt-3">
+              File: <span class="font-medium">{{ licenseFileName() }}</span>
+            </p>
+          }
         </div>
       </div>
     </div>
@@ -166,6 +242,6 @@
   </div>
 
   <div>
-    <app-save-area [loading]="loading()" (save)="onSubmit()" (cancel)="goBack()"></app-save-area>
+    <app-save-area [saveText]="isEditMode() ? 'Update Driver' : 'Save Driver'" [loading]="loading()" (save)="onSubmit()" (cancel)="goBack()"></app-save-area>
   </div>
 </div>

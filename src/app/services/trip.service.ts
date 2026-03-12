@@ -35,19 +35,19 @@ export class TripService {
 
   // Computed values
   readonly pendingTrips = computed(() =>
-    this.trips().filter((t) => t.status === 'pending')
+    this.trips().filter((t) => t.status === 'Pending payment')
   );
 
   readonly inProgressTrips = computed(() =>
-    this.trips().filter((t) => t.status === 'inprogress')
+    this.trips().filter((t) => t.status === 'Inprogress')
   );
 
   readonly completedTrips = computed(() =>
-    this.trips().filter((t) => t.status === 'completed')
+    this.trips().filter((t) => t.status === 'Completed')
   );
 
   readonly cancelledTrips = computed(() =>
-    this.trips().filter((t) => t.status === 'cancelled')
+    this.trips().filter((t) => t.status === 'Cancelled')
   );
 
   constructor(private http: HttpClientService, private commonService: CommonService) {}

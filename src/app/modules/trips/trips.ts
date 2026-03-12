@@ -32,7 +32,8 @@ export class Trips implements OnInit {
   trips = computed(() =>
     this.tripService.allTrips().map((trip) => ({
       id: trip.id,
-      date: new Date(trip.tripDate).toLocaleDateString(),
+      tripReferenceNumber: trip.tripReferenceNumber,
+      paidAmount: `${Number(trip.paidAmount || 0).toLocaleString()}`,
       endDate: trip.endDate ? new Date(trip.endDate).toLocaleDateString() : '-',
       vehicle: trip.vehicle?.registrationNo || trip.vehicleId,
       driver: trip.driver ? `${trip.driver.firstName} ${trip.driver.lastName}` : trip.driverId,
@@ -45,6 +46,10 @@ export class Trips implements OnInit {
 
   tableConfigurations: TableConfig = {
     columns: [
+      {
+        key:'tripReferenceNumber',
+        label: 'Trip#'
+      },
       {
         key: 'route',
         label: 'Route'
@@ -70,6 +75,10 @@ export class Trips implements OnInit {
         label: 'Revenue'
       },
       {
+        key: 'paidAmount',
+        label: 'Paid Amount'
+      },
+      {
         key: 'status',
         label: 'Status',
         type:'tripStatus'
@@ -78,7 +87,7 @@ export class Trips implements OnInit {
     actions: {
       view: true,
       edit: true,
-      delete: true,
+      delete: false,
       more: true
     }
   };
@@ -106,6 +115,16 @@ export class Trips implements OnInit {
     this.viewType.set('add');
     this.formTitle.set('Add new trip');
     this.formDescription.set('Create and schedule a new logistics trip.');
+    this.selectedTrip.set(undefined);
+    this.showAddButton.set(false);
+    this.viewDetails.set(true);
+  }
+
+  onEdit(row: any) {
+    this.selectedTrip.set(row._trip);
+    this.viewType.set('edit');
+    this.formTitle.set(`Edit trip ( ${row.route} )`);
+    this.formDescription.set('Update trip details and optionally add new expense rows.');
     this.showAddButton.set(false);
     this.viewDetails.set(true);
   }
@@ -141,7 +160,7 @@ export class Trips implements OnInit {
   }
 
   async completeTrip(trip: Trip) {
-    if (!trip?.id || trip.status === 'completed') {
+    if (!trip?.id || trip.status === 'Completed') {
       return;
     }
 

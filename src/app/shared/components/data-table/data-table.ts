@@ -45,8 +45,8 @@ export class DataTable {
   config = input<TableConfig>({
     columns: [],
     pageSize: 10,
-    striped: true,
-    hover: true,
+    striped: false,
+    hover: false,
     bordered: false,
     actions: {
       edit: false,
@@ -296,11 +296,9 @@ export class DataTable {
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
-      'active': 'bg-green-50 text-green-600 border-green-200',
-      'inactive': 'bg-gray-50 text-gray-600 border-gray-200',
-      'pending': 'bg-yellow-50 text-yellow-600 border-yellow-200',
-      'error': 'bg-red-50 text-red-600 border-red-200'
+      'Active': 'bg-green-50 text-green-600 border-green-200 px-2 py-2 rounded-md',
+      'Inactive': 'bg-red-50 text-red-600 border-red-200 px-2 py-2 rounded-md'
     };
-    return colors[status] || colors['inactive'];
+    return colors[status] || colors['Inactive'];
   }
 }

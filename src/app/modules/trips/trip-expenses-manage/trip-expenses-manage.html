@@ -92,10 +92,11 @@
             <div class="col-span-2 flex items-center justify-start">
                 @if (expenseRow.attachmentName) {
                 <button type="button" (click)="previewAttachment(expenseRow.id)"
-                    class="group flex items-center gap-2 rounded-lg border border-blue-100 bg-white px-2 py-1 hover:border-blue-300"
+                    class="group flex items-center gap-2 rounded-lg border border-blue-100 bg-white px-2 py-1 hover:border-blue-300 cursor-pointer"
                     [title]="expenseRow.attachmentName">
-                    <img [src]="expenseRow.attachmentUrl || ''" [alt]="expenseRow.attachmentName"
-                        class="h-9 w-9 rounded object-cover border border-gray-200 bg-gray-100">
+                    <!-- <img [src]="expenseRow.attachmentUrl || ''" [alt]="expenseRow.attachmentName"
+                        class="h-9 w-9 rounded object-cover border border-gray-200 bg-gray-100"> -->
+                    <i class="fas fa-eye"></i> &nbsp;
                     <span
                         class="text-[11px] font-semibold text-blue-600 group-hover:text-blue-700 truncate max-w-[90px]">Preview</span>
                 </button>

@@ -4,6 +4,7 @@ import { DataTable, TableConfig } from '../../../shared/components/data-table/da
 import { Layout } from '../../../shared/components/layout/layout';
 import { CustomerService } from '../../../services/customer.service';
 import { CustomerForm } from './customer-form/customer-form';
+import { Customer } from '../../../models/customer.model';
 
 @Component({
   selector: 'app-customers',
@@ -21,6 +22,7 @@ export class Customers implements OnInit {
   viewDetails = signal(false);
   formTitle = signal('');
   formDescription = signal('');
+  selectedCustomer = signal<Customer | undefined>(undefined);
 
   customers = computed(() =>
     this.customerService.allCustomers().map((customer) => ({
@@ -41,6 +43,7 @@ export class Customers implements OnInit {
       { key: 'phone', label: 'Phone' },
       { key: 'createdDate', label: 'Created date' },
     ],
+    actions: { edit: true },
   };
 
   async ngOnInit(): Promise<void> {
@@ -48,9 +51,19 @@ export class Customers implements OnInit {
   }
 
   onAdd() {
+    this.selectedCustomer.set(undefined);
     this.viewType.set('add');
     this.formTitle.set('Add customer');
     this.formDescription.set('Register a customer for trip billing and invoicing.');
+    this.viewDetails.set(true);
+  }
+
+  onEdit(row: any) {
+    const customer = this.customerService.getById(row.id);
+    this.selectedCustomer.set(customer);
+    this.viewType.set('edit');
+    this.formTitle.set('Edit customer');
+    this.formDescription.set(`Editing: ${row.name}`);
     this.viewDetails.set(true);
   }
 
@@ -59,6 +72,7 @@ export class Customers implements OnInit {
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    this.selectedCustomer.set(undefined);
     await this.customerService.getAll();
   }
 }

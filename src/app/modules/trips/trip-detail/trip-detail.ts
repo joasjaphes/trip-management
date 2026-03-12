@@ -21,7 +21,8 @@ export class TripDetail {
 
   confirmingComplete = signal(false);
   attachmentPreviewUrls = signal<Record<string, string>>({});
-  
+  cantCompleteMessage = signal('Please ensure the trip has an end date and all the amount has been received before completing.'); 
+
   totalExpenses = computed(() => {
     return (this.trip()?.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
   });
@@ -56,7 +57,7 @@ export class TripDetail {
 
   canComplete = computed(() => {
     const status = this.trip()?.status;
-    return status === 'pending' || status === 'inprogress';
+    return (status === 'Pending payment' || status === 'Inprogress') && !!this.trip()?.endDate && Number(this.trip().paidAmount) >= Number(this.trip().revenue);
   });
 
   requestComplete() {

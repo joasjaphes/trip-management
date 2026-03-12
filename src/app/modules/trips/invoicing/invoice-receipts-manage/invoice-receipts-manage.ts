@@ -3,6 +3,7 @@ import { Component, computed, effect, inject, input, output, signal } from '@ang
 import { FormsModule } from '@angular/forms';
 import { Invoice, InvoiceReceipt } from '../../../../models/invoice.model';
 import { InvoiceReceiptService } from '../../../../services/invoice-receipt.service';
+import { FileUploadService } from '../../../../services/file-upload.service';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
 
 type ReceiptDraft = {
@@ -13,6 +14,9 @@ type ReceiptDraft = {
   amount: string;
   receivedAt: string;
   attachment?: string;
+  attachmentName?: string;
+  attachmentUrl?: string;
+  isUploading?: boolean;
   notes: string;
 };
 
@@ -24,6 +28,7 @@ type ReceiptDraft = {
 })
 export class InvoiceReceiptsManage {
   private invoiceReceiptService = inject(InvoiceReceiptService);
+  private fileUploadService = inject(FileUploadService);
 
   invoice = input<Invoice | undefined>();
   close = output();
@@ -31,6 +36,8 @@ export class InvoiceReceiptsManage {
 
   receipts = this.invoiceReceiptService.allReceipts;
   loading = computed(() => this.invoiceReceiptService.loading());
+  pendingUploads = signal(0);
+  busy = computed(() => this.loading() || this.pendingUploads() > 0);
 
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
@@ -69,6 +76,9 @@ export class InvoiceReceiptsManage {
       amount: '',
       receivedAt: '',
       attachment: undefined,
+      attachmentName: undefined,
+      attachmentUrl: undefined,
+      isUploading: false,
       notes: '',
     };
   }
@@ -82,13 +92,59 @@ export class InvoiceReceiptsManage {
       amount: String(receipt.amount || ''),
       receivedAt: receipt.paidAt ? new Date(receipt.paidAt).toISOString().split('T')[0] : '',
       attachment: receipt.attachment,
+      attachmentName: this.fileUploadService.getFileName(receipt.attachment),
+      attachmentUrl: undefined,
+      isUploading: false,
       notes: receipt.notes || '',
     };
   }
 
   private syncRowsFromReceipts(receipts: InvoiceReceipt[]) {
     const rows = receipts.map((receipt) => this.mapReceiptToDraft(receipt));
-    this.receiptRows.set(rows.length > 0 ? rows : [this.createReceiptRow()]);
+    const hydratedRows = rows.length > 0 ? rows : [this.createReceiptRow()];
+    this.receiptRows.set(hydratedRows);
+    void this.hydrateAttachmentUrls(hydratedRows);
+  }
+
+  private async hydrateAttachmentUrls(rows: ReceiptDraft[]) {
+    const hydratedRows = await Promise.all(
+      rows.map(async (row) => ({
+        ...row,
+        attachmentName: row.attachmentName || this.fileUploadService.getFileName(row.attachment),
+        attachmentUrl: row.attachmentUrl || await this.fileUploadService.resolveFileUrl(row.attachment),
+      }))
+    );
+
+    this.receiptRows.set(hydratedRows);
+  }
+
+  private async ensureAttachmentUrl(rowId: string): Promise<string | undefined> {
+    const row = this.receiptRows().find((item) => item.id === rowId);
+    if (!row?.attachment) {
+      return undefined;
+    }
+
+    if (row.attachmentUrl) {
+      return row.attachmentUrl;
+    }
+
+    const resolvedUrl = await this.fileUploadService.resolveFileUrl(row.attachment);
+    if (!resolvedUrl) {
+      return undefined;
+    }
+
+    this.receiptRows.update((rows) =>
+      rows.map((item) =>
+        item.id === rowId
+          ? {
+              ...item,
+              attachmentUrl: resolvedUrl,
+            }
+          : item
+      )
+    );
+
+    return resolvedUrl;
   }
 
   private async waitForLoadingToFinish(timeoutMs = 6000): Promise<void> {
@@ -99,7 +155,7 @@ export class InvoiceReceiptsManage {
   }
 
   addReceiptRow() {
-    if (this.loading()) {
+    if (this.busy()) {
       return;
     }
     this.receiptRows.update((rows) => [...rows, this.createReceiptRow()]);
@@ -111,10 +167,79 @@ export class InvoiceReceiptsManage {
     );
   }
 
-  onReceiptAttachmentSelected(event: Event, rowId: string) {
+  async onReceiptAttachmentSelected(event: Event, rowId: string) {
     const input = event.target as HTMLInputElement;
-    const fileName = input.files && input.files[0] ? input.files[0].name : undefined;
-    this.updateRowField(rowId, 'attachment', fileName);
+    const file = input.files && input.files[0] ? input.files[0] : undefined;
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.errorMessage.set('Only image attachments are allowed.');
+      input.value = '';
+      return;
+    }
+
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.actionMessage.set(`Uploading ${file.name}...`);
+    this.pendingUploads.update((count) => count + 1);
+
+    this.receiptRows.update((rows) =>
+      rows.map((row) =>
+        row.id === rowId
+          ? {
+              ...row,
+              attachmentName: file.name,
+              isUploading: true,
+            }
+          : row
+      )
+    );
+
+    try {
+      const uploadedFile = await this.fileUploadService.uploadFile(file);
+      this.receiptRows.update((rows) =>
+        rows.map((row) =>
+          row.id === rowId
+            ? {
+                ...row,
+                attachment: uploadedFile.filePath,
+                attachmentName: uploadedFile.fileName,
+                attachmentUrl: uploadedFile.fileUrl,
+                isUploading: false,
+              }
+            : row
+        )
+      );
+      this.successMessage.set('Receipt attachment uploaded successfully.');
+    } catch (error) {
+      this.receiptRows.update((rows) =>
+        rows.map((row) =>
+          row.id === rowId
+            ? {
+                ...row,
+                isUploading: false,
+              }
+            : row
+        )
+      );
+      this.errorMessage.set(String(error || 'Could not upload the attachment. Please try again.'));
+    } finally {
+      this.pendingUploads.update((count) => Math.max(0, count - 1));
+      this.actionMessage.set(null);
+      input.value = '';
+    }
+  }
+
+  async previewAttachment(rowId: string) {
+    const url = await this.ensureAttachmentUrl(rowId);
+    if (!url) {
+      this.errorMessage.set('Attachment preview is not available for this receipt.');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   async removeReceiptRow(rowId: string) {
@@ -161,6 +286,11 @@ export class InvoiceReceiptsManage {
     const invoice = this.invoice();
     if (!invoice?.id) {
       this.errorMessage.set('Invoice not found.');
+      return;
+    }
+
+    if (this.pendingUploads() > 0) {
+      this.errorMessage.set('Wait for receipt attachments to finish uploading before saving receipts.');
       return;
     }
 

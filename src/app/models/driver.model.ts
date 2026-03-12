@@ -6,8 +6,14 @@ export interface Driver {
   phone: string;
   address?: string;
   dateOfBirth?: Date;
-  licenseDetails: DrivingLicense;
+  licenseDetails?: DrivingLicense;
+  licenseFrontPagePhoto?: string;
+  licenseNumber?: string;
+  licenseClass?: string;
+  licenseExpiry?: Date;
+
   photo?: string;
+  driverPhoto?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
