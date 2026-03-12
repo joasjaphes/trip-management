@@ -6,6 +6,7 @@ import { CommonService } from './common.service';
 type TripExpenseCreatePayload = {
   tripId: string;
   expenseId: string;
+  expenseDescription?: string;
   amount?: number;
   receiptAttachment?: string;
   date?: string;
@@ -57,6 +58,7 @@ export class TripExpenseService {
         id: this.commonService.makeid(),
         tripId: expense.tripId,
         expenseId: expense.expenseId,
+        expenseDescription: expense.expenseDescription,
         amount: expense.amount,
         receiptAttachment: expense.receiptAttachment,
         date: expense.date || new Date(),
@@ -81,6 +83,7 @@ export class TripExpenseService {
         id,
         tripId: expense.tripId ?? existing?.tripId,
         expenseId: expense.expenseId ?? existing?.expenseId,
+        expenseDescription: expense.expenseDescription ?? existing?.expenseDescription,
         amount: expense.amount ?? existing?.amount,
         receiptAttachment: expense.receiptAttachment ?? existing?.receiptAttachment,
         date: expense.date ?? existing?.date,

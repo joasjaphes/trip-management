@@ -1,4 +1,17 @@
 <form class="w-full flex flex-col gap-4" (ngSubmit)="onSubmit()">
+    @if (actionMessage()) {
+    <div class="alert alert-info">
+        <span class="loading loading-spinner loading-sm"></span>
+        <span>{{ actionMessage() }}</span>
+    </div>
+    }
+
+    @if (successMessage()) {
+    <div class="alert alert-success">
+        <span>{{ successMessage() }}</span>
+    </div>
+    }
+
     <!-- Error message -->
     @if (error()) {
     <div class="alert alert-error">

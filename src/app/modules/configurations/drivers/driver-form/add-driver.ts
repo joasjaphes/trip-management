@@ -30,11 +30,23 @@ export class AddDriver {
   // Expose service loading state
   isLoading = this.driverService.loading;
   error = this.driverService.errorMessage;
+  successMessage = signal<string | null>(null);
+  actionMessage = signal<string | null>(null);
 
-  onSubmit(): void {
+  private async waitForLoadingToFinish(timeoutMs = 6000): Promise<void> {
+    const start = Date.now();
+    while (this.isLoading() && Date.now() - start < timeoutMs) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
+
+  async onSubmit(): Promise<void> {
     if (!this.firstName().trim() || !this.lastName().trim() || !this.phone().trim()) {
       return;
     }
+
+    this.successMessage.set(null);
+    this.actionMessage.set('Saving driver...');
 
     const newDriver: Omit<Driver, 'id' | 'createdAt' | 'updatedAt'> = {
       firstName: this.firstName().trim(),
@@ -52,14 +64,18 @@ export class AddDriver {
       isActive: this.isActive(),
     };
 
-    this.driverService.create(newDriver);
+    try {
+      await this.driverService.create(newDriver);
+      this.successMessage.set('Driver saved successfully.');
+      await this.waitForLoadingToFinish();
 
-    setTimeout(() => {
       if (!this.error()) {
         this.reset();
         this.onSaved.emit();
       }
-    }, 400);
+    } finally {
+      this.actionMessage.set(null);
+    }
   }
 
   reset(): void {

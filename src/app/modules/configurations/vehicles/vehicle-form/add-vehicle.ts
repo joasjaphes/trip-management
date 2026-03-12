@@ -34,11 +34,23 @@ export class AddVehicle {
   // Expose service loading state
   isLoading = this.vehicleService.loading;
   error = this.vehicleService.errorMessage;
+  successMessage = signal<string | null>(null);
+  actionMessage = signal<string | null>(null);
 
-  onSubmit(): void {
+  private async waitForLoadingToFinish(timeoutMs = 6000): Promise<void> {
+    const start = Date.now();
+    while (this.isLoading() && Date.now() - start < timeoutMs) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
+
+  async onSubmit(): Promise<void> {
     if (!this.registrationNo().trim() || !this.tankCapacity() || !this.mileagePerFullTank()) {
       return;
     }
+
+    this.successMessage.set(null);
+    this.actionMessage.set('Saving vehicle...');
 
     const newVehicle: Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'> = {
       registrationNo: this.registrationNo().trim(),
@@ -49,14 +61,18 @@ export class AddVehicle {
       isActive: this.isActive(),
     };
 
-    this.vehicleService.create(newVehicle);
+    try {
+      await this.vehicleService.create(newVehicle);
+      this.successMessage.set('Vehicle saved successfully.');
+      await this.waitForLoadingToFinish();
 
-    setTimeout(() => {
       if (!this.error()) {
         this.reset();
         this.onSaved.emit();
       }
-    }, 400);
+    } finally {
+      this.actionMessage.set(null);
+    }
   }
 
   reset(): void {

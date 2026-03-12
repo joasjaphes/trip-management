@@ -7,7 +7,7 @@ import {
   computed,
   HostListener,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -16,6 +16,7 @@ export interface TableColumn {
   label: string;
   sortable?: boolean;
   width?: string;
+  type?: 'text' | 'number' | 'date' | 'status' | 'custom' | 'tripStatus' | 'invoiceStatus';
 }
 
 export interface TableConfig {
@@ -34,7 +35,7 @@ export interface TableConfig {
 
 @Component({
   selector: 'app-data-table',
-  imports: [CommonModule, FormsModule, FontAwesomeModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, DecimalPipe],
   templateUrl: './data-table.html',
   styleUrl: './data-table.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -260,5 +261,46 @@ export class DataTable {
   @HostListener('document:click')
   onDocumentClick() {
     this.openMoreMenuRow.set(null);
+  }
+
+  getTripStatusColor(status: string): string {
+    const colors: Record<string, string> = {
+      'pending': 'bg-yellow-50 text-yellow-600 border-yellow-200 px-2 py-2 rounded-md',
+      'inprogress': 'bg-blue-50 text-blue-600 border-blue-200 px-2 py-2 rounded-md',
+      'completed': 'bg-emerald-50 text-emerald-600 border-emerald-200 px-2 py-2 rounded-md',
+      'cancelled': 'bg-red-50 text-red-600 border-red-200 px-2 py-2 rounded-md'
+    };
+    return colors[status] || colors['pending'];
+  }
+
+  getInvoiceStatusColor(status: string): string {
+    const colors: Record<string, string> = {
+      'full_paid': 'bg-green-50 text-green-600 border-green-200 px-2 py-2 rounded-md',
+      'unpaid': 'bg-red-50 text-red-600 border-red-200 px-2 py-2 rounded-md',
+      'overdue': 'bg-yellow-50 text-yellow-600 border-yellow-200 px-2 py-2 rounded-md',
+      'partially_paid': 'bg-orange-50 text-orange-600 border-orange-200 px-2 py-2 rounded-md'
+    };
+    return colors[status] || colors['unpaid'];
+
+  }
+
+  getInvoiceStatusName(status: string): string {
+    const names: Record<string, string> = {
+      'paid': 'Paid',
+      'unpaid': 'Unpaid',
+      'partially_paid': 'Partially Paid',
+      'full_paid': 'Full Paid'
+    };
+    return names[status] || status;
+  }
+
+  getStatusColor(status: string): string {
+    const colors: Record<string, string> = {
+      'active': 'bg-green-50 text-green-600 border-green-200',
+      'inactive': 'bg-gray-50 text-gray-600 border-gray-200',
+      'pending': 'bg-yellow-50 text-yellow-600 border-yellow-200',
+      'error': 'bg-red-50 text-red-600 border-red-200'
+    };
+    return colors[status] || colors['inactive'];
   }
 }

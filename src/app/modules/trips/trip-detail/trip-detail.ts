@@ -1,6 +1,7 @@
-import { Component, input, output, computed, signal } from '@angular/core';
+import { Component, input, output, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Trip } from '../../../models/trip.model';
+import { Trip, TripExpense } from '../../../models/trip.model';
+import { ExpenseCategoryService } from '../../../services/expense-category.service';
 
 @Component({
   selector: 'app-trip-detail',
@@ -9,15 +10,22 @@ import { Trip } from '../../../models/trip.model';
   templateUrl: './trip-detail.html'
 })
 export class TripDetail {
+  private expenseCategoryService = inject(ExpenseCategoryService);
+
   trip = input<Trip | undefined>();
   completing = input(false);
   close = output();
   complete = output<Trip>();
+
   confirmingComplete = signal(false);
   
   totalExpenses = computed(() => {
     return (this.trip()?.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
   });
+
+  async ngOnInit() {
+    await this.expenseCategoryService.getAll();
+  }
 
   goBack() {
     this.confirmingComplete.set(false);
@@ -57,6 +65,15 @@ export class TripDetail {
     return colors[status] || colors['pending'];
   }
 
+  getExpenseCategoryName(expense: TripExpense): string {
+    if (expense.category?.name) {
+      return expense.category.name;
+    }
+
+    const category = this.expenseCategoryService.getById(expense.expenseId);
+    return category?.name || 'Other';
+  }
+
   getCategoryColor(categoryName: string | undefined): string {
     const colors: Record<string, string> = {
       'fuel': 'bg-red-50 text-[#f25f2f] border-red-100',
@@ -68,5 +85,9 @@ export class TripDetail {
     };
     const name = (categoryName || 'other').toLowerCase();
     return colors[name] || colors['other'];
+  }
+
+  getExpenseCategoryColor(expense: TripExpense): string {
+    return this.getCategoryColor(this.getExpenseCategoryName(expense));
   }
 }

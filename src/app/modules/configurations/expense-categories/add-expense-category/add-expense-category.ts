@@ -25,28 +25,44 @@ export class AddExpenseCategory {
   // Expose service loading state
   isLoading = this.expenseCategoryService.loading;
   error = this.expenseCategoryService.errorMessage;
+  successMessage = signal<string | null>(null);
+  actionMessage = signal<string | null>(null);
 
-  onSubmit(): void {
+  private async waitForLoadingToFinish(timeoutMs = 6000): Promise<void> {
+    const start = Date.now();
+    while (this.isLoading() && Date.now() - start < timeoutMs) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
+
+  async onSubmit(): Promise<void> {
     if (!this.categoryName().trim()) {
       return;
     }
 
-    this.expenseCategoryService.create(
-      this.categoryName().trim(),
-      this.description().trim(),
-      this.category().trim(),
-      this.isActive() // Pass the selected category
-    );
+    this.successMessage.set(null);
+    this.actionMessage.set('Saving expense category...');
 
-    // Wait for request to complete and reset form
-    setTimeout(() => {
+    try {
+      await this.expenseCategoryService.create(
+        this.categoryName().trim(),
+        this.description().trim(),
+        this.category().trim(),
+        this.isActive()
+      );
+
+      this.successMessage.set('Expense category saved successfully.');
+      await this.waitForLoadingToFinish();
+
       if (!this.error()) {
         this.categoryName.set('');
         this.description.set('');
         this.isActive.set(true);
         this.onSaved.emit();
       }
-    }, 400);
+    } finally {
+      this.actionMessage.set(null);
+    }
   }
 
   reset(): void {

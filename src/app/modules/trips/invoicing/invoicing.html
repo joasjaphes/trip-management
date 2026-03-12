@@ -6,6 +6,7 @@
   [(viewDetails)]="viewDetails"
   [(showAddButton)]="showAddButton"
   [formTitle]="formTitle()"
+  [splitSize]="splitSize()"
   [formDescription]="formDescription()"
 >
   <ng-container ngProjectAs="main">
@@ -19,12 +20,75 @@
       [data]="invoices()"
       [config]="tableConfigurations"
       (view)="onView($event)"
+      [moreActions]="moreActions()"
     ></app-data-table>
   </ng-container>
 
   <ng-container ngProjectAs="form">
     <div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
-      @if (selectedInvoice()) {
+      @if (panelMode() === 'view-receipts' && selectedInvoice()) {
+        <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-[18px] font-extrabold text-gray-900">Invoice Receipts</h3>
+              <p class="text-[13px] text-gray-400 mt-1">Read-only view of received payments for this invoice.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" (click)="printAllReceipts()" class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-4 font-extrabold text-[12px] rounded-xl">
+                Print PDF Summary
+              </button>
+              <button type="button" (click)="closePanel()" class="btn btn-ghost border border-gray-200 text-gray-600 px-4 text-[12px] rounded-xl">
+                Close
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-4 rounded-xl border border-gray-100 bg-white px-5 py-4 text-sm text-gray-600">
+            Total received:
+            <span class="font-extrabold text-[#f25f2f]">{{ totalReceived().toLocaleString() }}</span>
+            <span class="ml-4 text-gray-400">Remaining: {{ remainingAmount().toLocaleString() }}</span>
+          </div>
+
+          @if (invoiceReceipts().length > 0) {
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-gray-100">
+                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[20%]">Paid Date</th>
+                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[25%]">Reference</th>
+                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[25%]">Notes</th>
+                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[15%]">Amount</th>
+                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase text-center w-[15%]">Print</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50">
+                @for (receipt of invoiceReceipts(); track receipt.id) {
+                  <tr class="transition-colors hover:bg-gray-50">
+                    <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ receipt.paidAt ? (receipt.paidAt | date:'MMM d, yyyy') : '-' }}</td>
+                    <td class="py-4 px-2 text-[14px] text-gray-700">{{ receipt.reference || '-' }}</td>
+                    <td class="py-4 px-2 text-[14px] text-gray-600">{{ receipt.notes || '-' }}</td>
+                    <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ (receipt.amount || 0).toLocaleString() }}</td>
+                    <td class="py-4 px-2 text-center">
+                      <button type="button" (click)="printReceipt(receipt)" class="btn btn-ghost min-h-0 h-8 border border-gray-200 px-3 text-[11px] font-bold text-gray-700">
+                        Print
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div class="py-12 text-center">
+              <p class="text-gray-400 text-[14px] font-medium">No receipts recorded for this invoice yet.</p>
+            </div>
+          }
+        </div>
+      } @else if (panelMode() === 'manage-receipts' && selectedInvoice()) {
+        <app-invoice-receipts-manage
+          [invoice]="selectedInvoice()"
+          (saved)="onReceiptsSaved()"
+          (close)="closePanel()"
+        ></app-invoice-receipts-manage>
+      } @else if (selectedInvoice()) {
         <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm space-y-6">
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>

@@ -13,6 +13,12 @@
       (complete)="completeTrip($event)"
       (close)="onCloseDetail()"
     ></app-trip-detail>
+    } @else if (viewType() == 'manage-expense') {
+    <app-trip-expenses-manage
+      [trip]="selectedTrip()"
+      (saved)="onExpensesChanged()"
+      (close)="onCloseDetail()"
+    ></app-trip-expenses-manage>
     }
   </ng-container>
 </app-layout>

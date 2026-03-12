@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, output } from '@angular/core';
+import { Component, computed, inject, OnInit, output, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SaveArea } from '../../../shared/components/save-area/save-area';
@@ -64,6 +64,9 @@ export class TripForm implements OnInit {
       .filter((category) => category.isActive || category.status === 'Active')
   );
   loading = computed(() => this.tripService.loading() || this.tripExpenseService.loading());
+  successMessage = signal<string | null>(null);
+  errorMessage = signal<string | null>(null);
+  actionMessage = signal<string | null>(null);
 
   expenseRows: ExpenseDraft[] = [this.createExpenseRow()];
 
@@ -128,42 +131,61 @@ export class TripForm implements OnInit {
     this.close.emit();
   }
 
+  private async waitForLoadingToFinish(timeoutMs = 8000): Promise<void> {
+    const start = Date.now();
+    while (this.loading() && Date.now() - start < timeoutMs) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
+
   async onSubmit() {
-    const tripId = await this.tripService.create({
-      tripDate: this.tripDate ? new Date(this.tripDate) : new Date(),
-      endDate: this.endDate ? new Date(this.endDate) : undefined,
-      vehicleId: this.vehicleId,
-      driverId: this.driverId,
-      routeId: this.routeId,
-      cargoTypeId: this.cargoTypeId || undefined,
-      customerName: this.customerName || undefined,
-      customerTIN: this.customerTIN || undefined,
-      customerPhone: this.customerPhone || undefined,
-      revenue: Number(this.revenue || 0),
-      income: Number(this.revenue || 0),
-      status: this.status,
-      notes: this.notes || undefined,
-    });
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.actionMessage.set('Saving trip and expenses...');
 
-    const expensesToSave = this.expenseRows.filter((row) => row.expenseId);
+    try {
+      const tripId = await this.tripService.create({
+        tripDate: this.tripDate ? new Date(this.tripDate) : new Date(),
+        endDate: this.endDate ? new Date(this.endDate) : undefined,
+        vehicleId: this.vehicleId,
+        driverId: this.driverId,
+        routeId: this.routeId,
+        cargoTypeId: this.cargoTypeId || undefined,
+        customerName: this.customerName || undefined,
+        customerTIN: this.customerTIN || undefined,
+        customerPhone: this.customerPhone || undefined,
+        revenue: Number(this.revenue || 0),
+        income: Number(this.revenue || 0),
+        status: this.status,
+        notes: this.notes || undefined,
+      });
 
-    await Promise.all(
-      expensesToSave.map((row) => {
-        const parsedAmount = row.amount ? Number(row.amount) : undefined;
+      const expensesToSave = this.expenseRows.filter((row) => row.expenseId);
 
-        return this.tripExpenseService.create({
-          tripId,
-          expenseId: row.expenseId,
-          amount:
-            parsedAmount !== undefined && !Number.isNaN(parsedAmount)
-              ? parsedAmount
-              : undefined,
-          date: row.date || undefined,
-          receiptAttachment: row.attachment || undefined,
-        });
-      })
-    );
+      await Promise.all(
+        expensesToSave.map((row) => {
+          const parsedAmount = row.amount ? Number(row.amount) : undefined;
 
-    this.close.emit();
+          return this.tripExpenseService.create({
+            tripId,
+            expenseId: row.expenseId,
+            amount:
+              parsedAmount !== undefined && !Number.isNaN(parsedAmount)
+                ? parsedAmount
+                : undefined,
+            date: row.date || undefined,
+            receiptAttachment: row.attachment || undefined,
+          });
+        })
+      );
+
+      this.successMessage.set('Trip saved successfully.');
+      await this.waitForLoadingToFinish();
+      this.close.emit();
+    } catch (error) {
+      this.errorMessage.set(String(error || 'Could not save trip. Please try again.'));
+    } finally {
+      this.actionMessage.set(null);
+    }
   }
 }

@@ -4,13 +4,14 @@ import { DataTable, TableConfig } from '../../shared/components/data-table/data-
 import { Layout, SplitSize } from '../../shared/components/layout/layout';
 import { TripForm } from './trip-form/trip-form';
 import { TripDetail } from './trip-detail/trip-detail';
+import { TripExpensesManage } from './trip-expenses-manage/trip-expenses-manage';
 import { TripService } from '../../services/trip.service';
 import { Trip, TripStatus } from '../../models/trip.model';
 
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail],
+  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage],
   templateUrl: './trips.html'
 })
 export class Trips implements OnInit {
@@ -70,7 +71,8 @@ export class Trips implements OnInit {
       },
       {
         key: 'status',
-        label: 'Status'
+        label: 'Status',
+        type:'tripStatus'
       }
     ],
     actions: {
@@ -87,6 +89,12 @@ export class Trips implements OnInit {
       key: 'review-complete',
       icon: 'fa-solid fa-check-circle text-green-500',
       action: (row: any) => this.onView(row)
+    },
+    {
+      label: 'Manage expense',
+      key: 'manage-expense',
+      icon: 'fa-solid fa-money-bill-wave text-orange-500',
+      action: (row: any) => this.onManageExpense(row)
     },
   ]);
 
@@ -112,6 +120,15 @@ export class Trips implements OnInit {
     // this.splitSize.set('half');
   }
 
+  onManageExpense(row: any) {
+    this.selectedTrip.set(row._trip);
+    this.formTitle.set(`Manage expenses ( ${row.route} )`);
+    this.formDescription.set('Add, update, or remove expenses for this trip.');
+    this.viewType.set('manage-expense');
+    this.showAddButton.set(false);
+    this.viewDetails.set(true);
+  }
+
   async onCloseForm() {
     this.viewDetails.set(false);
     this.viewType.set('');
@@ -131,6 +148,20 @@ export class Trips implements OnInit {
     // await this.tripService.updateStatus(trip.id, TripStatus.COMPLETED);
     await this.tripService.update(trip.id, { ...trip, status: TripStatus.COMPLETED, endDate: new Date() });
     const refreshedTrip = this.tripService.getById(trip.id);
+    if (refreshedTrip) {
+      this.selectedTrip.set(refreshedTrip);
+    }
+  }
+
+  async onExpensesChanged() {
+    const tripId = this.selectedTrip()?.id;
+    await this.tripService.getAll();
+
+    if (!tripId) {
+      return;
+    }
+
+    const refreshedTrip = this.tripService.getById(tripId);
     if (refreshedTrip) {
       this.selectedTrip.set(refreshedTrip);
     }

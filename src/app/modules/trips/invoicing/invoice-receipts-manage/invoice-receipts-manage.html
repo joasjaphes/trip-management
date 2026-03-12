@@ -1,0 +1,103 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  <div class="bg-white border border-gray-100 rounded-2xl p-8 relative overflow-hidden shadow-sm">
+    <div class="flex items-center justify-between mb-6 relative z-10">
+      <div class="flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-[#f25f2f]">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">
+          Manage Invoice Receipts
+          @if (invoice()?.invoiceNumber) {
+            <span class="text-gray-400">({{ invoice()!.invoiceNumber }})</span>
+          }
+        </h3>
+      </div>
+      <button type="button" (click)="addReceiptRow()" [disabled]="loading()" class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide inline-flex items-center gap-2 disabled:text-gray-300 disabled:cursor-not-allowed">
+        + Add Receipt
+      </button>
+    </div>
+
+    @if (actionMessage()) {
+      <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+        <span class="loading loading-spinner loading-sm"></span>
+        <span>{{ actionMessage() }}</span>
+      </div>
+    }
+
+    @if (successMessage()) {
+      <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">{{ successMessage() }}</div>
+    }
+
+    @if (errorMessage()) {
+      <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{ errorMessage() }}</div>
+    }
+
+    <div class="mb-4 rounded-xl border border-gray-100 bg-white px-5 py-4 text-sm text-gray-600">
+      Received amount:
+      <span class="font-extrabold text-[#f25f2f]">{{ totalReceived().toLocaleString() }}</span>
+    </div>
+
+    <div class="grid grid-cols-14 gap-x-4 mb-2 px-2 relative z-10">
+      <!-- <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Method</div> -->
+      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Reference</div>
+      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Amount</div>
+      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Date</div>
+      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Attachment</div>
+      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Notes</div>
+    </div>
+
+    @for (receiptRow of receiptRows(); track receiptRow.id) {
+      <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-14 gap-x-4 items-center mb-3 relative z-10">
+        <!-- <div class="col-span-2">
+          <input type="text" [value]="receiptRow.method" (input)="updateRowField(receiptRow.id, 'method', $any($event.target).value)" placeholder="Cash/Bank/Mobile" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        </div> -->
+
+        <div class="col-span-3">
+          <input type="text" [value]="receiptRow.referenceNo" (input)="updateRowField(receiptRow.id, 'referenceNo', $any($event.target).value)" placeholder="Transaction ref" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        </div>
+
+        <div class="col-span-2">
+          <input type="number" [value]="receiptRow.amount" (input)="updateRowField(receiptRow.id, 'amount', $any($event.target).value)" placeholder="0.00" min="0" step="0.01" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        </div>
+
+        <div class="col-span-2">
+          <input type="date" [value]="receiptRow.receivedAt" (input)="updateRowField(receiptRow.id, 'receivedAt', $any($event.target).value)" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+        </div>
+
+        <div class="col-span-3 flex items-center gap-2">
+          <label class="flex-1 cursor-pointer w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-lg bg-white hover:bg-gray-50 py-2.5 transition-colors text-gray-400 hover:text-[#f25f2f]">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            <input type="file" class="hidden" (change)="onReceiptAttachmentSelected($event, receiptRow.id)">
+          </label>
+          @if (receiptRow.attachment) {
+            <span class="text-[12px] text-blue-500 truncate max-w-[90px]">{{ receiptRow.attachment }}</span>
+          }
+        </div>
+
+        <div class="col-span-2 flex items-center gap-2">
+          <input type="text" [value]="receiptRow.notes" (input)="updateRowField(receiptRow.id, 'notes', $any($event.target).value)" placeholder="Notes" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <button type="button" (click)="removeReceiptRow(receiptRow.id)" [disabled]="deletingRowId() === receiptRow.id || loading()" class="text-gray-400 hover:text-[#f25f2f] transition-colors shrink-0 p-1">
+            @if (deletingRowId() === receiptRow.id) {
+              <span class="loading loading-spinner loading-sm"></span>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-[18px] h-[18px]">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            }
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="mb-4 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 animate-pulse">
+        <div class="h-3 w-1/3 bg-gray-200 rounded mb-2"></div>
+        <div class="h-3 w-2/3 bg-gray-200 rounded"></div>
+      </div>
+    }
+
+    <app-save-area [saveText]="'Save Receipts'" [loading]="loading()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
+  </div>
+</div>

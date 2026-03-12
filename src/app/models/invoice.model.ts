@@ -9,11 +9,27 @@ export interface Invoice {
   tripId: string;
   customerId: string;
   customer?: Customer;
+  paymentStatus?: 'unpaid' | 'partially_paid' | 'full_paid';
+  paidAmount?: number;
+  remainingAmount?:number;
   trip?: Trip;
   amount: number;
   description?: string;
   status: InvoiceStatus;
+  receipts?: InvoiceReceipt[];
   issuedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface InvoiceReceipt {
+  id: string;
+  invoiceId: string;
+  amount: number;
+  paidAt: string;
+  reference?: string;
+  attachment?: string;
+  notes?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

@@ -1,4 +1,4 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
@@ -13,6 +13,9 @@ import { ExpenseCategoryService } from '../../../../services/expense-category.se
 export class ExpenseCategoryForm {
   private expenseCategoryService = inject(ExpenseCategoryService);
   loading = this.expenseCategoryService.loading;
+  successMessage = signal<string | null>(null);
+  errorMessage = signal<string | null>(null);
+  actionMessage = signal<string | null>(null);
 
   expenseName = '';
   category = 'GENERAL';
@@ -24,14 +27,33 @@ export class ExpenseCategoryForm {
     this.close.emit();
   }
 
-  async onSubmit() {
-    await this.expenseCategoryService.create(
-      this.expenseName,
-      this.description,
-      this.category,
-      this.isActive
-    );
+  private async waitForLoadingToFinish(timeoutMs = 6000): Promise<void> {
+    const start = Date.now();
+    while (this.loading() && Date.now() - start < timeoutMs) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
 
-    this.close.emit();
+  async onSubmit() {
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.actionMessage.set('Saving expense category...');
+
+    try {
+      await this.expenseCategoryService.create(
+        this.expenseName,
+        this.description,
+        this.category,
+        this.isActive
+      );
+
+      this.successMessage.set('Expense category saved successfully.');
+      await this.waitForLoadingToFinish();
+      this.close.emit();
+    } catch (error) {
+      this.errorMessage.set(String(error || 'Could not save expense category. Please try again.'));
+    } finally {
+      this.actionMessage.set(null);
+    }
   }
 }

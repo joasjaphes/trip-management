@@ -2,6 +2,21 @@
 
   <div class="max-w-[900px] mx-auto">
 
+    @if (actionMessage()) {
+      <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+        <span class="loading loading-spinner loading-sm"></span>
+        <span>{{ actionMessage() }}</span>
+      </div>
+    }
+
+    @if (successMessage()) {
+      <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">{{ successMessage() }}</div>
+    }
+
+    @if (errorMessage()) {
+      <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{ errorMessage() }}</div>
+    }
+
     <!-- Header -->
     <!-- <div class="flex items-center justify-between mb-8">
       <div>
@@ -114,7 +129,7 @@
     </div>
 
     <div>
-      <app-save-area [saveText]="saveText()" (cancel)="cancel()" (save)="onSubmit()"></app-save-area>
+      <app-save-area [saveText]="saveText()" [loading]="loading()" (cancel)="cancel()" (save)="onSubmit()"></app-save-area>
     </div>
 
   </div>

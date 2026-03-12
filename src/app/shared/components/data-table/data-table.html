@@ -70,7 +70,18 @@
           <!-- Data cells -->
           @for (column of config().columns; track column.key) {
           <td [style.width]="column.width">
+            @if(column.type === 'status') {
+            <span [class]="getStatusColor(row[column.key])"> {{ row[column.key] }}</span>
+            }@else if(column.type === 'tripStatus') {
+            <span [class]="getTripStatusColor(row[column.key])"> {{ row[column.key] }}</span>
+            }@else if(column.type === 'invoiceStatus') {
+            <span [class]="getInvoiceStatusColor(row[column.key])"> {{ getInvoiceStatusName(row[column.key]) }}</span>
+            }@else if(column.type === 'number') {
+            {{ row[column.key] | number}}
+            }
+            @else {
             {{ row[column.key] }}
+            }
           </td>
           }
           @if (hasActions()) {

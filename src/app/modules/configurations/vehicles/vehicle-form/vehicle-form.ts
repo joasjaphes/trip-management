@@ -28,6 +28,9 @@ export class VehicleForm implements OnInit {
   loading = computed(() =>
     this.isSubmitting() || this.vehicleService.loading() || this.vehiclePermitService.loading()
   );
+  successMessage = signal<string | null>(null);
+  errorMessage = signal<string | null>(null);
+  actionMessage = signal<string | null>(null);
   registeredPermits = computed(() =>
     this.permitRegistrationService.allPermits().filter((permit) => permit.isActive)
   );
@@ -51,6 +54,13 @@ export class VehicleForm implements OnInit {
 
   goBack() {
     this.close.emit();
+  }
+
+  private async waitForLoadingToFinish(timeoutMs = 6000): Promise<void> {
+    const start = Date.now();
+    while (this.loading() && Date.now() - start < timeoutMs) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
   }
 
   addPermit() {
@@ -94,7 +104,14 @@ export class VehicleForm implements OnInit {
   }
 
   async onSubmit() {
+    if (this.loading()) {
+      return;
+    }
+
     this.isSubmitting.set(true);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.actionMessage.set('Saving vehicle...');
     try {
       const vehicleId = await this.vehicleService.create({
         registrationNo: this.registrationNo,
@@ -119,9 +136,14 @@ export class VehicleForm implements OnInit {
         )
       );
 
+      this.successMessage.set('Vehicle saved successfully.');
+      await this.waitForLoadingToFinish();
       this.reset();
       this.close.emit();
+    } catch (error) {
+      this.errorMessage.set(String(error || 'Could not save vehicle. Please try again.'));
     } finally {
+      this.actionMessage.set(null);
       this.isSubmitting.set(false);
     }
   }

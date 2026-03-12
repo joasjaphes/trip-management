@@ -1,4 +1,4 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
@@ -15,6 +15,9 @@ export class RouteForm {
   private routeService = inject(RouteService);
   private commonService = inject(CommonService);
   loading = this.routeService.loading;
+  successMessage = signal<string | null>(null);
+  errorMessage = signal<string | null>(null);
+  actionMessage = signal<string | null>(null);
 
   routeName = '';
   startLocation = '';
@@ -28,16 +31,35 @@ export class RouteForm {
     this.close.emit();
   }
 
+  private async waitForLoadingToFinish(timeoutMs = 6000): Promise<void> {
+    const start = Date.now();
+    while (this.loading() && Date.now() - start < timeoutMs) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
+
   async onSubmit() {
-    await this.routeService.create({
-      id: this.commonService.makeid(),
-      name: this.routeName,
-      mileage: Number(this.mileage),
-      startLocation: this.startLocation || undefined,
-      endLocation: this.endLocation || undefined,
-      estimatedDuration: this.estimatedDuration ? Number(this.estimatedDuration) : undefined,
-      isActive: this.isActive,
-    });
-    this.close.emit();
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.actionMessage.set('Saving route...');
+
+    try {
+      await this.routeService.create({
+        id: this.commonService.makeid(),
+        name: this.routeName,
+        mileage: Number(this.mileage),
+        startLocation: this.startLocation || undefined,
+        endLocation: this.endLocation || undefined,
+        estimatedDuration: this.estimatedDuration ? Number(this.estimatedDuration) : undefined,
+        isActive: this.isActive,
+      });
+      this.successMessage.set('Route saved successfully.');
+      await this.waitForLoadingToFinish();
+      this.close.emit();
+    } catch (error) {
+      this.errorMessage.set(String(error || 'Could not save route. Please try again.'));
+    } finally {
+      this.actionMessage.set(null);
+    }
   }
 }

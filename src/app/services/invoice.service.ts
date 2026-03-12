@@ -18,7 +18,7 @@ export class InvoiceService {
   readonly totalOutstanding = computed(() =>
     this.invoices()
       .filter((invoice) => invoice.status !== 'paid' && invoice.status !== 'cancelled')
-      .reduce((sum, invoice) => sum + Number(invoice.amount || 0), 0)
+      .reduce((sum, invoice) => sum + (Number(invoice.amount || 0) - Number(invoice.paidAmount || 0)), 0)
   );
 
   constructor(

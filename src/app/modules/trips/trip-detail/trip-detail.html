@@ -155,8 +155,8 @@
                     <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ expense.date ? (expense.date | date:'MMM d, yyyy') : '-' }}</td>
                     <td class="py-4 px-2 text-[14px] text-gray-600">{{ expense.expenseDescription ||  '-' }}</td>
                     <td class="py-4 px-2">
-                      <span [class]="'border px-2 py-0.5 rounded text-[10px] font-extrabold tracking-widest uppercase ' + getCategoryColor(expense.category?.name)">
-                        {{ expense.category?.name || 'Other' }}
+                      <span [class]="'border px-2 py-0.5 rounded text-[10px] font-extrabold tracking-widest uppercase ' + getExpenseCategoryColor(expense)">
+                        {{ getExpenseCategoryName(expense) }}
                       </span>
                     </td>
                     <!-- <td class="py-4 px-2 text-[14px] text-gray-600">{{ expense.category?.description || '-' }}</td> -->
