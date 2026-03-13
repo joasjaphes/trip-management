@@ -36,8 +36,8 @@ export class DriverService {
       this.error.set(err?.toString() || 'Failed to fetch drivers');
       console.error('Failed to fetch drivers', err);
     } finally {
-      setTimeout(() => this.isLoading.set(false), 1000); // Simulate loading delay
-      // this.isLoading.set(false);
+      // setTimeout(() => this.isLoading.set(false), 1000); // Simulate loading delay
+      this.isLoading.set(false);
     }
   }
 
