@@ -134,13 +134,13 @@
     </div>
 
     <!-- Page content -->
-    <div class="flex-1 bg-[#f3f4f6] min-h-[calc(100vh-4rem)] p-2">
+    <div class="flex-1 bg-[#f3f4f6] h-[calc(100vh-4rem)] overflow-y-auto p-2">
       <router-outlet></router-outlet>
     </div>
   </div>
 
   <!-- Sidebar -->
-  <div class="drawer-side z-40 w-[250px] shadow-xl">
+  <div class="drawer-side z-40 w-[250px] shadow-xl overflow-y-auto no-scrollbar">
     <div class="bg-white min-h-screen flex flex-col w-[250px] border-r border-gray-200">
       <!-- Logo -->
       <div class="flex items-center gap-4 p-6 border-b border-gray-100">
@@ -156,7 +156,7 @@
         </div>
       </div>
 
-      <div class="flex-1 overflow-y-auto px-4 py-5">
+      <div class="flex-1 overflow-y-auto no-scrollbar px-4 py-5">
         @for (group of menuGroups; track group.label) {
         @if (group.items.length === 1) {
         <section class="mb-4 last:mb-0 rounded-2xl border border-gray-100 bg-white/80 px-2 py-1">
