@@ -55,7 +55,7 @@ export class ExpenseCategoryForm implements OnInit {
   async onSubmit() {
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    this.actionMessage.set(this.isEditMode ? 'Updating expense category...' : 'Saving expense category...');
+    this.actionMessage.set(this.isEditMode ? 'Updating expense...' : 'Saving expense...');
 
     try {
       if (this.isEditMode) {
@@ -76,12 +76,12 @@ export class ExpenseCategoryForm implements OnInit {
       }
 
       this.successMessage.set(
-        this.isEditMode ? 'Expense category updated successfully.' : 'Expense category saved successfully.'
+        this.isEditMode ? 'Expense updated successfully.' : 'Expense saved successfully.'
       );
       await this.waitForLoadingToFinish();
       this.close.emit();
     } catch (error) {
-      this.errorMessage.set(String(error || 'Could not save expense category. Please try again.'));
+      this.errorMessage.set(String(error || 'Could not save expense. Please try again.'));
     } finally {
       this.actionMessage.set(null);
     }

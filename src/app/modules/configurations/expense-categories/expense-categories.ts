@@ -68,7 +68,7 @@ export class ExpenseCategories implements OnInit {
   onAdd() {
     this.selectedCategory.set(undefined);
     this.viewType.set('add');
-    this.formTitle.set('Add new category');
+    this.formTitle.set('Add new expense');
     this.formDescription.set('Create a new expense classification for operations.');
     this.viewDetails.set(true);
   }
@@ -81,7 +81,7 @@ export class ExpenseCategories implements OnInit {
 
     this.selectedCategory.set(category);
     this.viewType.set('edit');
-    this.formTitle.set('Edit category');
+    this.formTitle.set('Edit expense');
     this.formDescription.set(`Updating ${category.name}`);
     this.viewDetails.set(true);
   }

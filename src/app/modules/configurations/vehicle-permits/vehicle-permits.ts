@@ -46,7 +46,7 @@ export class VehiclePermits implements OnInit {
   tableConfigurations: TableConfig = {
     columns: [
       { key: 'name', label: 'Permit name' },
-      { key: 'authorizingBody', label: 'Authorizing body' },
+      { key: 'authorizingBody', label: 'Issuing Authority' },
       { key: 'status', label: 'Status', type: 'status' },
       { key: 'createdDate', label: 'Created date' }
     ],
