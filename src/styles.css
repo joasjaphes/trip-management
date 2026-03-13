@@ -57,3 +57,7 @@
 .mat-mdc-menu-content {
     background-color: #ffffff !important;
 }
+
+ .mat-mdc-menu-item .mat-mdc-menu-item-text {
+    color: #000000 !important;
+ }
