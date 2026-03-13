@@ -8,7 +8,7 @@
   [formDescription]="formDescription()"
 >
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="customers()" [config]="tableConfigurations" (edit)="onEdit($event)"></app-data-table>
+    <app-data-table [data]="customers()" [config]="tableConfigurations" (edit)="onEdit($event)" [loading]="loading()"></app-data-table>
   </ng-container>
 
   <ng-container ngProjectAs="form">

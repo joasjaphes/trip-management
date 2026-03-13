@@ -118,7 +118,7 @@
 				</div>
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-					<div class="rounded-xl border border-gray-100 p-4 bg-gray-50">
+					<!-- <div class="rounded-xl border border-gray-100 p-4 bg-gray-50">
 						<p class="text-[12px] font-bold tracking-wider uppercase text-gray-400 mb-3">Driver Photo</p>
 						<div class="w-full h-48 rounded-xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center">
 							@if (driverPhotoUrl()) {
@@ -127,17 +127,22 @@
 								<span class="text-[13px] text-gray-400">No photo uploaded</span>
 							}
 						</div>
-					</div>
+					</div> -->
 
 					<div class="rounded-xl border border-gray-100 p-4 bg-gray-50">
 						<p class="text-[12px] font-bold tracking-wider uppercase text-gray-400 mb-3">License Attachment</p>
-						<div class="w-full h-48 rounded-xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center">
+						<button
+							type="button"
+							(click)="previewLicenseAttachment()"
+							[disabled]="!licensePhotoUrl()"
+							class="w-full h-48 rounded-xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center transition-colors disabled:cursor-not-allowed disabled:opacity-70"
+						>
 							@if (licensePhotoUrl()) {
-								<img [src]="licensePhotoUrl()" alt="Driver license attachment" class="w-full h-full object-contain" />
+								<img [src]="licensePhotoUrl()" alt="Driver license attachment" class="w-full h-full object-contain cursor-zoom-in" />
 							} @else {
 								<span class="text-[13px] text-gray-400">No attachment uploaded</span>
 							}
-						</div>
+						</button>
 					</div>
 				</div>
 			</div>

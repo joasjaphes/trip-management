@@ -75,7 +75,7 @@ export class DriverForm {
       this.dateOfBirth = selectedDriver.dateOfBirth
         ? new Date(selectedDriver.dateOfBirth).toISOString().slice(0, 10)
         : '';
-      this.driverId = selectedDriver.id ?? '';
+      // this.driverId = selectedDriver.driverId ?? '';
       this.address = selectedDriver.address ?? '';
       this.licenseNumber = selectedDriver.licenseNumber ?? '';
       this.licenseClass = selectedDriver.licenseClass ?? '';

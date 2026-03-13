@@ -78,6 +78,8 @@ export class TripForm implements OnInit {
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
   actionMessage = signal<string | null>(null);
+  metadataLoading = signal(true);
+  metadataError = signal<string | null>(null);
   isEditMode = computed(() => !!this.trip()?.id);
   deletedExpenseIds = signal<string[]>([]);
 
@@ -89,15 +91,28 @@ export class TripForm implements OnInit {
     });
   }
 
-  ngOnInit() {
-    Promise.all([
+  async ngOnInit(): Promise<void> {
+    await this.loadFormMetadata();
+  }
+
+  async loadFormMetadata(): Promise<void> {
+    this.metadataLoading.set(true);
+    this.metadataError.set(null);
+
+    try {
+      await Promise.all([
       this.vehicleService.getAll(),
       this.driverService.getAll(),
       this.routeService.getAll(),
       this.cargoTypeService.getAll(),
       this.expenseCategoryService.getAll(),
       this.customerService.getAll(),
-    ]).then();
+      ]);
+    } catch (error) {
+      this.metadataError.set(String(error || 'Could not load trip metadata. Please try again.'));
+    } finally {
+      this.metadataLoading.set(false);
+    }
   }
 
   onCustomerNameInput(name: string) {
@@ -289,6 +304,16 @@ export class TripForm implements OnInit {
   }
 
   async onSubmit() {
+    if (this.metadataLoading()) {
+      this.errorMessage.set('Please wait, trip metadata is still loading.');
+      return;
+    }
+
+    if (this.metadataError()) {
+      this.errorMessage.set('Trip metadata failed to load. Retry loading metadata before saving.');
+      return;
+    }
+
     if (this.pendingUploads() > 0) {
       this.errorMessage.set('Wait for expense attachments to finish uploading before saving the trip.');
       return;

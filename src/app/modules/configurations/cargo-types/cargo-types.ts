@@ -35,6 +35,8 @@ export class CargoTypes implements OnInit {
     }))
   );
 
+  loading = this.cargoTypeService.loading;
+
   tableConfigurations: TableConfig = {
     columns: [
       { key: 'name', label: 'Name' },

@@ -34,7 +34,7 @@ export class HttpClientService {
         map((root) => {
           const baseUrl = root.replace(/\/api\/?$/, '');
           const normalizedUrl = url.replace(/^\/+/, '');
-          return `${baseUrl}/${normalizedUrl}`;
+          return `${baseUrl}/files/${normalizedUrl}`;
         })
       )
     );

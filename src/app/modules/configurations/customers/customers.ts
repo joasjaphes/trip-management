@@ -24,6 +24,8 @@ export class Customers implements OnInit {
   formDescription = signal('');
   selectedCustomer = signal<Customer | undefined>(undefined);
 
+  loading = this.customerService.loading;
+
   customers = computed(() =>
     this.customerService.allCustomers().map((customer) => ({
       id: customer.id,

@@ -21,6 +21,34 @@
       errorMessage() }}</div>
     }
 
+    @if (metadataLoading()) {
+    <div class="relative z-10 space-y-6 animate-pulse">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="md:col-span-2 h-12 rounded-lg bg-gray-100"></div>
+        <div class="md:col-span-2 h-12 rounded-lg bg-gray-100"></div>
+        <div class="h-12 rounded-lg bg-gray-100"></div>
+        <div class="h-12 rounded-lg bg-gray-100"></div>
+        <div class="h-12 rounded-lg bg-gray-100"></div>
+        <div class="h-12 rounded-lg bg-gray-100"></div>
+        <div class="h-12 rounded-lg bg-gray-100"></div>
+        <div class="h-12 rounded-lg bg-gray-100"></div>
+      </div>
+      <div class="h-28 rounded-xl bg-gray-100"></div>
+      <div class="h-px bg-gray-100"></div>
+      <div class="h-12 rounded-lg bg-gray-100"></div>
+      <div class="h-12 rounded-lg bg-gray-100"></div>
+      <div class="h-12 rounded-lg bg-gray-100"></div>
+    </div>
+    <div class="mt-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+      <span class="loading loading-spinner loading-sm"></span>
+      <span>Loading trip metadata (vehicles, drivers, routes, customers and categories)...</span>
+    </div>
+    } @else if (metadataError()) {
+    <div class="relative z-10 rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-[13px] font-semibold text-red-700 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <span>{{ metadataError() }}</span>
+      <button type="button" (click)="loadFormMetadata()" class="btn btn-sm border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white">Retry</button>
+    </div>
+    } @else {
     <!-- Main Details Form Grid -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-8 mb-12 relative z-10">
       <!-- Start Date -->
@@ -295,6 +323,7 @@
 
     <app-save-area [saveText]="isEditMode() ? 'Update Trip' : 'Create Trip'" [loading]="busy()" (cancel)="goBack()"
       (save)="onSubmit()"></app-save-area>
+    }
 
   </div>
 </div>

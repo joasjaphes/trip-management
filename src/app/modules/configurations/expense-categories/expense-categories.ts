@@ -32,6 +32,8 @@ export class ExpenseCategories implements OnInit {
     }))
   );
 
+  loading = this.expenseCategoryService.loading;
+
   tableConfigurations: TableConfig = {
     columns: [
       {

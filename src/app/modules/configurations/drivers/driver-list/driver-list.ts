@@ -30,6 +30,7 @@ export class DriverList implements OnInit {
   drivers = computed(() =>
     this.driverService.allDrivers().map((driver) => ({
       ...driver,
+      fullName: `${driver.firstName} ${driver.lastName}`,
       licenseStatus: this.getLicenseStatus(driver.licenseDetails?.expiryDate),
       status: driver.isActive ? 'Active' : 'Inactive',
       initials: `${driver.firstName?.charAt(0) ?? ''}${driver.lastName?.charAt(0) ?? ''}`.toUpperCase(),
@@ -39,12 +40,8 @@ export class DriverList implements OnInit {
   tableConfigurations: TableConfig = {
     columns: [
       {
-        key: 'firstName',
-        label: 'First name'
-      },
-      {
-        key: 'lastName',
-        label: 'Last name'
+        key: 'fullName',
+        label: 'Full name'
       },
       {
         key: 'phone',

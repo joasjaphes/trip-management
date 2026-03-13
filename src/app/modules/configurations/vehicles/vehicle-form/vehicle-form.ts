@@ -69,6 +69,8 @@ export class VehicleForm implements OnInit {
   isActive = true;
 
   permits: PermitRow[] = [];
+
+  saving = signal(false);
   /** track which existing permit record ids were removed, so we can delete them on save */
   private removedPermitRecordIds: string[] = [];
 
@@ -213,7 +215,7 @@ export class VehicleForm implements OnInit {
 
   async onSubmit() {
     if (this.loading()) return;
-
+    this.saving.set(true);
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
@@ -302,13 +304,14 @@ export class VehicleForm implements OnInit {
         this.successMessage.set('Vehicle saved successfully.');
       }
 
-      await this.waitForLoadingToFinish();
+      // await this.waitForLoadingToFinish();
       this.reset();
       this.close.emit();
     } catch (error) {
       this.errorMessage.set(String(error || 'Could not save vehicle. Please try again.'));
     } finally {
       this.actionMessage.set(null);
+      this.saving.set(false);
       this.isSubmitting.set(false);
     }
   }

@@ -170,6 +170,15 @@ export class DriverDetail {
     return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
   }
 
+  previewLicenseAttachment() {
+    const attachmentUrl = this.licensePhotoUrl();
+    if (!attachmentUrl) {
+      return;
+    }
+
+    window.open(attachmentUrl, '_blank', 'noopener,noreferrer');
+  }
+
   goBack() {
     if (this.driver()) {
       this.close.emit();
