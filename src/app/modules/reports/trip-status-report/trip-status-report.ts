@@ -33,7 +33,7 @@ export class TripStatusReport implements OnInit {
     { label: 'Pending Payment', value: this.tripService.pendingTrips().length, color: 'text-amber-600 bg-amber-50' },
     { label: 'In Progress', value: this.tripService.inProgressTrips().length, color: 'text-blue-600 bg-blue-50' },
     { label: 'Completed', value: this.tripService.completedTrips().length, color: 'text-emerald-600 bg-emerald-50' },
-    { label: 'Cancelled', value: this.tripService.cancelledTrips().length, color: 'text-red-600 bg-red-50' },
+    // { label: 'Cancelled', value: this.tripService.cancelledTrips().length, color: 'text-red-600 bg-red-50' },
   ]));
 
   async ngOnInit(): Promise<void> {
