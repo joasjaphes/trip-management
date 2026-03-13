@@ -17,100 +17,113 @@
     </p>
   </div>
 
-  <!-- Responsive table wrapper -->
-  <div class="table-wrapper" role="region" aria-label="Data table">
-    <div class="table-scroll">
-      <table class="data-table z-0" [class.striped]="config().striped" [class.hover]="config().hover"
-        [class.bordered]="config().bordered">
-        <!-- Table Head -->
-        <thead>
-          <tr>
-            <!-- Selection checkbox header -->
-            <!-- <th class="col-select">
+  <div class="table-content-scroll" role="region" aria-label="Data table and footer">
+    <!-- Responsive table wrapper -->
+    <div class="table-wrapper">
+      <div class="table-scroll">
+        <table class="data-table z-0" [class.striped]="config().striped" [class.hover]="config().hover"
+          [class.bordered]="config().bordered">
+          <!-- Table Head -->
+          <thead>
+            <tr>
+              <!-- Selection checkbox header -->
+              <!-- <th class="col-select">
             <input type="checkbox" [checked]="isAllSelected()" (change)="onSelectAll($event)"
               aria-label="Select all rows on current page" />
           </th> -->
 
-            <!-- Column headers -->
-            @for (column of config().columns; track column.key) {
-            <th [style.width]="column.width" [class.sortable]="column.sortable" [attr.aria-sort]="
+              <!-- Column headers -->
+              @for (column of config().columns; track column.key) {
+              <th [style.width]="column.width" [class.sortable]="column.sortable" [attr.aria-sort]="
                 sortColumn() === column.key
                   ? sortDirection() === 'asc'
                     ? 'ascending'
                     : 'descending'
                   : 'none'
               ">
-              <button *ngIf="column.sortable" class="sort-button" (click)="onSort(column.key)" [attr.aria-label]="
+                <button *ngIf="column.sortable" class="sort-button" (click)="onSort(column.key)" [attr.aria-label]="
                   'Sort by ' + column.label + ', current direction: ' + sortDirection()
                 ">
-                <span class="column-label">{{ column.label }}</span>
-                <span class="sort-icon" aria-hidden="true">
-                  {{ getSortIcon(column.key) }}
-                </span>
-              </button>
-              <span *ngIf="!column.sortable">{{ column.label }}</span>
-            </th>
-            }
-            @if (hasActions()) {
-            <th>Actions</th>
-            }
-          </tr>
-        </thead>
+                  <span class="column-label">{{ column.label }}</span>
+                  <span class="sort-icon" aria-hidden="true">
+                    {{ getSortIcon(column.key) }}
+                  </span>
+                </button>
+                <span *ngIf="!column.sortable">{{ column.label }}</span>
+              </th>
+              }
+              @if (hasActions()) {
+              <th>Actions</th>
+              }
+            </tr>
+          </thead>
 
-        <!-- Table Body -->
-        <tbody>
-          @if(loading()) {
-          <tr class="empty-row">
-            <td [attr.colspan]="config().columns.length + (hasActions() ? 1 : 0)" class="empty-message">
-              <app-placeholder></app-placeholder>
-            </td>
-          </tr>
-          }
-          @else if (paginatedData().length > 0) {
-          @for (row of paginatedData(); track $index) {
-          <tr class="data-row" tabindex="0">
-            <!-- Selection checkbox -->
-            <!-- <td class="col-select">
+          <!-- Table Body -->
+          <tbody>
+            @if(loading()) {
+            <tr class="empty-row">
+              <td [attr.colspan]="config().columns.length + (hasActions() ? 1 : 0)" class="empty-message">
+                <app-placeholder></app-placeholder>
+              </td>
+            </tr>
+            }
+            @else if (paginatedData().length > 0) {
+            @for (row of paginatedData(); track $index) {
+            <tr>
+              <!-- Selection checkbox -->
+              <!-- <td class="col-select">
             <input type="checkbox" [checked]="selectedRows().has($index)" (change)="onSelectRow($index, $event)"
               [attr.aria-label]="'Select row ' + ($index + 1)" />
           </td> -->
 
-            <!-- Data cells -->
-            @for (column of config().columns; track column.key) {
-            <td [style.width]="column.width">
-              @if(column.type === 'status') {
-              <span [class]="getStatusColor(row[column.key])"> {{ row[column.key] }}</span>
-              }@else if(column.type === 'tripStatus') {
-              <span [class]="getTripStatusColor(row[column.key])"> {{ row[column.key] }}</span>
-              }@else if(column.type === 'invoiceStatus') {
-              <span [class]="getInvoiceStatusColor(row[column.key])"> {{ getInvoiceStatusName(row[column.key]) }}</span>
-              }@else if(column.type === 'number') {
-              {{ row[column.key] | number}}
+              <!-- Data cells -->
+              @for (column of config().columns; track column.key) {
+              <td [style.width]="column.width">
+                @if(column.type === 'status') {
+                <span [class]="getStatusColor(row[column.key])"> {{ row[column.key] }}</span>
+                }@else if(column.type === 'tripStatus') {
+                <span [class]="getTripStatusColor(row[column.key])"> {{ row[column.key] }}</span>
+                }@else if(column.type === 'invoiceStatus') {
+                <span [class]="getInvoiceStatusColor(row[column.key])"> {{ getInvoiceStatusName(row[column.key])
+                  }}</span>
+                }@else if(column.type === 'number') {
+                {{ row[column.key] | number}}
+                }
+                @else {
+                {{ row[column.key] }}
+                }
+              </td>
               }
-              @else {
-              {{ row[column.key] }}
-              }
-            </td>
-            }
-            @if (hasActions()) {
-            <td class="col-actions">
-              @if (config().actions?.edit) {
-              <i class="fa-solid fa-pencil" (click)="onEdit(row)" title="Edit"></i>&nbsp;&nbsp;
-              <!-- <button class="action-btn" (click)="onEdit(row)">Edit</button> -->
-              }
-              @if (config().actions?.view) {
-              <i class="fa-solid fa-eye" (click)="onView(row)" title="View"></i>&nbsp;&nbsp;
-              <!-- <button class="action-btn" (click)="onView(row)">View</button> -->
-              }
-              @if (config().actions?.delete) {
-              <i class="fa-solid fa-trash text-red-500" (click)="onDelete(row)"
-                title="Delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+              @if (hasActions()) {
+              <td class="col-actions">
+                @if (config().actions?.edit) {
+                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(row)" title="Edit"></i>&nbsp;&nbsp;
+                <!-- <button class="action-btn" (click)="onEdit(row)">Edit</button> -->
+                }
+                @if (config().actions?.view) {
+                <i class="fa-solid fa-eye cursor-pointer" (click)="onView(row)" title="View"></i>&nbsp;&nbsp;
+                <!-- <button class="action-btn" (click)="onView(row)">View</button> -->
+                }
+                @if (config().actions?.delete) {
+                <i class="fa-solid fa-trash text-red-500 cursor-pointer" (click)="onDelete(row)"
+                  title="Delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
 
-              <!-- <button class="action-btn" (click)="onDelete(row)">Delete</button> -->
-              }
-              @if (config().actions?.more) {
-              <div class="more-menu-container" (click)="$event.stopPropagation()">
-                <button type="button" class="more-trigger" (click)="toggleMoreMenu($index, $event)" title="More"
+                <!-- <button class="action-btn" (click)="onDelete(row)">Delete</button> -->
+                }
+                @if (config().actions?.more) {
+                <!-- <div> -->
+                <button matIconButton [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" class="cursor-pointer">
+                  <i class="fa-solid fa-ellipsis-v"></i>
+                </button>
+                <mat-menu #menu="matMenu" style="background-color:red">
+                  @for (action of moreActions(); track action.key) {
+                  <button mat-menu-item (click)="onMoreMenuAction(action, row, $event)" class="cursor-pointer">
+                    <i [class]="action.icon || 'fa-solid fa-question-circle'"></i> &nbsp;
+                    {{ action.label }}
+                  </button>
+                  }
+                </mat-menu>
+                <!-- <button type="button" class="more-trigger" (click)="toggleMoreMenu($index, $event)" title="More"
                   aria-haspopup="menu" [attr.aria-expanded]="openMoreMenuRow() === $index">
                   <i class="fa-solid fa-ellipsis-v"></i>
                 </button>
@@ -127,78 +140,80 @@
                   }
                   }
                 </div>
+                } -->
+                <!-- </div> -->
                 }
-              </div>
+              </td>
               }
-            </td>
+            </tr>
             }
-          </tr>
-          }
-          }
-          @else {
-          <tr class="empty-row">
-            <td [attr.colspan]="config().columns.length + (hasActions() ? 1 : 0)" class="empty-message">
-              <p>No data available</p>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Footer with Pagination -->
-  <div class="table-footer">
-    <div class="pagination-info">
-      <label for="pageSize">Items per page:</label>
-      <select id="pageSize" class="page-size-select" [value]="'10'"
-        (change)="onPageSizeChange(+$any($event.target).value)" aria-label="Select number of items per page">
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-      </select>
-      <span class="page-counter">
-        Page {{ currentPage() + 1 }} of {{ totalPages() || 1 }}
-      </span>
+            }
+            @else {
+            <tr class="empty-row">
+              <td [attr.colspan]="config().columns.length + (hasActions() ? 1 : 0)" class="empty-message">
+                <p>No data available</p>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- Pagination controls -->
-    @if (totalPages() > 1) {
-    <nav class="pagination" aria-label="Table pagination">
-      <button class="pagination-btn" (click)="onPageChange(0)" [disabled]="currentPage() === 0"
-        aria-label="Go to first page">
-        « First
-      </button>
-      <button class="pagination-btn" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0"
-        aria-label="Go to previous page">
-        ‹ Prev
-      </button>
+    <!-- Footer with Pagination -->
+    <div class="table-footer">
+      <div class="pagination-info">
+        <label for="pageSize">Items per page:</label>
+        <select id="pageSize" class="page-size-select" [value]="'10'"
+          (change)="onPageSizeChange(+$any($event.target).value)" aria-label="Select number of items per page">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select>
+        <span class="page-counter">
+          Page {{ currentPage() + 1 }} of {{ totalPages() || 1 }}
+        </span>
+      </div>
 
-      @for (page of pages(); track page) {
-      @if (
-      page === 0 ||
-      page === totalPages() - 1 ||
-      (page >= currentPage() - 1 && page <= currentPage() + 1) ) { <button class="pagination-btn"
-        [class.active]="page === currentPage()" (click)="onPageChange(page)"
-        [attr.aria-label]="'Go to page ' + (page + 1)" [attr.aria-current]="page === currentPage() ? 'page' : null">
-        {{ page + 1 }}
+      <!-- Pagination controls -->
+      @if (totalPages() > 1) {
+      <nav class="pagination" aria-label="Table pagination">
+        <button class="pagination-btn" (click)="onPageChange(0)" [disabled]="currentPage() === 0"
+          aria-label="Go to first page">
+          « First
         </button>
-        } @else if (
-        (page === 1 && currentPage() > 2) ||
-        (page === totalPages() - 2 && currentPage() < totalPages() - 3) ) { <span class="pagination-ellipsis">...</span>
-          }
-          }
+        <button class="pagination-btn" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0"
+          aria-label="Go to previous page">
+          ‹ Prev
+        </button>
 
-          <button class="pagination-btn" (click)="onPageChange(currentPage() + 1)"
-            [disabled]="currentPage() === totalPages() - 1" aria-label="Go to next page">
-            Next ›
+        @for (page of pages(); track page) {
+        @if (
+        page === 0 ||
+        page === totalPages() - 1 ||
+        (page >= currentPage() - 1 && page <= currentPage() + 1) ) { <button class="pagination-btn"
+          [class.active]="page === currentPage()" (click)="onPageChange(page)"
+          [attr.aria-label]="'Go to page ' + (page + 1)" [attr.aria-current]="page === currentPage() ? 'page' : null">
+          {{ page + 1 }}
           </button>
-          <button class="pagination-btn" (click)="onPageChange(totalPages() - 1)"
-            [disabled]="currentPage() === totalPages() - 1" aria-label="Go to last page">
-            Last »
-          </button>
-    </nav>
-    }
+          } @else if (
+          (page === 1 && currentPage() > 2) ||
+          (page === totalPages() - 2 && currentPage() < totalPages() - 3) ) { <span class="pagination-ellipsis">
+            ...</span>
+            }
+            }
+
+            <button class="pagination-btn" (click)="onPageChange(currentPage() + 1)"
+              [disabled]="currentPage() === totalPages() - 1" aria-label="Go to next page">
+              Next ›
+            </button>
+            <button class="pagination-btn" (click)="onPageChange(totalPages() - 1)"
+              [disabled]="currentPage() === totalPages() - 1" aria-label="Go to last page">
+              Last »
+            </button>
+      </nav>
+      }
+    </div>
   </div>
 </div>

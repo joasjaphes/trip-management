@@ -12,6 +12,7 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Placeholder } from '../placeholder/placeholder';
+import {MatMenuModule} from '@angular/material/menu';
 
 export interface TableColumn {
   key: string;
@@ -37,7 +38,7 @@ export interface TableConfig {
 
 @Component({
   selector: 'app-data-table',
-  imports: [CommonModule, FormsModule, FontAwesomeModule, DecimalPipe,Placeholder],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, DecimalPipe,Placeholder, MatMenuModule],
   templateUrl: './data-table.html',
   styleUrl: './data-table.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

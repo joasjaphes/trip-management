@@ -18,7 +18,7 @@
     </div>
     <div class="card bg-base-100 shadow-lg">
         <div class="content-container">
-            <div class="card-body content-panel" [style.width]="viewDetails() ? mainContentWidth(): '100%'"
+            <div class="card-body content-panel overflow-auto" [style.width]="viewDetails() ? mainContentWidth(): '100%'"
                 [class.slide-in-from-left]="!viewDetails()" [class.slide-out-to-left]="viewDetails()"
                 [style.opacity]="viewDetails() ? '0.3' : '1'" [style.pointer-events]="viewDetails() ? 'none' : 'auto'"
                 role="region" aria-label="Main content" [attr.aria-hidden]="viewDetails()">
