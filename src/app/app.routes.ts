@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { CompanyProfilePage } from './modules/configurations/company-profile/company-profile';
 
 export const routes: Routes = [
     {
@@ -75,6 +76,14 @@ export const routes: Routes = [
             {
                 path: 'vehicle-permits',
                 loadComponent: () => import('./modules/configurations/vehicle-permits/vehicle-permits').then(m => m.VehiclePermits),
+            },
+            {
+                path: 'issuing-bodies',
+                loadComponent: () => import('./modules/configurations/issuing-body/issuing-body').then(m => m.IssuingBodyComponent),
+            },
+            {
+                path: 'company-profile',
+                component: CompanyProfilePage,
             },
             {
                 path: 'vehicle-permits/new',

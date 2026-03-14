@@ -7,6 +7,7 @@ A comprehensive backend API for managing trips, customers, invoices, receipts, v
 - [Authentication](#authentication)
 - [API Endpoints](#api-endpoints)
 - [Data Models](#data-models)
+- [Migrations](#migrations)
 - [Error Handling](#error-handling)
 - [Examples](#examples)
 
@@ -557,10 +558,12 @@ Content-Type: application/json
 {
   "id": "permit-reg-id",
   "name": "Road License",
-  "authorizingBody": "Tanzania Revenue Authority",
+  "issuingBodyId": "issuing-body-uid-123",
   "isActive": true
 }
 ```
+
+`issuingBodyId` must reference an existing issuing body from `/api/issuing-bodies`.
 
 #### Update Permit Registration
 ```http
@@ -570,7 +573,103 @@ Content-Type: application/json
 {
   "id": "permit-reg-id",
   "name": "Road License",
-  "authorizingBody": "Tanzania Revenue Authority",
+  "issuingBodyId": "issuing-body-uid-123",
+  "isActive": true
+}
+```
+
+---
+
+### Issuing Bodies (`/api/issuing-bodies`)
+
+#### Get All Issuing Bodies
+```http
+GET /api/issuing-bodies
+```
+
+#### Get Issuing Body by ID
+```http
+GET /api/issuing-bodies/:id
+```
+
+#### Create Issuing Body
+```http
+POST /api/issuing-bodies
+Content-Type: application/json
+
+{
+  "id": "issuing-body-uid-123",
+  "name": "Tanzania Revenue Authority",
+  "description": "Government authority responsible for permit issuance",
+  "isActive": true
+}
+```
+
+#### Update Issuing Body
+```http
+PUT /api/issuing-bodies
+Content-Type: application/json
+
+{
+  "id": "issuing-body-uid-123",
+  "name": "Tanzania Revenue Authority",
+  "description": "Government authority responsible for permit issuance",
+  "isActive": true
+}
+```
+
+---
+
+### Company Profiles (`/api/company-profiles`)
+
+#### Get All Company Profiles
+```http
+GET /api/company-profiles
+```
+
+#### Get Company Profile by ID
+```http
+GET /api/company-profiles/:id
+```
+
+#### Create Company Profile
+```http
+POST /api/company-profiles
+Content-Type: application/json
+
+{
+  "id": "company-profile-uid-123",
+  "companyName": "Monit Africa Logistics Ltd",
+  "tin": "123456789",
+  "vrn": "40-123456-A",
+  "country": "Tanzania",
+  "region": "Dar es Salaam",
+  "district": "Ilala",
+  "street": "Nyerere Road",
+  "plot": "Plot 42",
+  "postalAddress": "P.O. Box 12345",
+  "description": "Head office profile for permits and invoicing documents",
+  "isActive": true
+}
+```
+
+#### Update Company Profile
+```http
+PUT /api/company-profiles
+Content-Type: application/json
+
+{
+  "id": "company-profile-uid-123",
+  "companyName": "Monit Africa Logistics Ltd",
+  "tin": "123456789",
+  "vrn": "40-123456-A",
+  "country": "Tanzania",
+  "region": "Dar es Salaam",
+  "district": "Ilala",
+  "street": "Nyerere Road",
+  "plot": "Plot 42",
+  "postalAddress": "P.O. Box 12345",
+  "description": "Head office profile for permits and invoicing documents",
   "isActive": true
 }
 ```
@@ -821,11 +920,67 @@ Use this file path in fields like `driverPhoto`, `licenseFrontPagePhoto`, `recei
 {
   "id": "string",
   "name": "string",
-  "authorizingBody": "string",
+  "issuingBodyId": "string",
   "isActive": "boolean",
   "createdAt": "string",
   "updatedAt": "string"
 }
+```
+
+### Issuing Body Model
+```typescript
+{
+  "id": "string",
+  "name": "string",
+  "description": "string | undefined",
+  "isActive": "boolean",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+### Company Profile Model
+```typescript
+{
+  "id": "string",
+  "companyName": "string",
+  "tin": "string",
+  "vrn": "string",
+  "country": "string",
+  "region": "string",
+  "district": "string",
+  "street": "string",
+  "plot": "string",
+  "postalAddress": "string",
+  "description": "string | undefined",
+  "isActive": "boolean",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+## Migrations
+
+Use TypeORM migration scripts to keep schema changes in sync.
+
+```bash
+# run migrations
+$ npm run migration:run
+
+# create a blank migration
+$ npm run migration:create --name=YourMigrationName
+
+# generate migration from current entity changes
+$ npm run migration:generate --name=YourMigrationName
+
+# revert last migration
+$ npm run migration:revert
+```
+
+If you are using Docker Compose and your database host is `trip-database`, run migration commands through the API container so hostname resolution works:
+
+```bash
+$ docker compose -f docker-compose.dev.yml run --rm --user "$(id -u):$(id -g)" trip-api npm run migration:run
 ```
 
 ## Error Handling

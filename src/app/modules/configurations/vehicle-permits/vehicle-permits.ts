@@ -31,7 +31,7 @@ export class VehiclePermits implements OnInit {
     this.permitRegistrationService.allPermits().map((permit) => ({
       id: permit.id,
       name: permit.name,
-      authorizingBody: permit.authorizingBody || '-',
+      authorizingBody: permit.issuingBody?.name || '-',
       status: permit.isActive ? 'Active' : 'Inactive',
       createdDate: permit.createdAt
         ? new Date(permit.createdAt).toLocaleDateString()

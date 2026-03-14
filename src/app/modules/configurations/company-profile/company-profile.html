@@ -1,0 +1,6 @@
+<app-layout [title]="title()" [description]="description()" [showAddButton]="showAddButton()">
+    <ng-container ngProjectAs='main'>
+        <app-company-profile-form [data]="profile()" [loading]="loading()" [(saving)]="saving"
+            (save)="onSave($event)" />
+    </ng-container>
+</app-layout>

@@ -1,6 +1,5 @@
-<div class=" w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
-
-  <div class="w-full">
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  <div class="max-w-[900px] mx-auto">
     @if (actionMessage()) {
     <div
       class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
@@ -20,30 +19,23 @@
       errorMessage() }}</div>
     }
 
-    <!-- Permit Details Card -->
     <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div class="flex flex-col gap-2">
-          <label class="text-[13px] font-bold text-gray-700">Permit Name</label>
-          <input type="text" placeholder="e.g. Oversize Load Annual Permit" [(ngModel)]="permitName" name="permitName"
+          <label class="text-[13px] font-bold text-gray-700">Issuing Body Name</label>
+          <input type="text" placeholder="e.g. Perishable Goods" [(ngModel)]="name" name="name"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         </div>
         <div class="flex flex-col gap-2">
-          <label class="text-[13px] font-bold text-gray-700">Issuing Authority</label>
-          <select name="issuingBodyId" id="issuingBodyId" [(ngModel)]="issuingBodyId"
+          <label class="text-[13px] font-bold text-gray-700">Issuing Body Description</label>
+          <input type="text" placeholder="e.g. Perishable Goods" [(ngModel)]="description" name="description"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-            <option value="">Select Issuing Authority</option>
-            @for (body of issuingBodies(); track body.id) {
-            <option [value]="body.id">{{ body.name }}</option>
-            }
-          </select>
         </div>
       </div>
-      <!-- Active Status Toggle -->
       <div class="flex items-center justify-between pt-6 border-t border-gray-100">
         <div>
-          <h3 class="text-[15px] font-extrabold text-gray-900">Status</h3>
-          <p class="text-[13px] text-gray-400 mt-0.5">Set whether this permit is active or inactive.</p>
+          <h3 class="text-[15px] font-extrabold text-gray-900">Active Status</h3>
+          <p class="text-[13px] text-gray-400 mt-0.5">Enable this issuing body.</p>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" [checked]="isActive" (change)="isActive = !isActive" class="sr-only peer">
@@ -54,8 +46,7 @@
       </div>
     </div>
 
-    <app-save-area [saveText]="isEditMode ? 'Update Permit' : 'Save Permit'" [loading]="loading()" (cancel)="goBack()"
-      (save)="onSubmit()"></app-save-area>
-
+    <app-save-area [saveText]="isEditMode() ? 'Update Issuing Body' : 'Save Issuing Body'" [loading]="saving()"
+      (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
   </div>
 </div>

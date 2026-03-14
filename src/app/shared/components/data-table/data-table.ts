@@ -12,7 +12,7 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Placeholder } from '../placeholder/placeholder';
-import {MatMenuModule} from '@angular/material/menu';
+import { MatMenuModule } from '@angular/material/menu';
 
 export interface TableColumn {
   key: string;
@@ -38,7 +38,7 @@ export interface TableConfig {
 
 @Component({
   selector: 'app-data-table',
-  imports: [CommonModule, FormsModule, FontAwesomeModule, DecimalPipe,Placeholder, MatMenuModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, DecimalPipe, Placeholder, MatMenuModule],
   templateUrl: './data-table.html',
   styleUrl: './data-table.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -256,7 +256,7 @@ export class DataTable {
     row: any,
     event: Event
   ) {
-    event.stopPropagation();
+    // event.stopPropagation();
     action.action(row);
     this.more.emit({ key: action.key, row });
     this.openMoreMenuRow.set(null);
@@ -274,7 +274,7 @@ export class DataTable {
       'completed': 'bg-emerald-50 text-emerald-600 border-emerald-200 px-2 py-2 rounded-md',
       'cancelled': 'bg-red-50 text-red-600 border-red-200 px-2 py-2 rounded-md'
     };
-    return colors[status] || colors['pending'];
+    return colors[status.toLowerCase()] || colors['pending'];
   }
 
   getInvoiceStatusColor(status: string): string {
@@ -284,7 +284,7 @@ export class DataTable {
       'overdue': 'bg-yellow-50 text-yellow-600 border-yellow-200 px-2 py-2 rounded-md',
       'partially_paid': 'bg-orange-50 text-orange-600 border-orange-200 px-2 py-2 rounded-md'
     };
-    return colors[status] || colors['unpaid'];
+    return colors[status.toLowerCase()] || colors['unpaid'];
 
   }
 
@@ -304,5 +304,24 @@ export class DataTable {
       'Inactive': 'bg-red-50 text-red-600 border-red-200 px-2 py-2 rounded-md'
     };
     return colors[status] || colors['Inactive'];
+  }
+
+  getTripStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'Completed':
+        return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
+      case 'Inprogress':
+        return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
+      case 'Pending payment':
+        return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+      default:
+        return 'text-gray-400 bg-gray-500/10 border-gray-500/20';
+    }
+  }
+
+  getMoreActionsForRow(row: any) {
+    return this.moreActions().filter(action => {
+      return row.actions[action.key]
+    });
   }
 }

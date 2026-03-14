@@ -75,13 +75,17 @@ export class Invoicing implements OnInit {
         tripNumber: invoice.trip?.tripReferenceNumber || '-',
         description: invoice.description || '-',
         customer: invoice.customer?.name || '-',
-        amount: Number(invoice.amount || 0).toLocaleString(),
-        paidAmount: invoice.paidAmount?.toLocaleString() || '0',
-        remainingAmount: Number(remainingAmount).toLocaleString(),
+        amount: Number(invoice.amount || 0),
+        paidAmount: invoice.paidAmount ? Number(invoice.paidAmount) : 0,
+        remainingAmount: Number(remainingAmount),
         status: invoice.status,
         paymentStatus: invoice.paymentStatus || 'unpaid',
-        issuedAt: invoice.issuedAt ? new Date(invoice.issuedAt).toLocaleDateString() : '-',
+        issuedAt: invoice.createdAt ? new Date(invoice.createdAt).toLocaleDateString() : '-',
         _invoice: invoice,
+        actions: {
+          viewReceipts: invoice.paidAmount > 0,
+          manageReceipts: true,
+        }
       };
     })
   );
@@ -103,9 +107,9 @@ export class Invoicing implements OnInit {
       { key: 'tripNumber', label: 'Trip #' },
       { key: 'description', label: 'Description' },
       { key: 'customer', label: 'Customer' },
-      { key: 'amount', label: 'Amount' },
-      { key: 'paidAmount', label: 'Paid Amount' },
-      { key: 'remainingAmount', label: 'Remaining Amount' },
+      { key: 'amount', label: 'Amount', type: 'number' },
+      { key: 'paidAmount', label: 'Paid Amount', type: 'number' },
+      { key: 'remainingAmount', label: 'Remaining Amount', type: 'number' },
       { key: 'paymentStatus', label: 'Payment Status', type: 'invoiceStatus' },
       { key: 'issuedAt', label: 'Issued at' },
     ],
@@ -118,13 +122,13 @@ export class Invoicing implements OnInit {
   moreActions = computed(() => [
     {
       label: 'View receipts',
-      key: 'view-receipts',
+      key: 'viewReceipts',
       icon: 'fa-solid fa-eye text-blue-500',
       action: (row: { _invoice: Invoice }) => this.onViewReceipts(row),
     },
     {
       label: 'Manage receipt',
-      key: 'manage-receipt',
+      key: 'manageReceipts',
       icon: 'fa-solid fa-receipt text-emerald-500',
       action: (row: { _invoice: Invoice }) => this.onManageReceipt(row),
     },

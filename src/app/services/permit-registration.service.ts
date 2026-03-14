@@ -6,6 +6,7 @@ import { CommonService } from './common.service';
 type PermitRegistrationPayload = {
   name: string;
   authorizingBody?: string;
+  issuingBodyId: string;
   isActive: boolean;
 };
 
@@ -29,6 +30,7 @@ export class PermitRegistrationService {
 
     try {
       const permits = await this.http.get<Permit[]>('permit-registrations');
+      console.log('Fetched permits:', permits);
       this.permits.set(permits);
     } catch (err) {
       this.error.set(err?.toString() || 'Failed to fetch permit registrations');
@@ -50,7 +52,7 @@ export class PermitRegistrationService {
       await this.http.post('permit-registrations', {
         id: this.commonService.makeid(),
         name: permit.name,
-        authorizingBody: permit.authorizingBody,
+        issuingBodyId: permit.issuingBodyId,
         isActive: permit.isActive,
       });
       await this.getAll();
@@ -72,7 +74,7 @@ export class PermitRegistrationService {
       await this.http.put('permit-registrations', {
         id,
         name: permit.name ?? existing?.name,
-        authorizingBody: permit.authorizingBody ?? existing?.authorizingBody,
+        issuingBodyId: permit.issuingBodyId ?? existing?.issuingBodyId,
         isActive: permit.isActive ?? existing?.isActive ?? true,
       });
       await this.getAll();

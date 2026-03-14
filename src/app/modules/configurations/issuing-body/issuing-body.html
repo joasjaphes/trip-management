@@ -1,0 +1,12 @@
+<app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
+  <ng-container ngProjectAs="main">
+    <app-data-table [data]="issuingBodies()" [config]="tableConfigurations" (edit)="onEdit($event)" [loading]="loading()"></app-data-table>
+  </ng-container>
+
+  <ng-container ngProjectAs="form">
+    @if (viewType() === 'add' || viewType() === 'edit') {
+      <app-issuing-body-form [issuingBody]="selectedIssuingBody()" (close)="onCloseForm()"></app-issuing-body-form>
+    }
+  </ng-container>
+</app-layout>

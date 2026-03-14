@@ -1,6 +1,6 @@
 import { Component, input, output, computed, signal, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Trip, TripExpense } from '../../../models/trip.model';
+import { Trip, TripExpense, TripStatus } from '../../../models/trip.model';
 import { ExpenseCategoryService } from '../../../services/expense-category.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 
@@ -56,10 +56,9 @@ export class TripDetail {
   }
 
   canComplete = computed(() => {
-    console.log('revenue', this.trip()?.revenue, 'paidAmount', this.trip()?.paidAmount, 'endDate', !!this.trip()?.endDate);
     const status = this.trip()?.status;
     console.log('status', status);
-    return (status === 'Pending payment' || status === 'Inprogress' || status == 'Completed') && !!this.trip()?.endDate && Number(this.trip().paidAmount) >= Number(this.trip().revenue);
+    return (status === 'Pending payment' || status === 'Inprogress') && !!this.trip()?.endDate && Number(this.trip().paidAmount) >= Number(this.trip().revenue);
   });
 
   requestComplete() {
@@ -82,12 +81,12 @@ export class TripDetail {
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
-      'pending': 'bg-yellow-50 text-yellow-600 border-yellow-200',
-      'inprogress': 'bg-blue-50 text-blue-600 border-blue-200',
-      'completed': 'bg-emerald-50 text-emerald-600 border-emerald-200',
-      'cancelled': 'bg-red-50 text-red-600 border-red-200'
+      [TripStatus.PENDING]: 'bg-yellow-50 text-yellow-600 border-yellow-200',
+      [TripStatus.IN_PROGRESS]: 'bg-blue-50 text-blue-600 border-blue-200',
+      [TripStatus.COMPLETED]: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+      [TripStatus.CANCELLED]: 'bg-red-50 text-red-600 border-red-200'
     };
-    return colors[status] || colors['pending'];
+    return colors[status] || colors[TripStatus.PENDING];
   }
 
   getExpenseCategoryName(expense: TripExpense): string {

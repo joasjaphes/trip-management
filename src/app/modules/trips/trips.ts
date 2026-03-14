@@ -34,21 +34,26 @@ export class Trips implements OnInit {
       id: trip.id,
       tripReferenceNumber: trip.tripReferenceNumber,
       date: trip.tripDate ? new Date(trip.tripDate).toLocaleDateString() : '-',
-      paidAmount: `${Number(trip.paidAmount || 0).toLocaleString()}`,
+      paidAmount: Number(trip.paidAmount || 0),
       endDate: trip.endDate ? new Date(trip.endDate).toLocaleDateString() : '-',
       vehicle: trip.vehicle?.registrationNo || trip.vehicleId,
       driver: trip.driver ? `${trip.driver.firstName} ${trip.driver.lastName}` : trip.driverId,
       route: trip.route?.name || trip.routeId,
-      revenue: `${Number(trip.revenue || 0).toLocaleString()}`,
+      revenue: Number(trip.revenue || 0),
       status: trip.status,
-      _trip: trip
+      _trip: trip,
+      canEdit: trip.status !== TripStatus.COMPLETED,
+      actions: {
+        reviewComplete: trip.status !== TripStatus.COMPLETED,
+        manageExpense: trip.status !== TripStatus.COMPLETED
+      }
     }))
   );
 
   tableConfigurations: TableConfig = {
     columns: [
       {
-        key:'tripReferenceNumber',
+        key: 'tripReferenceNumber',
         label: 'Trip#'
       },
       {
@@ -73,36 +78,38 @@ export class Trips implements OnInit {
       },
       {
         key: 'revenue',
-        label: 'Revenue'
+        label: 'Revenue',
+        type: 'number'
       },
       {
         key: 'paidAmount',
-        label: 'Paid Amount'
+        label: 'Paid Amount',
+        type: 'number'
       },
       {
         key: 'status',
         label: 'Status',
-        type:'tripStatus'
+        type: 'tripStatus'
       }
     ],
     actions: {
       view: true,
-      edit: true,
+      edit: false,
       delete: false,
-      more: true
+      more: false
     }
   };
 
   moreActions = computed(() => [
     {
       label: 'Review & Complete',
-      key: 'review-complete',
+      key: 'reviewComplete',
       icon: 'fa-solid fa-check-circle text-green-500',
       action: (row: any) => this.onView(row)
     },
     {
       label: 'Manage expense',
-      key: 'manage-expense',
+      key: 'manageExpense',
       icon: 'fa-solid fa-money-bill-wave text-orange-500',
       action: (row: any) => this.onManageExpense(row)
     },

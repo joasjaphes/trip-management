@@ -78,14 +78,22 @@
 
               <!-- Data cells -->
               @for (column of config().columns; track column.key) {
-              <td [style.width]="column.width">
+              <td [style.width]="column.width" [style.text-align]="column.type === 'number' ? 'right' : 'left'">
                 @if(column.type === 'status') {
-                <span [class]="getStatusColor(row[column.key])"> {{ row[column.key] }}</span>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getStatusColor(row[column.key])">
+                  <span class="capitalize">{{ row[column.key] }}</span>
+                </span>
                 }@else if(column.type === 'tripStatus') {
-                <span [class]="getTripStatusColor(row[column.key])"> {{ row[column.key] }}</span>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getTripStatusBadgeClass(row[column.key])">
+                  <span class="capitalize">{{ row[column.key] }}</span>
+                </span>
                 }@else if(column.type === 'invoiceStatus') {
-                <span [class]="getInvoiceStatusColor(row[column.key])"> {{ getInvoiceStatusName(row[column.key])
-                  }}</span>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getInvoiceStatusColor(row[column.key])">
+                  <span class="capitalize">{{ getInvoiceStatusName(row[column.key]) }}</span>
+                </span>
                 }@else if(column.type === 'number') {
                 {{ row[column.key] | number}}
                 }
@@ -96,7 +104,7 @@
               }
               @if (hasActions()) {
               <td class="col-actions">
-                @if (config().actions?.edit) {
+                @if (config().actions?.edit || row.canEdit) {
                 <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(row)" title="Edit"></i>&nbsp;&nbsp;
                 <!-- <button class="action-btn" (click)="onEdit(row)">Edit</button> -->
                 }
@@ -110,13 +118,14 @@
 
                 <!-- <button class="action-btn" (click)="onDelete(row)">Delete</button> -->
                 }
-                @if (config().actions?.more) {
+                @if (config().actions?.more || getMoreActionsForRow(row).length > 0) {
                 <!-- <div> -->
-                <button matIconButton [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" class="cursor-pointer">
+                <button matIconButton [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu"
+                  class="cursor-pointer">
                   <i class="fa-solid fa-ellipsis-v"></i>
                 </button>
                 <mat-menu #menu="matMenu" style="background-color:red">
-                  @for (action of moreActions(); track action.key) {
+                  @for (action of getMoreActionsForRow(row); track action.key) {
                   <button mat-menu-item (click)="onMoreMenuAction(action, row, $event)" class="cursor-pointer">
                     <i [class]="action.icon || 'fa-solid fa-question-circle'"></i> &nbsp;
                     {{ action.label }}
