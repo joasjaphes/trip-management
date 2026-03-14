@@ -85,42 +85,158 @@
       <app-invoice-receipts-manage [invoice]="selectedInvoice()" (saved)="onReceiptsSaved()"
         (close)="closePanel()"></app-invoice-receipts-manage>
       } @else if (selectedInvoice()) {
-      <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm space-y-6">
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <p class="text-gray-400 uppercase text-[11px] font-extrabold tracking-widest">Invoice #</p>
-            <p class="font-bold text-gray-800">{{ selectedInvoice()?.invoiceNumber || '-' }}</p>
-          </div>
-          <div>
-            <p class="text-gray-400 uppercase text-[11px] font-extrabold tracking-widest">Customer</p>
-            <p class="font-bold text-gray-800">{{ selectedInvoice()?.customer?.name || '-' }}</p>
-          </div>
-          <div>
-            <p class="text-gray-400 uppercase text-[11px] font-extrabold tracking-widest">Trip</p>
-            <p class="font-bold text-gray-800">{{ selectedInvoice()?.trip?.route?.name || selectedInvoice()?.tripId }}
-            </p>
-          </div>
-          <div>
-            <p class="text-gray-400 uppercase text-[11px] font-extrabold tracking-widest">Amount</p>
-            <p class="font-bold text-gray-800">{{ (selectedInvoice()?.amount || 0).toLocaleString() }}</p>
+      <!-- Formal Invoice Document -->
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+
+        <!-- Header: Logo + Company Info | Invoice # + Date -->
+        <div class="border-b border-gray-200 px-8 py-6">
+          <div class="flex justify-between items-start">
+            <!-- Left: Logo + Company -->
+            <div class="flex items-start gap-4">
+              <div class="p-3 bg-[#f25f2f] rounded-xl shadow-[0_4px_12px_rgba(240,43,60,0.25)] shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-[18px] font-extrabold text-gray-900 leading-tight">Easy Tracking</h2>
+                <p class="text-[12px] text-gray-400 font-medium">Fleet Management System</p>
+                <div class="mt-3 text-[12px] text-gray-500 leading-relaxed">
+                  <p>Dar es Salaam, Tanzania</p>
+                  <p>P.O. Box 12345</p>
+                  <p>Tel: +255 222 123 456</p>
+                  <p>Email: info&#64;easytracking.co.tz</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Invoice Label + Number + Date -->
+            <div class="text-right">
+              <h1 class="text-[28px] font-extrabold text-[#f25f2f] tracking-wide uppercase">Invoice</h1>
+              <div class="mt-3 space-y-1 text-[13px]">
+                <div class="flex justify-end gap-2">
+                  <span class="text-gray-400 font-semibold">Invoice No:</span>
+                  <span class="font-extrabold text-gray-900">{{ selectedInvoice()?.invoiceNumber || '-' }}</span>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-gray-400 font-semibold">Invoice Date:</span>
+                  <span class="font-bold text-gray-800">{{ selectedInvoice()?.issuedAt ? (selectedInvoice()!.issuedAt | date:'MMM d, yyyy') : (selectedInvoice()!.createdAt | date:'MMM d, yyyy') }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
-          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Status</label>
-          <select [(ngModel)]="selectedStatus"
-            class="mt-2 w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
-            <option value="draft">draft</option>
-            <option value="issued">issued</option>
-            <option value="paid">paid</option>
-            <option value="cancelled">cancelled</option>
-          </select>
+        <!-- Customer + Trip Info Row -->
+        <div class="border-b border-gray-200 px-8 py-5">
+          <div class="grid grid-cols-2 gap-6">
+            <!-- Bill To -->
+            <div>
+              <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-2">Bill To</p>
+              <p class="text-[15px] font-extrabold text-gray-900">{{ selectedInvoice()?.customer?.name || '-' }}</p>
+              @if (selectedInvoice()?.customer?.tin) {
+              <p class="text-[12px] text-gray-500 mt-0.5">TIN: {{ selectedInvoice()!.customer!.tin }}</p>
+              }
+              @if (selectedInvoice()?.customer?.phone) {
+              <p class="text-[12px] text-gray-500 mt-0.5">Phone: {{ selectedInvoice()!.customer!.phone }}</p>
+              }
+            </div>
+            <!-- Trip Info -->
+            <div>
+              <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-2">Trip Details</p>
+              <p class="text-[14px] font-bold text-gray-800">{{ selectedInvoice()?.trip?.route?.name || selectedInvoice()?.tripId }}</p>
+              @if (selectedInvoice()?.trip?.tripReferenceNumber) {
+              <p class="text-[12px] text-gray-500 mt-0.5">Ref: {{ selectedInvoice()!.trip!.tripReferenceNumber }}</p>
+              }
+              @if (selectedInvoice()?.trip?.vehicle?.registrationNo) {
+              <p class="text-[12px] text-gray-500 mt-0.5">Vehicle: {{ selectedInvoice()!.trip!.vehicle!.registrationNo }}</p>
+              }
+            </div>
+          </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        <!-- Itemized Table -->
+        <div class="px-8 py-5">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b-2 border-gray-800">
+                <th class="py-3 text-[10px] font-extrabold tracking-[0.15em] text-gray-500 uppercase w-[8%]">#</th>
+                <th class="py-3 text-[10px] font-extrabold tracking-[0.15em] text-gray-500 uppercase">Description</th>
+                <th class="py-3 text-[10px] font-extrabold tracking-[0.15em] text-gray-500 uppercase text-right w-[25%]">Amount (TZS)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-100">
+                <td class="py-4 text-[13px] text-gray-600">1</td>
+                <td class="py-4 text-[13px] text-gray-800 font-medium">{{ selectedInvoice()?.description || 'Transportation services — ' + (selectedInvoice()?.trip?.route?.name || '') }}</td>
+                <td class="py-4 text-[13px] text-gray-900 font-extrabold text-right">{{ (selectedInvoice()?.amount || 0).toLocaleString() }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Totals -->
+          <div class="mt-4 flex justify-end">
+            <div class="w-[55%] space-y-2">
+              <div class="flex justify-between text-[13px] py-2 border-b border-gray-100">
+                <span class="text-gray-500 font-medium">Sub Total</span>
+                <span class="font-bold text-gray-800">{{ (selectedInvoice()?.amount || 0).toLocaleString() }}</span>
+              </div>
+              <div class="flex justify-between text-[13px] py-2 border-b border-gray-100">
+                <span class="text-gray-500 font-medium">Paid Amount</span>
+                <span class="font-bold text-emerald-600">{{ (selectedInvoice()?.paidAmount || 0).toLocaleString() }}</span>
+              </div>
+              <div class="flex justify-between text-[15px] py-3 border-t-2 border-gray-800">
+                <span class="font-extrabold text-gray-900">Total Due</span>
+                <span class="font-extrabold text-[#f25f2f]">{{ (selectedInvoice()?.remainingAmount ?? selectedInvoice()?.amount ?? 0).toLocaleString() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Status + Terms -->
+        <div class="border-t border-gray-200 px-8 py-5 bg-gray-50/50">
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-2">Payment Status</p>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold"
+                [class]="selectedInvoice()?.paymentStatus === 'full_paid' ? 'bg-emerald-100 text-emerald-700' :
+                          selectedInvoice()?.paymentStatus === 'partially_paid' ? 'bg-amber-100 text-amber-700' :
+                          'bg-red-100 text-red-700'">
+                <span class="w-1.5 h-1.5 rounded-full"
+                  [class]="selectedInvoice()?.paymentStatus === 'full_paid' ? 'bg-emerald-500' :
+                            selectedInvoice()?.paymentStatus === 'partially_paid' ? 'bg-amber-500' :
+                            'bg-red-500'"></span>
+                {{ selectedInvoice()?.paymentStatus === 'full_paid' ? 'Fully Paid' :
+                   selectedInvoice()?.paymentStatus === 'partially_paid' ? 'Partially Paid' : 'Unpaid' }}
+              </span>
+            </div>
+            <div>
+              <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-2">Invoice Status</p>
+              <select [(ngModel)]="selectedStatus"
+                class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-[13px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+                <option value="draft">Draft</option>
+                <option value="issued">Issued</option>
+                <option value="paid">Paid</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Note -->
+        <div class="border-t border-dashed border-gray-300 px-8 py-4">
+          <p class="text-[11px] text-gray-400 leading-relaxed">
+            This is a computer-generated invoice. For any queries, please contact us at info&#64;easytracking.co.tz.
+            Payment is due upon receipt unless otherwise agreed.
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="border-t border-gray-200 px-8 py-4 bg-white flex items-center gap-3">
           <button type="button" (click)="saveInvoiceStatus()" [disabled]="loading()"
             class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-extrabold rounded-xl">
-            Save status
+            Save Status
           </button>
           <button type="button" (click)="closePanel()"
             class="btn btn-ghost border border-gray-200 text-gray-500 hover:bg-gray-50 rounded-xl">
