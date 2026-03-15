@@ -1,22 +1,22 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { CompanyProfile } from '../models/company-profile.model';
+import { HttpClientService } from './http-client.service';
 
 @Injectable({ providedIn: 'root' })
 export class CompanyProfileService {
-  private http = inject(HttpClient);
+  private http = inject(HttpClientService);
 
   loading = signal(false);
   profile = signal<CompanyProfile | null>(null);
 
   // Adjust endpoint to match your backend
-  private readonly endpoint = '/api/company-profile';
+  private readonly endpoint = 'company-profile';
 
   async get(): Promise<void> {
     this.loading.set(true);
     try {
-      const data = await firstValueFrom(this.http.get<CompanyProfile>(this.endpoint));
+      const data: CompanyProfile = await this.http.get(this.endpoint);
       this.profile.set(data);
     } finally {
       this.loading.set(false);
@@ -28,8 +28,8 @@ export class CompanyProfileService {
     try {
       const current = this.profile();
       const data = current?.id
-        ? await firstValueFrom(this.http.put<CompanyProfile>(`${this.endpoint}/${current.id}`, payload))
-        : await firstValueFrom(this.http.post<CompanyProfile>(this.endpoint, payload));
+        ? await this.http.put(`${this.endpoint}/${current.id}`, payload)
+        : await this.http.post(this.endpoint, payload);
 
       this.profile.set(data);
     } finally {

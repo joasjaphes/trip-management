@@ -29,7 +29,7 @@ export class HttpClientService {
       return url;
     }
 
-    return await firstValueFrom(
+    const imageUrl = await firstValueFrom(
       this.rootUrl.pipe(
         map((root) => {
           const baseUrl = root.replace(/\/api\/?$/, '');
@@ -38,6 +38,7 @@ export class HttpClientService {
         })
       )
     );
+    return imageUrl;
   }
 
   get authHeaders() {

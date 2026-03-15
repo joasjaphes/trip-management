@@ -5,16 +5,19 @@ import { CompanyProfile } from '../../../../models/company-profile.model';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
 import { FileUploadService } from '../../../../services/file-upload.service';
 import { HttpClientService } from '../../../../services/http-client.service';
+import { CommonService } from '../../../../services/common.service';
+import { Placeholder } from '../../../../shared/components/placeholder/placeholder';
 
 @Component({
     selector: 'app-company-profile-form',
     standalone: true,
-    imports: [CommonModule,FormsModule, SaveArea],
+    imports: [CommonModule,FormsModule, SaveArea,Placeholder],
     templateUrl: './company-profile-form.html',
 })
 export class CompanyProfileForm implements OnChanges {
     private fileUploadService = inject(FileUploadService);
     public http = inject(HttpClientService);
+    private commonService = inject(CommonService);
 
     @Input() data: CompanyProfile | null = null;
     @Input() loading = false;
@@ -57,6 +60,7 @@ export class CompanyProfileForm implements OnChanges {
     }
 
     async uploadLogo(event: any): Promise<void> {
+        console.log('File selected for upload:', event.target.files);
         const file = event.target.files[0];
         if (!file) return;
 
@@ -73,18 +77,19 @@ export class CompanyProfileForm implements OnChanges {
 
     onSubmit(): void {
         this.save.emit({
-            ...(this.data?.id ? { id: this.data.id } : {}),
+            ...this.data,
+            id: this.data?.id ?? this.commonService.makeid(),
             companyName: this.companyName,
-            tin: this.tin,
-            vrn: this.vrn,
-            country: this.country,
-            region: this.region,
-            district: this.district,
-            street: this.street,
-            plot: this.plot,
-            postalAddress: this.postalAddress,
-            description: this.description,
-            logo: this.logo,
+            tin: this.tin || '',
+            vrn: this.vrn || '',
+            country: this.country || '',
+            region: this.region || '',
+            district: this.district || '',
+            street: this.street || '',
+            plot: this.plot || '',
+            postalAddress: this.postalAddress || '',
+            description: this.description || '',
+            logo: this.logo || '',
         });
     }
 
