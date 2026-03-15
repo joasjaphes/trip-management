@@ -20,10 +20,15 @@ export class CompanyProfilePage implements OnInit {
   loading = this.companyProfileService.loading;
   saving = signal(false);
   profile = this.companyProfileService.profile;
-    showAddButton = signal(false);
+  showAddButton = signal(false);
+  isEditing = signal(false);
 
   async ngOnInit(): Promise<void> {
     await this.companyProfileService.get();
+  }
+
+  toggleEdit() {
+    this.isEditing.set(!this.isEditing());
   }
 
   async onSave(payload: CompanyProfile): Promise<void> {

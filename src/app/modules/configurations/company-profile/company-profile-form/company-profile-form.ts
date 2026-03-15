@@ -15,9 +15,11 @@ export class CompanyProfileForm implements OnChanges {
     @Input() loading = false;
 
     saving = model(false);
-    showCancel = signal(false);
+    showCancel = signal(true); // Enable cancel button
 
     @Output() save = new EventEmitter<CompanyProfile>();
+    @Output() cancel = new EventEmitter<void>();
+
     companyName: string;
     tin: string;
     vrn: string;
@@ -60,5 +62,9 @@ export class CompanyProfileForm implements OnChanges {
             postalAddress: this.postalAddress,
             description: this.description,
         });
+    }
+
+    onCancel(): void {
+        this.cancel.emit();
     }
 }

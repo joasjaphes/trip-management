@@ -1,37 +1,64 @@
-<div class="w-full">
-    <div class="w-full">
-        <label for="companyName">Company name</label>
-        <input type="text" id="companyName" name="companyName" [(ngModel)]="companyName" class="w-full border border-gray-300 rounded-md p-2">
+<div class="w-full h-full flex flex-col">
+    <div class="flex-1 space-y-8">
+        <!-- Identity Section -->
+        <section>
+            <h4 class="text-[13px] font-extrabold tracking-widest text-gray-400 uppercase mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+                <i class="fa-regular fa-building"></i> Company Identity
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="col-span-1 md:col-span-2">
+                    <label for="companyName" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Company Name</label>
+                    <input type="text" id="companyName" name="companyName" [(ngModel)]="companyName" placeholder="Enter full legal company name" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div>
+                    <label for="tin" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">TIN</label>
+                    <input type="text" id="tin" name="tin" [(ngModel)]="tin" placeholder="Tax Identification Number" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div>
+                    <label for="vrn" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">VRN (Optional)</label>
+                    <input type="text" id="vrn" name="vrn" [(ngModel)]="vrn" placeholder="Value Added Tax Registration" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+            </div>
+        </section>
+
+        <!-- Location Section -->
+        <section>
+            <h4 class="text-[13px] font-extrabold tracking-widest text-gray-400 uppercase mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+                <i class="fa-solid fa-location-dot"></i> Address Details
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-5">
+                <div class="col-span-3">
+                    <label for="country" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Country</label>
+                    <input type="text" id="country" name="country" [(ngModel)]="country" placeholder="e.g. Tanzania" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div class="col-span-3">
+                    <label for="region" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Region</label>
+                    <input type="text" id="region" name="region" [(ngModel)]="region" placeholder="e.g. Dar es Salaam" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+
+                <div class="col-span-2">
+                    <label for="district" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">District</label>
+                    <input type="text" id="district" name="district" [(ngModel)]="district" placeholder="e.g. Ilala" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div class="col-span-3">
+                    <label for="street" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Street</label>
+                    <input type="text" id="street" name="street" [(ngModel)]="street" placeholder="e.g. Samora Avenue" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div class="col-span-1">
+                    <label for="plot" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Plot</label>
+                    <input type="text" id="plot" name="plot" [(ngModel)]="plot" placeholder="e.g. 42" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+
+                <div class="col-span-6">
+                    <label for="address" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Postal Address</label>
+                    <input type="text" id="address" name="address" [(ngModel)]="postalAddress" placeholder="e.g. P.O. Box 1234" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+            </div>
+        </section>
     </div>
-    <div class="w-full">
-        <label for="tin">Tax Identification Number (TIN)</label>
-        <input type="text" id="tin" name="tin" [(ngModel)]="tin" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="address">Postal Address</label>
-        <input type="text" id="address" name="address" [(ngModel)]="postalAddress" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="country">Country</label>
-        <input type="text" id="country" name="country" [(ngModel)]="country" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="region">Region</label>
-        <input type="text" id="region" name="region" [(ngModel)]="region" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="district">District</label>
-        <input type="text" id="district" name="district" [(ngModel)]="district" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="street">Street</label>
-        <input type="text" id="street" name="street" [(ngModel)]="street" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="plot">Plot Number</label>
-        <input type="text" id="plot" name="plot" [(ngModel)]="plot" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full mt-4">
-        <app-save-area (save)="onSubmit()" [loading]="saving()" [saveText]="saveText()" [showCancel]="showCancel()"></app-save-area>
+
+    <!-- Sticky Footer Save Area -->
+    <div class="mt-8 pt-4 border-t border-gray-100 flex-shrink-0 bg-white">
+        <app-save-area (save)="onSubmit()" (cancel)="onCancel()" [loading]="saving()" [saveText]="saveText()" [showCancel]="showCancel()"></app-save-area>
     </div>
 </div>
