@@ -173,15 +173,20 @@
       <!-- Projected Revenue -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Projected Revenue/Income
-          @if (revenue) {
+          <!-- @if (revenue) {
           ({{ revenue |number:'1.0-2' }})
-          }
+          } -->
         </label>
         <div class="relative">
-          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[14px] pointer-events-none">
-            $</div>
-          <input type="number" [(ngModel)]="revenue" name="revenue" placeholder="0.00"
-            class="w-full bg-white border border-gray-200 rounded-lg pl-8 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <!-- <div class="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[14px] pointer-events-none">
+            TZS</div> -->
+          <input type="text" [(ngModel)]="revenue" name="revenue" placeholder="0.00" appNumberFormat 
+            class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">
+            @if (revenue) {
+            ({{ revenue | number:'1.0-2' }})
+            }
+          </div>
         </div>
       </div>
       <!-- Status -->

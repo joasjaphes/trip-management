@@ -13,6 +13,7 @@ import { VehicleService } from '../../../services/vehicle.service';
 import { CustomerService } from '../../../services/customer.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { CommonService } from '../../../services/common.service';
+import { NumberFormatDirective } from '../../../shared/directives/number-format';
 
 type ExpenseDraft = {
   id: string;
@@ -29,7 +30,7 @@ type ExpenseDraft = {
 @Component({
   selector: 'app-trip-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, DecimalPipe],
+  imports: [CommonModule, FormsModule, SaveArea, DecimalPipe, NumberFormatDirective],
   templateUrl: './trip-form.html',
 })
 export class TripForm implements OnInit {
