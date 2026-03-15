@@ -7,6 +7,8 @@ import { TripExpenseService } from '../../../services/trip-expense.service';
 import { SaveArea } from '../../../shared/components/save-area/save-area';
 import { CommonService } from '../../../services/common.service';
 import { FileUploadService } from '../../../services/file-upload.service';
+import { NumberFormatDirective } from '../../../shared/directives/number-format';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export type ExpenseDraft = {
     id: string;
@@ -24,7 +26,7 @@ export type ExpenseDraft = {
 @Component({
     selector: 'app-trip-expenses-manage',
     standalone: true,
-    imports: [CommonModule, FormsModule, SaveArea],
+    imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule],
     templateUrl: './trip-expenses-manage.html',
 })
 export class TripExpensesManage {
@@ -53,10 +55,33 @@ export class TripExpensesManage {
 
     expenseRows = signal<ExpenseDraft[]>([]);
 
+    private initialExpensesSnapshot = signal<string>('[]');
+
+    hasExpenseChanges = computed(
+        () => this.serializeExpenses(this.expenseRows()) !== this.initialExpensesSnapshot()
+    );
+
     constructor() {
         effect(() => {
             this.syncRowsFromTrip(this.trip());
         });
+    }
+
+    private serializeExpenses(rows: ExpenseDraft[]): string {
+        return JSON.stringify(
+            rows.map((row) => ({
+                expenseRecordId: row.expenseRecordId ?? '',
+                expenseId: row.expenseId ?? '',
+                description: (row.description ?? '').trim(),
+                amount: this.normalizeAmount(row.amount ?? ''),
+                date: row.date ?? '',
+                attachment: row.attachment ?? '',
+            }))
+        );
+    }
+
+    private normalizeAmount(value: string): string {
+        return (value || '').replace(/,/g, '').trim();
     }
 
     async ngOnInit() {
@@ -81,6 +106,7 @@ export class TripExpensesManage {
         const existing = (trip?.expenses || []).map((expense) => this.mapExpenseToDraft(expense));
         const rows = existing.length > 0 ? existing : [this.createExpenseRow()];
         this.expenseRows.set(rows);
+        this.initialExpensesSnapshot.set(this.serializeExpenses(rows));
         void this.hydrateAttachmentUrls(rows);
         this.error.set(null);
     }
@@ -323,7 +349,7 @@ export class TripExpensesManage {
                     });
                 })
             );
-
+            this.initialExpensesSnapshot.set(this.serializeExpenses(this.expenseRows()));
             this.successMessage.set('Trip expenses saved successfully.');
             this.saved.emit();
             await this.waitForLoadingToFinish();

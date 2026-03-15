@@ -9,8 +9,8 @@
                 </svg>
                 <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">
                     Manage Trip Expenses
-                    @if (trip()?.id) {
-                    <span class="text-gray-400">({{ trip()!.id }})</span>
+                    @if (trip()?.tripReferenceNumber) {
+                    <span class="text-gray-400">({{ trip()!.tripReferenceNumber }})</span>
                     }
                 </h3>
             </div>
@@ -77,7 +77,8 @@
             </div>
 
             <div class="col-span-2">
-                <input type="number" [value]="expenseRow.amount"
+                <input type="number" [value]="expenseRow.amount" appNumberFormat matTooltip=""
+                    matTooltipPosition="above" matTooltipClass="with-arrow"
                     (input)="updateRowField(expenseRow.id, 'amount', $any($event.target).value)" placeholder="0.00"
                     min="0" step="0.01"
                     class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
@@ -151,8 +152,7 @@
         <p class="text-[12px] text-amber-600 mb-6">No active expense categories found. Add categories in Configurations
             first.</p>
         }
-
-        <app-save-area [saveText]="'Save Expenses'" [loading]="busy()" (cancel)="goBack()"
-            (save)="onSubmit()"></app-save-area>
+        <app-save-area [saveText]="'Save Expenses'" [loading]="busy()" (cancel)="goBack()" (save)="onSubmit()"
+            [disabled]="!hasExpenseChanges()"></app-save-area>
     </div>
 </div>

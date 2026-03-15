@@ -9,6 +9,7 @@ import { Component, input, output, signal } from '@angular/core';
 export class SaveArea {
   save = output();
   cancel = output();
+  disabled = input(false);
   saveText = input('Save');
   cancelText = input('Cancel');
   showCancel = input(true);

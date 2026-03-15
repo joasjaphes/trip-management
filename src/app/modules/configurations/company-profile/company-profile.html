@@ -1,6 +1,132 @@
-<app-layout [title]="title()" [description]="description()" [showAddButton]="showAddButton()">
+<app-layout [title]="title()" [description]="description()" [showAddButton]="showAddButton()" [(viewDetails)]="isEditing" formTitle="Edit Company Profile" formDescription="Update your company identity and contact details" splitSize="half">
+
+    <!-- Read-Only View (Main Content) -->
     <ng-container ngProjectAs='main'>
-        <app-company-profile-form [data]="profile()" [loading]="loading()" [(saving)]="saving"
-            (save)="onSave($event)" />
+        <div class="space-y-6 ">
+            
+            <!-- Quick Actions Header (if needed above cards) -->
+            <div class="flex justify-between items-center bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-blue-50 rounded-xl text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-[16px] font-extrabold text-gray-900 tracking-wide">Company Information</h2>
+                        <p class="text-[12px] text-gray-500 font-medium">Your primary billing and operational identity</p>
+                    </div>
+                </div>
+                <button type="button" (click)="toggleEdit()" class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-5 font-bold text-[13px] rounded-xl flex items-center gap-2 shadow-sm transition-all hover:border-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                    Edit details
+                </button>
+            </div>
+
+            <!-- Two Card Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Card 1: Company Profile -->
+                <div class="bg-white border border-gray-100 rounded-2xl p-7 shadow-sm flex flex-col h-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-6 opacity-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+
+                    <h3 class="text-[15px] font-extrabold text-gray-900 mb-6 pb-4 border-b border-gray-100 tracking-wide flex items-center gap-2">
+                        Company profile 
+                    </h3>
+                    
+                    <div class="grid grid-cols-5 gap-6 flex-1">
+                        <!-- Left Details -->
+                        <div class="col-span-3 space-y-5">
+                            <div>
+                                <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">Company name</p>
+                                <p class="text-[15px] font-bold text-gray-900 leading-snug">{{ profile()?.companyName || '-' }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">TIN</p>
+                                <p class="text-[15px] font-medium text-gray-800">{{ profile()?.tin || '-' }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">VRN</p>
+                                <p class="text-[15px] font-medium text-gray-800">{{ profile()?.vrn || '-' }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Right Logo Area -->
+                        <div class="col-span-2 flex items-center justify-center">
+                            @if (profile()?.logo) {
+                                <div class="w-full aspect-square max-h-[140px] bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden flex items-center justify-center p-2">
+                                    <img [src]="(http.getImageUrl(profile()?.logo!) | async)" alt="Company Logo" class="w-full h-full object-contain">
+                                </div>
+                            } @else {
+                                <div class="w-full aspect-square max-h-[140px] bg-gray-50 border border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 p-4 transition-colors hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="text-[12px] font-semibold text-gray-400 tracking-wide">No logo</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Address Details -->
+                <div class="bg-white border border-gray-100 rounded-2xl p-7 shadow-sm flex flex-col h-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-6 opacity-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+
+                    <h3 class="text-[15px] font-extrabold text-gray-900 mb-6 pb-4 border-b border-gray-100 tracking-wide flex items-center gap-2">
+                        Address details
+                    </h3>
+                    
+                    <div class="grid grid-cols-3 gap-y-6 gap-x-4 flex-1">
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">Country</p>
+                            <p class="text-[14px] font-medium text-gray-800">{{ profile()?.country || '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">Region</p>
+                            <p class="text-[14px] font-medium text-gray-800">{{ profile()?.region || '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">District</p>
+                            <p class="text-[14px] font-medium text-gray-800">{{ profile()?.district || '-' }}</p>
+                        </div>
+
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">Street</p>
+                            <p class="text-[14px] font-medium text-gray-800">{{ profile()?.street || '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">Plot</p>
+                            <p class="text-[14px] font-medium text-gray-800">{{ profile()?.plot || '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">Postal address</p>
+                            <p class="text-[14px] font-medium text-gray-800 leading-snug">{{ profile()?.postalAddress || '-' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </ng-container>
+
+    <!-- Slide-Out Form Panel (Form Content) -->
+    <ng-container ngProjectAs='form'>
+        <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm h-full overflow-y-auto">
+            <app-company-profile-form [data]="profile()" [loading]="loading()" [(saving)]="saving"
+                (save)="onSave($event)" (cancel)="toggleEdit()" />
+        </div>
+    </ng-container>
+
 </app-layout>

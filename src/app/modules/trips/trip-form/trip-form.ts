@@ -14,6 +14,7 @@ import { CustomerService } from '../../../services/customer.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { CommonService } from '../../../services/common.service';
 import { NumberFormatDirective } from '../../../shared/directives/number-format';
+import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 
 type ExpenseDraft = {
   id: string;
@@ -30,7 +31,7 @@ type ExpenseDraft = {
 @Component({
   selector: 'app-trip-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, DecimalPipe, NumberFormatDirective],
+  imports: [CommonModule, FormsModule, SaveArea, DecimalPipe, NumberFormatDirective, MatTooltipModule],
   templateUrl: './trip-form.html',
 })
 export class TripForm implements OnInit {

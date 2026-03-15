@@ -4,8 +4,8 @@
 @plugin "daisyui";
 @import '@fortawesome/fontawesome-free/css/all.css';
 
-.primary {
-    --color-primary: #327fa8 !important;
+:root {
+    --color-primary: #f25f2f;
 }
 
 .bg-base-100 {
@@ -61,3 +61,53 @@
  .mat-mdc-menu-item .mat-mdc-menu-item-text {
     color: #000000 !important;
  }
+
+ .mat-mdc-tooltip {
+    background-color: var(--color-primary) !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+    border-radius: 5px !important;
+    opacity: 80% !important;
+ }
+
+
+ .mat-mdc-tooltip-panel.with-arrow .mdc-tooltip__surface {
+  position: relative;
+  overflow: visible; /* required so arrow can protrude */
+}
+
+/* Arrow shape */
+.mat-mdc-tooltip-panel.with-arrow .mdc-tooltip__surface::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+/* Position-aware arrow placement */
+.mat-mdc-tooltip-panel-above.with-arrow .mdc-tooltip__surface::after {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.mat-mdc-tooltip-panel-below.with-arrow .mdc-tooltip__surface::after {
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.mat-mdc-tooltip-panel-left.with-arrow .mdc-tooltip__surface::after {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.mat-mdc-tooltip-panel-right.with-arrow .mdc-tooltip__surface::after {
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}

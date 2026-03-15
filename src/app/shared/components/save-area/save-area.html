@@ -19,8 +19,8 @@
             class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-8 font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
             Back
         </button>
-        <button (click)="onConfirmSave()" [disabled]="loading()"
-            class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+        <button (click)="onConfirmSave()" [disabled]="loading() "
+            class="btn border-none bg-primary hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
             @if (loading()) {
             <span class="inline-flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -34,7 +34,7 @@
             }
         </button>
         } @else {
-        <button (click)="onSave()" [disabled]="loading()"
+        <button (click)="onSave()" [disabled]="loading() || disabled()"
             class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-8 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
             @if (loading()) {
             <span class="inline-flex items-center gap-2">

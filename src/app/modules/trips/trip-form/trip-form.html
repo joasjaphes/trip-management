@@ -180,7 +180,7 @@
         <div class="relative">
           <!-- <div class="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[14px] pointer-events-none">
             TZS</div> -->
-          <input type="text" [(ngModel)]="revenue" name="revenue" placeholder="0.00" appNumberFormat 
+          <input type="text" [(ngModel)]="revenue" name="revenue" placeholder="0.00" appNumberFormat matTooltip="" matTooltipPosition="above"  matTooltipClass="with-arrow"
             class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">
             @if (revenue) {
@@ -265,8 +265,8 @@
       </div>
       <!-- Amount -->
       <div class="col-span-2">
-        <input type="number" [(ngModel)]="expenseRow.amount" [name]="'amount-' + expenseRow.id"
-          placeholder="0.00 (optional)"
+        <input type="text" [(ngModel)]="expenseRow.amount" [name]="'amount-' + expenseRow.id"
+          placeholder="0.00 (optional)" appNumberFormat matTooltip="" matTooltipPosition="above"  matTooltipClass="with-arrow"
           class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
       <!-- Date -->

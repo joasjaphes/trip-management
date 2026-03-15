@@ -1,37 +1,95 @@
-<div class="w-full">
-    <div class="w-full">
-        <label for="companyName">Company name</label>
-        <input type="text" id="companyName" name="companyName" [(ngModel)]="companyName" class="w-full border border-gray-300 rounded-md p-2">
+<div class="w-full h-full flex flex-col">
+    <div class="flex-1 space-y-8">
+        <!-- Identity Section -->
+        <section>
+            <h4 class="text-[13px] font-extrabold tracking-widest text-gray-400 uppercase mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+                <i class="fa-regular fa-building"></i> Company Identity
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="col-span-1 md:col-span-2">
+                    <label for="companyName" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Company Name</label>
+                    <input type="text" id="companyName" name="companyName" [(ngModel)]="companyName" placeholder="Enter full legal company name" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div>
+                    <label for="tin" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">TIN</label>
+                    <input type="text" id="tin" name="tin" [(ngModel)]="tin" placeholder="Tax Identification Number" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div>
+                    <label for="vrn" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">VRN (Optional)</label>
+                    <input type="text" id="vrn" name="vrn" [(ngModel)]="vrn" placeholder="Value Added Tax Registration" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div class="col-span-1 md:col-span-2 mt-2">
+                    <label class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Company Logo</label>
+                    <div class="flex items-center gap-4">
+                        @if (logo) {
+                            <div class="w-16 h-16 rounded-xl border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center shrink-0">
+                                <img [src]="loading ? '' : (http.getImageUrl(logo) | async)" alt="Company Logo" class="w-full h-full object-contain p-1">
+                            </div>
+                        } @else {
+                            <div class="w-16 h-16 rounded-xl border border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center text-gray-400 shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        }
+                        
+                        <div class="flex-1">
+                            <input type="file" id="logoUpload" accept="image/*" (change)="uploadLogo($event)" class="hidden">
+                            <label for="logoUpload" class="inline-flex cursor-pointer border border-gray-200 bg-white hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 transition-colors shadow-sm gap-2 items-center">
+                                @if(uploadingLogo()) {
+                                    <span class="loading loading-spinner w-4 h-4"></span> Uploading...
+                                } @else {
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                    Upload Logo
+                                }
+                            </label>
+                            <p class="text-[11px] text-gray-400 mt-2">Recommended size: 400x400px. PNG or JPG.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Location Section -->
+        <section>
+            <h4 class="text-[13px] font-extrabold tracking-widest text-gray-400 uppercase mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+                <i class="fa-solid fa-location-dot"></i> Address Details
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-5">
+                <div class="col-span-3">
+                    <label for="country" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Country</label>
+                    <input type="text" id="country" name="country" [(ngModel)]="country" placeholder="e.g. Tanzania" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div class="col-span-3">
+                    <label for="region" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Region</label>
+                    <input type="text" id="region" name="region" [(ngModel)]="region" placeholder="e.g. Dar es Salaam" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+
+                <div class="col-span-2">
+                    <label for="district" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">District</label>
+                    <input type="text" id="district" name="district" [(ngModel)]="district" placeholder="e.g. Ilala" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div class="col-span-3">
+                    <label for="street" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Street</label>
+                    <input type="text" id="street" name="street" [(ngModel)]="street" placeholder="e.g. Samora Avenue" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+                <div class="col-span-1">
+                    <label for="plot" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Plot</label>
+                    <input type="text" id="plot" name="plot" [(ngModel)]="plot" placeholder="e.g. 42" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+
+                <div class="col-span-6">
+                    <label for="address" class="block text-[12px] font-extrabold text-gray-700 mb-1.5">Postal Address</label>
+                    <input type="text" id="address" name="address" [(ngModel)]="postalAddress" placeholder="e.g. P.O. Box 1234" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-all placeholder-gray-300">
+                </div>
+            </div>
+        </section>
     </div>
-    <div class="w-full">
-        <label for="tin">Tax Identification Number (TIN)</label>
-        <input type="text" id="tin" name="tin" [(ngModel)]="tin" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="address">Postal Address</label>
-        <input type="text" id="address" name="address" [(ngModel)]="postalAddress" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="country">Country</label>
-        <input type="text" id="country" name="country" [(ngModel)]="country" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="region">Region</label>
-        <input type="text" id="region" name="region" [(ngModel)]="region" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="district">District</label>
-        <input type="text" id="district" name="district" [(ngModel)]="district" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="street">Street</label>
-        <input type="text" id="street" name="street" [(ngModel)]="street" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full">
-        <label for="plot">Plot Number</label>
-        <input type="text" id="plot" name="plot" [(ngModel)]="plot" class="w-full border border-gray-300 rounded-md p-2">
-    </div>
-    <div class="w-full mt-4">
-        <app-save-area (save)="onSubmit()" [loading]="saving()" [saveText]="saveText()" [showCancel]="showCancel()"></app-save-area>
+
+    <!-- Sticky Footer Save Area -->
+    <div class="mt-8 pt-4 border-t border-gray-100 flex-shrink-0 bg-white">
+        <app-save-area (save)="onSubmit()" (cancel)="onCancel()" [loading]="saving()" [saveText]="saveText()" [showCancel]="showCancel()"></app-save-area>
     </div>
 </div>

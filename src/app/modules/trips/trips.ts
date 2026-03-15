@@ -7,11 +7,12 @@ import { TripDetail } from './trip-detail/trip-detail';
 import { TripExpensesManage } from './trip-expenses-manage/trip-expenses-manage';
 import { TripService } from '../../services/trip.service';
 import { Trip, TripStatus } from '../../models/trip.model';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage],
+  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, MatTooltipModule],
   templateUrl: './trips.html'
 })
 export class Trips implements OnInit {
@@ -149,7 +150,7 @@ export class Trips implements OnInit {
 
   onManageExpense(row: any) {
     this.selectedTrip.set(row._trip);
-    this.formTitle.set(`Manage expenses ( ${row.route} )`);
+    this.formTitle.set(`Manage expenses`);
     this.formDescription.set('Add, update, or remove expenses for this trip.');
     this.viewType.set('manage-expense');
     this.showAddButton.set(false);
