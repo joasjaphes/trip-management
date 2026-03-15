@@ -4,6 +4,7 @@ import { Layout } from '../../../shared/components/layout/layout';
 import { CompanyProfileForm } from './company-profile-form/company-profile-form';
 import { CompanyProfileService } from '../../../services/company-profile.service';
 import { CompanyProfile } from '../../../models/company-profile.model';
+import { HttpClientService } from '../../../services/http-client.service';
 
 @Component({
   selector: 'app-company-profile',
@@ -13,6 +14,7 @@ import { CompanyProfile } from '../../../models/company-profile.model';
 })
 export class CompanyProfilePage implements OnInit {
   private companyProfileService = inject(CompanyProfileService);
+  public http = inject(HttpClientService);
 
   title = signal('Company profile');
   description = signal('Manage your company identity and contact details.');

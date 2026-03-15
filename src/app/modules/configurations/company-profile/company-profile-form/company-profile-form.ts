@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, model, OnChanges, Output, signal, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, model, OnChanges, Output, signal, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CompanyProfile } from '../../../../models/company-profile.model';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
+import { FileUploadService } from '../../../../services/file-upload.service';
+import { HttpClientService } from '../../../../services/http-client.service';
 
 @Component({
     selector: 'app-company-profile-form',
@@ -11,6 +13,9 @@ import { SaveArea } from '../../../../shared/components/save-area/save-area';
     templateUrl: './company-profile-form.html',
 })
 export class CompanyProfileForm implements OnChanges {
+    private fileUploadService = inject(FileUploadService);
+    public http = inject(HttpClientService);
+
     @Input() data: CompanyProfile | null = null;
     @Input() loading = false;
 
@@ -30,8 +35,10 @@ export class CompanyProfileForm implements OnChanges {
     plot: string;
     postalAddress: string;
     description?: string;
+    logo?: string;
 
     saveText = signal('Update company profile');
+    uploadingLogo = signal(false);
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['data'] && this.data) {
@@ -45,6 +52,22 @@ export class CompanyProfileForm implements OnChanges {
             this.plot = this.data.plot;
             this.postalAddress = this.data.postalAddress;
             this.description = this.data.description;
+            this.logo = this.data.logo;
+        }
+    }
+
+    async uploadLogo(event: any): Promise<void> {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        this.uploadingLogo.set(true);
+        try {
+            const res = await this.fileUploadService.uploadFile(file);
+            this.logo = res.filePath;
+        } catch (error) {
+            console.error('Failed to upload logo', error);
+        } finally {
+            this.uploadingLogo.set(false);
         }
     }
 
@@ -61,6 +84,7 @@ export class CompanyProfileForm implements OnChanges {
             plot: this.plot,
             postalAddress: this.postalAddress,
             description: this.description,
+            logo: this.logo,
         });
     }
 

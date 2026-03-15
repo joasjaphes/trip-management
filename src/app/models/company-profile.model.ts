@@ -9,5 +9,6 @@ export interface CompanyProfile {
     street: string;
     plot: string;
     postalAddress: string;
+    logo?: string;
     description?: string;
 }
