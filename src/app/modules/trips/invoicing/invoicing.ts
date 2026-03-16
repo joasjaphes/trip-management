@@ -8,17 +8,22 @@ import { DataTable, TableConfig } from '../../../shared/components/data-table/da
 import { Layout } from '../../../shared/components/layout/layout';
 import { InvoiceReceiptsManage } from './invoice-receipts-manage/invoice-receipts-manage';
 import { InvoiceReceiptService } from '../../../services/invoice-receipt.service';
+import { CompanyProfileService } from '../../../services/company-profile.service';
+import { Placeholder } from '../../../shared/components/placeholder/placeholder';
+import { HttpClientService } from '../../../services/http-client.service';
 
 @Component({
   selector: 'app-invoicing',
   standalone: true,
-  imports: [CommonModule, FormsModule, Layout, DataTable, InvoiceReceiptsManage],
+  imports: [CommonModule, FormsModule, Layout, DataTable, InvoiceReceiptsManage, Placeholder],
   templateUrl: './invoicing.html',
 })
 export class Invoicing implements OnInit {
   private invoiceService = inject(InvoiceService);
   private tripService = inject(TripService);
   private invoiceReceiptService = inject(InvoiceReceiptService);
+  private companyService = inject(CompanyProfileService);
+  private http = inject(HttpClientService);
 
   title = signal('Invoicing');
   description = signal('Manage invoice generation and billing status changes.');
@@ -27,6 +32,8 @@ export class Invoicing implements OnInit {
   showAddButton = signal(false);
   formTitle = signal('');
   formDescription = signal('');
+  companyProfile = this.companyService.profile;
+  loadingCompanyProfile = this.companyService.loading;
 
   selectedTripId = '';
   generationStatus: InvoiceStatus = 'draft';
@@ -139,6 +146,7 @@ export class Invoicing implements OnInit {
       this.invoiceService.getAll(),
       this.tripService.getAll(),
       this.invoiceReceiptService.getAll(),
+      this.companyService.get(),
     ]);
   }
 
@@ -362,5 +370,10 @@ ${body}
     </div>`;
 
     this.openPrintWindow(`Receipts ${invoice.invoiceNumber || invoice.id}`, html);
+  }
+
+  async getCompanyLogoUrl(): Promise<string> {
+    const logoPath = this.companyProfile()?.logo;
+    return await this.http.getImageUrl(logoPath || '');
   }
 }
