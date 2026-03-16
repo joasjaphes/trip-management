@@ -204,8 +204,9 @@
               </div>
               <div class="flex justify-between text-[15px] py-3 border-t-2 border-gray-800">
                 <span class="font-extrabold text-gray-900">Total Due</span>
-                <span class="font-extrabold text-[#f25f2f]">{{ (selectedInvoice()?.remainingAmount ??
-                  selectedInvoice()?.amount ?? 0).toLocaleString() }}</span>
+                <!-- span class="font-extrabold text-[#f25f2f]">{{ (selectedInvoice()?.remainingAmount ??
+                  selectedInvoice()?.amount ?? 0).toLocaleString() }}</span> -->
+                <span class="font-extrabold text-[#f25f2f]">{{ ((selectedInvoice()?.amount || 0) - (selectedInvoice()?.paidAmount || 0)).toLocaleString() }}</span>
               </div>
             </div>
           </div>
