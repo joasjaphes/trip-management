@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, OnInit, inject } from '@angular/core';
+import { Directive, ElementRef, HostListener, OnInit, inject, input, model } from '@angular/core';
 import { MatTooltip } from '@angular/material/tooltip';
 
 @Directive({
@@ -8,6 +8,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 export class NumberFormatDirective implements OnInit {
     private readonly el = inject(ElementRef<HTMLInputElement>);
     private readonly tooltip = inject(MatTooltip, { optional: true, self: true });
+    maxValue = input<number | null>(null);
 
     ngOnInit(): void {
         const input = this.el.nativeElement;
@@ -15,6 +16,9 @@ export class NumberFormatDirective implements OnInit {
         input.setAttribute('autocomplete', 'off');
 
         if (input.value) {
+            if (this.maxValue() !== null) {
+                input.value = Math.min(parseFloat(input.value), this.maxValue()!).toString();
+            }
             input.value = this.formatValue(input.value);
         }
 
@@ -51,6 +55,9 @@ export class NumberFormatDirective implements OnInit {
     @HostListener('input')
     onInput(): void {
         const input = this.el.nativeElement;
+        if (this.maxValue() !== null) {
+            input.value = Math.min(parseFloat(input.value), this.maxValue()!).toString();
+        }
         const formatted = this.formatValue(input.value);
         input.value = formatted;
         this.updateTooltip(formatted, true); // show while typing

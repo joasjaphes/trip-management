@@ -40,8 +40,14 @@
         }
 
         <div class="mb-4 rounded-xl border border-gray-100 bg-white px-5 py-4 text-sm text-gray-600">
+            
+        </div>
+
+        <div class="mb-4 rounded-xl border border-gray-100 bg-white px-5 py-4 text-sm text-gray-600">
             Received amount:
-            <span class="font-extrabold text-[#f25f2f]">{{ totalReceived().toLocaleString() }}</span>
+            <span class="font-extrabold text-[#f25f2f]">{{ totalReceived().toLocaleString() }}</span><br><br>
+            Outstanding amount:
+            <span class="font-extrabold text-[#f25f2f]">{{ totalRemainingAmount().toLocaleString() }}</span>
         </div>
 
         <div class="grid grid-cols-16 gap-x-4 mb-2 px-2 relative z-10">
@@ -70,8 +76,8 @@
             </div>
 
             <div class="col-span-2">
-                <input type="number" [value]="receiptRow.amount"
-                    (input)="updateRowField(receiptRow.id, 'amount', $any($event.target).value)" placeholder="0.00"
+                <input type="number" [value]="receiptRow.amount" appNumberFormat matTooltip="" matTooltipPosition="above"
+                    (input)="updateRowField(receiptRow.id, 'amount', $any($event.target).value)" placeholder="0.00" [maxValue]="totalRemainingAmount()"
                     min="0" step="0.01"
                     class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
             </div>

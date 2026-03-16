@@ -84,6 +84,29 @@ export class TripForm implements OnInit {
   metadataError = signal<string | null>(null);
   isEditMode = computed(() => !!this.trip()?.id);
   deletedExpenseIds = signal<string[]>([]);
+  initialTripState = signal<Trip | undefined>(undefined);
+
+  hasChanges = computed(() => {
+    const initial = this.initialTripState();
+    if (
+      new Date(this.tripDate) !== new Date(initial?.tripDate)
+      || new Date(this.endDate) !== new Date(initial?.endDate)
+      || this.vehicleId !== initial?.vehicleId
+      || this.driverId !== initial?.driverId
+      || this.routeId !== initial?.routeId
+      || this.cargoTypeId !== initial?.cargoTypeId
+      || this.revenue !== String(initial?.revenue)
+      || this.status !== initial?.status
+      || this.notes !== initial?.notes
+      || this.customerName !== initial?.customerName
+      || this.customerTIN !== initial?.customerTIN
+      || this.customerPhone !== initial?.customerPhone
+      // || JSON.stringify(this.expenseRows) !== JSON.stringify(initial?.expenses)
+    ) {
+      return true;
+    }
+    return false;
+  })
 
   expenseRows: ExpenseDraft[] = [this.createExpenseRow()];
 
@@ -103,12 +126,12 @@ export class TripForm implements OnInit {
 
     try {
       await Promise.all([
-      this.vehicleService.getAll(),
-      this.driverService.getAll(),
-      this.routeService.getAll(),
-      this.cargoTypeService.getAll(),
-      this.expenseCategoryService.getAll(),
-      this.customerService.getAll(),
+        this.vehicleService.getAll(),
+        this.driverService.getAll(),
+        this.routeService.getAll(),
+        this.cargoTypeService.getAll(),
+        this.expenseCategoryService.getAll(),
+        this.customerService.getAll(),
       ]);
     } catch (error) {
       this.metadataError.set(String(error || 'Could not load trip metadata. Please try again.'));
@@ -145,6 +168,7 @@ export class TripForm implements OnInit {
       this.customerTIN = '';
       this.customerPhone = '';
       this.expenseRows = [this.createExpenseRow()];
+      this.initialTripState.set(undefined);
       return;
     }
     console.log('Populating form with trip data', trip);
@@ -161,6 +185,7 @@ export class TripForm implements OnInit {
     this.customerTIN = trip.customerTIN || trip.customer?.tin || '';
     this.customerPhone = trip.customerPhone || trip.customer?.phone || '';
     this.expenseRows = (trip.expenses || []).map((expense) => this.mapExpenseToDraft(expense));
+    this.initialTripState.set(trip);
   }
 
   private mapExpenseToDraft(expense: TripExpense): ExpenseDraft {

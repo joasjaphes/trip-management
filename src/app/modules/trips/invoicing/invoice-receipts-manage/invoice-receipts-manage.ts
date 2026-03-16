@@ -5,6 +5,8 @@ import { Invoice, InvoiceReceipt } from '../../../../models/invoice.model';
 import { InvoiceReceiptService } from '../../../../services/invoice-receipt.service';
 import { FileUploadService } from '../../../../services/file-upload.service';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
+import { NumberFormatDirective } from '../../../../shared/directives/number-format';
+import { MatTooltip, MatTooltipModule } from "@angular/material/tooltip";
 
 type ReceiptDraft = {
   id: string;
@@ -23,7 +25,7 @@ type ReceiptDraft = {
 @Component({
   selector: 'app-invoice-receipts-manage',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea],
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule],
   templateUrl: './invoice-receipts-manage.html',
 })
 export class InvoiceReceiptsManage {
@@ -57,6 +59,11 @@ export class InvoiceReceiptsManage {
   totalReceived = computed(() =>
     this.invoiceReceipts().reduce((sum, receipt) => sum + Number(receipt.amount || 0), 0)
   );
+
+  totalRemainingAmount = computed(() => {
+    const invoiceTotal = Number(this.invoice()?.amount || 0);
+    return Math.max(0, invoiceTotal - this.totalReceived());
+  });
 
   constructor() {
     effect(() => {
