@@ -17,7 +17,7 @@
     </p>
   </div>
 
-  <div class="table-content-scroll" role="region" aria-label="Data table and footer">
+  <div class="table-content-scroll" role="region" aria-label="Data table">
     <!-- Responsive table wrapper -->
     <div class="table-wrapper">
       <div class="table-scroll">
@@ -168,61 +168,61 @@
         </table>
       </div>
     </div>
+  </div>
 
-    <!-- Footer with Pagination -->
-    <div class="table-footer">
-      <div class="pagination-info">
-        <label for="pageSize">Items per page:</label>
-        <select id="pageSize" class="page-size-select" [value]="'10'"
-          (change)="onPageSizeChange(+$any($event.target).value)" aria-label="Select number of items per page">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-        </select>
-        <span class="page-counter">
-          Page {{ currentPage() + 1 }} of {{ totalPages() || 1 }}
-        </span>
-      </div>
-
-      <!-- Pagination controls -->
-      @if (totalPages() > 1) {
-      <nav class="pagination" aria-label="Table pagination">
-        <button class="pagination-btn" (click)="onPageChange(0)" [disabled]="currentPage() === 0"
-          aria-label="Go to first page">
-          « First
-        </button>
-        <button class="pagination-btn" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0"
-          aria-label="Go to previous page">
-          ‹ Prev
-        </button>
-
-        @for (page of pages(); track page) {
-        @if (
-        page === 0 ||
-        page === totalPages() - 1 ||
-        (page >= currentPage() - 1 && page <= currentPage() + 1) ) { <button class="pagination-btn"
-          [class.active]="page === currentPage()" (click)="onPageChange(page)"
-          [attr.aria-label]="'Go to page ' + (page + 1)" [attr.aria-current]="page === currentPage() ? 'page' : null">
-          {{ page + 1 }}
-          </button>
-          } @else if (
-          (page === 1 && currentPage() > 2) ||
-          (page === totalPages() - 2 && currentPage() < totalPages() - 3) ) { <span class="pagination-ellipsis">
-            ...</span>
-            }
-            }
-
-            <button class="pagination-btn" (click)="onPageChange(currentPage() + 1)"
-              [disabled]="currentPage() === totalPages() - 1" aria-label="Go to next page">
-              Next ›
-            </button>
-            <button class="pagination-btn" (click)="onPageChange(totalPages() - 1)"
-              [disabled]="currentPage() === totalPages() - 1" aria-label="Go to last page">
-              Last »
-            </button>
-      </nav>
-      }
+  <!-- Footer with Pagination -->
+  <div class="table-footer">
+    <div class="pagination-info">
+      <label for="pageSize">Items per page:</label>
+      <select id="pageSize" class="page-size-select" [value]="'10'"
+        (change)="onPageSizeChange(+$any($event.target).value)" aria-label="Select number of items per page">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+      </select>
+      <span class="page-counter">
+        Page {{ currentPage() + 1 }} of {{ totalPages() || 1 }}
+      </span>
     </div>
+
+    <!-- Pagination controls -->
+    @if (totalPages() > 1) {
+    <nav class="pagination" aria-label="Table pagination">
+      <button class="pagination-btn" (click)="onPageChange(0)" [disabled]="currentPage() === 0"
+        aria-label="Go to first page">
+        « First
+      </button>
+      <button class="pagination-btn" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0"
+        aria-label="Go to previous page">
+        ‹ Prev
+      </button>
+
+      @for (page of pages(); track page) {
+      @if (
+      page === 0 ||
+      page === totalPages() - 1 ||
+      (page >= currentPage() - 1 && page <= currentPage() + 1) ) { <button class="pagination-btn"
+        [class.active]="page === currentPage()" (click)="onPageChange(page)"
+        [attr.aria-label]="'Go to page ' + (page + 1)" [attr.aria-current]="page === currentPage() ? 'page' : null">
+        {{ page + 1 }}
+        </button>
+        } @else if (
+        (page === 1 && currentPage() > 2) ||
+        (page === totalPages() - 2 && currentPage() < totalPages() - 3) ) { <span class="pagination-ellipsis">
+          ...</span>
+          }
+          }
+
+          <button class="pagination-btn" (click)="onPageChange(currentPage() + 1)"
+            [disabled]="currentPage() === totalPages() - 1" aria-label="Go to next page">
+            Next ›
+          </button>
+          <button class="pagination-btn" (click)="onPageChange(totalPages() - 1)"
+            [disabled]="currentPage() === totalPages() - 1" aria-label="Go to last page">
+            Last »
+          </button>
+    </nav>
+    }
   </div>
 </div>

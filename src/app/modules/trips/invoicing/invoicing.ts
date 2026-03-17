@@ -91,7 +91,7 @@ export class Invoicing implements OnInit {
         _invoice: invoice,
         actions: {
           viewReceipts: invoice.paidAmount > 0,
-          manageReceipts: invoice.paidAmount < Number(invoice.amount || 0),
+          manageReceipts:  remainingAmount > 0,
         }
       };
     })
