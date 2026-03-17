@@ -9,6 +9,7 @@ import { CommonService } from '../../../services/common.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { NumberFormatDirective } from '../../../shared/directives/number-format';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import moment from 'moment';
 
 export type ExpenseDraft = {
     id: string;
@@ -54,6 +55,8 @@ export class TripExpensesManage {
     actionMessage = signal<string | null>(null);
 
     expenseRows = signal<ExpenseDraft[]>([]);
+    today = moment(new Date()).format('YYYY-MM-DD');
+    tripDate = computed(() => this.trip()?.tripDate ? moment(new Date(this.trip().tripDate)).format('YYYY-MM-DD') : '');
 
     private initialExpensesSnapshot = signal<string>('[]');
 

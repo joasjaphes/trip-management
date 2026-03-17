@@ -87,6 +87,8 @@ export class TripForm implements OnInit {
   deletedExpenseIds = signal<string[]>([]);
   initialTripState = signal<Trip | undefined>(undefined);
 
+  today = moment(new Date()).format('YYYY-MM-DD');
+
   expenseRows: ExpenseDraft[] = [this.createExpenseRow()];
 
   constructor() {

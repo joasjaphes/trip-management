@@ -86,7 +86,7 @@
 
             <div class="col-span-2">
                 <input type="date" [value]="expenseRow.date"
-                    (input)="updateRowField(expenseRow.id, 'date', $any($event.target).value)"
+                    (input)="updateRowField(expenseRow.id, 'date', $any($event.target).value)" [max]="today" [min]="tripDate()"
                     class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
             </div>
 
