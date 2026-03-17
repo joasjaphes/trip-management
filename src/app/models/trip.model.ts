@@ -6,9 +6,9 @@ import type { Customer } from './customer.model';
 
 export interface Trip {
 	id: string;
-	tripReferenceNumber?:string;
-	tripDate: Date;
-	endDate?: Date;
+	tripReferenceNumber?: string;
+	tripDate: Date | string;
+	endDate?: Date | string;
 	vehicleId: string;
 	vehicle?: Vehicle;
 	driverId: string;

@@ -15,6 +15,7 @@ import { FileUploadService } from '../../../services/file-upload.service';
 import { CommonService } from '../../../services/common.service';
 import { NumberFormatDirective } from '../../../shared/directives/number-format';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import moment from 'moment';
 
 type ExpenseDraft = {
   id: string;
@@ -49,8 +50,8 @@ export class TripForm implements OnInit {
   trip = input<Trip | undefined>();
   close = output();
 
-  tripDate = '';
-  endDate = '';
+  tripDate: Date | string = '';
+  endDate: Date | string = null;
   vehicleId = '';
   driverId = '';
   routeId = '';
@@ -85,28 +86,6 @@ export class TripForm implements OnInit {
   isEditMode = computed(() => !!this.trip()?.id);
   deletedExpenseIds = signal<string[]>([]);
   initialTripState = signal<Trip | undefined>(undefined);
-
-  hasChanges = computed(() => {
-    const initial = this.initialTripState();
-    if (
-      new Date(this.tripDate) !== new Date(initial?.tripDate)
-      || new Date(this.endDate) !== new Date(initial?.endDate)
-      || this.vehicleId !== initial?.vehicleId
-      || this.driverId !== initial?.driverId
-      || this.routeId !== initial?.routeId
-      || this.cargoTypeId !== initial?.cargoTypeId
-      || this.revenue !== String(initial?.revenue)
-      || this.status !== initial?.status
-      || this.notes !== initial?.notes
-      || this.customerName !== initial?.customerName
-      || this.customerTIN !== initial?.customerTIN
-      || this.customerPhone !== initial?.customerPhone
-      // || JSON.stringify(this.expenseRows) !== JSON.stringify(initial?.expenses)
-    ) {
-      return true;
-    }
-    return false;
-  })
 
   expenseRows: ExpenseDraft[] = [this.createExpenseRow()];
 
@@ -156,7 +135,7 @@ export class TripForm implements OnInit {
 
     if (!trip) {
       this.tripDate = '';
-      this.endDate = '';
+      this.endDate = null;
       this.vehicleId = '';
       this.driverId = '';
       this.routeId = '';
@@ -171,9 +150,8 @@ export class TripForm implements OnInit {
       this.initialTripState.set(undefined);
       return;
     }
-    console.log('Populating form with trip data', trip);
-    this.tripDate = trip.tripDate ? new Date(trip.tripDate).toISOString().split('T')[0] : '';
-    this.endDate = trip.endDate ? new Date(trip.endDate).toISOString().split('T')[0] : '';
+    this.tripDate = moment(new Date(trip.tripDate)).format('YYYY-MM-DD');
+    this.endDate = trip.endDate ? moment(new Date(trip.endDate)).format('YYYY-MM-DD') : null;
     this.vehicleId = trip.vehicleId || '';
     this.driverId = trip.driverId || '';
     this.routeId = trip.routeId || '';
@@ -429,5 +407,27 @@ export class TripForm implements OnInit {
     } finally {
       this.actionMessage.set(null);
     }
+  }
+
+  get hasChanges() {
+    const initial = this.trip();
+    if (
+      !moment(new Date(this.tripDate)).isSame(moment(new Date(initial?.tripDate)))
+      || this.endDate ? !moment(new Date(this.endDate)).isSame(moment(new Date(initial?.endDate ||''))) : false
+      || this.vehicleId !== (initial?.vehicleId || '')
+      || this.driverId !== (initial?.driverId || '')
+      || this.routeId !== (initial?.routeId || '')
+      || this.cargoTypeId !== (initial?.cargoTypeId || '')
+      || this.revenue !== String(initial?.revenue ?? '')
+      || this.status !== (initial?.status || TripStatus.IN_PROGRESS)
+      || this.notes !== (initial?.notes || '')
+      || this.customerName !== (initial?.customerName || initial?.customer?.name || '')
+      || this.customerTIN !== (initial?.customerTIN || initial?.customer?.tin || '')
+      || this.customerPhone !== (initial?.customerPhone || initial?.customer?.phone || '')
+      || JSON.stringify(this.expenseRows) !== JSON.stringify((initial?.expenses || []).map((expense) => this.mapExpenseToDraft(expense)))
+    ) {
+      return true;
+    }
+    return false;
   }
 }

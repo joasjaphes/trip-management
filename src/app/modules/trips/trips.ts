@@ -8,6 +8,7 @@ import { TripExpensesManage } from './trip-expenses-manage/trip-expenses-manage'
 import { TripService } from '../../services/trip.service';
 import { Trip, TripStatus } from '../../models/trip.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import moment from 'moment';
 
 @Component({
   selector: 'app-trips',
@@ -174,7 +175,7 @@ export class Trips implements OnInit {
     }
 
     // await this.tripService.updateStatus(trip.id, TripStatus.COMPLETED);
-    await this.tripService.update(trip.id, { ...trip, status: TripStatus.COMPLETED, endDate: new Date() });
+    await this.tripService.update(trip.id, { ...trip, status: TripStatus.COMPLETED, endDate: moment(new Date()).format('YYYY-MM-DD') });
     const refreshedTrip = this.tripService.getById(trip.id);
     if (refreshedTrip) {
       this.selectedTrip.set(refreshedTrip);

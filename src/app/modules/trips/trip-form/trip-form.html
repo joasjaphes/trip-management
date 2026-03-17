@@ -326,7 +326,7 @@
       first.</p>
     }
     <app-save-area [saveText]="isEditMode() ? 'Update Trip' : 'Create Trip'" [loading]="busy()" (cancel)="goBack()"
-      (save)="onSubmit()"></app-save-area>
+      (save)="onSubmit()" [disabled]="!hasChanges"></app-save-area>
     }
 
   </div>

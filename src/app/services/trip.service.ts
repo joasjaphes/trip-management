@@ -4,8 +4,8 @@ import { HttpClientService } from './http-client.service';
 import { CommonService } from './common.service';
 
 type TripWritePayload = {
-  tripDate: Date;
-  endDate?: Date;
+  tripDate: Date | string;
+  endDate?: Date | string;
   vehicleId: string;
   driverId: string;
   routeId: string;
