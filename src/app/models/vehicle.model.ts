@@ -1,6 +1,7 @@
 export interface Vehicle {
   id: string;
   registrationNo: string;
+  model?:string;
   registrationYear?: number;
   tankCapacity: number;
   mileagePerFullTank: number;

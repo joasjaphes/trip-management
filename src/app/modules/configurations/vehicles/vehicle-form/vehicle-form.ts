@@ -69,7 +69,7 @@ export class VehicleForm implements OnInit {
   isActive = true;
 
   permits: PermitRow[] = [];
-
+  model = '';
   saving = signal(false);
   /** track which existing permit record ids were removed, so we can delete them on save */
   private removedPermitRecordIds: string[] = [];
@@ -89,6 +89,7 @@ export class VehicleForm implements OnInit {
     this.year = vehicle.registrationYear ? String(vehicle.registrationYear) : '';
     this.tankCapacity = String(vehicle.tankCapacity ?? '');
     this.mileagePerFullTank = String(vehicle.mileagePerFullTank ?? '');
+    this.model = vehicle.model ?? '';
     this.isActive = vehicle.isActive;
 
     this.permits = (vehicle.permits || []).map((p) => ({
@@ -223,6 +224,7 @@ export class VehicleForm implements OnInit {
     const vehiclePayload = {
       registrationNo: this.registrationNo,
       registrationYear: this.year ? Number(this.year) : undefined,
+      model: this.model || undefined,
       tankCapacity: Number(this.tankCapacity),
       mileagePerFullTank: Number(this.mileagePerFullTank),
       currentMileage: undefined,

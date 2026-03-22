@@ -65,6 +65,16 @@ export class InvoiceReceiptsManage {
     return Math.max(0, invoiceTotal - this.totalReceived());
   });
 
+  invoiceDate = computed(() => {
+    const invoice = this.invoice();
+    if (!invoice?.createdAt) {
+      return 'N/A';
+    }
+    return new Date(invoice.createdAt).toLocaleDateString();
+  });
+
+  today = computed(() => new Date().toLocaleDateString());
+
   constructor() {
     effect(() => {
       this.syncRowsFromReceipts(this.invoiceReceipts());
