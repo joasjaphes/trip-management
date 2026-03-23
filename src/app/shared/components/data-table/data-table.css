@@ -86,12 +86,10 @@
 
 /* Table Wrapper */
 .table-wrapper {
-  overflow-x: auto;
   border-radius: 0.375rem;
   border: 1px solid #e5e7eb;
   position: relative;
   z-index: 1;
-  isolation: isolate;
 }
 
 .table-scroll {
