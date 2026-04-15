@@ -52,6 +52,33 @@ export class Trips implements OnInit {
     }))
   );
 
+  activeTab = signal<'in-progress' | 'completed'>('in-progress');
+
+setTab(tab: 'in-progress' | 'completed') {
+  this.activeTab.set(tab);
+}
+
+private isTripCompleted(trip: any): boolean {
+  const rawStatus = (trip?.status ?? trip?.tripStatus ?? '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[_\s-]/g, '');
+
+  return rawStatus === 'completed' || rawStatus === 'complete' || trip?.isCompleted === true;
+}
+
+filteredTrips = computed(() => {
+  const allTrips = this.trips() ?? [];
+
+  if (this.activeTab() === 'completed') {
+    return allTrips.filter((trip: any) => this.isTripCompleted(trip));
+  }
+
+  return allTrips.filter((trip: any) => !this.isTripCompleted(trip));
+});
+
+
   tableConfigurations: TableConfig = {
     columns: [
       {

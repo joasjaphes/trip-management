@@ -1,0 +1,45 @@
+/* filepath: /home/joas-japhes/Documents/joas/projects/angular/trip-management/src/app/modules/trips/trips.scss */
+/* ...existing code... */
+
+.trip-tabs {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.25rem;
+  border-radius: 0.75rem;
+  background: var(--surface-2, #f5f7fb);
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.tab-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary, #4b5563);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.55rem 0.85rem;
+  border-radius: 0.55rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary, #111827);
+  background: var(--surface-1, #ffffff);
+}
+
+.tab-btn:focus-visible {
+  outline: 2px solid var(--primary-color, #2563eb);
+  outline-offset: 2px;
+}
+
+.tab-btn.active {
+  color: var(--primary-color, #2563eb);
+  background: var(--surface-1, #ffffff);
+  border-color: color-mix(in srgb, var(--primary-color, #2563eb) 22%, transparent);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* ...existing code... */

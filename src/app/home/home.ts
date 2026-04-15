@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, resource, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { User } from '../models';
+import { HttpClientService } from '../services/http-client.service';
+import { TripService } from '../services/trip.service';
 
 interface MenuItem {
   label: string;
@@ -26,6 +28,7 @@ interface MenuGroup {
 export class Home implements OnInit {
   private router = inject(Router);
   private userService = inject(UserService);
+  private tripService = inject(TripService);
 
   isSidebarOpen = signal(true);
   username = signal('');
@@ -36,6 +39,10 @@ export class Home implements OnInit {
     Configuration: false,
     'User Management': false,
   });
+
+  tripManagementBadge = resource({
+    loader: () => this.tripService.getInprogressCount(),
+  })
 
   menuGroups: MenuGroup[] = [
     {
@@ -48,7 +55,7 @@ export class Home implements OnInit {
       label: 'Trip Management',
       icon: 'M13 10V3L4 14h7v7l9-11h-7z',
       items: [
-        { label: 'Trips', icon: 'M13 10V3L4 14h7v7l9-11h-7z', route: '/trips', badge: '2' },
+        { label: 'Trips', icon: 'M13 10V3L4 14h7v7l9-11h-7z', route: '/trips', badge: `${this.tripManagementBadge.value()}` },
         { label: 'Invoicing', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1M14.599 9C14.08 8.402 13.11 8 12 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z', route: '/invoicing' },
       ]
     },
@@ -95,6 +102,10 @@ export class Home implements OnInit {
     const currentUser: User = JSON.parse(localStorage.getItem('trip-management-user'));
     this.username.set(currentUser?.username || '');
     this.userService.getUsers().then();
+    setInterval(() => {
+      this.tripManagementBadge.reload();
+    }, 30000); // Refresh every 30 seconds
+    console.log('trip management home init');
 
   }
 

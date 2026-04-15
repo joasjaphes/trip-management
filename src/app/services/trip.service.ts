@@ -71,6 +71,16 @@ export class TripService {
     return this.trips().find((t) => t.id === id);
   }
 
+  async getInprogressCount(): Promise<number> {
+    try {
+      const response = await this.http.get<{count:number}>('trips/inProgress/count');
+      return response.count;
+    } catch (err) {
+      console.error('Failed to fetch trips for count', err);
+      return 0;
+    }
+  }
+
   async create(trip: TripWritePayload): Promise<string> {
     this.isLoading.set(true);
     this.error.set(null);
