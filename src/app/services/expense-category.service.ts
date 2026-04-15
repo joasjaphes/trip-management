@@ -59,7 +59,7 @@ export class ExpenseCategoryService {
   /**
    * Create a new category
    */
-  async create(name: string, description?: string, category?: string, isActive?: boolean): Promise<void> {
+  async create(name: string,  type?: 'TRIP' | 'OFFICE', description?: string, category?: string, isActive?: boolean): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
@@ -69,7 +69,8 @@ export class ExpenseCategoryService {
         name,
         category: category || 'GENERAL',
         description: description || '',
-        isActive: isActive ?? true
+        isActive: isActive ?? true,
+        type: type || 'TRIP'
       };
       
       await this.http.post('expenses', payload);
@@ -86,7 +87,7 @@ export class ExpenseCategoryService {
   /**
    * Update an existing category
    */
-  async update(id: string, name: string, description?: string, category?: string, isActive?: boolean): Promise<void> {
+  async update(id: string, name: string, type: 'TRIP' | 'OFFICE', description?: string, category?: string, isActive?: boolean): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
@@ -97,7 +98,8 @@ export class ExpenseCategoryService {
         name,
         category: category || existingCategory?.category || 'GENERAL',
         description: description ?? existingCategory?.description ?? '',
-        isActive: isActive !== undefined ? isActive : (existingCategory?.isActive ?? true)
+        isActive: isActive !== undefined ? isActive : (existingCategory?.isActive ?? true),
+        type: type || existingCategory?.type || 'TRIP'
       };
       
       await this.http.put('expenses', payload);
@@ -136,7 +138,7 @@ export class ExpenseCategoryService {
   async toggleActive(id: string): Promise<void> {
     const category = this.getById(id);
     if (category) {
-      await this.update(id, category.name, category.description, category.category, !category.isActive);
+      await this.update(id, category.name, category.type, category.description, category.category, !category.isActive);
     }
   }
 }

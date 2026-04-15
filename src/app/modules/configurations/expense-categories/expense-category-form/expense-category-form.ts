@@ -21,6 +21,7 @@ export class ExpenseCategoryForm implements OnInit {
 
   expenseName = '';
   category = 'GENERAL';
+  type: 'TRIP' | 'OFFICE' = null;
   description = '';
   isActive = true;
   close = output();
@@ -37,6 +38,7 @@ export class ExpenseCategoryForm implements OnInit {
 
     this.expenseName = category.name;
     this.category = category.category || 'GENERAL';
+    this.type = category.type || null;
     this.description = category.description || '';
     this.isActive = category.isActive ?? category.status === 'Active';
   }
@@ -62,6 +64,7 @@ export class ExpenseCategoryForm implements OnInit {
         await this.expenseCategoryService.update(
           this.selectedCategory()!.id,
           this.expenseName,
+          this.type,
           this.description,
           this.category,
           this.isActive
@@ -69,6 +72,7 @@ export class ExpenseCategoryForm implements OnInit {
       } else {
         await this.expenseCategoryService.create(
           this.expenseName,
+          this.type,
           this.description,
           this.category,
           this.isActive
