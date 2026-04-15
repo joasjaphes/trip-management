@@ -26,7 +26,7 @@ export class CompanyProfileForm implements OnChanges {
     showCancel = signal(true); // Enable cancel button
 
     @Output() save = new EventEmitter<CompanyProfile>();
-    @Output() cancel = new EventEmitter<void>();
+    @Output() close = new EventEmitter<void>();
 
     companyName: string;
     tin: string;
@@ -39,6 +39,11 @@ export class CompanyProfileForm implements OnChanges {
     postalAddress: string;
     description?: string;
     logo?: string;
+    logoUrl?: string;
+    bankName?: string;
+    bankAccountNumber?: string;
+    bankAccountName?: string;
+    bankBranch?: string;
 
     saveText = signal('Update company profile');
     uploadingLogo = signal(false);
@@ -56,6 +61,11 @@ export class CompanyProfileForm implements OnChanges {
             this.postalAddress = this.data.postalAddress;
             this.description = this.data.description;
             this.logo = this.data.logo;
+            this.bankName = this.data.bankName;
+            this.bankAccountNumber = this.data.bankAccountNumber;
+            this.bankAccountName = this.data.bankAccountName;
+            this.bankBranch = this.data.bankBranch;
+            this.logoUrl = this.data.logoUrl;
         }
     }
 
@@ -63,10 +73,11 @@ export class CompanyProfileForm implements OnChanges {
         console.log('File selected for upload:', event.target.files);
         const file = event.target.files[0];
         if (!file) return;
-
         this.uploadingLogo.set(true);
         try {
             const res = await this.fileUploadService.uploadFile(file);
+            console.log('File uploaded successfully:', res);
+            this.logoUrl = res.fileUrl;
             this.logo = res.filePath;
         } catch (error) {
             console.error('Failed to upload logo', error);
@@ -90,10 +101,15 @@ export class CompanyProfileForm implements OnChanges {
             postalAddress: this.postalAddress || '',
             description: this.description || '',
             logo: this.logo || '',
+            bankName: this.bankName || '',
+            bankAccountNumber: this.bankAccountNumber || '',
+            bankAccountName: this.bankAccountName || '',
+            bankBranch: this.bankBranch || '',
         });
     }
 
     onCancel(): void {
-        this.cancel.emit();
+        console.log('Canceling company profile edit');
+        this.close.emit();
     }
 }

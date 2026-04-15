@@ -1,5 +1,5 @@
 <app-layout [title]="title()" [description]="description()" [showAddButton]="showAddButton()"
-    [(viewDetails)]="isEditing" formTitle="Edit Company Profile"
+    [(viewDetails)]="viewDetails" formTitle="Edit Company Profile"
     formDescription="Update your company identity and contact details" splitSize="half">
 
     <!-- Read-Only View (Main Content) -->
@@ -27,7 +27,7 @@
                         </p>
                     </div>
                 </div>
-                <button type="button" (click)="toggleEdit()"
+                <button type="button" (click)="onEdit()"
                     class="btn border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-5 font-bold text-[13px] rounded-xl flex items-center gap-2 shadow-sm transition-all hover:border-gray-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
@@ -39,7 +39,7 @@
             </div>
 
             <!-- Two Card Layout -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 <!-- Card 1: Company Profile -->
                 <div
@@ -83,8 +83,7 @@
                             @if (profile()?.logo) {
                             <div
                                 class="w-full aspect-square max-h-[140px] bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden flex items-center justify-center p-2">
-                                <img [src]="getLogoUrl() | async" alt="Company Logo"
-                                    class="w-full h-full object-contain">
+                                <img [src]="profile()?.logoUrl" alt="Company Logo" class="w-full h-full object-contain">
                             </div>
                             } @else {
                             <div
@@ -155,6 +154,46 @@
                     </div>
                 </div>
 
+                <!-- Card 3: Bank Details -->
+                <div
+                    class="bg-white border border-gray-100 rounded-2xl p-7 shadow-sm flex flex-col h-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-6 opacity-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                        </svg>
+                    </div>
+
+                    <h3
+                        class="text-[15px] font-extrabold text-gray-900 mb-6 pb-4 border-b border-gray-100 tracking-wide flex items-center gap-2">
+                        Bank details
+                    </h3>
+
+                    <div class="grid grid-cols-2 gap-y-6 gap-x-4 flex-1">
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">Bank Name
+                            </p>
+                            <p class="text-[14px] font-medium text-gray-800">{{ profile()?.bankName || '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">Branch
+                            </p>
+                            <p class="text-[14px] font-medium text-gray-800">{{ profile()?.bankBranch || '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">Account
+                                Number</p>
+                            <p class="text-[14px] font-medium text-gray-800">{{ profile()?.bankAccountNumber || '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-1">SWIFT
+                                Code</p>
+                            <p class="text-[14px] font-medium text-gray-800">{{ profile()?.bankAccountName || '-' }}</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
         }
@@ -162,10 +201,13 @@
 
     <!-- Slide-Out Form Panel (Form Content) -->
     <ng-container ngProjectAs='form'>
-        <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm h-full overflow-y-auto">
-            <app-company-profile-form [data]="profile()" [loading]="loading()" [(saving)]="saving"
-                (save)="onSave($event)" (cancel)="toggleEdit()" />
-        </div>
+
+        <!-- <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm h-full overflow-y-auto"> -->
+        @if (viewType() === 'edit') {
+        <app-company-profile-form [data]="profile()" [loading]="loading()" [(saving)]="saving" (save)="onSave($event)"
+           (close)="onCloseDetails()" />
+        }
+        <!-- </div> -->
     </ng-container>
 
 </app-layout>

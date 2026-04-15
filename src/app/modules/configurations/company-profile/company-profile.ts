@@ -24,16 +24,23 @@ export class CompanyProfilePage implements OnInit {
   saving = signal(false);
   profile = this.companyProfileService.profile;
   showAddButton = signal(false);
-  isEditing = signal(false);
+  viewType = signal<'details' | 'edit'>('details');
+  viewDetails = signal(false);
 
   async ngOnInit(): Promise<void> {
     console.log('Loading company profile...',this.profile());
     this.companyProfileService.get().then();
   }
 
-  toggleEdit() {
-    this.isEditing.set(!this.isEditing());
+  onEdit() {
+    this.viewType.set('edit');
+    this.viewDetails.set(true);
   }
+
+  // toggleEdit() {
+  //   console.log('Toggling edit mode. Current profile:', this.profile());
+  //   this.isEditing.set(!this.isEditing());
+  // }
 
   async onSave(payload: CompanyProfile): Promise<void> {
     this.saving.set(true);
@@ -43,6 +50,12 @@ export class CompanyProfilePage implements OnInit {
         console.error('Failed to save company profile', e);
     }
     this.saving.set(false);
+    this.onCloseDetails();
+  }
+
+  onCloseDetails() {
+    this.viewDetails.set(false);
+    this.viewType.set('details');
   }
 
   async getLogoUrl(): Promise<string> {

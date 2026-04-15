@@ -17,6 +17,9 @@ export class CompanyProfileService {
     this.loading.set(true);
     try {
       const data: CompanyProfile = await this.http.get(this.endpoint);
+      if(data.logo){
+        data.logoUrl = await this.http.getImageUrl(data.logo);
+      }
       this.profile.set(data);
     } finally {
       this.loading.set(false);
@@ -28,7 +31,7 @@ export class CompanyProfileService {
     try {
       const current = this.profile();
       const data = current?.id
-        ? await this.http.put(`${this.endpoint}/${current.id}`, payload)
+        ? await this.http.put(`${this.endpoint}`, payload)
         : await this.http.post(this.endpoint, payload);
 
       this.profile.set(data);

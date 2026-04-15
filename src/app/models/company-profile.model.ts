@@ -10,5 +10,10 @@ export interface CompanyProfile {
     plot: string;
     postalAddress: string;
     logo?: string;
+    logoUrl?: string;
     description?: string;
+    bankName?: string;
+    bankAccountNumber?: string;
+    bankAccountName?: string;
+    bankBranch?: string;
 }
