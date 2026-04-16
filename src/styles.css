@@ -125,8 +125,6 @@
     opacity: 0.8 !important;
 }
 
-.mdc-tab__text-label {}
-
 .mat-mdc-tab {
     /* padding: 10px 16px !important; */
     border-top-right-radius: 5px !important;
