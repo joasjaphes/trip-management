@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Invoice, InvoiceStatus } from '../../../models/invoice.model';
@@ -15,7 +15,7 @@ import { HttpClientService } from '../../../services/http-client.service';
 @Component({
   selector: 'app-invoicing',
   standalone: true,
-  imports: [CommonModule, FormsModule, Layout, DataTable, InvoiceReceiptsManage, Placeholder],
+  imports: [CommonModule, FormsModule, Layout, DataTable, InvoiceReceiptsManage, Placeholder, DecimalPipe],
   templateUrl: './invoicing.html',
 })
 export class Invoicing implements OnInit {

@@ -14,6 +14,8 @@ export interface Invoice {
   remainingAmount?:number;
   trip?: Trip;
   amount: number;
+  vatAmount?: number;
+  subtotal?: number;
   description?: string;
   status: InvoiceStatus;
   receipts?: InvoiceReceipt[];

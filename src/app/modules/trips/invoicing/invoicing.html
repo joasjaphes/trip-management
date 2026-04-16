@@ -95,9 +95,9 @@
           <div class="flex justify-between items-start">
             <!-- Left: Logo + Company -->
             <div class="flex items-start gap-4">
-              <div class="p-3 bg-[#f25f2f] rounded-xl shadow-[0_4px_12px_rgba(240,43,60,0.25)] shrink-0">
+              <div class="p-3 rounded-xl shadow-[0_4px_12px_rgba(240,43,60,0.25)] shrink-0">
                 @if(companyProfile()?.logo){
-                <img [src]="getCompanyLogoUrl() | async" alt="Company Logo" class="h-7 w-7 object-contain">
+                <img [src]="companyProfile()!.logoUrl" alt="Company Logo" class="h-10 w-10 object-contain">
                 }@else{
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
@@ -142,7 +142,7 @@
           <div class="grid grid-cols-2 gap-6">
             <!-- Bill To -->
             <div>
-              <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-2">Bill To</p>
+              <p class="text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase mb-2">Customer</p>
               <p class="text-[15px] font-extrabold text-gray-900">{{ selectedInvoice()?.customer?.name || '-' }}</p>
               @if (selectedInvoice()?.customer?.tin) {
               <p class="text-[12px] text-gray-500 mt-0.5">TIN: {{ selectedInvoice()!.customer!.tin }}</p>
@@ -174,9 +174,10 @@
               <tr class="border-b-2 border-gray-800">
                 <th class="py-3 text-[10px] font-extrabold tracking-[0.15em] text-gray-500 uppercase w-[8%]">#</th>
                 <th class="py-3 text-[10px] font-extrabold tracking-[0.15em] text-gray-500 uppercase">Description</th>
+                <th class="py-3 text-[10px] font-extrabold tracking-[0.15em] text-gray-500 uppercase">Quantity</th>
                 <th
                   class="py-3 text-[10px] font-extrabold tracking-[0.15em] text-gray-500 uppercase text-right w-[25%]">
-                  Amount (TZS)</th>
+                  Rate (TZS)</th>
               </tr>
             </thead>
             <tbody>
@@ -184,8 +185,9 @@
                 <td class="py-4 text-[13px] text-gray-600">1</td>
                 <td class="py-4 text-[13px] text-gray-800 font-medium">{{ selectedInvoice()?.description ||
                   'Transportation services — ' + (selectedInvoice()?.trip?.route?.name || '') }}</td>
-                <td class="py-4 text-[13px] text-gray-900 font-extrabold text-right">{{ (selectedInvoice()?.amount ||
-                  0).toLocaleString() }}</td>
+                <td class="py-4 text-[13px] text-gray-900 font-extrabold">{{ 1 }}</td>
+                <td class="py-4 text-[13px] text-gray-900 font-extrabold text-right">{{ (selectedInvoice()?.subtotal ||
+                  0) | number: '1.2-2' }}</td>
               </tr>
             </tbody>
           </table>
@@ -195,18 +197,19 @@
             <div class="w-[55%] space-y-2">
               <div class="flex justify-between text-[13px] py-2 border-b border-gray-100">
                 <span class="text-gray-500 font-medium">Sub Total</span>
-                <span class="font-bold text-gray-800">{{ (selectedInvoice()?.amount || 0).toLocaleString() }}</span>
+                <span class="font-bold text-gray-800">{{ (selectedInvoice()?.subtotal || 0) | number: '1.2-2' }}</span>
               </div>
               <div class="flex justify-between text-[13px] py-2 border-b border-gray-100">
-                <span class="text-gray-500 font-medium">Paid Amount</span>
-                <span class="font-bold text-emerald-600">{{ (selectedInvoice()?.paidAmount || 0).toLocaleString()
+                <span class="text-gray-500 font-medium">VAT(18%)</span>
+                <span class="font-bold text-emerald-600">{{ (selectedInvoice()?.vatAmount || 0) | number: '1.2-2'
                   }}</span>
               </div>
               <div class="flex justify-between text-[15px] py-3 border-t-2 border-gray-800">
-                <span class="font-extrabold text-gray-900">Total Due</span>
+                <span class="font-extrabold text-gray-900">Net Amount</span>
                 <!-- span class="font-extrabold text-[#f25f2f]">{{ (selectedInvoice()?.remainingAmount ??
                   selectedInvoice()?.amount ?? 0).toLocaleString() }}</span> -->
-                <span class="font-extrabold text-[#f25f2f]">{{ ((selectedInvoice()?.amount || 0) - (selectedInvoice()?.paidAmount || 0)).toLocaleString() }}</span>
+                <span class="font-extrabold text-[#f25f2f]">{{ ((selectedInvoice()?.amount || 0) | number: '1.2-2')
+                  }}</span>
               </div>
             </div>
           </div>
@@ -240,6 +243,24 @@
           </div>
         </div> -->
 
+        <div class="border-t border-dashed border-gray-300 px-8 py-4">
+          <p class="text-[13px] font-medium">Bank Details</p>
+          <p>
+            <span class="text-[12px] text-gray-500 mt-1">Account Name: &nbsp; </span>{{ companyProfile()?.bankAccountName ||
+            '-' }}
+          </p>
+          <p>
+            <span class="text-[12px] text-gray-500 mt-0.5">Account Number: &nbsp;</span> {{ companyProfile()?.bankAccountNumber
+            || '-' }}
+          </p>
+          <p>
+            <span class="text-[12px] text-gray-500 mt-0.5">Bank Name: &nbsp;</span>{{ companyProfile()?.bankName || '-' }}
+          </p>
+          <p>
+            <span class="text-[12px] text-gray-500 mt-0.5">Branch: &nbsp;</span>{{ companyProfile()?.bankBranch || '-' }}
+          </p>
+        </div>
+
         <!-- Footer Note -->
         <div class="border-t border-dashed border-gray-300 px-8 py-4">
           <p class="text-[11px] text-gray-400 leading-relaxed">
@@ -249,7 +270,7 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="border-t border-gray-200 px-8 py-4 bg-white flex items-center gap-3">
+        <!-- <div class="border-t border-gray-200 px-8 py-4 bg-white flex items-center gap-3">
           <button type="button" (click)="saveInvoiceStatus()" [disabled]="loading()"
             class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-extrabold rounded-xl">
             Save Status
@@ -258,7 +279,7 @@
             class="btn btn-ghost border border-gray-200 text-gray-500 hover:bg-gray-50 rounded-xl">
             Close
           </button>
-        </div>
+        </div> -->
       </div>
       }
       } @else {
