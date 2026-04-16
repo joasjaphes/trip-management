@@ -5,11 +5,12 @@ import { SaveArea } from '../../../../shared/components/save-area/save-area';
 import { RouteService } from '../../../../services/route.service';
 import { CommonService } from '../../../../services/common.service';
 import { Route } from '../../../../models/route.model';
+import { NumberFormatDirective } from '../../../../shared/directives/number-format';
 
 @Component({
   selector: 'app-route-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea],
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective],
   templateUrl: './route-form.html'
 })
 export class RouteForm implements OnInit {
@@ -27,6 +28,8 @@ export class RouteForm implements OnInit {
   mileage = '0.00';
   estimatedDuration = '';
   isActive = true;
+  isVATZeroRated = true;
+  vatPercentage = '18';
   close = output();
 
   get isEditMode(): boolean {
@@ -45,6 +48,8 @@ export class RouteForm implements OnInit {
     this.mileage = String(route.mileage ?? '0.00');
     this.estimatedDuration = route.estimatedDuration ? String(route.estimatedDuration) : '';
     this.isActive = route.isActive;
+    this.isVATZeroRated = route.isVATZeroRated ?? true;
+    this.vatPercentage = String(route.vatPercentage ?? '18');
   }
 
   goBack() {
@@ -71,6 +76,8 @@ export class RouteForm implements OnInit {
         endLocation: this.endLocation || undefined,
         estimatedDuration: this.estimatedDuration ? Number(this.estimatedDuration) : undefined,
         isActive: this.isActive,
+        isVATZeroRated: this.isVATZeroRated,
+        vatPercentage: this.vatPercentage ? Number(this.vatPercentage) : undefined,
       };
 
       if (this.isEditMode) {

@@ -6,6 +6,8 @@ export interface Route {
   endLocation?: string;
   estimatedDuration?: number;
   isActive: boolean;
+  isVATZeroRated?: boolean;
+  vatPercentage?: number;
   createdAt: Date;
   updatedAt: Date;
 }
