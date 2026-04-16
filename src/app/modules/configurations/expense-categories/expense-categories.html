@@ -1,14 +1,88 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
   [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="categories()" [config]="tableConfigurations" (edit)="onEdit($event)" [loading]="loading()"></app-data-table>
+    <mat-tab-group>
+      <mat-tab label="Trip Expenses">
+        <ng-template mat-tab-label>
+          <span>Trip Expenses ({{ tripCategories().length }})</span>
+        </ng-template>
+        <app-data-table [data]="tripCategories()" [config]="tableConfigurations" (edit)="onEdit($event)"
+          [loading]="loading()"></app-data-table>
+      </mat-tab>
+      <mat-tab label="Office Expenses">
+        <ng-template mat-tab-label>
+          <span>Office Expenses ({{ officeCategories().length }})</span>
+        </ng-template>
+        <div class="w-full mt-4">
+          <div
+            class="grid grid-cols-4 w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-tl-xl rounded-tr-xl mb-2">
+            <!-- <div class="col-span-1 font-bold text-gray-700 text-[13px]"></div> -->
+            <div class="col-span-1 font-bold text-gray-700 text-[13px]">Expense Name</div>
+            <div class="col-span-1 font-bold text-gray-700 text-[13px]">Status</div>
+            <div class="col-span-1 font-bold text-gray-700 text-[13px] text-center">Actions</div>
+          </div>
+          <div class="w-full max-h-100 overflow-auto">
+            @for (category of officeCategories(); track $index) {
+            <div
+              class="grid grid-cols-4 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
+              <!-- <div class="col-span-1">{{ $index + 1 }}</div> -->
+              <div class="col-span-1">
+                @if (expandedCategoryId() !== category.id || expandedCategoryId() === null) {
+                <i class="fa-solid fa-circle-plus" (click)="setExpandedCategory(category.id)"></i>
+                }@else {
+                <i class="fa-solid fa-circle-minus" (click)="setExpandedCategory(category.id)"></i>
+                }
+                &nbsp;
+                <span class="font-bold">
+                  {{ category.name }}
+                </span>
+              </div>
+              <div class="col-span-1">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getStatusColor(category.status)">
+                  <span class="capitalize">{{ category.status }}</span>
+                </span>
+
+              </div>
+              <div class="col-span-1 text-center">
+                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(category)" title="Edit"></i>
+              </div>
+            </div>
+            @if(expandedCategoryId() === category.id) {
+            <div
+              class="ml-4 grid grid-cols-4 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
+              <!-- <div class="col-span-1">{{ $index + 1 }}</div> -->
+              <div class="col-span-1">
+              
+              </div>
+              <div class="col-span-1">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getStatusColor(category.status)">
+                  <span class="capitalize">{{ category.status }}</span>
+                </span>
+
+              </div>
+              <div class="col-span-1 text-center">
+                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(category)" title="Edit"></i>
+              </div>
+            </div>
+            }
+            }
+          </div>
+        </div>
+        <!-- <app-data-table [data]="officeCategories()" [config]="tableConfigurations" (edit)="onEdit($event)"
+          [loading]="loading()"></app-data-table> -->
+      </mat-tab>
+    </mat-tab-group>
+
   </ng-container>
   <ng-container ngProjectAs="form">
     @if (viewType() === 'add') {
     <app-expense-category-form (close)="onCloseForm()"></app-expense-category-form>
     }
     @if (viewType() === 'edit') {
-    <app-expense-category-form [selectedCategory]="selectedCategory()" (close)="onCloseForm()"></app-expense-category-form>
+    <app-expense-category-form [selectedCategory]="selectedCategory()"
+      (close)="onCloseForm()"></app-expense-category-form>
     }
   </ng-container>
 </app-layout>

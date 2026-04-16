@@ -5,11 +5,12 @@ import { Layout } from '../../../shared/components/layout/layout';
 import { ExpenseCategoryForm } from './expense-category-form/expense-category-form';
 import { ExpenseCategoryService } from '../../../services/expense-category.service';
 import { ExpenseCategory } from '../../../models/expense-category.model';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-expense-categories',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, ExpenseCategoryForm],
+  imports: [CommonModule, DataTable, Layout, ExpenseCategoryForm, MatTabsModule],
   templateUrl: './expense-categories.html',
 })
 export class ExpenseCategories implements OnInit {
@@ -22,7 +23,11 @@ export class ExpenseCategories implements OnInit {
   viewDetails = signal(false);
   formTitle = signal('');
   formDescription = signal('');
+  newExpenseName = signal('');
+  newExpenseIsActive = signal(true);
+  savingNewExpense = {};
   selectedCategory = signal<ExpenseCategory | undefined>(undefined);
+  expandedCategoryId = signal<string | null>(null);
 
   categories = computed(() =>
     this.expenseCategoryService.allCategories().map((category) => ({
@@ -30,6 +35,13 @@ export class ExpenseCategories implements OnInit {
       categoryType: category.category,
       createdDate: category.createdAt ? new Date(category.createdAt).toLocaleDateString() : '-',
     }))
+  );
+
+  tripCategories = computed(() =>
+    this.categories().filter((cat) => cat.type === 'TRIP')
+  );
+  officeCategories = computed(() =>
+    this.categories().filter((cat) => cat.type === 'OFFICE')
   );
 
   loading = this.expenseCategoryService.loading;
@@ -86,6 +98,10 @@ export class ExpenseCategories implements OnInit {
     this.viewDetails.set(true);
   }
 
+  setExpandedCategory(categoryId: string) {
+    this.expandedCategoryId.set(this.expandedCategoryId() === categoryId ? null : categoryId);
+  }
+
   async onCloseForm() {
     this.viewDetails.set(false);
     this.viewType.set('');
@@ -94,4 +110,33 @@ export class ExpenseCategories implements OnInit {
     this.selectedCategory.set(undefined);
     await this.expenseCategoryService.getAll();
   }
+
+    getStatusColor(status: string): string {
+    const colors: Record<string, string> = {
+      'Active': 'bg-green-50 text-green-600 border-green-200 px-2 py-2 rounded-md',
+      'Inactive': 'bg-red-50 text-red-600 border-red-200 px-2 py-2 rounded-md'
+    };
+    return colors[status] || colors['Inactive'];
+  }
+
+  async addNewExpense(categoryId: string) {
+    this.savingNewExpense[categoryId] = true;
+    try{
+      await this.expenseCategoryService.create(
+        this.newExpenseName(),
+        categoryId === 'trip' ? 'TRIP' : 'OFFICE',
+        '',
+        categoryId.toUpperCase(),
+        this.newExpenseIsActive()
+      );
+      this.newExpenseName.set('');
+      this.newExpenseIsActive.set(true);
+      await this.expenseCategoryService.getAll();
+    }catch(e){
+      console.error('Error adding new expense:', e);
+    } finally {
+      this.savingNewExpense[categoryId] = false;
+    }
+  }
+
 }

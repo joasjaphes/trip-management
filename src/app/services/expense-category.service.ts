@@ -59,7 +59,7 @@ export class ExpenseCategoryService {
   /**
    * Create a new category
    */
-  async create(name: string,  type?: 'TRIP' | 'OFFICE', description?: string, category?: string, isActive?: boolean): Promise<void> {
+  async create(name: string,  type?: 'TRIP' | 'OFFICE', description?: string, category?: string, isActive?: boolean, parentId?: string): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
@@ -70,7 +70,8 @@ export class ExpenseCategoryService {
         category: category || 'GENERAL',
         description: description || '',
         isActive: isActive ?? true,
-        type: type || 'TRIP'
+        type: type || 'TRIP',
+        parentId: parentId
       };
       
       await this.http.post('expenses', payload);

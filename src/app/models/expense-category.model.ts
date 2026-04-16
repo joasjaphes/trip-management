@@ -5,6 +5,8 @@ export interface ExpenseCategory {
   type: 'TRIP' | 'OFFICE'
   status: 'Active' | 'Inactive';
   description?: string;
+  parentId?: string;
+  children?: ExpenseCategory[];
   isActive?: boolean;
   createdAt: Date;
   updatedAt: Date;
