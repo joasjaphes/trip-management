@@ -1,24 +1,37 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
-  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [splitSize]="splitSize()" [(showAddButton)]="showAddButton">
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()"
+  [splitSize]="splitSize()" [(showAddButton)]="showAddButton">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="trips()" [config]="tableConfigurations" (view)="onView($event)" (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"></app-data-table>
+    <!-- <div class="w-full">
+      <app-tabs [tabs]="tabs" [selectedTab]="selectedTab()" [selectTab]="setTab"></app-tabs>
+    </div> -->
+    <mat-tab-group>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>In Progress ({{ inProgressTrips().length }})</span>
+        </ng-template>
+        <app-data-table [data]="inProgressTrips()" [config]="tableConfigurations" (view)="onView($event)"
+          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"></app-data-table>
+      </mat-tab>
+      <mat-tab label="Completed">
+        <ng-template mat-tab-label>
+          <span>Completed ({{ completedTrips().length }})</span>
+        </ng-template>
+        <app-data-table [data]="completedTrips()" [config]="tableConfigurations" (view)="onView($event)"
+          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"></app-data-table>
+      </mat-tab>
+    </mat-tab-group>
+
   </ng-container>
   <ng-container ngProjectAs="form">
     @if (viewType() == 'add' || viewType() == 'edit') {
     <app-trip-form [trip]="selectedTrip()" (close)="onCloseForm()"></app-trip-form>
     } @else if (viewType() == 'detail') {
-    <app-trip-detail
-      [trip]="selectedTrip()"
-      [completing]="loading()"
-      (complete)="completeTrip($event)"
-      (close)="onCloseDetail()"
-    ></app-trip-detail>
+    <app-trip-detail [trip]="selectedTrip()" [completing]="loading()" (complete)="completeTrip($event)"
+      (close)="onCloseDetail()"></app-trip-detail>
     } @else if (viewType() == 'manage-expense') {
-    <app-trip-expenses-manage
-      [trip]="selectedTrip()"
-      (saved)="onExpensesChanged()"
-      (close)="onCloseDetail()"
-    ></app-trip-expenses-manage>
+    <app-trip-expenses-manage [trip]="selectedTrip()" (saved)="onExpensesChanged()"
+      (close)="onCloseDetail()"></app-trip-expenses-manage>
     }
   </ng-container>
 </app-layout>

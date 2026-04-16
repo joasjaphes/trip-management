@@ -9,11 +9,13 @@ import { TripService } from '../../services/trip.service';
 import { Trip, TripStatus } from '../../models/trip.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import moment from 'moment';
+import { Tabs } from '../../shared/components/tabs/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, MatTooltipModule],
+  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, MatTooltipModule,Tabs,MatTabsModule ],
   templateUrl: './trips.html'
 })
 export class Trips implements OnInit {
@@ -30,6 +32,8 @@ export class Trips implements OnInit {
   selectedTrip = signal<Trip | undefined>(undefined);
   showAddButton = signal(true);
   loading = this.tripService.loading;
+  tabs = ['In Progress', 'Completed']
+  selectedTab = signal<'In Progress' | 'Completed'>('In Progress');
 
   trips = computed(() =>
     this.tripService.allTrips().map((trip) => ({
@@ -54,8 +58,9 @@ export class Trips implements OnInit {
 
   activeTab = signal<'in-progress' | 'completed'>('in-progress');
 
-setTab(tab: 'in-progress' | 'completed') {
-  this.activeTab.set(tab);
+setTab(tab: 'In Progress' | 'Completed') {
+  console.log('Selected tab:', tab);
+  this.selectedTab.set(tab);
 }
 
 private isTripCompleted(trip: any): boolean {
@@ -68,10 +73,19 @@ private isTripCompleted(trip: any): boolean {
   return rawStatus === 'completed' || rawStatus === 'complete' || trip?.isCompleted === true;
 }
 
+
+completedTrips = computed(() => {
+  return this.trips().filter((trip: any) => this.isTripCompleted(trip));
+});
+
+inProgressTrips = computed(() => {
+  return this.trips().filter((trip: any) => !this.isTripCompleted(trip));
+});
+
 filteredTrips = computed(() => {
   const allTrips = this.trips() ?? [];
 
-  if (this.activeTab() === 'completed') {
+  if (this.selectedTab() === 'Completed') {
     return allTrips.filter((trip: any) => this.isTripCompleted(trip));
   }
 
@@ -229,5 +243,13 @@ filteredTrips = computed(() => {
     this.selectedTrip.set(undefined);
     this.showAddButton.set(true);
     this.splitSize.set('full');
+  }
+
+  getTripsByStatus() {
+    if (this.selectedTab() == 'Completed') {
+      return this.trips().filter((trip: any) => this.isTripCompleted(trip));
+    }
+
+    return this.trips().filter((trip: any) => !this.isTripCompleted(trip));
   }
 }

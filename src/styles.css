@@ -58,56 +58,94 @@
     background-color: #ffffff !important;
 }
 
- .mat-mdc-menu-item .mat-mdc-menu-item-text {
+.mat-mdc-menu-item .mat-mdc-menu-item-text {
     color: #000000 !important;
- }
+}
 
- .mat-mdc-tooltip {
+.mat-mdc-tooltip {
     background-color: var(--color-primary) !important;
     color: #ffffff !important;
     font-weight: bold !important;
     font-size: 12px !important;
     border-radius: 5px !important;
     opacity: 80% !important;
- }
+}
 
 
- .mat-mdc-tooltip-panel.with-arrow .mdc-tooltip__surface {
-  position: relative;
-  overflow: visible; /* required so arrow can protrude */
+.mat-mdc-tooltip-panel.with-arrow .mdc-tooltip__surface {
+    position: relative;
+    overflow: visible;
+    /* required so arrow can protrude */
 }
 
 /* Arrow shape */
 .mat-mdc-tooltip-panel.with-arrow .mdc-tooltip__surface::after {
-  content: '';
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: inherit;
-  transform: rotate(45deg);
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: inherit;
+    transform: rotate(45deg);
 }
 
 /* Position-aware arrow placement */
 .mat-mdc-tooltip-panel-above.with-arrow .mdc-tooltip__surface::after {
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
 }
 
 .mat-mdc-tooltip-panel-below.with-arrow .mdc-tooltip__surface::after {
-  top: -4px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
 }
 
 .mat-mdc-tooltip-panel-left.with-arrow .mdc-tooltip__surface::after {
-  right: -4px;
-  top: 50%;
-  transform: translateY(-50%) rotate(45deg);
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
 }
 
 .mat-mdc-tooltip-panel-right.with-arrow .mdc-tooltip__surface::after {
-  left: -4px;
-  top: 50%;
-  transform: translateY(-50%) rotate(45deg);
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.mdc-tab-body-content {
+    overflow: hidden !important;
+}
+
+.mdc-tab-label-active {
+    font-weight: bolder !important;
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    border-top-right-radius: 5px !important;
+    border-top-left-radius: 5px !important;
+    opacity: 0.8 !important;
+}
+
+.mdc-tab__text-label {}
+
+.mat-mdc-tab {
+    /* padding: 10px 16px !important; */
+    border-top-right-radius: 5px !important;
+    border-top-left-radius: 5px !important;
+    margin-right: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    border-bottom: 0px !important;
+    text-align: center !important;
+    font-weight: 500 !important;
+}
+
+.mat-mdc-tab:not(.mat-mdc-tab-disabled):hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.mdc-tab--active {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    border-top-right-radius: 5px !important;
+    border-top-left-radius: 5px !important;
+    opacity: 0.8 !important;
 }

@@ -1,0 +1,13 @@
+<div class="w-full">
+    <div class="border-b border-gray-200">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            @for(tab of tabs; track $index) {
+            <a (click)="selectTab(tab)" [class.border-indigo-500]="selectedTab() === tab"
+                [class.text-indigo-600]="selectedTab() === tab"
+                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm cursor-pointer">
+                {{ tab }}
+            </a>
+            }
+        </nav>
+    </div>
+</div>
