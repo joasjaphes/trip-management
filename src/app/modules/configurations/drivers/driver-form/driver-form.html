@@ -170,6 +170,45 @@
       </div>
     </div>
 
+
+
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
+      <div class="flex items-center gap-3 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+        </svg>
+        <h2 class="text-[16px] font-extrabold text-gray-900">Passport Details</h2>
+      </div>
+
+      <div class="space-y-5 grid grid-cols-2 md:grid-cols-2 gap-6">
+        <div>
+          <div class="flex flex-col gap-2">
+            <label class="text-[13px] font-bold text-gray-700">Passport Number</label>
+            <input type="text" placeholder="P12345678" [(ngModel)]="passportNumber" name="passportNumber"
+                   class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          </div>
+        </div>
+
+        <div>
+          <!-- <div class="flex flex-col gap-2">
+            <label class="text-[13px] font-bold text-gray-700">Issuing Authority</label>
+            <input type="text" placeholder="e.g. SUMATRA" [(ngModel)]="issuingAuthority" name="issuingAuthority"
+                   class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          </div> -->
+          <div class="flex flex-col gap-2">
+            <label class="text-[13px] font-bold text-gray-700">Expiry Date</label>
+            <div class="relative">
+              <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="passportExpiryDate" name="passportExpiryDate" id="passportExpiryDate" [min]="today"
+                     class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+              <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- License Attachment Section -->
     <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-6">
       <div class="flex items-center gap-3 mb-4">

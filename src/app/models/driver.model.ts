@@ -11,7 +11,8 @@ export interface Driver {
   licenseNumber?: string;
   licenseClass?: string;
   licenseExpiryDate?: Date;
-
+  passportNumber?: string;
+  passportExpiryDate?: Date;
   photo?: string;
   driverPhoto?: string;
   isActive: boolean;

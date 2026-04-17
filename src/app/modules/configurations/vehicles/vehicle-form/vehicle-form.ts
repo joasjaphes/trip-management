@@ -6,7 +6,7 @@ import { VehicleService } from '../../../../services/vehicle.service';
 import { PermitRegistrationService } from '../../../../services/permit-registration.service';
 import { VehiclePermitService } from '../../../../services/vehicle-permit.service';
 import { FileUploadService } from '../../../../services/file-upload.service';
-import { Vehicle } from '../../../../models/vehicle.model';
+import { Vehicle, VehicleType } from '../../../../models/vehicle.model';
 import { CommonService } from '../../../../services/common.service';
 
 interface PermitRow {
@@ -67,6 +67,8 @@ export class VehicleForm implements OnInit {
   tankCapacity = '';
   mileagePerFullTank = '';
   isActive = true;
+  type:VehicleType | undefined = VehicleType.TRUCK;
+  vehicleType = VehicleType;
 
   permits: PermitRow[] = [];
   model = '';
@@ -91,6 +93,7 @@ export class VehicleForm implements OnInit {
     this.mileagePerFullTank = String(vehicle.mileagePerFullTank ?? '');
     this.model = vehicle.model ?? '';
     this.isActive = vehicle.isActive;
+    this.type = vehicle.type ?? VehicleType.TRUCK;
 
     this.permits = (vehicle.permits || []).map((p) => ({
       id: this.commonService.makeid(),
@@ -225,6 +228,7 @@ export class VehicleForm implements OnInit {
       registrationNo: this.registrationNo,
       registrationYear: this.year ? Number(this.year) : undefined,
       model: this.model || undefined,
+      type: this.type || undefined,
       tankCapacity: Number(this.tankCapacity),
       mileagePerFullTank: Number(this.mileagePerFullTank),
       currentMileage: undefined,

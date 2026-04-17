@@ -3,9 +3,10 @@ export interface Vehicle {
   registrationNo: string;
   model?:string;
   registrationYear?: number;
-  tankCapacity: number;
-  mileagePerFullTank: number;
+  tankCapacity?: number;
+  mileagePerFullTank?: number;
   currentMileage?: number;
+  type?: VehicleType;
   permits: VehiclePermit[];
   isActive: boolean;
   createdAt: Date;
@@ -18,4 +19,9 @@ export interface VehiclePermit {
   startDate: Date;
   endDate: Date;
   attachment?: string;
+}
+
+export enum VehicleType {
+  TRUCK = 'TRUCK',
+  TRAILER = 'TRAILER',
 }

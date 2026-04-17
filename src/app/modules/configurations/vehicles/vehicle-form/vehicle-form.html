@@ -22,6 +22,8 @@
 
     <!-- Registration Information Section -->
     <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
+
+
       <div class="flex items-center gap-3 mb-6">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
@@ -32,6 +34,15 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <label for="model">Vehicle Type</label>
+          <select name="type" id="vehicleType" [(ngModel)]="type"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+            <!-- <option value="">Select Vehicle Type</option> -->
+            <option [value]="vehicleType.TRUCK">Truck</option>
+            <option [value]="vehicleType.TRAILER">Trailer</option>
+          </select>
+        </div>
         <div class="flex flex-col gap-2">
           <label class="text-[13px] font-bold text-gray-700">Registration Number</label>
           <input type="text" placeholder="e.g. ABC-1234" [(ngModel)]="registrationNo" name="registrationNo"
@@ -44,12 +55,15 @@
         </div>
         <div class="flex flex-col gap-2">
           <label for="model">Vehicle Model</label>
-          <input id="model" type="text"  [(ngModel)]="model" placeholder="e.g. Toyota Hilux" class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300" />
+          <input id="model" type="text" [(ngModel)]="model" placeholder="e.g. Toyota Hilux"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300" />
         </div>
       </div>
     </div>
 
     <!-- Fuel Information Section -->
+    @if (type == vehicleType.TRUCK) {
+
     <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">
       <div class="flex items-center gap-3 mb-6">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24"
@@ -73,6 +87,7 @@
         </div>
       </div>
     </div>
+    }
 
     <!-- Permits & Documentation Section -->
     <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-6">

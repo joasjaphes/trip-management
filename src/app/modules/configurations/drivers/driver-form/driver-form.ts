@@ -31,6 +31,8 @@ export class DriverForm {
   address = '';
   licenseNumber = '';
   licenseClass = '';
+  passportNumber = '';
+  passportExpiryDate = '';
   issuingAuthority = '';
   licenseExpiry = '';
   isActive = true;
@@ -59,6 +61,8 @@ export class DriverForm {
         this.licenseNumber = '';
         this.licenseClass = '';
         this.issuingAuthority = '';
+        this.passportNumber = '';
+        this.passportExpiryDate = '';
         this.licenseExpiry = '';
         this.isActive = true;
         this.photoUrl.set(undefined);
@@ -81,6 +85,10 @@ export class DriverForm {
       this.licenseClass = selectedDriver.licenseClass ?? '';
       this.licenseExpiry = selectedDriver.licenseExpiryDate
         ? new Date(selectedDriver.licenseExpiryDate).toISOString().slice(0, 10)
+        : '';
+      this.passportNumber = selectedDriver.passportNumber ?? '';
+      this.passportExpiryDate = selectedDriver.passportExpiryDate
+        ? new Date(selectedDriver.passportExpiryDate).toISOString().slice(0, 10)
         : '';
       this.isActive = selectedDriver.isActive;
       // Populate photo URL from existing driver
@@ -222,6 +230,8 @@ export class DriverForm {
           licenseClass: this.licenseClass || 'Professional',
           frontPagePhoto: this.licenseAttachmentUrl() ?? this.driver()?.licenseDetails?.frontPagePhoto,
         },
+        passportNumber: this.passportNumber || undefined,
+        passportExpiryDate: this.passportExpiryDate ? new Date(this.passportExpiryDate) : undefined,
         photo: this.photoUrl() ?? this.driver()?.photo,
         isActive: this.isActive,
       };
