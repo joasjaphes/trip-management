@@ -15,7 +15,7 @@
         </ng-template>
         <div class="w-full mt-4">
           <div
-            class="grid grid-cols-4 w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-tl-xl rounded-tr-xl mb-2">
+            class="grid grid-cols-3 w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-tl-xl rounded-tr-xl mb-2">
             <!-- <div class="col-span-1 font-bold text-gray-700 text-[13px]"></div> -->
             <div class="col-span-1 font-bold text-gray-700 text-[13px]">Expense Name</div>
             <div class="col-span-1 font-bold text-gray-700 text-[13px]">Status</div>
@@ -24,7 +24,7 @@
           <div class="w-full max-h-100 overflow-auto">
             @for (category of officeCategories(); track $index) {
             <div
-              class="grid grid-cols-4 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
+              class="grid grid-cols-3 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
               <!-- <div class="col-span-1">{{ $index + 1 }}</div> -->
               <div class="col-span-1">
                 @if (expandedCategoryId() !== category.id || expandedCategoryId() === null) {
@@ -49,22 +49,70 @@
               </div>
             </div>
             @if(expandedCategoryId() === category.id) {
+            @for(expense of category.children; track expense.id) {
             <div
-              class="ml-4 grid grid-cols-4 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
+              class="ml-4 grid grid-cols-3 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
               <!-- <div class="col-span-1">{{ $index + 1 }}</div> -->
               <div class="col-span-1">
-              
+                <!-- @if (expandedCategoryId() !== category.id || expandedCategoryId() === null) {
+                <i class="fa-solid fa-circle-plus" (click)="setExpandedCategory(category.id)"></i>
+                }@else {
+                <i class="fa-solid fa-circle-minus" (click)="setExpandedCategory(category.id)"></i>
+                }
+                &nbsp; -->
+                <span>
+                  {{ expense.name }}
+                </span>
               </div>
               <div class="col-span-1">
                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border"
-                  [ngClass]="getStatusColor(category.status)">
-                  <span class="capitalize">{{ category.status }}</span>
+                  [ngClass]="getStatusColor(expense.status)">
+                  <span class="capitalize">{{ expense.status }}</span>
                 </span>
-
               </div>
               <div class="col-span-1 text-center">
-                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(category)" title="Edit"></i>
+                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(expense)" title="Edit"></i>
               </div>
+            </div>
+            }
+            <div
+              class="ml-4 grid grid-cols-3 gap-2 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
+              <!-- <div class="col-span-1">{{ $index + 1 }}</div> -->
+              <div class="col-span-2">
+                <!-- <label class="text-[13px] font-bold text-gray-700 block mb-2">Expense Name</label> -->
+                <input type="text" placeholder="e.g. Fuel, Maintenance, Permits" [(ngModel)]="newExpenseName"
+                  name="expenseName"
+                  class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+              </div>
+              <div class="col-span-1">
+                <button
+                  class="w-full py-3 bg-primary text-white hover:bg-[#ff5117] rounded-lg cursor-pointer disabled:opacity-50"
+                  [disabled]="!newExpenseName() || savingNewExpense[category.id] || confirmSavingNewExpense[category.id]"
+                  (click)="confirmSavingNewExpense[category.id] = true">
+                  <span class="font-bold">Add Expense</span>&nbsp;
+                  <span class="text-xs font-medium text-gray-200">({{category.name}})</span>
+                </button>
+              </div>
+              @if (confirmSavingNewExpense[category.id]) {
+              <div class="col-span-3 mt-2">
+                <div class="flex justify-end items-center space-x-2 mt-2">
+                  <span class="text-sm text-gray-600">Are you sure you want to add this expense?</span>
+                  <button class="px-4 py-2 bg-gray-300 text-gray-700 hover:bg-gray-400 rounded-lg cursor-pointer"
+                    (click)="confirmSavingNewExpense[category.id] = false">
+                    Cancel
+                  </button>
+                  <button class="px-4 py-2 bg-success text-white hover:bg-[#ff5117] rounded-lg cursor-pointer"
+                    (click)="confirmSavingNewExpense[category.id] = false; addNewExpense(category.id)">
+                    Confirm
+                  </button>
+                </div>
+              </div>
+              } @else if (savingNewExpense[category.id]) {
+              <div class="col-span-3 mt-2 flex items-center gap-2">
+                <span class="loading loading-spinner loading-sm"></span>
+                <span class="text-sm text-gray-600">Saving new expense...</span>
+              </div>
+              }
             </div>
             }
             }

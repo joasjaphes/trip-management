@@ -6,11 +6,13 @@ import { ExpenseCategoryForm } from './expense-category-form/expense-category-fo
 import { ExpenseCategoryService } from '../../../services/expense-category.service';
 import { ExpenseCategory } from '../../../models/expense-category.model';
 import { MatTabsModule } from '@angular/material/tabs';
+import { FormsModule } from '@angular/forms';
+import { SaveArea } from '../../../shared/components/save-area/save-area';
 
 @Component({
   selector: 'app-expense-categories',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, ExpenseCategoryForm, MatTabsModule],
+  imports: [CommonModule, DataTable, Layout, ExpenseCategoryForm, MatTabsModule, FormsModule,SaveArea],
   templateUrl: './expense-categories.html',
 })
 export class ExpenseCategories implements OnInit {
@@ -24,8 +26,9 @@ export class ExpenseCategories implements OnInit {
   formTitle = signal('');
   formDescription = signal('');
   newExpenseName = signal('');
-  newExpenseIsActive = signal(true);
+  newExpenseIsActive = true;
   savingNewExpense = {};
+  confirmSavingNewExpense = {};
   selectedCategory = signal<ExpenseCategory | undefined>(undefined);
   expandedCategoryId = signal<string | null>(null);
 
@@ -41,7 +44,7 @@ export class ExpenseCategories implements OnInit {
     this.categories().filter((cat) => cat.type === 'TRIP')
   );
   officeCategories = computed(() =>
-    this.categories().filter((cat) => cat.type === 'OFFICE')
+    this.categories().filter((cat) => cat.type === 'OFFICE' && !cat.parentId)
   );
 
   loading = this.expenseCategoryService.loading;
@@ -124,13 +127,14 @@ export class ExpenseCategories implements OnInit {
     try{
       await this.expenseCategoryService.create(
         this.newExpenseName(),
-        categoryId === 'trip' ? 'TRIP' : 'OFFICE',
+        'OFFICE',
         '',
-        categoryId.toUpperCase(),
-        this.newExpenseIsActive()
+        'OTHER',
+        this.newExpenseIsActive,
+        categoryId
       );
       this.newExpenseName.set('');
-      this.newExpenseIsActive.set(true);
+      this.newExpenseIsActive = true;
       await this.expenseCategoryService.getAll();
     }catch(e){
       console.error('Error adding new expense:', e);
