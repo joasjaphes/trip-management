@@ -28,6 +28,7 @@ export class CargoTypes implements OnInit {
     this.cargoTypeService.allCargoTypes().map((cargoType) => ({
       id: cargoType.id,
       name: cargoType.name,
+      unitOfMeasure: cargoType.unitOfMeasure,
       status: cargoType.isActive ? 'Active' : 'Inactive',
       createdDate: cargoType.createdAt
         ? new Date(cargoType.createdAt).toLocaleDateString()

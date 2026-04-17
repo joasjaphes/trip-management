@@ -48,6 +48,7 @@ export class CargoTypeService {
       await this.http.post('cargo-types', {
         id: this.commonService.makeid(),
         name: cargoType.name,
+        unitOfMeasure: cargoType.unitOfMeasure,
         isActive: cargoType.isActive ?? true,
       });
       await this.getAll();
@@ -69,6 +70,7 @@ export class CargoTypeService {
       await this.http.put('cargo-types', {
         id,
         name: cargoType.name ?? existing?.name,
+        unitOfMeasure: cargoType.unitOfMeasure ?? existing?.unitOfMeasure,
         isActive: cargoType.isActive ?? existing?.isActive,
       });
       await this.getAll();

@@ -23,6 +23,7 @@ export class CargoTypeForm {
   isEditMode = computed(() => !!this.cargoType()?.id);
 
   name = '';
+  unitOfMeasurement = '';
   isActive = true;
   close = output();
 
@@ -31,9 +32,11 @@ export class CargoTypeForm {
       const ct = this.cargoType();
       if (ct) {
         this.name = ct.name;
+        this.unitOfMeasurement = ct.unitOfMeasure ?? '';
         this.isActive = ct.isActive;
       } else {
         this.name = '';
+        this.unitOfMeasurement = '';
         this.isActive = true;
       }
     });
@@ -60,12 +63,14 @@ export class CargoTypeForm {
       if (this.isEditMode()) {
         await this.cargoTypeService.update(this.cargoType()!.id, {
           name: this.name,
+          unitOfMeasure: this.unitOfMeasurement,
           isActive: this.isActive,
         });
         // this.successMessage.set('Cargo type updated successfully.');
       } else {
         await this.cargoTypeService.create({
           name: this.name,
+          unitOfMeasure: this.unitOfMeasurement,
           isActive: this.isActive,
         });
       }
