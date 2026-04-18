@@ -7,4 +7,5 @@ export * from './trip.model';
 export * from './cargo-type.model';
 export * from './permits.model';
 export * from './customer.model';
+export * from './offloading-place.model';
 export * from './invoice.model';

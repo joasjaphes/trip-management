@@ -122,6 +122,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./modules/configurations/customers/customers').then(m => m.Customers),
             },
             {
+                path: 'offloading-places',
+                loadComponent: () => import('./modules/configurations/offloading-places/offloading-places').then(m => m.OffloadingPlaces),
+            },
+            {
                 path: 'expense-categories/new',
                 loadComponent: () => import('./modules/configurations/expense-categories/expense-category-form/expense-category-form').then(m => m.ExpenseCategoryForm),
             },

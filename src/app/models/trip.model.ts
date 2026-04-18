@@ -3,6 +3,7 @@ import type { ExpenseCategory } from './expense-category.model';
 import type { Route } from './route.model';
 import type { Vehicle } from './vehicle.model';
 import type { Customer } from './customer.model';
+import type { OffloadingPlace } from './offloading-place.model';
 
 export interface Trip {
 	id: string;
@@ -29,7 +30,7 @@ export interface Trip {
 	customerPhone?: string;
 	offloadingPlaceId?: string;
 	offloadingPlaceName?: string;
-	offloadingPlace?: { id?: string; name: string };
+	offloadingPlace?: OffloadingPlace;
 	revenue: number;
 	paidAmount?: number;
 	income?: number;
