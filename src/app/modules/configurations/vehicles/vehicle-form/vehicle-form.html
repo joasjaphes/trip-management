@@ -35,7 +35,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="flex flex-col gap-2">
-          <label for="model">Vehicle Type</label>
+          <label for="model" class="text-[13px] font-bold text-gray-700">Vehicle Type</label>
           <select name="type" id="vehicleType" [(ngModel)]="type"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
             <!-- <option value="">Select Vehicle Type</option> -->
@@ -54,10 +54,52 @@
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         </div>
         <div class="flex flex-col gap-2">
-          <label for="model">Vehicle Model</label>
+          <label for="model" class="text-[13px] font-bold text-gray-700">
+            @if (type === vehicleType.TRUCK) {
+            Truck
+            } @else {
+            Trailer
+            }
+           
+            Model
+          </label>
           <input id="model" type="text" [(ngModel)]="model" placeholder="e.g. Toyota Hilux"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300" />
         </div>
+        @if (type === vehicleType.TRAILER) {
+        <div class="flex flex-col gap-2 col-span-1 md:col-span-2">
+          <label class="text-[13px] font-bold text-gray-700">Trailer Type</label>
+          <select name="trailerType" id="trailerType" [(ngModel)]="trailerType"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+            <option value="" disabled>Select Trailer Type</option>
+            <option value="Flatbed">Flatbed</option>
+            <option value="Skeleton">Skeleton</option>
+            <option value="Tanker">Tanker</option>
+            <option value="Box">Box Body</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-[13px] font-bold text-gray-700">Dimensions</label>
+          <input type="text" placeholder="e.g. L: 12m, W: 2.5m, H: 3m" [(ngModel)]="trailerDimensions" name="dimensions"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="weighLimits" class="text-[13px] font-bold text-gray-700">Weight Limits(Tons)</label>
+          <input type="text" placeholder="e.g. 2" appNumberFormat [(ngModel)]="trailerWeightLimits" name="weighLimits"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="axles" class="text-[13px] font-bold text-gray-700">Axles</label>
+          <input type="text" placeholder="e.g. 3" [(ngModel)]="trailerAxles" name="axles"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="suspension" class="text-[13px] font-bold text-gray-700">Suspension</label>
+          <input type="text" placeholder="e.g. Air Ride" [(ngModel)]="trailerSuspension" name="suspension"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        </div>
+
+        }
       </div>
     </div>
 
@@ -222,6 +264,7 @@
         <label for="isActive" class="text-[13px] font-medium text-gray-500">Active</label>
       </div>
     </div>
+
     <app-save-area [saveText]="isEditMode ? 'Update Vehicle' : 'Save Vehicle'" [loading]="saving()" (cancel)="goBack()"
       (save)="onSubmit()"></app-save-area>
 

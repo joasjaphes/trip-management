@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, model } from '@angular/core';
 import { Vehicle } from '../models/vehicle.model';
 import { HttpClientService } from './http-client.service';
 import { CommonService } from './common.service';
@@ -56,6 +56,12 @@ export class VehicleService {
         registrationYear: vehicle.registrationYear,
         tankCapacity: vehicle.tankCapacity,
         type: vehicle.type,
+        model: vehicle.model,
+        trailerType: vehicle.trailerType,
+        trailerDimensions: vehicle.trailerDimensions,
+        trailerWeightLimits: vehicle.trailerWeightLimits,
+        trailerAxles: vehicle.trailerAxles,
+        trailerSuspension: vehicle.trailerSuspension,
         mileagePerFullTank: vehicle.mileagePerFullTank,
         isActive: vehicle.isActive ?? true
       };
@@ -84,6 +90,12 @@ export class VehicleService {
         tankCapacity: vehicle.tankCapacity,
         type: vehicle.type,
         mileagePerFullTank: vehicle.mileagePerFullTank,
+        model: vehicle.model,
+        trailerType: vehicle.trailerType,
+        trailerDimensions: vehicle.trailerDimensions,
+        trailerWeightLimits: vehicle.trailerWeightLimits,
+        trailerAxles: vehicle.trailerAxles,
+        trailerSuspension: vehicle.trailerSuspension,
         isActive: vehicle.isActive
       };
       

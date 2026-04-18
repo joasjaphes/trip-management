@@ -4,6 +4,11 @@ export interface Vehicle {
   model?:string;
   registrationYear?: number;
   tankCapacity?: number;
+  trailerType?: string;
+  trailerDimensions?: string;
+  trailerWeightLimits?: string;
+  trailerAxles?: string;
+  trailerSuspension?: string;
   mileagePerFullTank?: number;
   currentMileage?: number;
   type?: VehicleType;

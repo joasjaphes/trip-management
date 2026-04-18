@@ -6,11 +6,12 @@ import { VehicleForm } from '../vehicle-form/vehicle-form';
 import { VehicleDetail } from '../vehicle-detail/vehicle-detail';
 import { VehicleService } from '../../../../services/vehicle.service';
 import { Vehicle } from '../../../../models/vehicle.model';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-vehicle-list',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, VehicleForm, VehicleDetail],
+  imports: [CommonModule, DataTable, Layout, VehicleForm, VehicleDetail, MatTabsModule],
   templateUrl: './vehicle-list.html',
 })
 export class VehicleList implements OnInit {
@@ -32,11 +33,26 @@ export class VehicleList implements OnInit {
       id: vehicle.id,
       registrationNo: vehicle.registrationNo,
       registrationYear: vehicle.registrationYear ?? '-',
+      type: vehicle.type ?? '-',
+      model: vehicle.model ?? '-',
+      trailerType: vehicle.trailerType ?? '-',
+      trailerDimensions: vehicle.trailerDimensions ?? '-',
+      trailerWeightLimits: vehicle.trailerWeightLimits ?? '-',
+      trailerAxles: vehicle.trailerAxles ?? '-',
+      trailerSuspension: vehicle.trailerSuspension ?? '-',
       tankCapacity: `${vehicle.tankCapacity} L`,
       mileagePerFullTank: `${vehicle.mileagePerFullTank} KM`,
       permitExpiry: this.getPermitExpiry(vehicle.permits),
       status: vehicle.isActive ? 'Active' : 'Inactive',
     }))
+  );
+
+  trucks = computed(() =>
+    this.vehicles().filter((v) => v.type === 'TRUCK')
+  );
+
+  trailers = computed(() =>
+    this.vehicles().filter((v) => v.type === 'TRAILER')
   );
 
   tableConfigurations: TableConfig = {
@@ -46,6 +62,30 @@ export class VehicleList implements OnInit {
       { key: 'tankCapacity', label: 'Tank capacity' },
       { key: 'mileagePerFullTank', label: 'Mileage per full tank' },
       { key: 'permitExpiry', label: 'Permit expiry' },
+      { key: 'status', label: 'Status',type: 'status' },
+    ],
+    actions: { edit: true, view: true },
+  };
+
+  truckTableConfigurations: TableConfig = {
+    columns: [
+      { key: 'registrationNo', label: 'Registration number' },
+      { key: 'registrationYear', label: 'Registration year' },
+      { key: 'model', label: 'Model' },
+      { key: 'tankCapacity', label: 'Tank capacity' },
+      { key: 'mileagePerFullTank', label: 'Mileage per full tank' },
+      { key: 'permitExpiry', label: 'Permit expiry' },
+      { key: 'status', label: 'Status',type: 'status' },
+    ],
+    actions: { edit: true, view: true },
+  };
+
+  trailerTableConfigurations: TableConfig = {
+    columns: [
+      { key: 'registrationNo', label: 'Registration number' },
+      { key: 'registrationYear', label: 'Registration year' },
+      { key: 'model', label: 'Model' },
+      { key: 'trailerType', label: 'Trailer type' },
       { key: 'status', label: 'Status',type: 'status' },
     ],
     actions: { edit: true, view: true },

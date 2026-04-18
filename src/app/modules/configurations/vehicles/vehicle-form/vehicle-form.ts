@@ -8,6 +8,7 @@ import { VehiclePermitService } from '../../../../services/vehicle-permit.servic
 import { FileUploadService } from '../../../../services/file-upload.service';
 import { Vehicle, VehicleType } from '../../../../models/vehicle.model';
 import { CommonService } from '../../../../services/common.service';
+import { NumberFormatDirective } from '../../../../shared/directives/number-format';
 
 interface PermitRow {
   id: string;
@@ -26,7 +27,7 @@ interface PermitRow {
 @Component({
   selector: 'app-vehicle-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea],
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective],
   templateUrl: './vehicle-form.html'
 })
 export class VehicleForm implements OnInit {
@@ -67,10 +68,15 @@ export class VehicleForm implements OnInit {
   tankCapacity = '';
   mileagePerFullTank = '';
   isActive = true;
-  type:VehicleType | undefined = VehicleType.TRUCK;
+  type: VehicleType | undefined = VehicleType.TRUCK;
   vehicleType = VehicleType;
 
   permits: PermitRow[] = [];
+  trailerType:string;
+  trailerDimensions:string;
+  trailerWeightLimits:string;
+  trailerAxles:string;
+  trailerSuspension:string;
   model = '';
   saving = signal(false);
   /** track which existing permit record ids were removed, so we can delete them on save */
@@ -94,6 +100,11 @@ export class VehicleForm implements OnInit {
     this.model = vehicle.model ?? '';
     this.isActive = vehicle.isActive;
     this.type = vehicle.type ?? VehicleType.TRUCK;
+    this.trailerType = vehicle.trailerType || '';
+    this.trailerDimensions = vehicle.trailerDimensions || '';
+    this.trailerWeightLimits = vehicle.trailerWeightLimits || '';
+    this.trailerAxles = vehicle.trailerAxles || '';
+    this.trailerSuspension = vehicle.trailerSuspension || '';
 
     this.permits = (vehicle.permits || []).map((p) => ({
       id: this.commonService.makeid(),
@@ -171,12 +182,12 @@ export class VehicleForm implements OnInit {
       this.permits = this.permits.map((p) =>
         p.id === permitId
           ? {
-              ...p,
-              attachmentPath: uploaded.filePath,
-              attachmentName: uploaded.fileName,
-              attachmentUrl: uploaded.fileUrl,
-              isUploading: false,
-            }
+            ...p,
+            attachmentPath: uploaded.filePath,
+            attachmentName: uploaded.fileName,
+            attachmentUrl: uploaded.fileUrl,
+            isUploading: false,
+          }
           : p
       );
       this.successMessage.set('Permit attachment uploaded.');
@@ -215,6 +226,11 @@ export class VehicleForm implements OnInit {
     this.isActive = true;
     this.permits = [];
     this.removedPermitRecordIds = [];
+    this.trailerType = '';
+    this.trailerDimensions = '';
+    this.trailerWeightLimits = '';
+    this.trailerAxles = '';
+    this.trailerSuspension = '';
   }
 
   async onSubmit() {
@@ -230,6 +246,11 @@ export class VehicleForm implements OnInit {
       model: this.model || undefined,
       type: this.type || undefined,
       tankCapacity: Number(this.tankCapacity),
+      trailerType: this.trailerType || undefined,
+      trailerDimensions: this.trailerDimensions || undefined,
+      trailerWeightLimits: this.trailerWeightLimits || undefined,
+      trailerAxles: this.trailerAxles || undefined,
+      trailerSuspension: this.trailerSuspension || undefined,
       mileagePerFullTank: Number(this.mileagePerFullTank),
       currentMileage: undefined,
       permits: [],
