@@ -258,28 +258,69 @@ export class Invoicing implements OnInit {
   <meta charset="utf-8" />
   <title>${title}</title>
   <style>
-    @page { size: A4; margin: 14mm; }
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; color: #1f2937; }
-    .sheet { border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; }
-    .top { background: linear-gradient(135deg, #f25f2f, #ff7b4a); color: #fff; padding: 18px 22px; }
-    .top h1 { margin: 0; font-size: 22px; letter-spacing: 0.3px; }
-    .top p { margin: 6px 0 0; opacity: 0.95; font-size: 12px; }
-    .content { padding: 18px 22px 24px; }
-    .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; margin-bottom: 14px; }
-    .k { font-size: 11px; text-transform: uppercase; color: #6b7280; letter-spacing: .08em; font-weight: 700; }
-    .v { font-size: 14px; color: #111827; font-weight: 700; margin-top: 2px; }
-    .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #6b7280; border-bottom: 1px solid #e5e7eb; padding: 8px 6px; }
-    .table td { font-size: 13px; border-bottom: 1px solid #f3f4f6; padding: 10px 6px; }
-    .right { text-align: right; }
-    .totals { margin-top: 14px; border-top: 2px solid #111827; padding-top: 10px; display: grid; gap: 6px; }
-    .row { display: flex; justify-content: space-between; font-size: 13px; }
-    .strong { font-weight: 800; font-size: 15px; }
-    .foot { margin-top: 22px; font-size: 11px; color: #6b7280; border-top: 1px dashed #d1d5db; padding-top: 10px; }
+    @page { size: A4; margin: 10mm; }
+    body { font-family: Arial, Helvetica, sans-serif; margin: 0; color: #000; background: #fff; }
+    .print-container { width: 100%; max-width: 210mm; margin: 0 auto; }
+    table { width: 100%; border-collapse: collapse; }
+    .border { border: 1px solid #000; }
+    .border-b { border-bottom: 1px solid #000; }
+    .border-l { border-left: 1px solid #000; }
+    .border-r { border-right: 1px solid #000; }
+    .border-t { border-top: 1px solid #000; }
+    .p-1 { padding: 4px; }
+    .p-2 { padding: 8px; }
+    .p-3 { padding: 12px; }
+    .pl-2 { padding-left: 8px; }
+    .pr-2 { padding-right: 8px; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .text-left { text-align: left; }
+    .font-bold { font-weight: bold; }
+    .uppercase { text-transform: uppercase; }
+    .capitalize { text-transform: capitalize; }
+    .text-\[12px\] { font-size: 12px; }
+    .text-\[13px\] { font-size: 13px; }
+    .text-\[14px\] { font-size: 14px; }
+    .text-\[20px\] { font-size: 20px; }
+    .leading-none { line-height: 1; }
+    .leading-snug { line-height: 1.375; }
+    .mt-1 { margin-top: 4px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-6 { margin-top: 24px; }
+    .mb-2 { margin-top: 8px; }
+    .h-20 { height: 80px; }
+    .h-24 { height: 96px; }
+    .h-28 { height: 112px; }
+    .object-contain { object-fit: contain; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .bottom-0 { bottom: 0; }
+    .right-0 { right: 0; }
+    .w-full { width: 100%; }
+    .w-1\/2 { width: 50%; }
+    .w-1\/3 { width: 33.333333%; }
+    .w-2\/3 { width: 66.666667%; }
+    .w-\[30\%\] { width: 30%; }
+    .w-\[34\%\] { width: 34%; }
+    .w-\[36\%\] { width: 36%; }
+    .w-\[45\%\] { width: 45%; }
+    .w-\[55\%\] { width: 55%; }
+    /* Formal Invoice specific */
+    .border-b-\[4px\] { border-bottom-width: 4px; }
+    .tracking-wide { letter-spacing: 0.025em; }
+    /* Hide scrollbars for print */
+    ::-webkit-scrollbar { display: none; }
   </style>
 </head>
 <body>
-${body}
+  <div class="print-container">
+    ${body}
+  </div>
 </body>
 </html>`;
   }
@@ -295,6 +336,18 @@ ${body}
     win.document.close();
     win.focus();
     setTimeout(() => win.print(), 250);
+  }
+
+  printInvoice() {
+    const invoice = this.selectedInvoice();
+    if (!invoice) return;
+
+    const element = document.getElementById('invoice-document');
+    if (!element) return;
+
+    // Use specific styles for print shell
+    const html = element.innerHTML;
+    this.openPrintWindow(`Invoice ${invoice.invoiceNumber || invoice.id}`, html);
   }
 
   printReceipt(receipt: any) {
