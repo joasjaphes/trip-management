@@ -15,6 +15,7 @@ type ReceiptDraft = {
   receiptRecordId?: string;
   method: string;
   referenceNo: string;
+  isNew?: boolean;
   amount: string;
   receivedAt: string;
   attachment?: string;
@@ -55,7 +56,9 @@ export class InvoiceReceiptsManage {
     if (!invoiceId) {
       return [];
     }
-    return this.receipts().filter((receipt) => receipt.invoiceId === invoiceId);
+    const invoiceReceipts = this.receipts().filter((receipt) => receipt.invoiceId === invoiceId);
+    console.log('Filtered receipts for invoice', invoiceId, invoiceReceipts);
+    return invoiceReceipts;
   });
 
   totalReceived = computed(() =>
@@ -83,8 +86,8 @@ export class InvoiceReceiptsManage {
     });
   }
 
-  async ngOnInit() {
-    await this.invoiceReceiptService.getAll();
+   ngOnInit() {
+    this.invoiceReceiptService.getAll().then();
   }
 
   private createReceiptRow(): ReceiptDraft {
@@ -94,6 +97,7 @@ export class InvoiceReceiptsManage {
       referenceNo: '',
       amount: '',
       receivedAt: '',
+      isNew: true,
       attachment: undefined,
       attachmentName: undefined,
       attachmentUrl: undefined,
@@ -107,6 +111,7 @@ export class InvoiceReceiptsManage {
       id: crypto.randomUUID(),
       receiptRecordId: receipt.id,
       method: '',
+      isNew: false,
       referenceNo: receipt.reference || '',
       amount: String(receipt.amount || ''),
       receivedAt: receipt.paidAt ? new Date(receipt.paidAt).toISOString().split('T')[0] : '',
@@ -379,4 +384,9 @@ export class InvoiceReceiptsManage {
       this.actionMessage.set(null);
     }
   }
+
+  Number(value: string): number {
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
+}
 }

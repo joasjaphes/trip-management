@@ -14,10 +14,6 @@
                     }
                 </h3>
             </div>
-            <button type="button" (click)="addReceiptRow()" [disabled]="busy()"
-                class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide inline-flex items-center gap-2 disabled:text-gray-300 disabled:cursor-not-allowed">
-                + Add Receipt
-            </button>
         </div>
 
         @if (actionMessage()) {
@@ -40,7 +36,7 @@
         }
 
         <div class="mb-4 rounded-xl border border-gray-100 bg-white px-5 py-4 text-sm text-gray-600">
-            
+
         </div>
 
         <div class="mb-4 rounded-xl border border-gray-100 bg-white px-5 py-4 text-sm text-gray-600">
@@ -49,7 +45,12 @@
             Outstanding amount:
             <span class="font-extrabold text-[#f25f2f]">{{ totalRemainingAmount().toLocaleString() }}</span>
         </div>
-
+        <div class="w-full mb-7" align="right">
+            <button type="button" (click)="addReceiptRow()" [disabled]="busy()"
+                class="text-[#f25f2f] border border-[#f25f2f] px-4 py-2 rounded-lg cursor-pointer hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide inline-flex items-center gap-2 disabled:text-gray-300 disabled:cursor-not-allowed">
+                + Add new receipt
+            </button>
+        </div>
         <div class="grid grid-cols-16 gap-x-4 mb-2 px-2 relative z-10">
             <!-- <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Method</div> -->
             <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Reference</div>
@@ -71,14 +72,15 @@
             <div class="col-span-3">
                 <input type="text" [value]="receiptRow.referenceNo"
                     (input)="updateRowField(receiptRow.id, 'referenceNo', $any($event.target).value)"
-                    placeholder="Transaction ref"
+                    [disabled]="!receiptRow.isNew" placeholder="Transaction ref"
                     class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
             </div>
 
             <div class="col-span-2">
-                <input type="number" [value]="receiptRow.amount" appNumberFormat matTooltip="" matTooltipPosition="above"
-                    (input)="updateRowField(receiptRow.id, 'amount', $any($event.target).value)" placeholder="0.00" [maxValue]="totalRemainingAmount()"
-                    min="0" step="0.01"
+                <input type="number" [(value)]="receiptRow.amount" appNumberFormat matTooltip=""
+                    matTooltipPosition="above" [disabled]="!receiptRow.isNew"
+                    (input)="updateRowField(receiptRow.id, 'amount', $any($event.target).value)" placeholder="0.00" 
+                    min="0" step="0.01" [maxValue]="receiptRow.isNew ? totalRemainingAmount() : Number(receiptRow.amount)"
                     class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
             </div>
 
