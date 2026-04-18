@@ -141,6 +141,23 @@ export class Invoicing implements OnInit {
     },
   ]);
 
+  numberToWords(amount: number): string {
+    if (!amount) return 'zero';
+    const a = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+    const b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+    const numToWords = (num: number): string => {
+      if ((num = num | 0) === 0) return '';
+      if (num < 20) return a[num];
+      if (num < 100) return b[Math.floor(num / 10)] + (num % 10 ? '-' + a[num % 10] : '');
+      if (num < 1000) return a[Math.floor(num / 100)] + ' hundred' + (num % 100 ? ' and ' + numToWords(num % 100) : '');
+      if (num < 1000000) return numToWords(Math.floor(num / 1000)) + ' thousand' + (num % 1000 ? ' ' + numToWords(num % 1000) : '');
+      if (num < 1000000000) return numToWords(Math.floor(num / 1000000)) + ' million' + (num % 1000000 ? ' ' + numToWords(num % 1000000) : '');
+      return numToWords(Math.floor(num / 1000000000)) + ' billion' + (num % 1000000000 ? ' ' + numToWords(num % 1000000000) : '');
+    };
+    return numToWords(amount);
+  }
+
   async ngOnInit(): Promise<void> {
     await Promise.all([
       this.invoiceService.getAll(),
