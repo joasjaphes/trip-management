@@ -48,6 +48,7 @@ export class TripForm implements OnInit {
   private commonService = inject(CommonService);
 
   trip = input<Trip | undefined>();
+  trips = this.tripService.allTrips;
   close = output();
 
   tripDate: Date | string = '';
@@ -67,9 +68,15 @@ export class TripForm implements OnInit {
   docNumber = null;
 
   vehicles = this.vehicleService.allVehicles;
-  trucks = computed(() => this.vehicles().filter((v) => v.type === 'TRUCK'));
-  trailers = computed(() => this.vehicles().filter((v) => v.type === 'TRAILER'));
+  trucks = computed(() => this.vehicles().filter((v) => v.type === 'TRUCK' && this.trips().filter((t) => t.status === TripStatus.IN_PROGRESS && t.vehicleId === v.id).length === 0 || this.trip()?.vehicleId === v.id));
+  trailers = computed(() => this.vehicles().filter((v) => v.type === 'TRAILER' && this.trips().filter((t) => (t.status === TripStatus.IN_PROGRESS && t.trailerId === v.id)).length === 0 || this.trip()?.trailerId === v.id));
   drivers = this.driverService.allDrivers;
+  filteredDrivers = computed(() => {
+    const assignedDriverIds = this.trips()
+      .filter((t) => t.status === TripStatus.IN_PROGRESS && t.driverId)
+      .map((t) => t.driverId);
+    return this.drivers().filter((d) => !assignedDriverIds.includes(d.id) || this.trip()?.driverId === d.id);
+  });
   routes = this.routeService.allRoutes;
   customers = this.customerService.allCustomers;
   cargoTypes = computed(() =>
@@ -421,28 +428,28 @@ export class TripForm implements OnInit {
       this.actionMessage.set(null);
     }
   }
- get unitOfMeasurement() {
+  get unitOfMeasurement() {
     const cargoType = this.cargoTypes().find((type) => type.id === this.cargoTypeId);
     return cargoType?.unitOfMeasure || '';
- }
+  }
   get hasChanges() {
     const initial = this.trip();
     if (
       !moment(new Date(this.tripDate)).isSame(moment(new Date(initial?.tripDate)))
-      || this.endDate ? !moment(new Date(this.endDate)).isSame(moment(new Date(initial?.endDate ||''))) : false
-      || this.vehicleId !== (initial?.vehicleId || '')
-      || this.driverId !== (initial?.driverId || '')
-      || this.routeId !== (initial?.routeId || '')
-      || this.cargoTypeId !== (initial?.cargoTypeId || '')
-      || this.revenue !== String(initial?.revenue ?? '')
-      || this.status !== (initial?.status || TripStatus.IN_PROGRESS)
-      || this.notes !== (initial?.notes || '')
-      || this.customerName !== (initial?.customerName || initial?.customer?.name || '')
-      || this.customerTIN !== (initial?.customerTIN || initial?.customer?.tin || '')
-      || this.customerPhone !== (initial?.customerPhone || initial?.customer?.phone || '')
-      || this.trailerId !== (initial?.trailerId || '')
-      || this.cargoQuantity !== (initial?.cargoQuantity || null)
-      || this.docNumber !== (initial?.docNumber || null)
+        || this.endDate ? !moment(new Date(this.endDate)).isSame(moment(new Date(initial?.endDate || ''))) : false
+        || this.vehicleId !== (initial?.vehicleId || '')
+        || this.driverId !== (initial?.driverId || '')
+        || this.routeId !== (initial?.routeId || '')
+        || this.cargoTypeId !== (initial?.cargoTypeId || '')
+        || this.revenue !== String(initial?.revenue ?? '')
+        || this.status !== (initial?.status || TripStatus.IN_PROGRESS)
+        || this.notes !== (initial?.notes || '')
+        || this.customerName !== (initial?.customerName || initial?.customer?.name || '')
+        || this.customerTIN !== (initial?.customerTIN || initial?.customer?.tin || '')
+        || this.customerPhone !== (initial?.customerPhone || initial?.customer?.phone || '')
+        || this.trailerId !== (initial?.trailerId || '')
+        || this.cargoQuantity !== (initial?.cargoQuantity || null)
+        || this.docNumber !== (initial?.docNumber || null)
       || JSON.stringify(this.expenseRows) !== JSON.stringify((initial?.expenses || []).map((expense) => this.mapExpenseToDraft(expense)))
     ) {
       return true;
