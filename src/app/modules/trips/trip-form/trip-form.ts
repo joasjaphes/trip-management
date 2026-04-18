@@ -62,8 +62,13 @@ export class TripForm implements OnInit {
   customerName = '';
   customerTIN = '';
   customerPhone = '';
+  trailerId = '';
+  cargoQuantity = null;
+  docNumber = null;
 
   vehicles = this.vehicleService.allVehicles;
+  trucks = computed(() => this.vehicles().filter((v) => v.type === 'TRUCK'));
+  trailers = computed(() => this.vehicles().filter((v) => v.type === 'TRAILER'));
   drivers = this.driverService.allDrivers;
   routes = this.routeService.allRoutes;
   customers = this.customerService.allCustomers;
@@ -155,6 +160,9 @@ export class TripForm implements OnInit {
     this.tripDate = moment(new Date(trip.tripDate)).format('YYYY-MM-DD');
     this.endDate = trip.endDate ? moment(new Date(trip.endDate)).format('YYYY-MM-DD') : null;
     this.vehicleId = trip.vehicleId || '';
+    this.trailerId = trip.trailerId || '';
+    this.docNumber = trip.docNumber || '';
+    this.cargoQuantity = trip.cargoQuantity || null;
     this.driverId = trip.driverId || '';
     this.routeId = trip.routeId || '';
     this.cargoTypeId = trip.cargoTypeId || '';
@@ -341,6 +349,9 @@ export class TripForm implements OnInit {
         customerName: this.customerName || undefined,
         customerTIN: this.customerTIN || undefined,
         customerPhone: this.customerPhone || undefined,
+        trailerId: this.trailerId || undefined,
+        cargoQuantity: this.cargoQuantity || undefined,
+        docNumber: this.docNumber || undefined,
         revenue: Number(this.revenue || 0),
         income: Number(this.revenue || 0),
         status: this.status,
@@ -410,7 +421,10 @@ export class TripForm implements OnInit {
       this.actionMessage.set(null);
     }
   }
-
+ get unitOfMeasurement() {
+    const cargoType = this.cargoTypes().find((type) => type.id === this.cargoTypeId);
+    return cargoType?.unitOfMeasure || '';
+ }
   get hasChanges() {
     const initial = this.trip();
     if (
@@ -426,6 +440,9 @@ export class TripForm implements OnInit {
       || this.customerName !== (initial?.customerName || initial?.customer?.name || '')
       || this.customerTIN !== (initial?.customerTIN || initial?.customer?.tin || '')
       || this.customerPhone !== (initial?.customerPhone || initial?.customer?.phone || '')
+      || this.trailerId !== (initial?.trailerId || '')
+      || this.cargoQuantity !== (initial?.cargoQuantity || null)
+      || this.docNumber !== (initial?.docNumber || null)
       || JSON.stringify(this.expenseRows) !== JSON.stringify((initial?.expenses || []).map((expense) => this.mapExpenseToDraft(expense)))
     ) {
       return true;

@@ -55,6 +55,7 @@ export class VehicleService {
         registrationNo: vehicle.registrationNo,
         registrationYear: vehicle.registrationYear,
         tankCapacity: vehicle.tankCapacity,
+        type: vehicle.type,
         mileagePerFullTank: vehicle.mileagePerFullTank,
         isActive: vehicle.isActive ?? true
       };
@@ -81,6 +82,7 @@ export class VehicleService {
         registrationNo: vehicle.registrationNo,
         registrationYear: vehicle.registrationYear,
         tankCapacity: vehicle.tankCapacity,
+        type: vehicle.type,
         mileagePerFullTank: vehicle.mileagePerFullTank,
         isActive: vehicle.isActive
       };

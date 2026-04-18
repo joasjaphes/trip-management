@@ -11,7 +11,13 @@ export interface Trip {
 	endDate?: Date | string;
 	vehicleId: string;
 	vehicle?: Vehicle;
+	trailerId?: string;
+	trailer?: Vehicle;
+	cargoQuantity?: number;
 	driverId: string;
+	docNumber?: string;
+	tripDocument?: string;
+	completionDocument?: string;
 	driver?: Driver;
 	routeId: string;
 	route?: Route;

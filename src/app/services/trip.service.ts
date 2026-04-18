@@ -13,6 +13,9 @@ type TripWritePayload = {
   customerName?: string;
   customerTIN?: string;
   customerPhone?: string;
+  trailerId?: string;
+  cargoQuantity?: number;
+  docNumber?: string;
   revenue: number;
   income?: number;
   status: Trip['status'];

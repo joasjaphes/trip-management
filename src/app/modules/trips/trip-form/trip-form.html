@@ -39,20 +39,23 @@
       <div class="h-12 rounded-lg bg-gray-100"></div>
       <div class="h-12 rounded-lg bg-gray-100"></div>
     </div>
-    <div class="mt-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+    <div
+      class="mt-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
       <span class="loading loading-spinner loading-sm"></span>
       <span>Loading trip metadata (vehicles, drivers, routes, customers and categories)...</span>
     </div>
     } @else if (metadataError()) {
-    <div class="relative z-10 rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-[13px] font-semibold text-red-700 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div
+      class="relative z-10 rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-[13px] font-semibold text-red-700 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       <span>{{ metadataError() }}</span>
-      <button type="button" (click)="loadFormMetadata()" class="btn btn-sm border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white">Retry</button>
+      <button type="button" (click)="loadFormMetadata()"
+        class="btn btn-sm border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white">Retry</button>
     </div>
     } @else {
     <!-- Main Details Form Grid -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-8 mb-12 relative z-10">
       <!-- Start Date -->
-      <div class="flex flex-col gap-2 md:col-span-2">
+      <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Start Date</label>
         <div class="relative">
           <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="tripDate" name="tripDate"
@@ -63,24 +66,26 @@
         </div>
       </div>
       <!-- End Date -->
-      <div class="flex flex-col gap-2 md:col-span-2">
+      <!-- <div class="flex flex-col gap-2 md:col-span-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">End Date (Est.)</label>
         <div class="relative">
           <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="endDate" name="endDate" [min]="tripDate" [disabled]="!tripDate"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-          <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg> -->
+        
         </div>
-      </div>
+      </div> -->
       <!-- Vehicle -->
+      @if (tripDate) {
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Vehicle</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Truck</label>
         <div class="relative">
           <select [(ngModel)]="vehicleId" name="vehicleId"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
             <option value="" disabled>Select Vehicle</option>
-            @for (vehicle of vehicles(); track vehicle.id) {
+            @if (!trucks().length) {
+            <option value="" disabled>No trucks available</option>
+            }
+            @for (vehicle of trucks(); track vehicle.id) {
             <option [value]="vehicle.id">{{ vehicle.registrationNo }}</option>
             }
           </select>
@@ -90,6 +95,29 @@
           </svg>
         </div>
       </div>
+      }
+      @if (vehicleId) {
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Trailer</label>
+        <div class="relative">
+          <select [(ngModel)]="trailerId" name="trailerId"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+            <option value="" disabled>Select Trailer</option>
+            @if (!trailers().length) {
+            <option value="" disabled>No trailers available</option>
+            }
+            @for (vehicle of trailers(); track vehicle.id) {
+            <option [value]="vehicle.id">{{ vehicle.registrationNo }}</option>
+            }
+          </select>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+      }
+      @if (trailerId) {
       <!-- Driver -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Driver</label>
@@ -143,11 +171,33 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Container / Document
+          Number</label>
+        <input type="text" [(ngModel)]="docNumber" name="docNumber" placeholder="e.g. 123456789"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+      </div>
+
+      <div class="flex flex-col gap-2 relative">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Cargo Quantity</label>
+        <div class="relative">
+          <!-- <div class="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[14px] pointer-events-none">
+            TZS</div> -->
+          <input type="text" [(ngModel)]="cargoQuantity" name="cargoQuantity" placeholder="0.00" appNumberFormat
+            matTooltip="" matTooltipPosition="above" matTooltipClass="with-arrow"
+            class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">
+            <!-- @if (cargoQuantity) { -->
+            {{ unitOfMeasurement }}
+            <!-- } -->
+          </div>
+        </div>
+      </div>
       <!-- Customer Name (Autocomplete) -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Name</label>
-        <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameInput($event)" name="customerName" autocomplete="off"
-          list="customer-name-options" placeholder="Select existing customer or type a new name"
+        <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameInput($event)" name="customerName"
+          autocomplete="off" list="customer-name-options" placeholder="Select existing customer or type a new name"
           class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         <datalist id="customer-name-options">
           @for (customer of customers(); track customer.id) {
@@ -155,7 +205,6 @@
           }
         </datalist>
       </div>
-
       <!-- Customer TIN -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer TIN</label>
@@ -180,7 +229,8 @@
         <div class="relative">
           <!-- <div class="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[14px] pointer-events-none">
             TZS</div> -->
-          <input type="text" [(ngModel)]="revenue" name="revenue" placeholder="0.00" appNumberFormat matTooltip="" matTooltipPosition="above"  matTooltipClass="with-arrow"
+          <input type="text" [(ngModel)]="revenue" name="revenue" placeholder="0.00" appNumberFormat matTooltip=""
+            matTooltipPosition="above" matTooltipClass="with-arrow"
             class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">
             @if (revenue) {
@@ -214,9 +264,11 @@
           placeholder="Add specific trip requirements or cargo details..."
           class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 resize-none"></textarea>
       </div>
+      }
     </div>
 
 
+    @if (trailerId) {
     <!-- Expenses Section Border Divider -->
     <hr class="border-gray-100 my-8 relative z-10">
 
@@ -266,12 +318,14 @@
       <!-- Amount -->
       <div class="col-span-2">
         <input type="text" [(ngModel)]="expenseRow.amount" [name]="'amount-' + expenseRow.id"
-          placeholder="0.00 (optional)" appNumberFormat matTooltip="" matTooltipPosition="above"  matTooltipClass="with-arrow"
+          placeholder="0.00 (optional)" appNumberFormat matTooltip="" matTooltipPosition="above"
+          matTooltipClass="with-arrow"
           class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
       <!-- Date -->
       <div class="col-span-3 relative">
-        <input type="date" [(ngModel)]="expenseRow.date" [name]="'date-' + expenseRow.id" placeholder="mm/dd/yyyy" [max]="today" [min]="tripDate"
+        <input type="date" [(ngModel)]="expenseRow.date" [name]="'date-' + expenseRow.id" placeholder="mm/dd/yyyy"
+          [max]="today" [min]="tripDate"
           class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -325,8 +379,10 @@
     <p class="text-[12px] text-amber-600 mb-6">No active expense categories found. Add categories in Configurations
       first.</p>
     }
+
+    }
     <app-save-area [saveText]="isEditMode() ? 'Update Trip' : 'Create Trip'" [loading]="busy()" (cancel)="goBack()"
-      (save)="onSubmit()" [disabled]="!hasChanges"></app-save-area>
+      (save)="onSubmit()" [disabled]="!hasChanges || !trailerId"></app-save-area>
     }
 
   </div>
