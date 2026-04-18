@@ -11,10 +11,13 @@ import { TripExpenseService } from '../../../services/trip-expense.service';
 import { TripService } from '../../../services/trip.service';
 import { VehicleService } from '../../../services/vehicle.service';
 import { CustomerService } from '../../../services/customer.service';
+import { OffloadingPlaceService } from '../../../services/offloading-place.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { CommonService } from '../../../services/common.service';
 import { NumberFormatDirective } from '../../../shared/directives/number-format';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import moment from 'moment';
 
 type ExpenseDraft = {
@@ -32,7 +35,7 @@ type ExpenseDraft = {
 @Component({
   selector: 'app-trip-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, DecimalPipe, NumberFormatDirective, MatTooltipModule],
+  imports: [CommonModule, FormsModule, SaveArea, DecimalPipe, NumberFormatDirective, MatTooltipModule, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './trip-form.html',
 })
 export class TripForm implements OnInit {
@@ -44,6 +47,7 @@ export class TripForm implements OnInit {
   private expenseCategoryService = inject(ExpenseCategoryService);
   private tripExpenseService = inject(TripExpenseService);
   private customerService = inject(CustomerService);
+  private offloadingPlaceService = inject(OffloadingPlaceService);
   private fileUploadService = inject(FileUploadService);
   private commonService = inject(CommonService);
 
@@ -63,6 +67,8 @@ export class TripForm implements OnInit {
   customerName = '';
   customerTIN = '';
   customerPhone = '';
+  offloadingPlaceName = '';
+  offloadingPlaceId = '';
   trailerId = '';
   cargoQuantity = null;
   docNumber = null;
@@ -79,6 +85,7 @@ export class TripForm implements OnInit {
   });
   routes = this.routeService.allRoutes;
   customers = this.customerService.allCustomers;
+  offloadingPlaces = this.offloadingPlaceService.all;
   cargoTypes = computed(() =>
     this.cargoTypeService.allCargoTypes().filter((cargoType) => cargoType.isActive)
   );
@@ -89,7 +96,7 @@ export class TripForm implements OnInit {
   );
   loading = computed(() => this.tripService.loading() || this.tripExpenseService.loading());
   pendingUploads = signal(0);
-  busy = computed(() => this.loading() || this.pendingUploads() > 0);
+  busy = computed(() => this.loading() || this.pendingUploads() > 0 || this.tripDocumentUploading());
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
   actionMessage = signal<string | null>(null);
@@ -98,6 +105,12 @@ export class TripForm implements OnInit {
   isEditMode = computed(() => !!this.trip()?.id);
   deletedExpenseIds = signal<string[]>([]);
   initialTripState = signal<Trip | undefined>(undefined);
+  tripDocumentPath = signal<string | undefined>(undefined);
+  tripDocumentName = signal<string | undefined>(undefined);
+  tripDocumentUrl = signal<string | undefined>(undefined);
+  tripDocumentUploading = signal(false);
+  tripDocumentError = signal<string | null>(null);
+  tripDocumentSuccess = signal<string | null>(null);
 
   today = moment(new Date()).format('YYYY-MM-DD');
 
@@ -125,6 +138,7 @@ export class TripForm implements OnInit {
         this.cargoTypeService.getAll(),
         this.expenseCategoryService.getAll(),
         this.customerService.getAll(),
+        this.offloadingPlaceService.getAll(),
       ]);
     } catch (error) {
       this.metadataError.set(String(error || 'Could not load trip metadata. Please try again.'));
@@ -144,6 +158,16 @@ export class TripForm implements OnInit {
     this.customerPhone = matched.phone || '';
   }
 
+  onOffloadingPlaceInput(name: string) {
+    const matched = this.offloadingPlaceService.findByName(name);
+    if (!matched) {
+      return;
+    }
+
+    this.offloadingPlaceName = matched.name;
+    this.offloadingPlaceId = matched.id;
+  }
+
   private populateFormFromTrip(trip: Trip | undefined) {
     this.deletedExpenseIds.set([]);
 
@@ -160,6 +184,8 @@ export class TripForm implements OnInit {
       this.customerName = '';
       this.customerTIN = '';
       this.customerPhone = '';
+      this.offloadingPlaceName = '';
+      this.offloadingPlaceId = '';
       this.expenseRows = [this.createExpenseRow()];
       this.initialTripState.set(undefined);
       return;
@@ -179,6 +205,9 @@ export class TripForm implements OnInit {
     this.customerName = trip.customerName || trip.customer?.name || '';
     this.customerTIN = trip.customerTIN || trip.customer?.tin || '';
     this.customerPhone = trip.customerPhone || trip.customer?.phone || '';
+    this.offloadingPlaceName = trip.offloadingPlaceName;
+    this.offloadingPlaceId = trip.offloadingPlaceId 
+    void this.hydrateTripDocument(trip.tripDocument);
     this.expenseRows = (trip.expenses || []).map((expense) => this.mapExpenseToDraft(expense));
     this.initialTripState.set(trip);
   }
@@ -215,6 +244,105 @@ export class TripForm implements OnInit {
     this.expenseRows = this.expenseRows.map((row) =>
       row.id === rowId ? updater(row) : row
     );
+  }
+
+  toDateValue(value: string | Date | null | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const parsedDate = new Date(value);
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
+
+  toDateString(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onTripDateChanged(value: Date | null) {
+    this.tripDate = this.toDateString(value);
+  }
+
+  onExpenseDateChanged(rowId: string, value: Date | null) {
+    this.updateExpenseRow(rowId, (row) => ({
+      ...row,
+      date: this.toDateString(value),
+    }));
+  }
+
+  private async hydrateTripDocument(path: string | undefined) {
+    this.tripDocumentPath.set(path || undefined);
+    this.tripDocumentName.set(this.fileUploadService.getFileName(path));
+    this.tripDocumentError.set(null);
+    this.tripDocumentSuccess.set(null);
+
+    if (!path) {
+      this.tripDocumentUrl.set(undefined);
+      return;
+    }
+
+    const url = await this.fileUploadService.resolveFileUrl(path);
+    this.tripDocumentUrl.set(url);
+  }
+
+  async onTripDocumentSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0] ? input.files[0] : undefined;
+    if (!file) {
+      return;
+    }
+
+    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp'];
+    const lowerName = file.name.toLowerCase();
+    const hasAllowedExtension = ['.pdf', '.png', '.jpg', '.jpeg', '.webp'].some((ext) => lowerName.endsWith(ext));
+    if (!allowedMimeTypes.includes(file.type) && !hasAllowedExtension) {
+      this.tripDocumentError.set('Only PDF or image files are allowed.');
+      input.value = '';
+      return;
+    }
+
+    this.tripDocumentError.set(null);
+    this.tripDocumentSuccess.set(null);
+    this.tripDocumentUploading.set(true);
+    this.tripDocumentName.set(file.name);
+
+    try {
+      const uploaded = await this.fileUploadService.uploadFile(file);
+      this.tripDocumentPath.set(uploaded.filePath);
+      this.tripDocumentName.set(uploaded.fileName);
+      this.tripDocumentUrl.set(uploaded.fileUrl);
+      this.tripDocumentSuccess.set('Trip document uploaded successfully.');
+    } catch (error) {
+      this.tripDocumentError.set(String(error || 'Could not upload trip document. Please try again.'));
+    } finally {
+      this.tripDocumentUploading.set(false);
+      input.value = '';
+    }
+  }
+
+  removeTripDocument() {
+    this.tripDocumentPath.set(undefined);
+    this.tripDocumentName.set(undefined);
+    this.tripDocumentUrl.set(undefined);
+    this.tripDocumentError.set(null);
+    this.tripDocumentSuccess.set(null);
+  }
+
+  previewTripDocument() {
+    const url = this.tripDocumentUrl();
+    if (!url) {
+      this.tripDocumentError.set('Document preview is not available.');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   private async ensureAttachmentUrl(rowId: string): Promise<string | undefined> {
@@ -341,6 +469,11 @@ export class TripForm implements OnInit {
       return;
     }
 
+    if (this.tripDocumentUploading()) {
+      this.errorMessage.set('Wait for the trip document upload to finish before saving the trip.');
+      return;
+    }
+
     this.errorMessage.set(null);
     this.successMessage.set(null);
     this.actionMessage.set(this.isEditMode() ? 'Updating trip...' : 'Saving trip and expenses...');
@@ -356,9 +489,12 @@ export class TripForm implements OnInit {
         customerName: this.customerName || undefined,
         customerTIN: this.customerTIN || undefined,
         customerPhone: this.customerPhone || undefined,
+        offloadingPlaceName: this.offloadingPlaceName || undefined,
+        offloadingPlaceId: this.offloadingPlaceId || undefined,
         trailerId: this.trailerId || undefined,
         cargoQuantity: this.cargoQuantity || undefined,
         docNumber: this.docNumber || undefined,
+        tripDocument: this.tripDocumentPath() || undefined,
         revenue: Number(this.revenue || 0),
         income: Number(this.revenue || 0),
         status: this.status,
@@ -447,9 +583,11 @@ export class TripForm implements OnInit {
         || this.customerName !== (initial?.customerName || initial?.customer?.name || '')
         || this.customerTIN !== (initial?.customerTIN || initial?.customer?.tin || '')
         || this.customerPhone !== (initial?.customerPhone || initial?.customer?.phone || '')
+        || this.offloadingPlaceName !== (initial?.offloadingPlaceName || initial?.offloadingPlace?.name || '')
         || this.trailerId !== (initial?.trailerId || '')
         || this.cargoQuantity !== (initial?.cargoQuantity || null)
         || this.docNumber !== (initial?.docNumber || null)
+      || this.tripDocumentPath() !== (initial?.tripDocument || '')
       || JSON.stringify(this.expenseRows) !== JSON.stringify((initial?.expenses || []).map((expense) => this.mapExpenseToDraft(expense)))
     ) {
       return true;

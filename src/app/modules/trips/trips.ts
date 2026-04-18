@@ -46,6 +46,9 @@ export class Trips implements OnInit {
       driver: trip.driver ? `${trip.driver.firstName} ${trip.driver.lastName}` : trip.driverId,
       route: trip.route?.name || trip.routeId,
       revenue: Number(trip.revenue || 0),
+      offloadingPlace:trip.offloadingPlace,
+      offloadingPlaceName: trip.offloadingPlaceName,
+      offloadingPlaceId: trip.offloadingPlaceId,
       status: trip.status,
       _trip: trip,
       canEdit: trip.status !== TripStatus.COMPLETED,
@@ -216,7 +219,11 @@ filteredTrips = computed(() => {
     }
 
     // await this.tripService.updateStatus(trip.id, TripStatus.COMPLETED);
-    await this.tripService.update(trip.id, { ...trip, status: TripStatus.COMPLETED, endDate: moment(new Date()).format('YYYY-MM-DD') });
+    await this.tripService.update(trip.id, {
+      ...trip,
+      status: TripStatus.COMPLETED,
+      endDate: trip.endDate || moment(new Date()).format('YYYY-MM-DD')
+    });
     const refreshedTrip = this.tripService.getById(trip.id);
     if (refreshedTrip) {
       this.selectedTrip.set(refreshedTrip);

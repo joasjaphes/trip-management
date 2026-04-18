@@ -16,4 +16,5 @@ export interface CompanyProfile {
     bankAccountNumber?: string;
     bankAccountName?: string;
     bankBranch?: string;
+    bankSwiftCode?: string;
 }

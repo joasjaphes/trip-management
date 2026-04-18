@@ -159,6 +159,7 @@ Content-Type: application/json
   "customerName": "Acme Corporation",
   "customerTIN": "123456789",
   "customerPhone": "+255700000000",
+  "offloadingPlaceName": "Dar es Salaam Port",
   "revenue": 1500000,
   "paidAmount": 0,
   "income": 1200000,
@@ -168,7 +169,7 @@ Content-Type: application/json
 
 **Status Options:** `pending`, `inprogress`, `completed`, `cancelled`
 
-When creating a trip, the API checks for an existing customer using `customerTIN`. If no customer exists, it creates one. The trip, customer creation, and invoice creation are saved in a single database transaction.
+When creating a trip, the API checks for an existing customer using `customerTIN`. If no customer exists, it creates one. Similarly, if `offloadingPlaceName` is provided, the API checks for an existing offloading place by name. If not found, it creates one automatically. The trip, customer creation, offloading place creation, and invoice creation are saved in a single database transaction.
 
 An invoice is automatically generated for every new trip with:
 - `amount` equal to the trip `revenue`
@@ -193,6 +194,7 @@ Content-Type: application/json
   "cargoTypeId": "cargo-type-uid-123",
   "customerName": "Acme Corporation",
   "customerTIN": "123456789",
+  "offloadingPlaceName": "Dar es Salaam Port",
   "customerPhone": "+255700000000",
   "revenue": 1500000,
   "paidAmount": 200000,
@@ -619,7 +621,54 @@ Content-Type: application/json
 ```
 
 ---
+Offloading Places (`/api/offloading-places`)
 
+#### Get All Offloading Places
+```http
+GET /api/offloading-places
+```
+
+#### Get Offloading Place by ID
+```http
+GET /api/offloading-places/:id
+```
+
+#### Create Offloading Place
+```http
+POST /api/offloading-places
+Content-Type: application/json
+
+{
+  "id": "offloading-place-uid-123",
+  "name": "Dar es Salaam Port",
+  "latitude": -6.819,
+  "longitude": 39.289
+}
+```
+
+**Field Details:**
+- `name` (required, unique): The name of the offloading place
+- `latitude` (optional): Geographic latitude coordinate
+- `longitude` (optional): Geographic longitude coordinate
+
+Offloading places are automatically created when a trip is created or updated with an `offloadingPlaceName` that doesn't already exist. The name serves as the unique identifier for lookups.
+
+#### Update Offloading Place
+```http
+PUT /api/offloading-places
+Content-Type: application/json
+
+{
+  "id": "offloading-place-uid-123",
+  "name": "Dar es Salaam Port",
+  "latitude": -6.819,
+  "longitude": 39.289
+}
+```
+
+---
+
+### 
 ### Company Profiles (`/api/company-profiles`)
 
 #### Get All Company Profiles

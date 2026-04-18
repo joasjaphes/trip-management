@@ -7,6 +7,8 @@ import { FileUploadService } from '../../../../services/file-upload.service';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
 import { NumberFormatDirective } from '../../../../shared/directives/number-format';
 import { MatTooltip, MatTooltipModule } from "@angular/material/tooltip";
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 type ReceiptDraft = {
   id: string;
@@ -25,7 +27,7 @@ type ReceiptDraft = {
 @Component({
   selector: 'app-invoice-receipts-manage',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule],
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './invoice-receipts-manage.html',
 })
 export class InvoiceReceiptsManage {
@@ -182,6 +184,30 @@ export class InvoiceReceiptsManage {
     this.receiptRows.update((rows) =>
       rows.map((row) => (row.id === rowId ? { ...row, [field]: value } : row))
     );
+  }
+
+  toDateValue(value: string | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const parsedDate = new Date(value);
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
+
+  toDateString(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onReceiptDateChanged(rowId: string, value: Date | null) {
+    this.updateRowField(rowId, 'receivedAt', this.toDateString(value));
   }
 
   async onReceiptAttachmentSelected(event: Event, rowId: string) {

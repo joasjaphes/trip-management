@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { Trip, TripExpense, TripStatus } from '../../../models/trip.model';
 import { ExpenseCategoryService } from '../../../services/expense-category.service';
 import { FileUploadService } from '../../../services/file-upload.service';
+import { FormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-trip-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './trip-detail.html'
 })
 export class TripDetail {
@@ -18,10 +21,21 @@ export class TripDetail {
   completing = input(false);
   close = output();
   complete = output<Trip>();
+  tripEndDate: string | undefined = this.trip()?.endDate ? this.toDateInputValue(this.trip()?.endDate) : undefined;
 
   confirmingComplete = signal(false);
   attachmentPreviewUrls = signal<Record<string, string>>({});
   cantCompleteMessage = signal('Please ensure the trip has an end date and all the amount has been received before completing.'); 
+  completionDocumentPath = signal<string | undefined>(undefined);
+  completionDocumentName = signal<string | undefined>(undefined);
+  completionDocumentUrl = signal<string | undefined>(undefined);
+  completionDocumentUploading = signal(false);
+  completionDocumentError = signal<string | null>(null);
+  completionDocumentSuccess = signal<string | null>(null);
+
+  canConfirmCompletion = computed(() => {
+    return !!this.tripEndDate && !this.completing() && !this.completionDocumentUploading();
+  });
 
   totalExpenses = computed(() => {
     return (this.trip()?.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
@@ -30,6 +44,12 @@ export class TripDetail {
   constructor() {
     effect(() => {
       void this.loadAttachmentPreviewUrls(this.trip()?.expenses || []);
+    });
+
+    effect(() => {
+      const selectedTrip = this.trip();
+      this.tripEndDate = selectedTrip?.endDate ? this.toDateInputValue(selectedTrip.endDate) : undefined;
+      void this.hydrateCompletionDocument(selectedTrip?.completionDocument);
     });
   }
 
@@ -57,8 +77,7 @@ export class TripDetail {
 
   canComplete = computed(() => {
     const status = this.trip()?.status;
-    console.log('status', status);
-    return (status === 'Pending payment' || status === 'Inprogress') && !!this.trip()?.endDate && Number(this.trip().paidAmount) >= Number(this.trip().revenue);
+    return (status === 'Pending payment' || status === 'Inprogress') && Number(this.trip()?.paidAmount) >= Number(this.trip()?.revenue);
   });
 
   requestComplete() {
@@ -75,8 +94,115 @@ export class TripDetail {
       return;
     }
 
+    if (this.completionDocumentUploading()) {
+      this.completionDocumentError.set('Wait for the document upload to finish before completing the trip.');
+      return;
+    }
+
     this.confirmingComplete.set(false);
-    this.complete.emit(trip);
+    this.complete.emit({
+      ...trip,
+      status: TripStatus.COMPLETED,
+      completionDocument: this.completionDocumentPath() || undefined,
+      endDate: this.tripEndDate
+    });
+  }
+
+  private toDateInputValue(rawDate: Date | string | undefined): string | undefined {
+    if (!rawDate) {
+      return undefined;
+    }
+
+    const date = new Date(rawDate);
+    if (Number.isNaN(date.getTime())) {
+      return undefined;
+    }
+
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  toDateValue(rawDate: Date | string | undefined): Date | null {
+    if (!rawDate) {
+      return null;
+    }
+
+    const parsedDate = new Date(rawDate);
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
+
+  onTripEndDateSelected(value: Date | null) {
+    this.tripEndDate = value ? this.toDateInputValue(value) : undefined;
+  }
+
+  private async hydrateCompletionDocument(path: string | undefined) {
+    this.completionDocumentPath.set(path || undefined);
+    this.completionDocumentName.set(this.fileUploadService.getFileName(path));
+    this.completionDocumentError.set(null);
+    this.completionDocumentSuccess.set(null);
+
+    if (!path) {
+      this.completionDocumentUrl.set(undefined);
+      return;
+    }
+
+    const url = await this.fileUploadService.resolveFileUrl(path);
+    this.completionDocumentUrl.set(url);
+  }
+
+  async onCompletionDocumentSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0] ? input.files[0] : undefined;
+    if (!file) {
+      return;
+    }
+
+    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp'];
+    const lowerName = file.name.toLowerCase();
+    const hasAllowedExtension = ['.pdf', '.png', '.jpg', '.jpeg', '.webp'].some((ext) => lowerName.endsWith(ext));
+    if (!allowedMimeTypes.includes(file.type) && !hasAllowedExtension) {
+      this.completionDocumentError.set('Only PDF or image files are allowed.');
+      input.value = '';
+      return;
+    }
+
+    this.completionDocumentError.set(null);
+    this.completionDocumentSuccess.set(null);
+    this.completionDocumentUploading.set(true);
+    this.completionDocumentName.set(file.name);
+
+    try {
+      const uploaded = await this.fileUploadService.uploadFile(file);
+      this.completionDocumentPath.set(uploaded.filePath);
+      this.completionDocumentName.set(uploaded.fileName);
+      this.completionDocumentUrl.set(uploaded.fileUrl);
+      this.completionDocumentSuccess.set('Completion document uploaded successfully.');
+    } catch (error) {
+      this.completionDocumentError.set(String(error || 'Could not upload completion document.'));
+    } finally {
+      this.completionDocumentUploading.set(false);
+      input.value = '';
+    }
+  }
+
+  removeCompletionDocument() {
+    this.completionDocumentPath.set(undefined);
+    this.completionDocumentName.set(undefined);
+    this.completionDocumentUrl.set(undefined);
+    this.completionDocumentError.set(null);
+    this.completionDocumentSuccess.set(null);
+  }
+
+  previewCompletionDocument() {
+    const url = this.completionDocumentUrl();
+    if (!url) {
+      this.completionDocumentError.set('Document preview is not available.');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   getStatusColor(status: string): string {

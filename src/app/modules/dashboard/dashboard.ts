@@ -2,10 +2,12 @@ import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -152,5 +154,33 @@ export class Dashboard {
       default:
         return 'text-gray-400 bg-gray-500/10 border-gray-500/20';
     }
+  }
+
+  toDateValue(value: string | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  toDateString(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  setCustomStartDate(value: Date | null) {
+    this.customStartDate.set(this.toDateString(value));
+  }
+
+  setCustomEndDate(value: Date | null) {
+    this.customEndDate.set(this.toDateString(value));
   }
 }

@@ -5,11 +5,13 @@ import { SaveArea } from '../../../../shared/components/save-area/save-area';
 import { DriverService } from '../../../../services/driver.service';
 import { FileUploadService } from '../../../../services/file-upload.service';
 import { Driver } from '../../../../models/driver.model';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-driver-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea],
+  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './driver-form.html'
 })
 export class DriverForm {
@@ -250,5 +252,37 @@ export class DriverForm {
     } finally {
       this.actionMessage.set(null);
     }
+  }
+
+  toDateValue(value: string | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const parsedDate = new Date(value);
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
+
+  toDateString(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onDateOfBirthChanged(value: Date | null) {
+    this.dateOfBirth = this.toDateString(value);
+  }
+
+  onLicenseExpiryChanged(value: Date | null) {
+    this.licenseExpiry = this.toDateString(value);
+  }
+
+  onPassportExpiryChanged(value: Date | null) {
+    this.passportExpiryDate = this.toDateString(value);
   }
 }

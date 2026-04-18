@@ -190,15 +190,40 @@
 
         <!-- Start Date -->
         <div class="col-span-3">
-          <input type="date" [(ngModel)]="permit.startDate" [name]="'permitStart_' + permit.id"
-            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+          <div class="relative">
+            <input [matDatepicker]="permitStartPicker" [value]="toDateValue(permit.startDate)"
+              (dateChange)="onPermitStartDateChanged(permit.id, $event.value)" [name]="'permitStart_' + permit.id"
+              readonly
+              class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 pr-9 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+            <button type="button" (click)="permitStartPicker.open()"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+              aria-label="Open permit start date picker">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <mat-datepicker #permitStartPicker></mat-datepicker>
+          </div>
         </div>
 
         <!-- End Date -->
         <div class="col-span-3">
-          <input type="date" [(ngModel)]="permit.endDate" [min]="permit.startDate" [disabled]="!permit.startDate"
-            [name]="'permitEnd_' + permit.id"
-            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+          <div class="relative">
+            <input [matDatepicker]="permitEndPicker" [value]="toDateValue(permit.endDate)" [min]="toDateValue(permit.startDate)"
+              [disabled]="!permit.startDate" (dateChange)="onPermitEndDateChanged(permit.id, $event.value)"
+              [name]="'permitEnd_' + permit.id" readonly
+              class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 pr-9 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+            <button type="button" (click)="permitEndPicker.open()" [disabled]="!permit.startDate"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-[#f25f2f] enabled:hover:text-[#ff5117] disabled:text-gray-300"
+              aria-label="Open permit end date picker">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <mat-datepicker #permitEndPicker></mat-datepicker>
+          </div>
         </div>
 
         <!-- Attachment preview -->

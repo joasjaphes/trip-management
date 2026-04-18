@@ -85,9 +85,22 @@
             </div>
 
             <div class="col-span-2">
-                <input type="date" [value]="expenseRow.date"
-                    (input)="updateRowField(expenseRow.id, 'date', $any($event.target).value)" [max]="today" [min]="tripDate()"
-                    class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+                <div class="relative">
+                    <input [matDatepicker]="expenseDatePicker" [value]="toDateValue(expenseRow.date)"
+                        (dateChange)="onExpenseDateChanged(expenseRow.id, $event.value)" [max]="toDateValue(today)"
+                        [min]="toDateValue(tripDate())" readonly
+                        class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 pr-9 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+                    <button type="button" (click)="expenseDatePicker.open()"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+                        aria-label="Open expense date picker">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </button>
+                    <mat-datepicker #expenseDatePicker></mat-datepicker>
+                </div>
             </div>
 
             <div class="col-span-2 flex items-center justify-start">

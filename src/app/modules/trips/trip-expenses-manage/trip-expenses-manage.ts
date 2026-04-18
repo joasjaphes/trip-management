@@ -9,6 +9,8 @@ import { CommonService } from '../../../services/common.service';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { NumberFormatDirective } from '../../../shared/directives/number-format';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import moment from 'moment';
 
 export type ExpenseDraft = {
@@ -27,7 +29,7 @@ export type ExpenseDraft = {
 @Component({
     selector: 'app-trip-expenses-manage',
     standalone: true,
-    imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule],
+    imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule, MatDatepickerModule, MatNativeDateModule],
     templateUrl: './trip-expenses-manage.html',
 })
 export class TripExpensesManage {
@@ -192,6 +194,30 @@ export class TripExpensesManage {
         this.expenseRows.update((rows) =>
             rows.map((row) => (row.id === rowId ? { ...row, [field]: value } : row))
         );
+    }
+
+    toDateValue(value: string | undefined): Date | null {
+        if (!value) {
+            return null;
+        }
+
+        const parsedDate = new Date(value);
+        return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+    }
+
+    toDateString(value: Date | null): string {
+        if (!value) {
+            return '';
+        }
+
+        const year = value.getFullYear();
+        const month = `${value.getMonth() + 1}`.padStart(2, '0');
+        const day = `${value.getDate()}`.padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    onExpenseDateChanged(rowId: string, value: Date | null) {
+        this.updateRowField(rowId, 'date', this.toDateString(value));
     }
 
     private async ensureAttachmentUrl(rowId: string): Promise<string | undefined> {

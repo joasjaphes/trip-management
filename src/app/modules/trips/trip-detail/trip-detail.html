@@ -1,10 +1,11 @@
 <div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
-  
+
   <div>
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-10">
       <div class="flex items-center gap-3">
-        <button (click)="goBack()" class="btn btn-ghost border border-gray-200 hover:bg-gray-50 text-gray-500 px-5 font-bold flex items-center gap-2 text-[13px] rounded-xl transition-colors">
+        <button (click)="goBack()"
+          class="btn btn-ghost border border-gray-200 hover:bg-gray-50 text-gray-500 px-5 font-bold flex items-center gap-2 text-[13px] rounded-xl transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -29,38 +30,25 @@
       </div>
       <div class="flex items-center gap-3">
         <span
-          [class]="'border px-3 py-1 rounded-full text-[11px] font-extrabold tracking-widest uppercase ' + getStatusColor(trip()?.status || 'pending')"
-        >
+          [class]="'border px-3 py-1 rounded-full text-[11px] font-extrabold tracking-widest uppercase ' + getStatusColor(trip()?.status || 'pending')">
           {{ trip()?.status || 'pending' }}
         </span>
 
         @if (canComplete()) {
         @if (!confirmingComplete()) {
-        <button
-          type="button"
-          (click)="requestComplete()"
-          [disabled]="completing()"
-          class="btn border-none bg-emerald-600 hover:bg-emerald-700 text-white px-5 font-extrabold text-[13px] rounded-xl"
-        >
+        <button type="button" (click)="requestComplete()" [disabled]="completing() || !tripEndDate"
+          class="btn border-none bg-emerald-600 hover:bg-emerald-700 text-white px-5 font-extrabold text-[13px] rounded-xl disabled:bg-gray-300 disabled:hover:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors">
           Complete Trip
         </button>
         } @else {
         <div class="flex items-center gap-2 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2">
           <span class="text-[12px] font-bold text-emerald-700">Confirm complete?</span>
-          <button
-            type="button"
-            (click)="confirmComplete()"
-            [disabled]="completing()"
-            class="btn border-none bg-emerald-600 hover:bg-emerald-700 text-white px-3 min-h-0 h-8 text-[12px] rounded-lg"
-          >
+          <button type="button" (click)="confirmComplete()" [disabled]="!canConfirmCompletion()"
+            class="btn border-none bg-emerald-600 hover:bg-emerald-700 text-white px-3 min-h-0 h-8 text-[12px] rounded-lg">
             Yes
           </button>
-          <button
-            type="button"
-            (click)="cancelComplete()"
-            [disabled]="completing()"
-            class="btn btn-ghost border border-gray-200 text-gray-600 px-3 min-h-0 h-8 text-[12px] rounded-lg"
-          >
+          <button type="button" (click)="cancelComplete()" [disabled]="completing()"
+            class="btn btn-ghost border border-gray-200 text-gray-600 px-3 min-h-0 h-8 text-[12px] rounded-lg">
             No
           </button>
         </div>
@@ -70,11 +58,12 @@
     </div>
 
     <!-- Main Content Dual Column Grid -->
-  @if (!canComplete() && trip()?.status !== 'Completed') {
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3 mb-2">
+    @if (!canComplete() && trip()?.status !== 'Completed') {
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3 mb-2">
       <div class="bg-amber-100 text-amber-600 p-2 rounded-lg shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
       </div>
       <div>
@@ -82,17 +71,96 @@
         <p class="text-xs text-amber-600">{{cantCompleteMessage()}}</p>
       </div>
     </div>
-  }
+    }@else {
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm relative overflow-hidden mb-2 mt-2">
+      <div class="w-full">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">End Date</label>
+        <div class="relative">
+          <input [matDatepicker]="tripEndDatePicker" [value]="toDateValue(tripEndDate)"
+            (dateChange)="onTripEndDateSelected($event.value)" [min]="toDateValue(trip()?.tripDate)" readonly
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <button type="button" (click)="tripEndDatePicker.open()"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+            aria-label="Open end date picker">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </button>
+          <mat-datepicker #tripEndDatePicker></mat-datepicker>
+        </div>
+      </div>
+      <div class="mt-6 border-t border-gray-100 pt-6">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Trip Completion Document</label>
+          @if (completionDocumentUploading()) {
+          <span class="text-[11px] font-bold text-blue-600">Uploading...</span>
+          }
+        </div>
+
+        <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
+          <div class="flex flex-col md:flex-row md:items-center gap-3 md:justify-between">
+            <div class="flex items-center gap-2 min-w-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#f25f2f] shrink-0" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 7a2 2 0 012-2h6a2 2 0 012 2v10a2 2 0 01-2 2H9a2 2 0 01-2-2V7z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6M9 15h4" />
+              </svg>
+              <div class="min-w-0">
+                <p class="text-[13px] font-bold text-gray-900 truncate">
+                  {{ completionDocumentName() || 'No document attached yet' }}
+                </p>
+                <p class="text-[11px] text-gray-500">Accepted types: PDF, PNG, JPG, WEBP</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input #completionDocumentInput type="file" class="hidden" accept=".pdf,image/png,image/jpeg,image/webp"
+                (change)="onCompletionDocumentSelected($event)">
+              <button type="button" (click)="completionDocumentInput.click()"
+                [disabled]="completing() || completionDocumentUploading()"
+                class="btn min-h-0 h-9 border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-4 text-[12px] font-extrabold rounded-lg disabled:bg-gray-300 disabled:hover:bg-gray-300 disabled:text-gray-500">
+                {{ completionDocumentPath() ? 'Replace' : 'Attach' }}
+              </button>
+
+              <button type="button" (click)="previewCompletionDocument()"
+                [disabled]="!completionDocumentUrl() || completionDocumentUploading()"
+                class="btn btn-ghost min-h-0 h-9 border border-gray-200 text-gray-700 px-4 text-[12px] font-bold rounded-lg disabled:border-gray-100 disabled:text-gray-300">
+                Preview
+              </button>
+
+              <button type="button" (click)="removeCompletionDocument()"
+                [disabled]="!completionDocumentPath() || completionDocumentUploading()"
+                class="btn btn-ghost min-h-0 h-9 border border-red-100 text-red-500 px-4 text-[12px] font-bold rounded-lg hover:bg-red-50 disabled:border-gray-100 disabled:text-gray-300">
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        @if (completionDocumentError()) {
+        <p class="mt-2 text-[12px] font-semibold text-red-500">{{ completionDocumentError() }}</p>
+        }
+
+        @if (completionDocumentSuccess()) {
+        <p class="mt-2 text-[12px] font-semibold text-emerald-600">{{ completionDocumentSuccess() }}</p>
+        }
+      </div>
+    </div>
+    }
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
+
       <!-- Left Column (Core Info & Expenses) -->
       <div class="lg:col-span-2 space-y-8">
-        
+
         <!-- Core Information -->
         <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm relative overflow-hidden">
           <div class="flex items-center gap-3 mb-8 relative z-10">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">Core Information</h2>
           </div>
@@ -100,15 +168,18 @@
           <div class="grid grid-cols-2 md:grid-cols-2 gap-x-8 gap-y-10 relative z-10">
             <div class="flex flex-col gap-2">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Trip Date</span>
-              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.tripDate ? (trip()!.tripDate | date:'MMM d, yyyy') : '-' }}</span>
+              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.tripDate ? (trip()!.tripDate | date:'MMM d,
+                yyyy') : '-' }}</span>
             </div>
             <div class="flex flex-col gap-2">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">End Date</span>
-              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.endDate ? (trip()!.endDate | date:'MMM d, yyyy') : '-' }}</span>
+              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.endDate ? (trip()!.endDate | date:'MMM d,
+                yyyy') : '-' }}</span>
             </div>
             <div class="flex flex-col gap-2 relative">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Revenue</span>
-              <span class="text-[20px] font-extrabold text-[#f25f2f]">{{ (trip()?.revenue || 0).toLocaleString() }}</span>
+              <span class="text-[20px] font-extrabold text-[#f25f2f]">{{ (trip()?.revenue || 0).toLocaleString()
+                }}</span>
             </div>
             <div class="flex flex-col gap-2">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Route Name</span>
@@ -118,9 +189,12 @@
               <div class="flex flex-col gap-2">
                 <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Origin</span>
                 <span class="text-[16px] font-bold text-gray-900 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#f25f2f]" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   {{ trip()?.route?.startLocation || '-' }}
                 </span>
@@ -129,8 +203,10 @@
               <div class="flex flex-col gap-2">
                 <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Destination</span>
                 <span class="text-[16px] font-bold text-gray-900 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#f25f2f]" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
                   </svg>
                   {{ trip()?.route?.endLocation || '-' }}
                 </span>
@@ -144,72 +220,89 @@
         <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
           <div class="flex items-center justify-between mb-8">
             <div class="flex items-center gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm-7 5a2 2 0 11-4 0 2 2 0 014 0z" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm-7 5a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">Trip Expenses</h2>
             </div>
           </div>
 
           @if (trip()?.expenses && trip()!.expenses.length > 0) {
-            <table class="w-full text-left">
-              <thead>
-                <tr class="border-b border-gray-100">
-                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[20%]">Date</th>
-                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[35%]">Description</th>
-                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[20%]">Category</th>
-                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[15%]">Amount</th>
-                  <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase text-center w-[10%]">Receipt</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-50">
-                @for (expense of trip()!.expenses; track expense.id) {
-                  <tr class="transition-colors hover:bg-gray-50">
-                    <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ expense.date ? (expense.date | date:'MMM d, yyyy') : '-' }}</td>
-                    <td class="py-4 px-2 text-[14px] text-gray-600">{{ expense.expenseDescription ||  '-' }}</td>
-                    <td class="py-4 px-2">
-                      <span [class]="'border px-2 py-0.5 rounded text-[10px] font-extrabold tracking-widest uppercase ' + getExpenseCategoryColor(expense)">
-                        {{ getExpenseCategoryName(expense) }}
-                      </span>
-                    </td>
-                    <!-- <td class="py-4 px-2 text-[14px] text-gray-600">{{ expense.category?.description || '-' }}</td> -->
-                    <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
-                    <td class="py-4 px-2 text-center" [class]="expense.receiptAttachment ? 'text-[#f25f2f]' : 'text-gray-300'">
-                      @if (expense.receiptAttachment) {
-                        <button
-                          type="button"
-                          (click)="previewAttachment(expense)"
-                          [disabled]="!attachmentPreviewUrls()[expense.id]"
-                          class="inline-flex items-center gap-2 rounded-lg border border-orange-100 bg-orange-50 px-3 py-1.5 text-[11px] font-extrabold tracking-wide text-[#f25f2f] hover:bg-orange-100 disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-300 disabled:cursor-not-allowed"
-                          [title]="getExpenseAttachmentName(expense)"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                          <span>Preview</span>
-                        </button>
-                      } @else {
-                        <svg xmlns="http://www.w3.org/2000/svg" class="inline w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                        </svg>
-                      }
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-6 items-center pr-[12%]">
-              <span class="text-[14px] font-extrabold text-gray-900 tracking-wide">Total Expenses:</span>
-              <span class="text-[18px] font-extrabold text-[#f25f2f]">{{ totalExpenses().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-            </div>
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b border-gray-100">
+                <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[20%]">Date
+                </th>
+                <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[35%]">
+                  Description</th>
+                <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[20%]">
+                  Category</th>
+                <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[15%]">Amount
+                </th>
+                <th
+                  class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase text-center w-[10%]">
+                  Receipt</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              @for (expense of trip()!.expenses; track expense.id) {
+              <tr class="transition-colors hover:bg-gray-50">
+                <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ expense.date ? (expense.date |
+                  date:'MMM d, yyyy') : '-' }}</td>
+                <td class="py-4 px-2 text-[14px] text-gray-600">{{ expense.expenseDescription || '-' }}</td>
+                <td class="py-4 px-2">
+                  <span
+                    [class]="'border px-2 py-0.5 rounded text-[10px] font-extrabold tracking-widest uppercase ' + getExpenseCategoryColor(expense)">
+                    {{ getExpenseCategoryName(expense) }}
+                  </span>
+                </td>
+                <!-- <td class="py-4 px-2 text-[14px] text-gray-600">{{ expense.category?.description || '-' }}</td> -->
+                <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ expense.amount.toLocaleString('en-US',
+                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
+                <td class="py-4 px-2 text-center"
+                  [class]="expense.receiptAttachment ? 'text-[#f25f2f]' : 'text-gray-300'">
+                  @if (expense.receiptAttachment) {
+                  <button type="button" (click)="previewAttachment(expense)"
+                    [disabled]="!attachmentPreviewUrls()[expense.id]"
+                    class="inline-flex items-center gap-2 rounded-lg border border-orange-100 bg-orange-50 px-3 py-1.5 text-[11px] font-extrabold tracking-wide text-[#f25f2f] hover:bg-orange-100 disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-300 disabled:cursor-not-allowed"
+                    [title]="getExpenseAttachmentName(expense)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <span>Preview</span>
+                  </button>
+                  } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="inline w-5 h-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                  </svg>
+                  }
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+          <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-6 items-center pr-[12%]">
+            <span class="text-[14px] font-extrabold text-gray-900 tracking-wide">Total Expenses:</span>
+            <span class="text-[18px] font-extrabold text-[#f25f2f]">{{ totalExpenses().toLocaleString('en-US', {
+              minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+          </div>
           } @else {
-            <div class="py-12 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-              </svg>
-              <p class="text-gray-400 text-[14px] font-medium">No expenses added for this trip yet</p>
-            </div>
+          <div class="py-12 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 mb-3" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <p class="text-gray-400 text-[14px] font-medium">No expenses added for this trip yet</p>
+          </div>
           }
 
         </div>
@@ -218,42 +311,56 @@
 
       <!-- Right Column (Resources & Notes) -->
       <div class="space-y-8">
-        
+
         <!-- Resources -->
         <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
           <div class="flex items-center gap-3 mb-8">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
             <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">Resources</h2>
           </div>
 
           <div class="space-y-4">
             <!-- Driver Card -->
-            <div class="bg-gray-50 border border-gray-100 rounded-xl p-5 flex items-center gap-4 hover:border-[#f25f2f]/30 transition-colors cursor-pointer group">
-              <div class="bg-red-50 text-[#f25f2f] rounded-full w-12 h-12 flex items-center justify-center shrink-0 border border-red-100 group-hover:bg-[#f25f2f] group-hover:text-white transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <div
+              class="bg-gray-50 border border-gray-100 rounded-xl p-5 flex items-center gap-4 hover:border-[#f25f2f]/30 transition-colors cursor-pointer group">
+              <div
+                class="bg-red-50 text-[#f25f2f] rounded-full w-12 h-12 flex items-center justify-center shrink-0 border border-red-100 group-hover:bg-[#f25f2f] group-hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
               <div class="flex flex-col">
-                <span class="text-[9px] font-extrabold tracking-widest text-gray-400 uppercase mb-1">Primary Driver</span>
-                <span class="text-[15px] font-extrabold text-gray-900 leading-tight">{{ trip()?.driver ? trip()!.driver.firstName + ' ' + trip()!.driver.lastName : '-' }}</span>
+                <span class="text-[9px] font-extrabold tracking-widest text-gray-400 uppercase mb-1">Primary
+                  Driver</span>
+                <span class="text-[15px] font-extrabold text-gray-900 leading-tight">{{ trip()?.driver ?
+                  trip()!.driver.firstName + ' ' + trip()!.driver.lastName : '-' }}</span>
                 <span class="text-[12px] font-medium text-gray-400 mt-0.5">ID: {{ trip()?.driverId || '-' }}</span>
               </div>
             </div>
 
             <!-- Vehicle Card -->
-            <div class="bg-gray-50 border border-gray-100 rounded-xl p-5 flex items-center gap-4 hover:border-[#f25f2f]/30 transition-colors cursor-pointer group">
-              <div class="bg-red-50 text-[#f25f2f] rounded-full w-12 h-12 flex items-center justify-center shrink-0 border border-red-100 group-hover:bg-[#f25f2f] group-hover:text-white transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            <div
+              class="bg-gray-50 border border-gray-100 rounded-xl p-5 flex items-center gap-4 hover:border-[#f25f2f]/30 transition-colors cursor-pointer group">
+              <div
+                class="bg-red-50 text-[#f25f2f] rounded-full w-12 h-12 flex items-center justify-center shrink-0 border border-red-100 group-hover:bg-[#f25f2f] group-hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                 </svg>
               </div>
               <div class="flex flex-col">
                 <span class="text-[9px] font-extrabold tracking-widest text-gray-400 uppercase mb-1">Vehicle</span>
-                <span class="text-[15px] font-extrabold text-gray-900 leading-tight">{{ trip()?.vehicle?.registrationNo || '-' }}</span>
-                <span class="text-[12px] font-medium text-gray-400 mt-0.5">Plate: {{ trip()?.vehicle?.registrationNo || '-' }}</span>
+                <span class="text-[15px] font-extrabold text-gray-900 leading-tight">{{ trip()?.vehicle?.registrationNo
+                  || '-' }}</span>
+                <span class="text-[12px] font-medium text-gray-400 mt-0.5">Plate: {{ trip()?.vehicle?.registrationNo ||
+                  '-' }}</span>
               </div>
             </div>
           </div>
@@ -262,8 +369,10 @@
         <!-- Trip Notes -->
         <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
           <div class="flex items-center gap-3 mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">Trip Notes</h2>
           </div>
@@ -274,11 +383,13 @@
           <div class="mt-8 pt-6 border-t border-gray-100 space-y-2">
             <div class="flex justify-between items-center text-[11px]">
               <span class="font-bold text-gray-400">Record Created</span>
-              <span class="font-bold text-gray-700 tracking-wide">{{ trip()?.createdAt ? (trip()!.createdAt | date:'short') : '-' }}</span>
+              <span class="font-bold text-gray-700 tracking-wide">{{ trip()?.createdAt ? (trip()!.createdAt |
+                date:'short') : '-' }}</span>
             </div>
             <div class="flex justify-between items-center text-[11px]">
               <span class="font-bold text-gray-400">Last Modified</span>
-              <span class="font-bold text-gray-700 tracking-wide">{{ trip()?.updatedAt ? (trip()!.updatedAt | date:'short') : '-' }}</span>
+              <span class="font-bold text-gray-700 tracking-wide">{{ trip()?.updatedAt ? (trip()!.updatedAt |
+                date:'short') : '-' }}</span>
             </div>
           </div>
         </div>

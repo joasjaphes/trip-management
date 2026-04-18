@@ -93,8 +93,18 @@
           <div class="flex flex-col gap-2">
             <label class="text-[13px] font-bold text-gray-700">Date of Birth</label>
             <div class="relative">
-              <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="dateOfBirth" name="dateOfBirth"
-                     class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+              <input [matDatepicker]="dateOfBirthPicker" [value]="toDateValue(dateOfBirth)"
+                     (dateChange)="onDateOfBirthChanged($event.value)" readonly
+                     class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+              <button type="button" (click)="dateOfBirthPicker.open()"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+                      aria-label="Open date of birth picker">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </button>
+              <mat-datepicker #dateOfBirthPicker></mat-datepicker>
               <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg> -->
@@ -159,8 +169,18 @@
           <div class="flex flex-col gap-2">
             <label class="text-[13px] font-bold text-gray-700">Expiry Date</label>
             <div class="relative">
-              <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="licenseExpiry" [min]="today" name="licenseExpiry"
-                     class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+              <input [matDatepicker]="licenseExpiryPicker" [value]="toDateValue(licenseExpiry)"
+                     (dateChange)="onLicenseExpiryChanged($event.value)" [min]="today" readonly
+                     class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+              <button type="button" (click)="licenseExpiryPicker.open()"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+                      aria-label="Open license expiry picker">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </button>
+              <mat-datepicker #licenseExpiryPicker></mat-datepicker>
               <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg> -->
@@ -198,8 +218,19 @@
           <div class="flex flex-col gap-2">
             <label class="text-[13px] font-bold text-gray-700">Expiry Date</label>
             <div class="relative">
-              <input type="date" placeholder="mm/dd/yyyy" [(ngModel)]="passportExpiryDate" name="passportExpiryDate" id="passportExpiryDate" [min]="today"
-                     class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+              <input [matDatepicker]="passportExpiryPicker" [value]="toDateValue(passportExpiryDate)"
+                     (dateChange)="onPassportExpiryChanged($event.value)" [min]="today" name="passportExpiryDate"
+                     id="passportExpiryDate" readonly
+                     class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+              <button type="button" (click)="passportExpiryPicker.open()"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+                      aria-label="Open passport expiry picker">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </button>
+              <mat-datepicker #passportExpiryPicker></mat-datepicker>
               <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg> -->

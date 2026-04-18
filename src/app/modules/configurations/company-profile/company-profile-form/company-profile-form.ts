@@ -44,6 +44,7 @@ export class CompanyProfileForm implements OnChanges {
     bankAccountNumber?: string;
     bankAccountName?: string;
     bankBranch?: string;
+    bankSwiftCode?: string;
 
     saveText = signal('Update company profile');
     uploadingLogo = signal(false);
@@ -65,6 +66,7 @@ export class CompanyProfileForm implements OnChanges {
             this.bankAccountNumber = this.data.bankAccountNumber;
             this.bankAccountName = this.data.bankAccountName;
             this.bankBranch = this.data.bankBranch;
+            this.bankSwiftCode = this.data.bankSwiftCode;
             this.logoUrl = this.data.logoUrl;
         }
     }
@@ -104,6 +106,7 @@ export class CompanyProfileForm implements OnChanges {
             bankName: this.bankName || '',
             bankAccountNumber: this.bankAccountNumber || '',
             bankAccountName: this.bankAccountName || '',
+            bankSwiftCode: this.bankSwiftCode || '',
             bankBranch: this.bankBranch || '',
         });
     }

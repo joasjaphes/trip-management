@@ -9,6 +9,8 @@ import { FileUploadService } from '../../../../services/file-upload.service';
 import { Vehicle, VehicleType } from '../../../../models/vehicle.model';
 import { CommonService } from '../../../../services/common.service';
 import { NumberFormatDirective } from '../../../../shared/directives/number-format';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 interface PermitRow {
   id: string;
@@ -27,7 +29,7 @@ interface PermitRow {
 @Component({
   selector: 'app-vehicle-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective],
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './vehicle-form.html'
 })
 export class VehicleForm implements OnInit {
@@ -231,6 +233,51 @@ export class VehicleForm implements OnInit {
     this.trailerWeightLimits = '';
     this.trailerAxles = '';
     this.trailerSuspension = '';
+  }
+
+  toDateValue(value: string | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const parsedDate = new Date(value);
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
+
+  toDateString(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onPermitStartDateChanged(permitId: string, value: Date | null) {
+    const startDate = this.toDateString(value);
+    this.permits = this.permits.map((permit) =>
+      permit.id === permitId
+        ? {
+            ...permit,
+            startDate,
+            endDate: permit.endDate && startDate && permit.endDate < startDate ? '' : permit.endDate,
+          }
+        : permit
+    );
+  }
+
+  onPermitEndDateChanged(permitId: string, value: Date | null) {
+    const endDate = this.toDateString(value);
+    this.permits = this.permits.map((permit) =>
+      permit.id === permitId
+        ? {
+            ...permit,
+            endDate,
+          }
+        : permit
+    );
   }
 
   async onSubmit() {

@@ -27,6 +27,9 @@ export interface Trip {
 	customerName?: string;
 	customerTIN?: string;
 	customerPhone?: string;
+	offloadingPlaceId?: string;
+	offloadingPlaceName?: string;
+	offloadingPlace?: { id?: string; name: string };
 	revenue: number;
 	paidAmount?: number;
 	income?: number;
