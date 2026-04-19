@@ -92,7 +92,7 @@ export class TripForm implements OnInit {
   expenseCategories = computed(() =>
     this.expenseCategoryService
       .allCategories()
-      .filter((category) => category.isActive || category.status === 'Active')
+      .filter((category) => category.isActive || category.status === 'Active' && category.type === 'TRIP')
   );
   loading = computed(() => this.tripService.loading() || this.tripExpenseService.loading());
   pendingUploads = signal(0);
