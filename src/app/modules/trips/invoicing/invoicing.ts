@@ -114,14 +114,14 @@ export class Invoicing implements OnInit {
       });
     }
 
-    // Count full paid invoices
-    const paidCount = allInvoices.filter(inv => inv.paymentStatus === 'full_paid').length;
-    if (paidCount > 0) {
+    // Count unpaid invoices
+    const unpaidCount = allInvoices.filter(inv => inv.paymentStatus === 'unpaid').length;
+    if (unpaidCount > 0) {
       tabs.push({
-        label: 'Paid',
-        value: 'full_paid',
-        count: paidCount,
-        icon: 'fa-check-circle text-emerald-500'
+        label: 'Unpaid',
+        value: 'unpaid',
+        count: unpaidCount,
+        icon: 'fa-clock text-red-500'
       });
     }
 
@@ -136,14 +136,14 @@ export class Invoicing implements OnInit {
       });
     }
 
-    // Count unpaid invoices
-    const unpaidCount = allInvoices.filter(inv => inv.paymentStatus === 'unpaid').length;
-    if (unpaidCount > 0) {
+    // Count full paid invoices
+    const paidCount = allInvoices.filter(inv => inv.paymentStatus === 'full_paid').length;
+    if (paidCount > 0) {
       tabs.push({
-        label: 'Unpaid',
-        value: 'unpaid',
-        count: unpaidCount,
-        icon: 'fa-clock text-red-500'
+        label: 'Paid',
+        value: 'full_paid',
+        count: paidCount,
+        icon: 'fa-check-circle text-emerald-500'
       });
     }
 
