@@ -42,6 +42,7 @@ export class Invoicing implements OnInit {
   selectedStatus: InvoiceStatus = 'draft';
   panelMode = signal<'generate' | 'detail' | 'manage-receipts' | 'view-receipts'>('generate');
   splitSize = signal<'full' | 'half'>('full');
+  selectedPaymentStatusFilter = signal<'all' | 'full_paid' | 'partially_paid' | 'unpaid'>('all');
 
   loading = computed(
     () => this.invoiceService.loading() || this.tripService.loading()
@@ -97,6 +98,68 @@ export class Invoicing implements OnInit {
       };
     })
   );
+
+  paymentStatusTabs = computed(() => {
+    const allInvoices = this.invoices();
+    const tabs: Array<{ label: string; value: 'all' | 'full_paid' | 'partially_paid' | 'unpaid'; count: number; icon: string }> = [];
+    
+    // Count all invoices
+    const totalCount = allInvoices.length;
+    if (totalCount > 0) {
+      tabs.push({
+        label: 'All',
+        value: 'all',
+        count: totalCount,
+        icon: 'fa-list'
+      });
+    }
+
+    // Count full paid invoices
+    const paidCount = allInvoices.filter(inv => inv.paymentStatus === 'full_paid').length;
+    if (paidCount > 0) {
+      tabs.push({
+        label: 'Paid',
+        value: 'full_paid',
+        count: paidCount,
+        icon: 'fa-check-circle text-emerald-500'
+      });
+    }
+
+    // Count partially paid invoices
+    const partialCount = allInvoices.filter(inv => inv.paymentStatus === 'partially_paid').length;
+    if (partialCount > 0) {
+      tabs.push({
+        label: 'Partial Paid',
+        value: 'partially_paid',
+        count: partialCount,
+        icon: 'fa-exclamation-circle text-yellow-500'
+      });
+    }
+
+    // Count unpaid invoices
+    const unpaidCount = allInvoices.filter(inv => inv.paymentStatus === 'unpaid').length;
+    if (unpaidCount > 0) {
+      tabs.push({
+        label: 'Unpaid',
+        value: 'unpaid',
+        count: unpaidCount,
+        icon: 'fa-clock text-red-500'
+      });
+    }
+
+    return tabs;
+  });
+
+  filteredInvoices = computed(() => {
+    const filter = this.selectedPaymentStatusFilter();
+    const allInvoices = this.invoices();
+
+    if (filter === 'all') {
+      return allInvoices;
+    }
+
+    return allInvoices.filter(inv => inv.paymentStatus === filter);
+  });
 
   tripsWithoutInvoice = computed(() => {
     const usedTripIds = new Set(this.invoiceService.allInvoices().map((invoice) => invoice.tripId));

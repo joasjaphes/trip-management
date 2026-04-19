@@ -8,7 +8,29 @@
         {{ totalOutstanding().toLocaleString() }}
       </span>
     </div>
-    <app-data-table [data]="invoices()" [config]="tableConfigurations" (view)="onView($event)" [loading]="loading()"
+
+    <!-- Payment Status Tabs -->
+    @if (paymentStatusTabs().length > 0) {
+    <div class="mb-4 bg-white rounded-xl border border-gray-100 p-4 flex flex-wrap gap-2">
+      @for (tab of paymentStatusTabs(); track tab.value) {
+      <button
+        type="button"
+        (click)="selectedPaymentStatusFilter.set(tab.value)"
+        [class.active]="selectedPaymentStatusFilter() === tab.value"
+        class="tab-button px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 border"
+        [ngClass]="{
+          'bg-[#f25f2f] text-white border-[#f25f2f]': selectedPaymentStatusFilter() === tab.value,
+          'bg-gray-50 text-gray-700 border-gray-200 hover:border-[#f25f2f] hover:text-[#f25f2f]': selectedPaymentStatusFilter() !== tab.value
+        }">
+        <i [class]="'fa-solid ' + tab.icon"></i>
+        <span>{{ tab.label }}</span>
+        <span class="ml-1 font-bold">({{ tab.count }})</span>
+      </button>
+      }
+    </div>
+    }
+
+    <app-data-table [data]="filteredInvoices()" [config]="tableConfigurations" (view)="onView($event)" [loading]="loading()"
       [moreActions]="moreActions()"></app-data-table>
   </ng-container>
 

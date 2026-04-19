@@ -1,5 +1,31 @@
 /* Invoicing Component Styles - Print Optimization */
 
+/* Payment Status Tabs Styling */
+.tab-button {
+  transition: all 0.2s ease-in-out;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tab-button:hover:not(.active) {
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+.tab-button.active {
+  box-shadow: 0 2px 8px rgba(242, 95, 47, 0.2);
+}
+
+.tab-button i {
+  font-size: 14px;
+}
+
+.tab-button span:last-child {
+  font-size: 12px;
+  opacity: 0.9;
+  margin-left: 4px;
+}
+
 /* Bank Details & Signature Table - Print Layout */
 @media print {
   /* Ensure no absolute positioning distorts the signature section */
