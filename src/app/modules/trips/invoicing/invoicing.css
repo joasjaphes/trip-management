@@ -1,0 +1,143 @@
+/* Invoicing Component Styles - Print Optimization */
+
+/* Bank Details & Signature Table - Print Layout */
+@media print {
+  /* Ensure no absolute positioning distorts the signature section */
+  #invoice-document table[style*="h-32"] {
+    height: auto !important;
+    page-break-inside: avoid;
+  }
+
+  #invoice-document table[style*="h-32"] tr {
+    vertical-align: top;
+  }
+
+  #invoice-document table[style*="h-32"] td {
+    position: relative !important;
+    padding: 12px 12px !important;
+  }
+
+  /* Bank Details Section - Left Column */
+  #invoice-document table[style*="h-32"] td.w-\[45\%\] {
+    width: 45% !important;
+    vertical-align: top;
+  }
+
+  #invoice-document table[style*="h-32"] td.w-\[55\%\] {
+    width: 55% !important;
+    vertical-align: top;
+  }
+
+  /* Remove absolute positioning from signature area */
+  #invoice-document table[style*="h-32"] .absolute {
+    position: static !important;
+    bottom: auto !important;
+    right: auto !important;
+    margin: 0 !important;
+    width: 100% !important;
+    left: auto !important;
+  }
+
+  /* Signature text - "For company name" */
+  #invoice-document table[style*="h-32"] .absolute:first-of-type {
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 20px;
+    margin-bottom: 12px;
+  }
+
+  /* Authorized Signatory line */
+  #invoice-document table[style*="h-32"] .absolute:last-of-type {
+    text-align: center;
+    border-top: 1px solid #000;
+    padding-top: 2px;
+    padding-bottom: 0;
+    font-size: 13px;
+    margin-top: 40px;
+    width: 75% !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Ensure all tables maintain proper structure */
+  #invoice-document table {
+    page-break-inside: avoid;
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  /* Remove any transform or scaling that might distort */
+  #invoice-document {
+    transform: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Prevent overflow */
+  #invoice-document,
+  #invoice-document * {
+    overflow: visible !important;
+  }
+
+  /* Ensure proper table cell alignment */
+  #invoice-document td,
+  #invoice-document th {
+    page-break-inside: avoid;
+  }
+
+  /* Bottom colored bar */
+  #invoice-document .flex.mt-8 {
+    page-break-inside: avoid;
+    display: flex !important;
+  }
+
+  #invoice-document .flex.mt-8 .w-1\/2 {
+    width: 50% !important;
+    height: 6px;
+  }
+
+  /* Maintain black border at bottom */
+  #invoice-document .w-full.border-b-\[2px\] {
+    border-bottom: 2px solid #000 !important;
+  }
+}
+
+/* Screen view - no changes needed */
+@media screen {
+  /* Keep original absolute positioning for screen view */
+  #invoice-document {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+}
+
+/* Ensure signature area renders properly in all zoom levels */
+#invoice-document table:last-of-type {
+  margin-top: -1px;
+  position: relative;
+  z-index: 10;
+}
+
+/* Print-specific page settings */
+@page {
+  size: A4;
+  margin: 10mm;
+}
+
+/* Prevent content overflow on pages */
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-container {
+    margin: 0;
+    padding: 0;
+  }
+
+  #invoice-document {
+    margin: 0;
+    box-shadow: none !important;
+  }
+}
