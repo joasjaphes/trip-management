@@ -205,8 +205,8 @@ export class TripForm implements OnInit {
     this.customerName = trip.customerName || trip.customer?.name || '';
     this.customerTIN = trip.customerTIN || trip.customer?.tin || '';
     this.customerPhone = trip.customerPhone || trip.customer?.phone || '';
-    this.offloadingPlaceName = trip.offloadingPlaceName;
-    this.offloadingPlaceId = trip.offloadingPlaceId 
+    this.offloadingPlaceName = trip.offloadingPlaceName || '';
+    this.offloadingPlaceId = trip.offloadingPlaceId || '';
     void this.hydrateTripDocument(trip.tripDocument);
     this.expenseRows = (trip.expenses || []).map((expense) => this.mapExpenseToDraft(expense));
     this.initialTripState.set(trip);
@@ -572,26 +572,34 @@ export class TripForm implements OnInit {
     const initial = this.trip();
     if (
       !moment(new Date(this.tripDate)).isSame(moment(new Date(initial?.tripDate)))
-        || this.endDate ? !moment(new Date(this.endDate)).isSame(moment(new Date(initial?.endDate || ''))) : false
-        || this.vehicleId !== (initial?.vehicleId || '')
-        || this.driverId !== (initial?.driverId || '')
-        || this.routeId !== (initial?.routeId || '')
-        || this.cargoTypeId !== (initial?.cargoTypeId || '')
-        || this.revenue !== String(initial?.revenue ?? '')
-        || this.status !== (initial?.status || TripStatus.IN_PROGRESS)
-        || this.notes !== (initial?.notes || '')
-        || this.customerName !== (initial?.customerName || initial?.customer?.name || '')
-        || this.customerTIN !== (initial?.customerTIN || initial?.customer?.tin || '')
-        || this.customerPhone !== (initial?.customerPhone || initial?.customer?.phone || '')
-        || this.offloadingPlaceName !== (initial?.offloadingPlaceName || initial?.offloadingPlace?.name || '')
-        || this.trailerId !== (initial?.trailerId || '')
-        || this.cargoQuantity !== (initial?.cargoQuantity || null)
-        || this.docNumber !== (initial?.docNumber || null)
-      || this.tripDocumentPath() !== (initial?.tripDocument || '')
+      || this.vehicleId !== (initial?.vehicleId || '')
+      || this.trailerId !== (initial?.trailerId || '')
+      || this.driverId !== (initial?.driverId || '')
+      || this.routeId !== (initial?.routeId || '')
+      || this.cargoTypeId !== (initial?.cargoTypeId || '')
+      || this.revenue !== String(initial?.revenue ?? '')
+      || this.status !== (initial?.status || TripStatus.IN_PROGRESS)
+      || this.notes !== (initial?.notes || '')
+      || this.customerName !== (initial?.customerName || initial?.customer?.name || '')
+      || this.customerTIN !== (initial?.customerTIN || initial?.customer?.tin || '')
+      || this.customerPhone !== (initial?.customerPhone || initial?.customer?.phone || '')
+      || this.offloadingPlaceName !== (initial?.offloadingPlaceName || initial?.offloadingPlace?.name || '')
+      || this.trailerId !== (initial?.trailerId || '')
+      || this.cargoQuantity !== (initial?.cargoQuantity || null)
+      || this.docNumber !== (initial?.docNumber || null)
+      || this.tripDocumentPath() !== (initial?.tripDocument || undefined)
       || JSON.stringify(this.expenseRows) !== JSON.stringify((initial?.expenses || []).map((expense) => this.mapExpenseToDraft(expense)))
     ) {
       return true;
     }
     return false;
+  }
+
+  get canSave() {
+    return !this.loading() && !this.metadataLoading() && this.hasChanges && this.compulsoryFieldsFilled;
+  }
+
+  get compulsoryFieldsFilled() {
+    return !!this.tripDate && !!this.vehicleId && !!this.trailerId && !!this.driverId && !!this.routeId && !!this.cargoTypeId && !!this.revenue && !!this.customerName && !!this.docNumber;
   }
 }

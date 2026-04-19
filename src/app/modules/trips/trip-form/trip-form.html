@@ -56,9 +56,9 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-8 mb-12 relative z-10">
       <!-- Start Date -->
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Start Date</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Start Date*</label>
         <div class="relative">
-          <input [matDatepicker]="tripDatePicker" [value]="toDateValue(tripDate)" (dateChange)="onTripDateChanged($event.value)"
+          <input [matDatepicker]="tripDatePicker" [value]="toDateValue(tripDate)" (dateChange)="onTripDateChanged($event.value)" required
             readonly class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           <button type="button" (click)="tripDatePicker.open()"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]" aria-label="Open trip date picker">
@@ -85,7 +85,7 @@
       <!-- Vehicle -->
       @if (tripDate) {
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Truck</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Truck*</label>
         <div class="relative">
           <select [(ngModel)]="vehicleId" name="vehicleId"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
@@ -106,7 +106,7 @@
       }
       @if (vehicleId) {
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Trailer</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Trailer*</label>
         <div class="relative">
           <select [(ngModel)]="trailerId" name="trailerId"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
@@ -128,7 +128,7 @@
       @if (trailerId) {
       <!-- Driver -->
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Driver</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Driver*</label>
         <div class="relative">
           <select [(ngModel)]="driverId" name="driverId"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
@@ -146,7 +146,7 @@
 
       <!-- Route Selection -->
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Route Selection</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Route Selection*</label>
         <div class="relative">
           <select [(ngModel)]="routeId" name="routeId"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
@@ -163,7 +163,7 @@
       </div>
       <!-- Cargo Type -->
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Cargo Type</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Cargo Type*</label>
         <div class="relative">
           <select [(ngModel)]="cargoTypeId" name="cargoTypeId"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
@@ -181,7 +181,7 @@
 
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Container / Document
-          Number</label>
+          Number*</label>
         <input type="text" [(ngModel)]="docNumber" name="docNumber" placeholder="e.g. 123456789"
           class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
@@ -203,7 +203,7 @@
       </div>
       <!-- Customer Name (Autocomplete) -->
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Name</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Name*</label>
         <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameInput($event)" name="customerName"
           autocomplete="off" list="customer-name-options" placeholder="Select existing customer or type a new name"
           class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
@@ -242,7 +242,7 @@
 
       <!-- Projected Revenue -->
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Projected Revenue/Income
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Projected Revenue/Income*
           <!-- @if (revenue) {
           ({{ revenue |number:'1.0-2' }})
           } -->
@@ -472,7 +472,7 @@
 
     }
     <app-save-area [saveText]="isEditMode() ? 'Update Trip' : 'Create Trip'" [loading]="busy()" (cancel)="goBack()"
-      (save)="onSubmit()" [disabled]="!hasChanges || !trailerId"></app-save-area>
+      (save)="onSubmit()" [disabled]="!canSave"></app-save-area>
     }
 
   </div>
