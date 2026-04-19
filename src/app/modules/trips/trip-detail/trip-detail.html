@@ -71,7 +71,8 @@
         <p class="text-xs text-amber-600">{{cantCompleteMessage()}}</p>
       </div>
     </div>
-    }@else {
+    }
+    @if(canComplete() && trip()?.status !== 'Completed') {
     <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm relative overflow-hidden mb-2 mt-2">
       <div class="w-full">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">End Date</label>
