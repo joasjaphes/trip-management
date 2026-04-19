@@ -15,7 +15,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, MatTooltipModule,Tabs,MatTabsModule ],
+  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, MatTooltipModule, Tabs, MatTabsModule],
   templateUrl: './trips.html'
 })
 export class Trips implements OnInit {
@@ -42,11 +42,13 @@ export class Trips implements OnInit {
       date: trip.tripDate ? new Date(trip.tripDate).toLocaleDateString() : '-',
       paidAmount: Number(trip.paidAmount || 0),
       endDate: trip.endDate ? new Date(trip.endDate).toLocaleDateString() : '-',
-      vehicle: trip.vehicle?.registrationNo || trip.vehicleId,
+      vehicle: trip.vehicle?.registrationNo || trip.vehicleId || '-',
+      trailer: trip.trailer?.registrationNo || trip.trailerId || '-',
       driver: trip.driver ? `${trip.driver.firstName} ${trip.driver.lastName}` : trip.driverId,
+      docNumber: trip.docNumber || '-',
       route: trip.route?.name || trip.routeId,
       revenue: Number(trip.revenue || 0),
-      offloadingPlace:trip.offloadingPlace,
+      offloadingPlace: trip.offloadingPlace,
       offloadingPlaceName: trip.offloadingPlaceName,
       offloadingPlaceId: trip.offloadingPlaceId,
       status: trip.status,
@@ -61,39 +63,39 @@ export class Trips implements OnInit {
 
   activeTab = signal<'in-progress' | 'completed'>('in-progress');
 
-setTab(tab: 'In Progress' | 'Completed') {
-  console.log('Selected tab:', tab);
-  this.selectedTab.set(tab);
-}
-
-private isTripCompleted(trip: any): boolean {
-  const rawStatus = (trip?.status ?? trip?.tripStatus ?? '')
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/[_\s-]/g, '');
-
-  return rawStatus === 'completed' || rawStatus === 'complete' || trip?.isCompleted === true;
-}
-
-
-completedTrips = computed(() => {
-  return this.trips().filter((trip: any) => this.isTripCompleted(trip));
-});
-
-inProgressTrips = computed(() => {
-  return this.trips().filter((trip: any) => !this.isTripCompleted(trip));
-});
-
-filteredTrips = computed(() => {
-  const allTrips = this.trips() ?? [];
-
-  if (this.selectedTab() === 'Completed') {
-    return allTrips.filter((trip: any) => this.isTripCompleted(trip));
+  setTab(tab: 'In Progress' | 'Completed') {
+    console.log('Selected tab:', tab);
+    this.selectedTab.set(tab);
   }
 
-  return allTrips.filter((trip: any) => !this.isTripCompleted(trip));
-});
+  private isTripCompleted(trip: any): boolean {
+    const rawStatus = (trip?.status ?? trip?.tripStatus ?? '')
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/[_\s-]/g, '');
+
+    return rawStatus === 'completed' || rawStatus === 'complete' || trip?.isCompleted === true;
+  }
+
+
+  completedTrips = computed(() => {
+    return this.trips().filter((trip: any) => this.isTripCompleted(trip));
+  });
+
+  inProgressTrips = computed(() => {
+    return this.trips().filter((trip: any) => !this.isTripCompleted(trip));
+  });
+
+  filteredTrips = computed(() => {
+    const allTrips = this.trips() ?? [];
+
+    if (this.selectedTab() === 'Completed') {
+      return allTrips.filter((trip: any) => this.isTripCompleted(trip));
+    }
+
+    return allTrips.filter((trip: any) => !this.isTripCompleted(trip));
+  });
 
 
   tableConfigurations: TableConfig = {
@@ -116,21 +118,23 @@ filteredTrips = computed(() => {
       },
       {
         key: 'vehicle',
-        label: 'Vehicle'
+        label: 'Truck'
+      },
+      {
+        key: 'trailer',
+        label: 'Trailer'
+      },
+      {
+        key: 'docNumber',
+        label: 'Container/Document Number'
       },
       {
         key: 'driver',
         label: 'Driver'
       },
       {
-        key: 'revenue',
-        label: 'Revenue',
-        type: 'number'
-      },
-      {
-        key: 'paidAmount',
-        label: 'Paid Amount',
-        type: 'number'
+        key: 'offloadingPlaceName',
+        label: 'Offloading place'
       },
       {
         key: 'status',
