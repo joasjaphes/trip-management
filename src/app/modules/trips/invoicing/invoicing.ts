@@ -17,6 +17,7 @@ import { HttpClientService } from '../../../services/http-client.service';
   standalone: true,
   imports: [CommonModule, FormsModule, Layout, DataTable, InvoiceReceiptsManage, Placeholder, DecimalPipe],
   templateUrl: './invoicing.html',
+  styleUrl: './invoicing.css',
 })
 export class Invoicing implements OnInit {
   private invoiceService = inject(InvoiceService);
@@ -41,6 +42,7 @@ export class Invoicing implements OnInit {
   selectedStatus: InvoiceStatus = 'draft';
   panelMode = signal<'generate' | 'detail' | 'manage-receipts' | 'view-receipts'>('generate');
   splitSize = signal<'full' | 'half'>('full');
+  selectedPaymentStatusFilter = signal<'all' | 'full_paid' | 'partially_paid' | 'unpaid'>('all');
 
   loading = computed(
     () => this.invoiceService.loading() || this.tripService.loading()
@@ -96,6 +98,68 @@ export class Invoicing implements OnInit {
       };
     })
   );
+
+  paymentStatusTabs = computed(() => {
+    const allInvoices = this.invoices();
+    const tabs: Array<{ label: string; value: 'all' | 'full_paid' | 'partially_paid' | 'unpaid'; count: number; icon: string }> = [];
+    
+    // Count all invoices
+    const totalCount = allInvoices.length;
+    if (totalCount > 0) {
+      tabs.push({
+        label: 'All',
+        value: 'all',
+        count: totalCount,
+        icon: 'fa-list'
+      });
+    }
+
+    // Count unpaid invoices
+    const unpaidCount = allInvoices.filter(inv => inv.paymentStatus === 'unpaid').length;
+    if (unpaidCount > 0) {
+      tabs.push({
+        label: 'Unpaid',
+        value: 'unpaid',
+        count: unpaidCount,
+        icon: 'fa-clock text-red-500'
+      });
+    }
+
+    // Count partially paid invoices
+    const partialCount = allInvoices.filter(inv => inv.paymentStatus === 'partially_paid').length;
+    if (partialCount > 0) {
+      tabs.push({
+        label: 'Partial Paid',
+        value: 'partially_paid',
+        count: partialCount,
+        icon: 'fa-exclamation-circle text-yellow-500'
+      });
+    }
+
+    // Count full paid invoices
+    const paidCount = allInvoices.filter(inv => inv.paymentStatus === 'full_paid').length;
+    if (paidCount > 0) {
+      tabs.push({
+        label: 'Paid',
+        value: 'full_paid',
+        count: paidCount,
+        icon: 'fa-check-circle text-emerald-500'
+      });
+    }
+
+    return tabs;
+  });
+
+  filteredInvoices = computed(() => {
+    const filter = this.selectedPaymentStatusFilter();
+    const allInvoices = this.invoices();
+
+    if (filter === 'all') {
+      return allInvoices;
+    }
+
+    return allInvoices.filter(inv => inv.paymentStatus === filter);
+  });
 
   tripsWithoutInvoice = computed(() => {
     const usedTripIds = new Set(this.invoiceService.allInvoices().map((invoice) => invoice.tripId));
@@ -261,7 +325,7 @@ export class Invoicing implements OnInit {
     @page { size: A4; margin: 10mm; }
     body { font-family: Arial, Helvetica, sans-serif; margin: 0; color: #000; background: #fff; }
     .print-container { width: 100%; max-width: 210mm; margin: 0 auto; }
-    table { width: 100%; border-collapse: collapse; }
+    table { width: 100%; border-collapse: collapse; page-break-inside: avoid; }
     .border { border: 1px solid #000; }
     .border-b { border-bottom: 1px solid #000; }
     .border-l { border-left: 1px solid #000; }
@@ -288,31 +352,73 @@ export class Invoicing implements OnInit {
     .mt-2 { margin-top: 8px; }
     .mt-4 { margin-top: 16px; }
     .mt-6 { margin-top: 24px; }
-    .mb-2 { margin-top: 8px; }
+    .mt-8 { margin-top: 32px; }
+    .mb-2 { margin-bottom: 8px; }
     .h-20 { height: 80px; }
     .h-24 { height: 96px; }
     .h-28 { height: 112px; }
+    .h-32 { height: auto; }
     .object-contain { object-fit: contain; }
     .flex { display: flex; }
     .flex-col { flex-direction: column; }
     .items-center { align-items: center; }
     .justify-between { justify-content: space-between; }
     .relative { position: relative; }
-    .absolute { position: absolute; }
-    .bottom-0 { bottom: 0; }
-    .right-0 { right: 0; }
+    .absolute { position: static !important; }
+    .bottom-0 { bottom: auto; }
+    .bottom-4 { bottom: auto; }
+    .bottom-\[4\.5rem\] { bottom: auto; }
+    .right-0 { right: auto; }
+    .right-4 { right: auto; }
+    .left-0 { left: auto; }
     .w-full { width: 100%; }
     .w-1\/2 { width: 50%; }
     .w-1\/3 { width: 33.333333%; }
     .w-2\/3 { width: 66.666667%; }
+    .w-3\/4 { width: 75%; }
     .w-\[30\%\] { width: 30%; }
     .w-\[34\%\] { width: 34%; }
     .w-\[36\%\] { width: 36%; }
     .w-\[45\%\] { width: 45%; }
     .w-\[55\%\] { width: 55%; }
+    /* Print-specific overrides for signature section */
+    td[style*="w-\\[55\\%\\]"] { vertical-align: top; }
+    td[style*="w-\\[45\\%\\]"] { vertical-align: top; }
+    .absolute[style*="bottom"] { 
+      position: static !important; 
+      display: block !important;
+      text-align: center;
+      margin: 0 auto !important;
+      margin-top: 20px !important;
+      width: 100% !important;
+      left: auto !important;
+      right: auto !important;
+    }
+    .absolute[style*="border-top"] {
+      border-top: 1px solid #000 !important;
+      padding-top: 2px !important;
+      margin-top: 40px !important;
+      width: 75% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
     /* Formal Invoice specific */
     .border-b-\[4px\] { border-bottom-width: 4px; }
     .tracking-wide { letter-spacing: 0.025em; }
+    .overflow-hidden { overflow: visible; }
+    .object-contain { object-fit: contain; }
+    /* Ensure proper page breaks */
+    td { page-break-inside: avoid; }
+    /* Fix signature area layout */
+    table[style*="h-32"] { height: auto; }
+    table[style*="h-32"] td { padding: 12px; }
+    /* Colored footer bar */
+    .flex.mt-8 { display: flex; margin-top: 32px; }
+    .bg-red-600 { background-color: #dc2626; }
+    .bg-black { background-color: #000; }
+    .border-b-\[2px\] { border-bottom: 2px solid #000; }
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
     /* Hide scrollbars for print */
     ::-webkit-scrollbar { display: none; }
   </style>
