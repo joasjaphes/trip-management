@@ -79,7 +79,10 @@ export class DataTable {
   selectedRows = signal<Set<number>>(new Set());
   pageSize = signal<number>(10);
   openMoreMenuRow = signal<number | null>(null);
+  showAddButton = input(false);
+  addButtonText = input('Add New');
   loading = input(false);
+  add = output<void>();
 
   hasActions = computed(() => {
     return this.config().actions && Object.values(this.config().actions).some((v) => !!v);
@@ -154,6 +157,10 @@ export class DataTable {
   onSearch(term: string) {
     this.searchTerm.set(term);
     this.currentPage.set(0);
+  }
+
+  onAdd() {
+    this.add.emit();
   }
 
   onSort(column: string) {

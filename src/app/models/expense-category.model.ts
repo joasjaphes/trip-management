@@ -8,6 +8,7 @@ export interface ExpenseCategory {
   parentId?: string;
   children?: ExpenseCategory[];
   isActive?: boolean;
+  isPurchase?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

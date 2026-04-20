@@ -31,6 +31,8 @@ export class ExpenseCategories implements OnInit {
   confirmSavingNewExpense = {};
   selectedCategory = signal<ExpenseCategory | undefined>(undefined);
   expandedCategoryId = signal<string | null>(null);
+  type = signal<'TRIP' | 'OFFICE'>('TRIP');
+  isPurchase = signal(false);
 
   categories = computed(() =>
     this.expenseCategoryService.allCategories().map((category) => ({
@@ -44,7 +46,11 @@ export class ExpenseCategories implements OnInit {
     this.categories().filter((cat) => cat.type === 'TRIP')
   );
   officeCategories = computed(() =>
-    this.categories().filter((cat) => cat.type === 'OFFICE' && !cat.parentId)
+    this.categories().filter((cat) => cat.type === 'OFFICE' && !cat.isPurchase && !cat.parentId)
+  );
+
+  purchaseCategories = computed(() =>
+    this.categories().filter((cat) => cat.isPurchase && !cat.parentId)
   );
 
   loading = this.expenseCategoryService.loading;
@@ -80,11 +86,13 @@ export class ExpenseCategories implements OnInit {
     await this.expenseCategoryService.getAll();
   }
 
-  onAdd() {
+  onAdd(isPurchase = false, type: 'TRIP' | 'OFFICE' = 'TRIP') {
     this.selectedCategory.set(undefined);
+    this.isPurchase.set(isPurchase);
+    this.type.set(type);
     this.viewType.set('add');
-    this.formTitle.set('Add new expense');
-    this.formDescription.set('Create a new expense classification for operations.');
+    this.formTitle.set( isPurchase ? 'Add new item' : 'Add new expense');
+    this.formDescription.set( isPurchase ? 'Create a new item classification for operations.' : 'Create a new expense classification for operations.');
     this.viewDetails.set(true);
   }
 
@@ -94,9 +102,12 @@ export class ExpenseCategories implements OnInit {
       return;
     }
 
+    this.isPurchase.set(category.isPurchase ?? false);
+    this.type.set(category.type);
+
     this.selectedCategory.set(category);
     this.viewType.set('edit');
-    this.formTitle.set('Edit expense');
+    this.formTitle.set(category.isPurchase ? 'Edit item' : 'Edit expense');
     this.formDescription.set(`Updating ${category.name}`);
     this.viewDetails.set(true);
   }
@@ -109,6 +120,8 @@ export class ExpenseCategories implements OnInit {
     this.viewDetails.set(false);
     this.viewType.set('');
     this.formTitle.set('');
+    this.isPurchase.set(false);
+    this.type.set('TRIP');
     this.formDescription.set('');
     this.selectedCategory.set(undefined);
     await this.expenseCategoryService.getAll();
@@ -123,13 +136,19 @@ export class ExpenseCategories implements OnInit {
   }
 
   async addNewExpense(categoryId: string) {
+    const expenseCategory = this.officeCategories().find(cat => cat.id === categoryId);
+    if (!expenseCategory) {
+      console.error('Parent category not found for id:', categoryId);
+      return;
+    }
     this.savingNewExpense[categoryId] = true;
     try{
       await this.expenseCategoryService.create(
         this.newExpenseName(),
-        'OFFICE',
+        expenseCategory.type,
+        expenseCategory.isPurchase,
         '',
-        'OTHER',
+        expenseCategory.category,
         this.newExpenseIsActive,
         categoryId
       );

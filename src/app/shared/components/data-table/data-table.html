@@ -4,9 +4,21 @@
     @if (title()) {
     <h2 class="table-title">{{ title() }}</h2>
     }
-    <div class="header-actions">
-      <input type="search" class="search-input" placeholder="Search table..." [value]="''"
-        (input)="onSearch($any($event.target).value)" aria-label="Search table contents" />
+    <div class="w-full flex justify-between">
+      <div class="header-actions">
+        <input type="search" class="search-input" placeholder="Search table..." [value]="''"
+          (input)="onSearch($any($event.target).value)" aria-label="Search table contents" />
+      </div>
+      @if (showAddButton()) {
+      <a (click)="onAdd()"
+        class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+        </svg>
+        {{addButtonText()}}
+      </a>
+      }
     </div>
   </div>
 
@@ -98,7 +110,7 @@
                 <span class="truncate" [title]="row[column.key] | number">{{ row[column.key] | number}}</span>
                 }
                 @else {
-                  <span class="truncate" [title]="row[column.key]">{{ row[column.key] }}</span>
+                <span class="truncate" [title]="row[column.key]">{{ row[column.key] }}</span>
                 }
               </td>
               }

@@ -18,10 +18,13 @@ export class ExpenseCategoryForm implements OnInit {
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
   actionMessage = signal<string | null>(null);
+  type = input<'TRIP' | 'OFFICE'>('TRIP');
+  isPurchase = input(false);
+
 
   expenseName = '';
   category = 'GENERAL';
-  type: 'TRIP' | 'OFFICE' = null;
+  // type: 'TRIP' | 'OFFICE' = null;
   description = '';
   isActive = true;
   close = output();
@@ -38,7 +41,6 @@ export class ExpenseCategoryForm implements OnInit {
 
     this.expenseName = category.name;
     this.category = category.category || 'GENERAL';
-    this.type = category.type || null;
     this.description = category.description || '';
     this.isActive = category.isActive ?? category.status === 'Active';
   }
@@ -55,16 +57,21 @@ export class ExpenseCategoryForm implements OnInit {
   }
 
   async onSubmit() {
+    let trailingMessage = 'expense';
+    if(this.isPurchase()) {
+      trailingMessage = 'item';
+    }
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    this.actionMessage.set(this.isEditMode ? 'Updating expense...' : 'Saving expense...');
+    this.actionMessage.set(this.isEditMode ? `Updating ${trailingMessage}...` : `Saving ${trailingMessage}...`);
 
     try {
       if (this.isEditMode) {
         await this.expenseCategoryService.update(
           this.selectedCategory()!.id,
           this.expenseName,
-          this.type,
+          this.type(),
+          this.isPurchase(),
           this.description,
           this.category,
           this.isActive
@@ -72,7 +79,8 @@ export class ExpenseCategoryForm implements OnInit {
       } else {
         await this.expenseCategoryService.create(
           this.expenseName,
-          this.type,
+          this.type(),
+          this.isPurchase(),
           this.description,
           this.category,
           this.isActive

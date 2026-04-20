@@ -1,5 +1,5 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
-  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [showAddButton]="false">
   <ng-container ngProjectAs="main">
     <mat-tab-group>
       <mat-tab label="Trip Expenses">
@@ -7,13 +7,25 @@
           <span>Trip Expenses ({{ tripCategories().length }})</span>
         </ng-template>
         <app-data-table [data]="tripCategories()" [config]="tableConfigurations" (edit)="onEdit($event)"
-          [loading]="loading()"></app-data-table>
+          [loading]="loading()" [showAddButton]="true" [addButtonText]="'Add Trip Expenses'"
+          (add)="onAdd()"></app-data-table>
       </mat-tab>
       <mat-tab label="Office Expenses">
         <ng-template mat-tab-label>
           <span>Office Expenses ({{ officeCategories().length }})</span>
         </ng-template>
         <div class="w-full mt-4">
+          <div class="w-full flex justify-end">
+            <a (click)="onAdd(false, 'OFFICE')"
+              class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+              Add Office Expense
+            </a>
+          </div>
           <div
             class="grid grid-cols-3 w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-tl-xl rounded-tr-xl mb-2">
             <!-- <div class="col-span-1 font-bold text-gray-700 text-[13px]"></div> -->
@@ -121,16 +133,140 @@
         <!-- <app-data-table [data]="officeCategories()" [config]="tableConfigurations" (edit)="onEdit($event)"
           [loading]="loading()"></app-data-table> -->
       </mat-tab>
+       <mat-tab label="Purchase Items">
+        <ng-template mat-tab-label>
+          <span>Purchase Items ({{ purchaseCategories().length }})</span>
+        </ng-template>
+        <div class="w-full mt-4">
+          <div class="w-full flex justify-end">
+            <a (click)="onAdd(true, 'OFFICE')"
+              class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+              Add Purchase Item
+            </a>
+          </div>
+          <div
+            class="grid grid-cols-3 w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-tl-xl rounded-tr-xl mb-2">
+            <!-- <div class="col-span-1 font-bold text-gray-700 text-[13px]"></div> -->
+            <div class="col-span-1 font-bold text-gray-700 text-[13px]">Item Name</div>
+            <div class="col-span-1 font-bold text-gray-700 text-[13px]">Status</div>
+            <div class="col-span-1 font-bold text-gray-700 text-[13px] text-center">Actions</div>
+          </div>
+          <div class="w-full max-h-100 overflow-auto">
+            @for (category of purchaseCategories(); track $index) {
+            <div
+              class="grid grid-cols-3 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
+              <!-- <div class="col-span-1">{{ $index + 1 }}</div> -->
+              <div class="col-span-1">
+                @if (expandedCategoryId() !== category.id || expandedCategoryId() === null) {
+                <i class="fa-solid fa-circle-plus" (click)="setExpandedCategory(category.id)"></i>
+                }@else {
+                <i class="fa-solid fa-circle-minus" (click)="setExpandedCategory(category.id)"></i>
+                }
+                &nbsp;
+                <span class="font-bold">
+                  {{ category.name }}
+                </span>
+              </div>
+              <div class="col-span-1">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getStatusColor(category.status)">
+                  <span class="capitalize">{{ category.status }}</span>
+                </span>
+
+              </div>
+              <div class="col-span-1 text-center">
+                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(category)" title="Edit"></i>
+              </div>
+            </div>
+            @if(expandedCategoryId() === category.id) {
+            @for(expense of category.children; track expense.id) {
+            <div
+              class="ml-4 grid grid-cols-3 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
+              <!-- <div class="col-span-1">{{ $index + 1 }}</div> -->
+              <div class="col-span-1">
+                <!-- @if (expandedCategoryId() !== category.id || expandedCategoryId() === null) {
+                <i class="fa-solid fa-circle-plus" (click)="setExpandedCategory(category.id)"></i>
+                }@else {
+                <i class="fa-solid fa-circle-minus" (click)="setExpandedCategory(category.id)"></i>
+                }
+                &nbsp; -->
+                <span>
+                  {{ expense.name }}
+                </span>
+              </div>
+              <div class="col-span-1">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getStatusColor(expense.status)">
+                  <span class="capitalize">{{ expense.status }}</span>
+                </span>
+              </div>
+              <div class="col-span-1 text-center">
+                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(expense)" title="Edit"></i>
+              </div>
+            </div>
+            }
+            <div
+              class="ml-4 grid grid-cols-3 gap-2 w-full px-4 py-3 border border-gray-100 rounded-lg mb-2 items-center cursor-pointer hover:bg-gray-50">
+              <!-- <div class="col-span-1">{{ $index + 1 }}</div> -->
+              <div class="col-span-2">
+                <!-- <label class="text-[13px] font-bold text-gray-700 block mb-2">Expense Name</label> -->
+                <input type="text" placeholder="e.g. Fuel, Maintenance, Permits" [(ngModel)]="newExpenseName"
+                  name="expenseName"
+                  class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+              </div>
+              <div class="col-span-1">
+                <button
+                  class="w-full py-3 bg-primary text-white hover:bg-[#ff5117] rounded-lg cursor-pointer disabled:opacity-50"
+                  [disabled]="!newExpenseName() || savingNewExpense[category.id] || confirmSavingNewExpense[category.id]"
+                  (click)="confirmSavingNewExpense[category.id] = true">
+                  <span class="font-bold">Add Item</span>&nbsp;
+                  <span class="text-xs font-medium text-gray-200">({{category.name}})</span>
+                </button>
+              </div>
+              @if (confirmSavingNewExpense[category.id]) {
+              <div class="col-span-3 mt-2">
+                <div class="flex justify-end items-center space-x-2 mt-2">
+                  <span class="text-sm text-gray-600">Are you sure you want to add this item?</span>
+                  <button class="px-4 py-2 bg-gray-300 text-gray-700 hover:bg-gray-400 rounded-lg cursor-pointer"
+                    (click)="confirmSavingNewExpense[category.id] = false">
+                    Cancel
+                  </button>
+                  <button class="px-4 py-2 bg-success text-white hover:bg-[#ff5117] rounded-lg cursor-pointer"
+                    (click)="confirmSavingNewExpense[category.id] = false; addNewExpense(category.id)">
+                    Confirm
+                  </button>
+                </div>
+              </div>
+              } @else if (savingNewExpense[category.id]) {
+              <div class="col-span-3 mt-2 flex items-center gap-2">
+                <span class="loading loading-spinner loading-sm"></span>
+                <span class="text-sm text-gray-600">Saving new item...</span>
+              </div>
+              }
+            </div>
+            }
+            }
+          </div>
+        </div>
+        <!-- <app-data-table [data]="officeCategories()" [config]="tableConfigurations" (edit)="onEdit($event)"
+          [loading]="loading()"></app-data-table> -->
+      </mat-tab>
     </mat-tab-group>
 
   </ng-container>
   <ng-container ngProjectAs="form">
     @if (viewType() === 'add') {
-    <app-expense-category-form (close)="onCloseForm()"></app-expense-category-form>
+    <app-expense-category-form (close)="onCloseForm()" [type]="type()"
+      [isPurchase]="isPurchase()"></app-expense-category-form>
     }
     @if (viewType() === 'edit') {
-    <app-expense-category-form [selectedCategory]="selectedCategory()"
-      (close)="onCloseForm()"></app-expense-category-form>
+    <app-expense-category-form [selectedCategory]="selectedCategory()" (close)="onCloseForm()" [type]="type()"
+      [isPurchase]="isPurchase()"></app-expense-category-form>
     }
   </ng-container>
 </app-layout>

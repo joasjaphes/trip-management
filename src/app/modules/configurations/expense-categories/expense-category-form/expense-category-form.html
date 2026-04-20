@@ -24,12 +24,17 @@
 
       <!-- Category Name -->
       <div class="mb-6">
-        <label class="text-[13px] font-bold text-gray-700 block mb-2">Expense Name</label>
+        <label class="text-[13px] font-bold text-gray-700 block mb-2">
+          @if (isPurchase()) {
+          Item Name
+          } @else {
+          Expense
+          Name}</label>
         <input type="text" placeholder="e.g. Fuel, Maintenance, Permits" [(ngModel)]="expenseName" name="expenseName"
           class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
 
-      <div class="mb-8">
+      <!-- <div class="mb-8">
         <label class="text-[13px] font-bold text-gray-700 block mb-2">Expense Type</label>
         <div class="relative">
           <select [(ngModel)]="type" name="Expense Type"
@@ -42,9 +47,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
-      </div>
-      @if(type) {
-      @if (type === 'TRIP') {
+      </div> -->
+      @if(type()) {
+      @if (type() === 'TRIP') {
       <div class="mb-8">
         <label class="text-[13px] font-bold text-gray-700 block mb-2">Expense Category</label>
         <div class="relative">

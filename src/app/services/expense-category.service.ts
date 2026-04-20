@@ -59,7 +59,7 @@ export class ExpenseCategoryService {
   /**
    * Create a new category
    */
-  async create(name: string,  type?: 'TRIP' | 'OFFICE', description?: string, category?: string, isActive?: boolean, parentId?: string): Promise<void> {
+  async create(name: string,  type?: 'TRIP' | 'OFFICE', isPurchase?: boolean, description?: string, category?: string, isActive?: boolean, parentId?: string): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
@@ -69,6 +69,7 @@ export class ExpenseCategoryService {
         name,
         category: category || 'GENERAL',
         description: description || '',
+        isPurchase: isPurchase ?? false,
         isActive: isActive ?? true,
         type: type || 'TRIP',
         parentId: parentId
@@ -88,7 +89,7 @@ export class ExpenseCategoryService {
   /**
    * Update an existing category
    */
-  async update(id: string, name: string, type: 'TRIP' | 'OFFICE', description?: string, category?: string, isActive?: boolean): Promise<void> {
+  async update(id: string, name: string, type: 'TRIP' | 'OFFICE', isPurchase?: boolean, description?: string, category?: string, isActive?: boolean): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
@@ -97,6 +98,7 @@ export class ExpenseCategoryService {
       const payload = {
         id,
         name,
+        isPurchase: isPurchase ?? existingCategory?.isPurchase ?? false,
         category: category || existingCategory?.category || 'GENERAL',
         description: description ?? existingCategory?.description ?? '',
         isActive: isActive !== undefined ? isActive : (existingCategory?.isActive ?? true),
@@ -139,7 +141,7 @@ export class ExpenseCategoryService {
   async toggleActive(id: string): Promise<void> {
     const category = this.getById(id);
     if (category) {
-      await this.update(id, category.name, category.type, category.description, category.category, !category.isActive);
+      await this.update(id, category.name, category.type, category.isPurchase, category.description, category.category, !category.isActive);
     }
   }
 }
