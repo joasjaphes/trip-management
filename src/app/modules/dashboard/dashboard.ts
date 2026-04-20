@@ -16,38 +16,27 @@ export class Dashboard {
   customStartDate = signal<string>('');
   customEndDate = signal<string>('');
 
-  private multiplier = computed(() => {
-    switch (this.period()) {
-      case 'today': return 0.05;
-      case 'weekly': return 0.25;
-      case 'monthly': return 1.0;
-      case 'custom': return 1.5; 
-      default: return 1.0;
-    }
-  });
-
   readonly stats = computed(() => {
-    const mult = this.multiplier();
     return [
       {
         title: 'Total Revenue',
-        value: `TZS ${(45678000 * mult).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-        change: '+8%',
+        value: 'TZS 0',
+        change: '0%',
         icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
         color: 'bg-teal-500',
         link: '/trips'
       },
       {
         title: 'Total Trips',
-        value: Math.round(156 * mult).toString(),
-        change: '+12%',
+        value: '0',
+        change: '0%',
         icon: 'M13 10V3L4 14h7v7l9-11h-7z',
         color: 'bg-blue-500',
         link: '/trips'
       },
       {
         title: 'Active Trips',
-        value: Math.round(18 * mult).toString(),
+        value: '0',
         change: '0%',
         icon: 'M8 17a1 1 0 01-1-1V8a1 1 0 012 0v8a1 1 0 01-1 1zm4 0a1 1 0 01-1-1V8a1 1 0 012 0v8a1 1 0 01-1 1zm4 0a1 1 0 01-1-1V8a1 1 0 012 0v8a1 1 0 01-1 1z M3 19a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14z',
         color: 'bg-emerald-500',
@@ -55,8 +44,8 @@ export class Dashboard {
       },
       {
         title: 'Total Outstanding',
-        value: `TZS ${(35678000 * mult).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-        change: '+3%',
+        value: 'TZS 0',
+        change: '0%',
         icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
         color: 'bg-rose-500',
         link: '/drivers'
@@ -64,39 +53,8 @@ export class Dashboard {
     ];
   });
 
-  private allMockTrips = [
-    { id: 1, route: 'Dar - Kasumbalesa', driver: 'John Kamau', vehicle: 'T 123 EAS', date: '2026-03-01', status: 'completed', revenue: 15000000 },
-    { id: 2, route: 'Dar - Lubumbashi', driver: 'Mary Wanjiku', vehicle: 'T 435 EAD', date: '2026-03-01', status: 'in-progress', revenue: 15000000 },
-    { id: 3, route: 'Dar - Lubumbashi', driver: 'Peter Ochieng', vehicle: 'T 467 EAB', date: '2026-02-29', status: 'completed', revenue: 15000000 },
-    { id: 4, route: 'Nairobi - Eldoret', driver: 'Jane Akinyi', vehicle: 'KDA 321D', date: '2026-02-29', status: 'completed', revenue: 10000 },
-    { id: 5, route: 'Dar - Arusha', driver: 'Ali Hassan', vehicle: 'T 999 xyz', date: '2026-03-10', status: 'pending', revenue: 800000 },
-    { id: 6, route: 'Dodoma - Mbeya', driver: 'Juma Juma', vehicle: 'T 111 AAA', date: '2026-03-12', status: 'cancelled', revenue: 0 },
-  ];
-
   readonly recentTrips = computed(() => {
-    const startDate = this.customStartDate();
-    const endDate = this.customEndDate();
-
-    const tripsInRange = this.allMockTrips.filter((trip) => {
-      if (startDate && trip.date < startDate) {
-        return false;
-      }
-
-      if (endDate && trip.date > endDate) {
-        return false;
-      }
-
-      return true;
-    });
-
-    // To simulate non-custom periods, we still slice the array differently.
-    switch (this.period()) {
-      case 'today': return this.allMockTrips.slice(0, 1);
-      case 'weekly': return this.allMockTrips.slice(0, 3);
-      case 'monthly': return this.allMockTrips.slice(0, 5);
-      case 'custom': return tripsInRange;
-      default: return this.allMockTrips.slice(0, 3);
-    }
+    return [];
   });
 
   readonly tripStatusSummary = computed(() => {
