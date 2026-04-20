@@ -218,19 +218,23 @@ export class Trips implements OnInit {
   }
 
   async completeTrip(trip: Trip) {
+    console.log('Completing trip:', trip);
     if (!trip?.id || trip.status === 'Completed') {
       return;
     }
-
-    // await this.tripService.updateStatus(trip.id, TripStatus.COMPLETED);
-    await this.tripService.update(trip.id, {
-      ...trip,
-      status: TripStatus.COMPLETED,
-      endDate: trip.endDate || moment(new Date()).format('YYYY-MM-DD')
-    });
-    const refreshedTrip = this.tripService.getById(trip.id);
-    if (refreshedTrip) {
-      this.selectedTrip.set(refreshedTrip);
+    try {
+      // await this.tripService.updateStatus(trip.id, TripStatus.COMPLETED);
+      await this.tripService.update(trip.id, {
+        ...trip,
+        status: TripStatus.COMPLETED,
+        endDate: trip.endDate || moment(new Date()).format('YYYY-MM-DD')
+      });
+      const refreshedTrip = this.tripService.getById(trip.id);
+      if (refreshedTrip) {
+        this.selectedTrip.set(refreshedTrip);
+      }
+    } catch (e) {
+      console.error('Error completing trip:', e);
     }
   }
 

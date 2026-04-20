@@ -231,7 +231,6 @@
               <th class="border border-black p-2 w-[42%] font-bold text-[13px]">Description</th>
               <th class="border border-black p-2 w-[12%] font-bold text-[13px]">Quantity</th>
               <th class="border border-black p-2 w-[14%] font-bold text-[13px]">Rate<br>(USD)</th>
-              <th class="border border-black p-2 w-[10%] font-bold text-[13px]">per</th>
               <th class="border border-black p-2 w-[16%] font-bold text-[13px]">Amount (USD)</th>
             </tr> 
           </thead>
@@ -239,25 +238,15 @@
             <tr class="bg-white">
               <td class="border border-black p-2 align-middle text-[13px]">1</td>
               <td class="border border-black p-2 text-left align-top h-20 text-[13px]">
-                Transportation from Dar to <br>
-                {{ selectedInvoice()?.trip?.route?.name?.split('-')?.[1]?.trim() || selectedInvoice()?.trip?.route?.name || '-' | titlecase }} 
-                <span class="font-bold">({{ selectedInvoice()?.trip?.vehicle?.registrationNo || '-' }}
-                @if(selectedInvoice()?.trip?.trailer?.registrationNo) { & {{ selectedInvoice()?.trip?.trailer?.registrationNo }} }
-                )</span>
-                <br>
+                Transportation 
                 {{ selectedInvoice()?.description || '' }}
               </td>
-              <td class="border border-black p-2 align-middle text-[13px]">{{ 1 }}</td>
-              <td class="border border-black p-2 align-middle text-[13px]">{{ (selectedInvoice()?.subtotal || selectedInvoice()?.amount || 0) | number: '1.2-2' }}</td>
-              <td class="border border-black p-2 align-middle text-[13px]"></td>
+              <td class="border border-black p-2 align-middle text-[13px]">{{ selectedInvoice()?.quantity || 1 }}</td>
+              <td class="border border-black p-2 align-middle text-[13px]">{{ (selectedInvoice()?.rate || selectedInvoice()?.amount || 0) | number: '1.2-2' }}</td>
               <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ (selectedInvoice()?.subtotal || selectedInvoice()?.amount || 0) | number: '1.2-2' }}</td>
             </tr>
             <tr class="font-bold bg-white h-8">
-              <td class="border border-black p-2"></td>
-              <td class="border border-black p-2 text-left text-[14px]">Total</td>
-              <td class="border border-black p-2"></td>
-              <td class="border border-black p-2"></td>
-              <td class="border border-black p-2"></td>
+              <td class="border border-black p-2 text-left text-[14px]" colspan="4">Total</td>
               <td class="border border-black p-2 text-right pr-2 text-[14px]">{{ (selectedInvoice()?.subtotal || selectedInvoice()?.amount || 0) | number: '1.2-2' }}</td>
             </tr>
           </tbody>

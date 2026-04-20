@@ -104,7 +104,6 @@ export class TripDetail {
     this.confirmingComplete.set(false);
     this.complete.emit({
       ...trip,
-      status: TripStatus.COMPLETED,
       completionDocument: this.completionDocumentPath() || undefined,
       endDate: this.tripEndDate
     });

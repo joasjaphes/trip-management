@@ -13,7 +13,10 @@ export interface Invoice {
   paidAmount?: number;
   remainingAmount?:number;
   trip?: Trip;
+  tripReferenceNumber?: string;
   amount: number;
+  quantity?: number;
+  rate?: number;
   vatAmount?: number;
   subtotal?: number;
   description?: string;
