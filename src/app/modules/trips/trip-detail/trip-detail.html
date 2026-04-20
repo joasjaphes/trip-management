@@ -186,6 +186,14 @@
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Route Name</span>
               <span class="text-[16px] font-bold text-gray-900">{{ trip()?.route?.name || '-' }}</span>
             </div>
+            <div class="flex flex-col gap-2">
+              <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Container/Document Number</span>
+              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.docNumber || '-' }}</span>
+            </div>
+            <div class="flex flex-col gap-2">
+              <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Offloading Place</span>
+              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.offloadingPlaceName || trip()?.offloadingPlace?.name || '-' }}</span>
+            </div>
             <div class="col-span-2 flex items-center justify-between mt-2 pt-8 border-t border-gray-100">
               <div class="flex flex-col gap-2">
                 <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Origin</span>
@@ -364,7 +372,52 @@
                   '-' }}</span>
               </div>
             </div>
+
+            <!-- Trailer Card -->
+            <div
+              class="bg-gray-50 border border-gray-100 rounded-xl p-5 flex items-center gap-4 hover:border-[#f25f2f]/30 transition-colors cursor-pointer group">
+              <div
+                class="bg-red-50 text-[#f25f2f] rounded-full w-12 h-12 flex items-center justify-center shrink-0 border border-red-100 group-hover:bg-[#f25f2f] group-hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 17h6M9 13h6m-6-4h6m2 10H7a2 2 0 01-2-2V7a2 2 0 012-2h6.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V17a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[9px] font-extrabold tracking-widest text-gray-400 uppercase mb-1">Trailer</span>
+                <span class="text-[15px] font-extrabold text-gray-900 leading-tight">{{ trip()?.trailer?.registrationNo || trip()?.trailerId || '-' }}</span>
+                <span class="text-[12px] font-medium text-gray-400 mt-0.5">Plate: {{ trip()?.trailer?.registrationNo || '-' }}</span>
+              </div>
+            </div>
           </div>
+        </div>
+
+        <!-- Trip Document Attachment -->
+        <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
+          <div class="flex items-center gap-3 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 7a2 2 0 012-2h6a2 2 0 012 2v10a2 2 0 01-2 2H9a2 2 0 01-2-2V7z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6M9 15h4" />
+            </svg>
+            <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">Attachment</h2>
+          </div>
+
+          @if (trip()?.tripDocument) {
+          <div class="rounded-xl border border-orange-100 bg-orange-50 px-4 py-4">
+            <p class="text-[13px] font-bold text-gray-900 truncate mb-3">
+              {{ trip()?.tripDocument ? trip()?.tripDocument?.split('/').pop() : '-' }}
+            </p>
+            <button type="button" (click)="previewTripDocument()" [disabled]="!tripDocumentUrl()"
+              class="btn min-h-0 h-9 border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-4 text-[12px] font-extrabold rounded-lg disabled:bg-gray-300 disabled:hover:bg-gray-300 disabled:text-gray-500">
+              Preview Attachment
+            </button>
+          </div>
+          } @else {
+          <p class="text-[14px] text-gray-500">No trip attachment uploaded.</p>
+          }
         </div>
 
         <!-- Trip Notes -->

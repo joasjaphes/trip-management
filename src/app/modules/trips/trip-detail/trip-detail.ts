@@ -32,6 +32,7 @@ export class TripDetail {
   completionDocumentUploading = signal(false);
   completionDocumentError = signal<string | null>(null);
   completionDocumentSuccess = signal<string | null>(null);
+  tripDocumentUrl = signal<string | undefined>(undefined);
 
   canConfirmCompletion = computed(() => {
     return !!this.tripEndDate && !this.completing() && !this.completionDocumentUploading();
@@ -50,6 +51,7 @@ export class TripDetail {
       const selectedTrip = this.trip();
       this.tripEndDate = selectedTrip?.endDate ? this.toDateInputValue(selectedTrip.endDate) : undefined;
       void this.hydrateCompletionDocument(selectedTrip?.completionDocument);
+      void this.hydrateTripDocument(selectedTrip?.tripDocument);
     });
   }
 
@@ -152,6 +154,16 @@ export class TripDetail {
     this.completionDocumentUrl.set(url);
   }
 
+  private async hydrateTripDocument(path: string | undefined) {
+    if (!path) {
+      this.tripDocumentUrl.set(undefined);
+      return;
+    }
+
+    const url = await this.fileUploadService.resolveFileUrl(path);
+    this.tripDocumentUrl.set(url || undefined);
+  }
+
   async onCompletionDocumentSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files && input.files[0] ? input.files[0] : undefined;
@@ -199,6 +211,15 @@ export class TripDetail {
     const url = this.completionDocumentUrl();
     if (!url) {
       this.completionDocumentError.set('Document preview is not available.');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  previewTripDocument() {
+    const url = this.tripDocumentUrl();
+    if (!url) {
       return;
     }
 
