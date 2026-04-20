@@ -72,10 +72,10 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="stat.icon" />
                 </svg>
               </div>
-              <p class="text-sm font-bold" [class.text-emerald-500]="stat.change.startsWith('+')"
+              <!-- <p class="text-sm font-bold" [class.text-emerald-500]="stat.change.startsWith('+')"
                 [class.text-red-500]="stat.change.startsWith('-')" [class.text-gray-400]="stat.change === '0%'">
                 {{ stat.change }}
-              </p>
+              </p> -->
             </div>
             <p class="text-gray-400 text-sm mb-1 font-semibold">{{ stat.title }}</p>
             <p class="text-3xl font-bold text-gray-900">{{ stat.value | number }}</p>
