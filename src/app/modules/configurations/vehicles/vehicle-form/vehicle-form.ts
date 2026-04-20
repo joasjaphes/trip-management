@@ -235,13 +235,57 @@ export class VehicleForm implements OnInit {
     this.trailerSuspension = '';
   }
 
+  private parseDateOnly(value: string): Date | null {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) {
+      return null;
+    }
+
+    const year = Number(match[1]);
+    const monthIndex = Number(match[2]) - 1;
+    const day = Number(match[3]);
+    const parsedDate = new Date(year, monthIndex, day);
+
+    if (
+      parsedDate.getFullYear() !== year ||
+      parsedDate.getMonth() !== monthIndex ||
+      parsedDate.getDate() !== day
+    ) {
+      return null;
+    }
+
+    return parsedDate;
+  }
+
   toDateValue(value: string | undefined): Date | null {
     if (!value) {
       return null;
     }
 
+    const dateOnlyValue = this.parseDateOnly(value);
+    if (dateOnlyValue) {
+      return dateOnlyValue;
+    }
+
     const parsedDate = new Date(value);
     return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
+
+  getPermitEndDateFilter(permit: PermitRow): (date: Date | null) => boolean {
+    return (date: Date | null) => {
+      if (!date) {
+        return true;
+      }
+
+      const startDate = this.toDateValue(permit.startDate);
+      if (!startDate) {
+        return true;
+      }
+
+      const current = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const min = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      return current >= min;
+    };
   }
 
   toDateString(value: Date | null): string {

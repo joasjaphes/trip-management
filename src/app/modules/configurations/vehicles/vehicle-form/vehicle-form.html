@@ -212,6 +212,7 @@
         <div class="col-span-3">
           <div class="relative">
             <input [matDatepicker]="permitEndPicker" [value]="toDateValue(permit.endDate)" [min]="toDateValue(permit.startDate)"
+              [matDatepickerFilter]="getPermitEndDateFilter(permit)"
               [disabled]="!permit.startDate" (dateChange)="onPermitEndDateChanged(permit.id, $event.value)"
               [name]="'permitEnd_' + permit.id" readonly
               class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 pr-9 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">

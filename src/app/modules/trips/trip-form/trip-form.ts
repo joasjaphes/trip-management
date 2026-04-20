@@ -92,7 +92,7 @@ export class TripForm implements OnInit {
   expenseCategories = computed(() =>
     this.expenseCategoryService
       .allCategories()
-      .filter((category) => category.isActive || category.status === 'Active' && category.type === 'TRIP')
+      .filter((category) => (category.isActive || category.status === 'Active') && category.type === 'TRIP')
   );
   loading = computed(() => this.tripService.loading() || this.tripExpenseService.loading());
   pendingUploads = signal(0);
@@ -190,6 +190,8 @@ export class TripForm implements OnInit {
       this.initialTripState.set(undefined);
       return;
     }
+
+    console.log('Editing Trip', trip);
     this.tripDate = moment(new Date(trip.tripDate)).format('YYYY-MM-DD');
     this.endDate = trip.endDate ? moment(new Date(trip.endDate)).format('YYYY-MM-DD') : null;
     this.vehicleId = trip.vehicleId || '';

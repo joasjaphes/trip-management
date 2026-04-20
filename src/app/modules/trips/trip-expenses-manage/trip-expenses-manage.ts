@@ -45,7 +45,7 @@ export class TripExpensesManage {
     expenseCategories = computed(() =>
         this.expenseCategoryService
             .allCategories()
-            .filter((category) => category.isActive || category.status === 'Active' && category.type === 'TRIP')
+            .filter((category) => (category.isActive || category.status === 'Active') && category.type === 'TRIP')
     );
 
     loading = computed(() => this.tripExpenseService.loading());
