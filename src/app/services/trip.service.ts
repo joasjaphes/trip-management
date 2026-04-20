@@ -70,6 +70,7 @@ export class TripService {
     }
   }
 
+
   getById(id: string): Trip | undefined {
     return this.trips().find((t) => t.id === id);
   }

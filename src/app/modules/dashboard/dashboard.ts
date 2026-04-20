@@ -1,26 +1,75 @@
-import { Component, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, computed, inject, Inject, resource, signal } from '@angular/core';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { HttpClientService } from '../../services/http-client.service';
+import moment from 'moment';
+import { Trip, TripStatus } from '../../models';
+import { Placeholder } from '../../shared/components/placeholder/placeholder';
+
+
+
+export type DashboardSummary = {
+  totalRevenue: number;
+  totalTrips: number;
+  activeTrips: number;
+  outstandingAmount: number;
+  completedTrips: number;
+  inProgressTrips: number;
+  recentTrips: Trip[];
+}
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterLink, FormsModule, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, RouterLink, FormsModule, MatDatepickerModule, MatNativeDateModule,Placeholder,DecimalPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-  period = signal<'today' | 'weekly' | 'monthly' | 'custom'>('today');
+  period = signal<'today' | 'weekly' | 'monthly' | 'custom'>('monthly');
   customStartDate = signal<string>('');
   customEndDate = signal<string>('');
+  http = inject(HttpClientService);
+  summary = resource<DashboardSummary, DashboardSummary>({
+    loader: async () => {
+      const start = moment(this.dateRange().start).format('YYYY-MM-DD');
+      const end = moment(this.dateRange().end).format('YYYY-MM-DD');
+      return await this.http.get(`trips/stats?startDate=${start}&endDate=${end}`);
+    }
+  });
+  loading = this.summary.isLoading;
+
+  dateRange = computed(() => {
+    const today = new Date();
+    switch (this.period()) {
+      case 'today':
+        return { start: today, end: today };
+      case 'weekly': {
+        const start = new Date(today);
+        start.setDate(today.getDate() - 7);
+        return { start, end: today };
+      }
+      case 'monthly': {
+        const start = new Date(today);
+        start.setMonth(today.getMonth() - 1);
+        return { start, end: today };
+      }
+      case 'custom':
+        return {
+          start: this.toDateValue(this.customStartDate()),
+          end: this.toDateValue(this.customEndDate())
+        };
+    }
+  });
 
   readonly stats = computed(() => {
+    const summary = this.summary.value;
     return [
       {
-        title: 'Total Revenue',
-        value: 'TZS 0',
+        title: 'Total Revenue (TZS)',
+        value: summary()?.totalRevenue || 0,
         change: '0%',
         icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
         color: 'bg-teal-500',
@@ -28,7 +77,7 @@ export class Dashboard {
       },
       {
         title: 'Total Trips',
-        value: '0',
+        value: summary()?.totalTrips || 0,
         change: '0%',
         icon: 'M13 10V3L4 14h7v7l9-11h-7z',
         color: 'bg-blue-500',
@@ -36,15 +85,15 @@ export class Dashboard {
       },
       {
         title: 'Active Trips',
-        value: '0',
+        value: summary()?.activeTrips || 0,
         change: '0%',
         icon: 'M8 17a1 1 0 01-1-1V8a1 1 0 012 0v8a1 1 0 01-1 1zm4 0a1 1 0 01-1-1V8a1 1 0 012 0v8a1 1 0 01-1 1zm4 0a1 1 0 01-1-1V8a1 1 0 012 0v8a1 1 0 01-1 1z M3 19a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14z',
         color: 'bg-emerald-500',
         link: '/vehicles'
       },
       {
-        title: 'Total Outstanding',
-        value: 'TZS 0',
+        title: 'Total Outstanding (TZS)',
+        value: summary()?.outstandingAmount || 0,
         change: '0%',
         icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
         color: 'bg-rose-500',
@@ -54,24 +103,24 @@ export class Dashboard {
   });
 
   readonly recentTrips = computed(() => {
+    const summary = this.summary.value;
+    if (summary) {
+      return summary().recentTrips || [];
+    }
     return [];
   });
-
+  tripStatus = TripStatus;
   readonly tripStatusSummary = computed(() => {
-    const currentTrips = this.recentTrips();
-    const total = currentTrips.length;
+    const summary = this.summary.value;
+    const total = summary()?.totalTrips || 0;
     const countByStatus = {
-      completed: currentTrips.filter((trip) => trip.status === 'completed').length,
-      'in-progress': currentTrips.filter((trip) => trip.status === 'in-progress').length,
-      pending: currentTrips.filter((trip) => trip.status === 'pending').length,
-      cancelled: currentTrips.filter((trip) => trip.status === 'cancelled').length,
+      completed: summary()?.completedTrips || 0,
+      'in-progress': summary()?.inProgressTrips || 0,
     };
 
     const rows = [
       { key: 'completed', label: 'Completed', count: countByStatus.completed, color: '#10b981' },
       { key: 'in-progress', label: 'In Progress', count: countByStatus['in-progress'], color: '#3b82f6' },
-      { key: 'pending', label: 'Pending', count: countByStatus.pending, color: '#f59e0b' },
-      { key: 'cancelled', label: 'Cancelled', count: countByStatus.cancelled, color: '#ef4444' },
     ];
 
     return rows.map((row) => ({
@@ -99,7 +148,7 @@ export class Dashboard {
     return `conic-gradient(${slices.join(', ')})`;
   });
 
-  readonly totalTrips = computed(() => this.recentTrips().length);
+  readonly totalTrips = computed(() => this.summary.value().totalTrips || 0);
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
@@ -136,9 +185,11 @@ export class Dashboard {
 
   setCustomStartDate(value: Date | null) {
     this.customStartDate.set(this.toDateString(value));
+    this.summary.reload();
   }
 
   setCustomEndDate(value: Date | null) {
     this.customEndDate.set(this.toDateString(value));
+    this.summary.reload();
   }
 }
