@@ -1,6 +1,6 @@
 {
     "server": {
-        "url": "https://triptrucks.mosheltec.com/api",
+        "url": "https://triptrucks.com/api",
         "url1": "http://localhost:3000/api",
         "imageUrl": "http://localhost:3000"
     },
