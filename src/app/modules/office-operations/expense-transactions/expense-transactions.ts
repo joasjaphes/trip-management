@@ -63,6 +63,9 @@ export class ExpenseTransactions implements OnInit {
       { key: 'transactionAmount', label: 'Amount', type: 'number' },
       { key: 'attachmentName', label: 'Attachment' },
     ],
+    actions: {
+      edit:true,
+    }
   };
 
   async ngOnInit(): Promise<void> {

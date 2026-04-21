@@ -1,8 +1,10 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { HttpClientService } from './http-client.service';
 import { ExpenseTransaction } from '../models/expense-transaction.model';
+import { identity } from 'rxjs';
 
 export type ExpenseTransactionPayload = {
+  id:string;
   expenseId: string;
   vendorName: string;
   vendorTIN: string;
@@ -56,6 +58,7 @@ export class ExpenseTransactionService {
 
     try {
       await this.http.post('expenseTransactions', {
+        id: transaction.id,
         expenseId: transaction.expenseId,
         vendorName: transaction.vendorName,
         vendorTIN: transaction.vendorTIN,
