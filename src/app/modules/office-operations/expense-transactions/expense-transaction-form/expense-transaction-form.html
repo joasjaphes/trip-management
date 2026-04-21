@@ -1,0 +1,209 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  <div class="bg-white border border-gray-100 rounded-2xl p-8 relative overflow-hidden shadow-sm">
+    <div class="flex items-center justify-between mb-6 relative z-10">
+      <div class="flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="w-5 h-5 text-[#f25f2f]">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">
+          @if (isEditMode()) {
+            Edit Expense Transaction
+          } @else {
+            Post Office Expense Transactions
+          }
+        </h3>
+      </div>
+
+      @if (!isEditMode()) {
+        <button type="button" (click)="addRow()" [disabled]="!canAddRow()"
+          class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide inline-flex items-center gap-2 disabled:text-gray-300 disabled:cursor-not-allowed">
+          + Add Expense
+        </button>
+      }
+    </div>
+
+    @if (!isEditMode()) {
+      <div class="mb-4 text-[12px] font-semibold text-gray-500">
+        Rows: {{ rows().length }} / 10
+      </div>
+    }
+
+    @if (actionMessage()) {
+      <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+        <span class="loading loading-spinner loading-sm"></span>
+        <span>{{ actionMessage() }}</span>
+      </div>
+    }
+
+    @if (successMessage()) {
+      <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">{{ successMessage() }}</div>
+    }
+
+    @if (errorMessage()) {
+      <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{ errorMessage() }}</div>
+    }
+
+    <div class="grid grid-cols-18 gap-x-4 mb-2 px-2 relative z-10">
+      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Transaction Date</div>
+      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor Name</div>
+      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor TIN</div>
+      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Expense</div>
+      <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Quantity</div>
+      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Unit price</div>
+      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Amount</div>
+      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Attachment</div>
+      <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Delete</div>
+    </div>
+
+    @for (row of rows(); track row.id) {
+      <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-18 gap-x-4 items-center mb-3 relative z-10">
+        <div class="col-span-2">
+          <div class="relative">
+            <input
+              [matDatepicker]="transactionDatePicker"
+              [value]="toDateObject(row.transactionDate)"
+              (dateChange)="onTransactionDateChanged(row.id, $event.value)"
+              [max]="today"
+              readonly
+              class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 pr-9 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors"
+            >
+            <button type="button" (click)="transactionDatePicker.open()"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+              aria-label="Open transaction date picker">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <mat-datepicker #transactionDatePicker></mat-datepicker>
+          </div>
+        </div>
+
+        <div class="col-span-3">
+          <input
+            type="text"
+            placeholder="e.g. Stationery Supplies Ltd"
+            [value]="row.vendorName"
+            (input)="updateRowField(row.id, 'vendorName', $any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+          >
+        </div>
+
+        <div class="col-span-3">
+          <input
+            type="text"
+            placeholder="e.g. TIN-123456789"
+            [value]="row.vendorTIN"
+            (input)="updateRowField(row.id, 'vendorTIN', $any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+          >
+        </div>
+
+        <div class="col-span-2 relative">
+          <select [value]="row.expenseId"
+            (change)="updateRowField(row.id, 'expenseId', $any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+            <option value="" disabled>Select Expense</option>
+            @for (expense of officeExpenses(); track expense.id) {
+              <option [value]="expense.id">{{ expense.name }}</option>
+            }
+          </select>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+
+        <div class="col-span-1">
+          <input
+            type="number"
+            min="0"
+            step="1"
+            placeholder="0"
+            [value]="row.quantity"
+            (input)="updateRowField(row.id, 'quantity', $any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+          >
+        </div>
+
+        <div class="col-span-2">
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            [value]="row.unitPrice"
+            (input)="updateRowField(row.id, 'unitPrice', $any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+          >
+        </div>
+
+        <div class="col-span-2">
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            [value]="row.transactionAmount"
+            (input)="updateRowField(row.id, 'transactionAmount', $any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
+          >
+        </div>
+
+        <div class="col-span-2 flex flex-col gap-1">
+          <label class="cursor-pointer w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-lg bg-white hover:bg-gray-50 py-2.5 transition-colors text-gray-400 hover:text-[#f25f2f]">
+            <span class="text-[12px] font-semibold">
+              @if (row.isUploadingAttachment) {
+                Uploading...
+              } @else if (row.attachmentName) {
+                Change file
+              } @else {
+                Upload file
+              }
+            </span>
+            <input type="file" accept="image/*,application/pdf" class="hidden" [disabled]="saving() || row.isUploadingAttachment"
+              (change)="onAttachmentSelected($event, row.id)">
+          </label>
+
+          <div class="min-h-4 text-[11px] text-gray-400 truncate" [title]="row.attachmentName || ''">
+            @if (row.attachmentName) {
+              {{ row.attachmentName }}
+            } @else {
+              No attachment
+            }
+          </div>
+        </div>
+
+        <div class="col-span-1 text-right">
+          <button type="button" (click)="removeRow(row.id)" [disabled]="isEditMode() || saving()"
+            class="text-gray-400 hover:text-[#f25f2f] transition-colors shrink-0 p-1 disabled:text-gray-300 disabled:cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              class="w-[18px] h-[18px]">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (officeExpenses().length === 0) {
+      <p class="text-[12px] text-amber-600 mb-6">No OFFICE leaf expenses found. Add office expense categories without children first.</p>
+    }
+
+    @if (!isEditMode() && rows().length >= 10) {
+      <p class="text-[12px] text-amber-600 mb-6">You reached the limit of 10 transactions per batch.</p>
+    }
+
+    <app-save-area
+      [saveText]="isEditMode() ? 'Update Transaction' : 'Post Transactions'"
+      [loading]="saving()"
+      [disabled]="!canSave()"
+      (cancel)="goBack()"
+      (save)="onSubmit()"
+    ></app-save-area>
+  </div>
+</div>

@@ -81,7 +81,7 @@
             }
             @else if (paginatedData().length > 0) {
             @for (row of paginatedData(); track $index) {
-            <tr>
+            <tr (click)="onRowClick(row)" class="cursor-pointer">
               <!-- Selection checkbox -->
               <!-- <td class="col-select">
             <input type="checkbox" [checked]="selectedRows().has($index)" (change)="onSelectRow($index, $event)"

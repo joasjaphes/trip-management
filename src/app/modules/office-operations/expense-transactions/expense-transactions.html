@@ -1,0 +1,14 @@
+<app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [showAddButton]="showAddButton()" [splitSize]="splitSize()">
+  <ng-container ngProjectAs="main">
+    <app-data-table [data]="transactions()" [config]="tableConfigurations" (rowClick)="onEdit($event)" [loading]="loading()"
+      [showAddButton]="true" [addButtonText]="'Post expense transaction'" (add)="onAdd()"></app-data-table>
+  </ng-container>
+
+  <ng-container ngProjectAs="form">
+    @if (viewType() === 'add' || viewType() === 'edit') {
+      <app-expense-transaction-form [transaction]="selectedTransaction()" [officeExpenses]="officeLeafExpenses()"
+        (close)="onCloseForm()"></app-expense-transaction-form>
+    }
+  </ng-container>
+</app-layout>

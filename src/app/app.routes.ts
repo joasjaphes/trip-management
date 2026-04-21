@@ -110,6 +110,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./modules/configurations/expense-categories/expense-categories').then(m => m.ExpenseCategories),
             },
             {
+                path: 'expense-transactions',
+                loadComponent: () => import('./modules/office-operations/expense-transactions/expense-transactions').then(m => m.ExpenseTransactions),
+            },
+            {
                 path: 'cargo-types',
                 loadComponent: () => import('./modules/configurations/cargo-types/cargo-types').then(m => m.CargoTypes),
             },

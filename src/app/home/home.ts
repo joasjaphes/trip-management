@@ -60,6 +60,14 @@ export class Home implements OnInit {
       ]
     },
     {
+      label: 'Office Operations',
+      icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+      items: [
+        { label: 'Expense Transactions', icon: 'M4 7h16M4 12h16M4 17h10', route: '/expense-transactions' },
+        { label: 'Purchases', icon: 'M4 7h16M4 12h16M4 17h10', route: '/purchases' },
+      ]
+    },
+    {
       label: 'Reports',
       icon: 'M9 17v-6m4 6V7m4 10v-3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z',
       items: [
@@ -83,7 +91,7 @@ export class Home implements OnInit {
         { label: 'Expenses', icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z', route: '/expense-categories' },
         { label: 'Company Profile', icon: 'M12 4a8 8 0 100 16 8 8 0 000-16zm0 2a6 6 0 110 12A6 6 0 0112 6zm0 2a4 4 0 100 8 4 4 0 000-8z', route: '/company-profile' },
       ]
-    },    
+    },
     {
       label: 'User Management',
       icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
