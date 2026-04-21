@@ -7,8 +7,10 @@ import { CommonService } from '../../../../services/common.service';
 import { ExpenseTransactionService } from '../../../../services/expense-transaction.service';
 import { FileUploadService } from '../../../../services/file-upload.service';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
+import { NumberFormatDirective } from '../../../../shared/directives/number-format';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 type ExpenseTransactionDraft = {
   id: string;
@@ -16,9 +18,9 @@ type ExpenseTransactionDraft = {
   expenseId: string;
   vendorName: string;
   vendorTIN: string;
-  quantity: string;
-  unitPrice: string;
-  transactionAmount: string;
+  quantity: number;
+  unitPrice: number;
+  transactionAmount: number;
   attachment?: string;
   attachmentName?: string;
   isUploadingAttachment?: boolean;
@@ -28,7 +30,8 @@ const MAX_BATCH_TRANSACTIONS = 10;
 
 @Component({
   selector: 'app-expense-transaction-form',
-  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './expense-transaction-form.html',
 })
 export class ExpenseTransactionForm {
@@ -56,6 +59,10 @@ export class ExpenseTransactionForm {
 
   canSave = computed(() => this.hasValidRows() && !this.saving());
 
+  private calculateTransactionAmount(quantity: number, unitPrice: number): number {
+    return Number((quantity * unitPrice).toFixed(2));
+  }
+
   constructor() {
     effect(() => {
       const record = this.transaction();
@@ -67,9 +74,9 @@ export class ExpenseTransactionForm {
             expenseId: record.expenseId,
             vendorName: record.vendorName,
             vendorTIN: record.vendorTIN,
-            quantity: String(record.quantity ?? ''),
-            unitPrice: String(record.unitPrice ?? ''),
-            transactionAmount: String(record.transactionAmount || ''),
+            quantity: record.quantity || 1,
+            unitPrice: record.unitPrice ?? 0,
+            transactionAmount: this.calculateTransactionAmount(record.quantity || 1, record.unitPrice ?? 0),
             attachment: record.attachment,
             attachmentName: this.fileUploadService.getFileName(record.attachment),
             isUploadingAttachment: false,
@@ -92,9 +99,9 @@ export class ExpenseTransactionForm {
       expenseId: '',
       vendorName: '',
       vendorTIN: '',
-      quantity: '',
-      unitPrice: '',
-      transactionAmount: '',
+      quantity: 1,
+      unitPrice: 0,
+      transactionAmount: 0,
       attachment: undefined,
       attachmentName: undefined,
       isUploadingAttachment: false,
@@ -182,7 +189,23 @@ export class ExpenseTransactionForm {
 
   updateRowField(rowId: string, field: keyof ExpenseTransactionDraft, value: string) {
     this.rows.update((rows) =>
-      rows.map((row) => (row.id === rowId ? { ...row, [field]: value } : row))
+      rows.map((row) => {
+        if (row.id !== rowId) {
+          return row;
+        }
+
+        if (field === 'quantity' || field === 'unitPrice') {
+          const parsedValue = Number(value);
+          const numericValue = Number.isFinite(parsedValue) ? parsedValue : 0;
+          const nextRow = { ...row, [field]: numericValue };
+          return {
+            ...nextRow,
+            transactionAmount: this.calculateTransactionAmount(nextRow.quantity, nextRow.unitPrice),
+          };
+        }
+
+        return { ...row, [field]: value };
+      })
     );
   }
 
@@ -273,6 +296,7 @@ export class ExpenseTransactionForm {
       if (this.isEditMode()) {
         const row = validRows[0];
         await this.expenseTransactionService.update(this.transaction()!.id, {
+          id: this.transaction()!.id,
           expenseId: row.expenseId,
           vendorName: row.vendorName.trim(),
           vendorTIN: row.vendorTIN.trim(),
@@ -286,6 +310,7 @@ export class ExpenseTransactionForm {
         await Promise.all(
           validRows.map((row) =>
             this.expenseTransactionService.create({
+              id: row.id,
               expenseId: row.expenseId,
               vendorName: row.vendorName.trim(),
               vendorTIN: row.vendorTIN.trim(),
