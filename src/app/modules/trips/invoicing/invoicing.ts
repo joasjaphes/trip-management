@@ -80,10 +80,11 @@ export class Invoicing implements OnInit {
       return {
         id: invoice.id,
         invoiceNumber: invoice.invoiceNumber || '-',
-        tripRoute: invoice.trip?.route?.name || invoice.tripId,
+        tripRoute: invoice.trips[0]?.route?.name || invoice.tripId,
         tripNumber: invoice.tripReferenceNumber || '-',
         rate:invoice.rate,
         quantity: invoice.quantity,
+        trucks: invoice.trucks || '-',
         description: invoice.description || '-',
         customer: invoice.customer?.name || '-',
         amount: Number(invoice.amount || 0),
@@ -473,7 +474,8 @@ export class Invoicing implements OnInit {
       <div class="content">
         <div class="meta">
           <div><div class="k">Customer</div><div class="v">${invoice.customer?.name || '-'}</div></div>
-          <div><div class="k">Trip</div><div class="v">${invoice.trip?.route?.name || invoice.tripId}</div></div>
+          <div><div class="k">Trip</div><div class="v">${invoice.trips[0]?.route?.name || invoice.tripId}</div></div>
+          <div><div class="k">Trucks</div><div class="v">${invoice.trucks || '-'}</div></div>
           <div><div class="k">Reference</div><div class="v">${receipt.reference || '-'}</div></div>
           <div><div class="k">Paid At</div><div class="v">${receipt.paidAt ? new Date(receipt.paidAt).toLocaleDateString() : '-'}</div></div>
         </div>
@@ -521,7 +523,8 @@ export class Invoicing implements OnInit {
       <div class="content">
         <div class="meta">
           <div><div class="k">Customer</div><div class="v">${invoice.customer?.name || '-'}</div></div>
-          <div><div class="k">Trip</div><div class="v">${invoice.trip?.route?.name || invoice.tripId}</div></div>
+          <div><div class="k">Trip</div><div class="v">${invoice.trips[0]?.route?.name || invoice.tripId}</div></div>
+          <div><div class="k">Trucks</div><div class="v">${invoice.trucks || '-'}</div></div>
           <div><div class="k">Invoice Amount</div><div class="v">${Number(invoice.amount || 0).toLocaleString()}</div></div>
           <div><div class="k">Printed On</div><div class="v">${new Date().toLocaleDateString()}</div></div>
         </div>

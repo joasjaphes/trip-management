@@ -107,10 +107,12 @@
                   <span class="capitalize">{{ getInvoiceStatusName(row[column.key]) }}</span>
                 </span>
                 }@else if(column.type === 'number') {
-                <span class="truncate" [title]="row[column.key] | number">{{ row[column.key] | number}}</span>
+                <span class="cell-ellipsis" [style.max-width]="column.width || '20rem'" [title]="row[column.key] | number">{{ row[column.key] | number}}</span>
                 }
                 @else {
-                <span class="truncate" [title]="row[column.key]">{{ row[column.key] }}</span>
+                <span [title]="row[column.key]" class="cell-ellipsis" [style.max-width]="column.width || '20rem'">
+                  {{ row[column.key] }}
+                </span>
                 }
               </td>
               }

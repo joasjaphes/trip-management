@@ -47,11 +47,9 @@
 
     <div class="grid grid-cols-18 gap-x-4 mb-2 px-2 relative z-10">
       <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Transaction Date</div>
-      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor Name</div>
-      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor TIN</div>
-      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Expense</div>
-      <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Quantity</div>
-      <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Unit price</div>
+      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor</div>
+      <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Description</div>
+      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Expense</div>
       <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Amount</div>
       <div class="col-span-2 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Attachment</div>
       <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Delete</div>
@@ -63,7 +61,7 @@
           <div class="relative">
             <input
               [matDatepicker]="transactionDatePicker"
-              [value]="toDateObject(row.transactionDate)"
+              [(ngModel)]="row.transactionDate"
               (dateChange)="onTransactionDateChanged(row.id, $event.value)"
               [max]="today"
               readonly
@@ -85,25 +83,27 @@
         <div class="col-span-3">
           <input
             type="text"
-            placeholder="e.g. Stationery Supplies Ltd"
-            [value]="row.vendorName"
-            (input)="updateRowField(row.id, 'vendorName', $any($event.target).value)"
+            autocomplete="off"
+            list="vendor-options"
+            placeholder="Select existing vendor or type a new name"
+            [(ngModel)]="row.vendorSearchTerm"
+            (input)="onVendorInput(row.id, $any($event.target).value)"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
           >
         </div>
 
-        <div class="col-span-3">
+        <div class="col-span-4">
           <input
             type="text"
-            placeholder="e.g. TIN-123456789"
-            [value]="row.vendorTIN"
-            (input)="updateRowField(row.id, 'vendorTIN', $any($event.target).value)"
+            placeholder="e.g. Fuel purchase for trip TRP-2026-001"
+            [(ngModel)]="row.description"
+            (input)="updateRowField(row.id, 'description', $any($event.target).value)"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
           >
         </div>
 
-        <div class="col-span-2 relative">
-          <select [value]="row.expenseId"
+        <div class="col-span-3 relative">
+          <select [(ngModel)]="row.expenseId"
             (change)="updateRowField(row.id, 'expenseId', $any($event.target).value)"
             class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
             <option value="" disabled>Select Expense</option>
@@ -117,48 +117,16 @@
           </svg>
         </div>
 
-        <div class="col-span-1">
-          <input
-            type="text"
-            min="0"
-            step="1"
-            placeholder="0"
-            [value]="row.quantity"
-            appNumberFormat
-            (input)="updateRowField(row.id, 'quantity', $any($event.target).value)"
-            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
-          >
-        </div>
-
         <div class="col-span-2">
           <input
             type="text"
             min="0"
             step="0.01"
             placeholder="0.00"
-            [value]="row.unitPrice"
+            [(ngModel)]="row.transactionAmount"
             appNumberFormat
-            matTooltip=""
-            matTooltipPosition="above"
-            matTooltipClass="with-arrow"
-            (input)="updateRowField(row.id, 'unitPrice', $any($event.target).value)"
-            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
-          >
-        </div>
-
-        <div class="col-span-2">
-          <input
-            type="text"
-            min="0"
-            step="0.01"
-            placeholder="0.00"
-            [value]="row.transactionAmount"
-            appNumberFormat
-            matTooltip=""
-            matTooltipPosition="above"
-            matTooltipClass="with-arrow"
-            disabled
-            class="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-700 transition-colors placeholder-gray-300 cursor-not-allowed"
+            (input)="updateRowField(row.id, 'transactionAmount', $any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
           >
         </div>
 
@@ -184,6 +152,17 @@
               No attachment
             }
           </div>
+
+          @if (row.attachment) {
+            <button
+              type="button"
+              (click)="previewAttachment(row.id)"
+              [disabled]="row.isUploadingAttachment"
+              class="w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[11px] font-semibold text-gray-600 transition-colors hover:text-[#f25f2f] hover:border-[#f25f2f] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Preview
+            </button>
+          }
         </div>
 
         <div class="col-span-1 text-right">
@@ -202,10 +181,15 @@
     @if (officeExpenses().length === 0) {
       <p class="text-[12px] text-amber-600 mb-6">No OFFICE leaf expenses found. Add office expense categories without children first.</p>
     }
-
     @if (!isEditMode() && rows().length >= 10) {
       <p class="text-[12px] text-amber-600 mb-6">You reached the limit of 10 transactions per batch.</p>
     }
+
+    <datalist id="vendor-options">
+      @for (vendor of vendors(); track vendor.id) {
+        <option [value]="vendor.vendorName">{{ vendor.vendorTIN }}</option>
+      }
+    </datalist>
 
     <app-save-area
       [saveText]="isEditMode() ? 'Update Transaction' : 'Post Transactions'"

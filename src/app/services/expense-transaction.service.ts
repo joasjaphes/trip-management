@@ -1,13 +1,13 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { HttpClientService } from './http-client.service';
 import { ExpenseTransaction } from '../models/expense-transaction.model';
-import { identity } from 'rxjs';
 
 export type ExpenseTransactionPayload = {
   id:string;
   expenseId: string;
-  vendorName: string;
-  vendorTIN: string;
+  vendorId?: string;
+  vendorName?:string;
+  description?: string;
   transactionAmount: number;
   transactionDate: string;
   quantity: number;
@@ -61,7 +61,8 @@ export class ExpenseTransactionService {
         id: transaction.id,
         expenseId: transaction.expenseId,
         vendorName: transaction.vendorName,
-        vendorTIN: transaction.vendorTIN,
+        vendorId: transaction.vendorId,
+        description: transaction.description || undefined,
         transactionAmount: Number(transaction.transactionAmount),
         transactionDate: transaction.transactionDate,
         quantity: Number(transaction.quantity),
@@ -86,8 +87,8 @@ export class ExpenseTransactionService {
       await this.http.put('expenseTransactions', {
         id,
         expenseId: transaction.expenseId,
-        vendorName: transaction.vendorName,
-        vendorTIN: transaction.vendorTIN,
+        vendorId: transaction.vendorId,
+        description: transaction.description || undefined,
         transactionAmount: Number(transaction.transactionAmount),
         transactionDate: transaction.transactionDate,
         quantity: Number(transaction.quantity),

@@ -12,7 +12,8 @@ export interface Invoice {
   paymentStatus?: 'unpaid' | 'partially_paid' | 'full_paid';
   paidAmount?: number;
   remainingAmount?:number;
-  trip?: Trip;
+  trips?: Trip[];
+  trucks?: string;
   tripReferenceNumber?: string;
   amount: number;
   quantity?: number;
