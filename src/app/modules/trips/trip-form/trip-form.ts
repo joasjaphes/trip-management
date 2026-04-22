@@ -494,7 +494,7 @@ export class TripForm implements OnInit {
         offloadingPlaceName: this.offloadingPlaceName || undefined,
         offloadingPlaceId: this.offloadingPlaceId || undefined,
         trailerId: this.trailerId || undefined,
-        cargoQuantity: this.cargoQuantity || undefined,
+        cargoQuantity: Number(this.cargoQuantity || 0) || undefined,
         docNumber: this.docNumber || undefined,
         tripDocument: this.tripDocumentPath() || undefined,
         revenue: Number(this.revenue || 0),
