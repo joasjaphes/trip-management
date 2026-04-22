@@ -126,6 +126,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./modules/configurations/customers/customers').then(m => m.Customers),
             },
             {
+                path: 'vendors',
+                loadComponent: () => import('./modules/configurations/vendors/vendors').then(m => m.Vendors),
+            },
+            {
                 path: 'offloading-places',
                 loadComponent: () => import('./modules/configurations/offloading-places/offloading-places').then(m => m.OffloadingPlaces),
             },

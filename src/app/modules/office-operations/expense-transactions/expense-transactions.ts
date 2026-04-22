@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ExpenseCategory } from '../../../models/expense-category.model';
 import { ExpenseTransaction } from '../../../models/expense-transaction.model';
 import { ExpenseCategoryService } from '../../../services/expense-category.service';
 import { ExpenseTransactionService } from '../../../services/expense-transaction.service';
+import { VendorService } from '../../../services/vendor.service';
 import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { ExpenseTransactionForm } from './expense-transaction-form/expense-transaction-form';
@@ -16,10 +17,12 @@ type ExpenseCategoryWithChildrens = ExpenseCategory & {
   selector: 'app-expense-transactions',
   imports: [CommonModule, DataTable, Layout, ExpenseTransactionForm],
   templateUrl: './expense-transactions.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpenseTransactions implements OnInit {
   private expenseCategoryService = inject(ExpenseCategoryService);
   private expenseTransactionService = inject(ExpenseTransactionService);
+  private vendorService = inject(VendorService);
 
   title = signal('Office Expense Transactions');
   description = signal('Post and manage office expense transactions.');
@@ -31,35 +34,39 @@ export class ExpenseTransactions implements OnInit {
   formDescription = signal('');
   selectedTransaction = signal<ExpenseTransaction | undefined>(undefined);
   showAddButton = signal(false);
+  vendors = this.vendorService.allVendors;
   officeLeafExpenses = computed(() =>
     this.expenseCategoryService
       .allCategories()
       .filter((category) => category.type === 'OFFICE' && !this.hasChildren(category) && !category.isPurchase)
   );
 
+  vendorNamesById = computed(() => new Map(this.vendorService.allVendors().map((vendor) => [vendor.id, vendor.vendorName])));
+
   transactions = computed(() => {
     const expenseNames = new Map(
       this.officeLeafExpenses().map((expense) => [expense.id, expense.name])
     );
+    const vendorNames = this.vendorNamesById();
 
     return this.expenseTransactionService.allTransactions().map((transaction) => ({
       ...transaction,
       expenseName: expenseNames.get(transaction.expenseId) ?? transaction.expense?.name ?? '-',
+      vendorDisplay: vendorNames.get(transaction.vendorId ?? '') ?? transaction.vendor?.vendorName ?? transaction.vendorName ?? '-',
+      descriptionDisplay: transaction.description || '-',
       transactionDateDisplay: this.formatDate(transaction.transactionDate),
       attachmentName: this.getAttachmentName(transaction.attachment),
     }));
   });
 
-  loading = this.expenseTransactionService.loading;
+  loading = computed(() => this.expenseCategoryService.loading() || this.expenseTransactionService.loading() || this.vendorService.loading());
 
   tableConfigurations: TableConfig = {
     columns: [
       { key: 'transactionDateDisplay', label: 'Transaction Date' },
-      { key: 'vendorName', label: 'Vendor Name' },
-      { key: 'vendorTIN', label: 'Vendor TIN' },
+      { key: 'vendorDisplay', label: 'Vendor' },
+      { key: 'descriptionDisplay', label: 'Description' },
       { key: 'expenseName', label: 'Expense' },
-      { key: 'quantity', label: 'Quantity', type: 'number' },
-      { key: 'unitPrice', label: 'Unit price', type: 'number' },
       { key: 'transactionAmount', label: 'Amount', type: 'number' },
       { key: 'attachmentName', label: 'Attachment' },
     ],
@@ -72,6 +79,7 @@ export class ExpenseTransactions implements OnInit {
     await Promise.all([
       this.expenseCategoryService.getAll(),
       this.expenseTransactionService.getAll(),
+      this.vendorService.getAll(),
     ]);
   }
 
@@ -103,7 +111,10 @@ export class ExpenseTransactions implements OnInit {
     this.formDescription.set('');
     this.selectedTransaction.set(undefined);
 
-    await this.expenseTransactionService.getAll();
+    await Promise.all([
+      this.expenseTransactionService.getAll(),
+      this.vendorService.getAll(),
+    ]);
   }
 
   private hasChildren(category: ExpenseCategory): boolean {

@@ -1,25 +1,27 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ExpenseCategory } from '../../../../models/expense-category.model';
 import { ExpenseTransaction } from '../../../../models/expense-transaction.model';
+import { Vendor } from '../../../../models/vendor.model';
 import { CommonService } from '../../../../services/common.service';
 import { ExpenseTransactionService } from '../../../../services/expense-transaction.service';
 import { FileUploadService } from '../../../../services/file-upload.service';
+import { VendorService } from '../../../../services/vendor.service';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
 import { NumberFormatDirective } from '../../../../shared/directives/number-format';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { VendorFormDialog, VendorFormDialogData } from '../../../configurations/vendors/vendor-form/vendor-form';
 
 type ExpenseTransactionDraft = {
   id: string;
   transactionDate: string;
   expenseId: string;
-  vendorName: string;
-  vendorTIN: string;
-  quantity: number;
-  unitPrice: number;
+  vendorId: string;
+  vendorSearchTerm: string;
+  description: string;
   transactionAmount: number;
   attachment?: string;
   attachmentName?: string;
@@ -31,18 +33,22 @@ const MAX_BATCH_TRANSACTIONS = 10;
 @Component({
   selector: 'app-expense-transaction-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './expense-transaction-form.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExpenseTransactionForm {
+export class ExpenseTransactionForm implements OnInit {
   private expenseTransactionService = inject(ExpenseTransactionService);
   private commonService = inject(CommonService);
   private fileUploadService = inject(FileUploadService);
+  private vendorService = inject(VendorService);
+  private dialog = inject(MatDialog);
   today = new Date();
 
   loading = this.expenseTransactionService.loading;
   transaction = input<ExpenseTransaction | undefined>();
   officeExpenses = input<ExpenseCategory[]>([]);
+  vendors = input<Vendor[]>([]);
 
   close = output();
 
@@ -59,8 +65,10 @@ export class ExpenseTransactionForm {
 
   canSave = computed(() => this.hasValidRows() && !this.saving());
 
-  private calculateTransactionAmount(quantity: number, unitPrice: number): number {
-    return Number((quantity * unitPrice).toFixed(2));
+  ngOnInit(): void {
+    if (this.vendorService.allVendors().length === 0) {
+      void this.vendorService.getAll();
+    }
   }
 
   constructor() {
@@ -68,28 +76,12 @@ export class ExpenseTransactionForm {
       const record = this.transaction();
       if (record) {
         this.rows.set([
-          {
-            id: record.id,
-            transactionDate: this.toDateInputValue(record.transactionDate),
-            expenseId: record.expenseId,
-            vendorName: record.vendorName,
-            vendorTIN: record.vendorTIN,
-            quantity: record.quantity || 1,
-            unitPrice: record.unitPrice ?? 0,
-            transactionAmount: this.calculateTransactionAmount(record.quantity || 1, record.unitPrice ?? 0),
-            attachment: record.attachment,
-            attachmentName: this.fileUploadService.getFileName(record.attachment),
-            isUploadingAttachment: false,
-          },
+          this.createRowFromTransaction(record),
         ]);
       } else {
-        this.rows.set(this.createInitialRows());
+        this.rows.set([this.createEmptyRow()]);
       }
     });
-  }
-
-  private createInitialRows(count = MAX_BATCH_TRANSACTIONS): ExpenseTransactionDraft[] {
-    return Array.from({ length: count }, () => this.createEmptyRow());
   }
 
   private createEmptyRow(): ExpenseTransactionDraft {
@@ -97,10 +89,9 @@ export class ExpenseTransactionForm {
       id: this.commonService.makeid(),
       transactionDate: this.getTodayDateValue(),
       expenseId: '',
-      vendorName: '',
-      vendorTIN: '',
-      quantity: 1,
-      unitPrice: 0,
+      vendorId: '',
+      vendorSearchTerm: '',
+      description: '',
       transactionAmount: 0,
       attachment: undefined,
       attachmentName: undefined,
@@ -108,12 +99,28 @@ export class ExpenseTransactionForm {
     };
   }
 
+  private createRowFromTransaction(record: ExpenseTransaction): ExpenseTransactionDraft {
+    const vendor = this.resolveVendor(record.vendorId ?? '', record.vendorName ?? '');
+
+    return {
+      id: record.id,
+      transactionDate: this.toDateInputValue(record.transactionDate),
+      expenseId: record.expenseId,
+      vendorId: vendor?.id ?? record.vendorId ?? '',
+      vendorSearchTerm: vendor?.vendorName ?? record.vendorName ?? '',
+      description: record.description ?? '',
+      transactionAmount: Number(record.transactionAmount ?? 0),
+      attachment: record.attachment,
+      attachmentName: this.fileUploadService.getFileName(record.attachment),
+      isUploadingAttachment: false,
+    };
+  }
+
   private isValidRow(row: ExpenseTransactionDraft): boolean {
     return (
       !!row.expenseId &&
+      !!row.vendorId &&
       !!row.transactionDate &&
-      Number(row.quantity) > 0 &&
-      Number(row.unitPrice) > 0 &&
       Number(row.transactionAmount) > 0
     );
   }
@@ -194,19 +201,77 @@ export class ExpenseTransactionForm {
           return row;
         }
 
-        if (field === 'quantity' || field === 'unitPrice') {
+        if (field === 'transactionAmount') {
           const parsedValue = Number(value);
           const numericValue = Number.isFinite(parsedValue) ? parsedValue : 0;
-          const nextRow = { ...row, [field]: numericValue };
-          return {
-            ...nextRow,
-            transactionAmount: this.calculateTransactionAmount(nextRow.quantity, nextRow.unitPrice),
-          };
+          return { ...row, transactionAmount: numericValue };
         }
 
         return { ...row, [field]: value };
       })
     );
+  }
+
+  updateVendorField(rowId: string, value: string) {
+    const vendor = this.resolveVendor('', value);
+
+    this.rows.update((rows) =>
+      rows.map((row) =>
+        row.id === rowId
+          ? {
+              ...row,
+              vendorSearchTerm: value,
+              vendorId: vendor?.id ?? '',
+            }
+          : row
+      )
+    );
+  }
+
+  openVendorDialog(rowId: string) {
+    const data: VendorFormDialogData = {
+      title: 'Add vendor',
+      description: 'Create a vendor to use in expense transactions.',
+    };
+
+    this.dialog.open(VendorFormDialog, {
+      width: '720px',
+      maxWidth: '95vw',
+      autoFocus: false,
+      restoreFocus: true,
+      data,
+    }).afterClosed().subscribe((vendor: Vendor | null | undefined) => {
+      if (!vendor) {
+        return;
+      }
+
+      this.rows.update((rows) =>
+        rows.map((row) =>
+          row.id === rowId
+            ? {
+                ...row,
+                vendorId: vendor.id,
+                vendorSearchTerm: vendor.vendorName,
+              }
+            : row
+        )
+      );
+    });
+  }
+
+  private resolveVendor(vendorId: string, vendorName: string): Vendor | undefined {
+    if (vendorId) {
+      const byId = this.vendorService.getById(vendorId);
+      if (byId) {
+        return byId;
+      }
+    }
+
+    if (vendorName.trim()) {
+      return this.vendorService.findByName(vendorName);
+    }
+
+    return undefined;
   }
 
   onTransactionDateChanged(rowId: string, value: Date | null) {
@@ -298,12 +363,12 @@ export class ExpenseTransactionForm {
         await this.expenseTransactionService.update(this.transaction()!.id, {
           id: this.transaction()!.id,
           expenseId: row.expenseId,
-          vendorName: row.vendorName.trim(),
-          vendorTIN: row.vendorTIN.trim(),
+          vendorId: row.vendorId,
+          description: row.description.trim() || undefined,
           transactionAmount: Number(row.transactionAmount),
           transactionDate: this.toIsoDateValue(row.transactionDate),
-          quantity: Number(row.quantity),
-          unitPrice: Number(row.unitPrice),
+          quantity: 1,
+          unitPrice: Number(row.transactionAmount),
           attachment: row.attachment,
         });
       } else {
@@ -312,12 +377,12 @@ export class ExpenseTransactionForm {
             this.expenseTransactionService.create({
               id: row.id,
               expenseId: row.expenseId,
-              vendorName: row.vendorName.trim(),
-              vendorTIN: row.vendorTIN.trim(),
+              vendorId: row.vendorId,
+              description: row.description.trim() || undefined,
               transactionAmount: Number(row.transactionAmount),
               transactionDate: this.toIsoDateValue(row.transactionDate),
-              quantity: Number(row.quantity),
-              unitPrice: Number(row.unitPrice),
+              quantity: 1,
+              unitPrice: Number(row.transactionAmount),
               attachment: row.attachment,
             })
           )

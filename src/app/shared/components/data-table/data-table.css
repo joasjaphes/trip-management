@@ -228,6 +228,13 @@
   vertical-align: middle;
 }
 
+.cell-ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .data-table td input[type='checkbox'] {
   cursor: pointer;
   width: 1.125rem;

@@ -205,7 +205,7 @@
               </td>
               <td class="border border-black p-2 align-top h-[75px]">
                 <p class="text-[12px]">Destination</p>
-                <p class="font-bold uppercase mt-1 text-[13px]">{{ selectedInvoice()?.trip?.route?.name?.split('-')?.[1]?.trim() || selectedInvoice()?.trip?.route?.name || '-' | uppercase }}</p>
+                <p class="font-bold uppercase mt-1 text-[13px]">{{ selectedInvoice()?.trips[0]?.route?.name?.split('-')?.[1]?.trim() || selectedInvoice()?.trips[0]?.route?.name || '-' | uppercase }}</p>
               </td>
             </tr>
 
@@ -214,10 +214,7 @@
               <td class="border border-black p-1 align-middle h-8"></td>
               <td colspan="2" class="border border-black p-2 text-center uppercase tracking-wide">
                 <span class="font-bold text-[14px]">TRUCK:</span>&nbsp;&nbsp;
-                <span class="font-bold text-[14px]">{{ selectedInvoice()?.trip?.vehicle?.registrationNo || '-' }}</span>
-                @if (selectedInvoice()?.trip?.trailer?.registrationNo) {
-                   & <span class="font-bold text-[14px]">{{ selectedInvoice()?.trip?.trailer?.registrationNo }}</span>
-                }
+                <span class="font-bold text-[14px]">{{ selectedInvoice()?.trucks || '-' }}</span>
               </td>
             </tr>
           </tbody>

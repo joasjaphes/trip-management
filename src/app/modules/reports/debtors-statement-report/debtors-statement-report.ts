@@ -27,7 +27,7 @@ export class DebtorsStatementReport implements OnInit {
           id: invoice.id,
           invoiceNumber: invoice.invoiceNumber || invoice.id,
           customer: invoice.customer?.name || invoice.customerId || 'Unknown customer',
-          tripReference: invoice.trip?.tripReferenceNumber || invoice.tripId,
+          tripReference: invoice.trips.map((t) => t.tripReferenceNumber || invoice.tripId).join(', ') || invoice.tripReferenceNumber || invoice.tripId || 'Unknown trip',
           issuedAt: invoice.issuedAt || invoice.createdAt,
           amount,
           paidAmount,
