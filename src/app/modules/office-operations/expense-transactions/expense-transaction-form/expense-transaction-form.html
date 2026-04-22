@@ -61,7 +61,7 @@
           <div class="relative">
             <input
               [matDatepicker]="transactionDatePicker"
-              [value]="toDateObject(row.transactionDate)"
+              [(ngModel)]="row.transactionDate"
               (dateChange)="onTransactionDateChanged(row.id, $event.value)"
               [max]="today"
               readonly
@@ -83,33 +83,27 @@
         <div class="col-span-3">
           <input
             type="text"
+            autocomplete="off"
             list="vendor-options"
-            placeholder="Search vendor by name"
-            [value]="row.vendorSearchTerm"
-            (input)="updateVendorField(row.id, $any($event.target).value)"
+            placeholder="Select existing vendor or type a new name"
+            [(ngModel)]="row.vendorSearchTerm"
+            (input)="onVendorInput(row.id, $any($event.target).value)"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
           >
-          <div class="mt-2 flex items-center justify-between gap-3">
-            <p class="text-[11px] text-gray-400 truncate">Choose an existing vendor or create a new one.</p>
-            <button type="button" (click)="openVendorDialog(row.id)"
-              class="shrink-0 text-[11px] font-bold text-[#f25f2f] hover:text-[#ff5117]">
-              + Create vendor
-            </button>
-          </div>
         </div>
 
         <div class="col-span-4">
           <input
             type="text"
             placeholder="e.g. Fuel purchase for trip TRP-2026-001"
-            [value]="row.description"
+            [(ngModel)]="row.description"
             (input)="updateRowField(row.id, 'description', $any($event.target).value)"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
           >
         </div>
 
         <div class="col-span-3 relative">
-          <select [value]="row.expenseId"
+          <select [(ngModel)]="row.expenseId"
             (change)="updateRowField(row.id, 'expenseId', $any($event.target).value)"
             class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
             <option value="" disabled>Select Expense</option>
@@ -128,21 +122,8 @@
             type="text"
             min="0"
             step="0.01"
-            placeholder="0"
-            [value]="row.transactionAmount"
-            appNumberFormat
-            (input)="updateRowField(row.id, 'transactionAmount', $any($event.target).value)"
-            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
-          >
-        </div>
-
-        <div class="col-span-2">
-          <input
-            type="text"
-            min="0"
-            step="0.01"
             placeholder="0.00"
-            [value]="row.transactionAmount"
+            [(ngModel)]="row.transactionAmount"
             appNumberFormat
             (input)="updateRowField(row.id, 'transactionAmount', $any($event.target).value)"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
@@ -171,6 +152,17 @@
               No attachment
             }
           </div>
+
+          @if (row.attachment) {
+            <button
+              type="button"
+              (click)="previewAttachment(row.id)"
+              [disabled]="row.isUploadingAttachment"
+              class="w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-[11px] font-semibold text-gray-600 transition-colors hover:text-[#f25f2f] hover:border-[#f25f2f] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Preview
+            </button>
+          }
         </div>
 
         <div class="col-span-1 text-right">
@@ -189,23 +181,13 @@
     @if (officeExpenses().length === 0) {
       <p class="text-[12px] text-amber-600 mb-6">No OFFICE leaf expenses found. Add office expense categories without children first.</p>
     }
-
-    @if (vendors().length === 0) {
-      <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[12px] font-semibold text-amber-700 flex items-center justify-between gap-4">
-        <span>No vendors available yet. Create one before posting expenses.</span>
-        <button type="button" (click)="openVendorDialog(rows()[0].id)" class="text-[#f25f2f] hover:text-[#ff5117]">
-          Create vendor
-        </button>
-      </div>
-    }
-
     @if (!isEditMode() && rows().length >= 10) {
       <p class="text-[12px] text-amber-600 mb-6">You reached the limit of 10 transactions per batch.</p>
     }
 
     <datalist id="vendor-options">
       @for (vendor of vendors(); track vendor.id) {
-        <option [value]="vendor.vendorName">{{ vendor.vendorName }} - {{ vendor.vendorTIN }}</option>
+        <option [value]="vendor.vendorName">{{ vendor.vendorTIN }}</option>
       }
     </datalist>
 

@@ -68,7 +68,7 @@ export class ExpenseTransactions implements OnInit {
       { key: 'descriptionDisplay', label: 'Description' },
       { key: 'expenseName', label: 'Expense' },
       { key: 'transactionAmount', label: 'Amount', type: 'number' },
-      { key: 'attachmentName', label: 'Attachment' },
+      // { key: 'attachmentName', label: 'Attachment' },
     ],
     actions: {
       edit:true,

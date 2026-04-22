@@ -5,7 +5,8 @@ import { ExpenseTransaction } from '../models/expense-transaction.model';
 export type ExpenseTransactionPayload = {
   id:string;
   expenseId: string;
-  vendorId: string;
+  vendorId?: string;
+  vendorName?:string;
   description?: string;
   transactionAmount: number;
   transactionDate: string;
@@ -59,6 +60,7 @@ export class ExpenseTransactionService {
       await this.http.post('expenseTransactions', {
         id: transaction.id,
         expenseId: transaction.expenseId,
+        vendorName: transaction.vendorName,
         vendorId: transaction.vendorId,
         description: transaction.description || undefined,
         transactionAmount: Number(transaction.transactionAmount),

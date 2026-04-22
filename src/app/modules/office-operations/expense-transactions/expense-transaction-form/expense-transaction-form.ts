@@ -25,6 +25,7 @@ type ExpenseTransactionDraft = {
   transactionAmount: number;
   attachment?: string;
   attachmentName?: string;
+  attachmentUrl?: string;
   isUploadingAttachment?: boolean;
 };
 
@@ -33,7 +34,7 @@ const MAX_BATCH_TRANSACTIONS = 10;
 @Component({
   selector: 'app-expense-transaction-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatDatepickerModule, MatNativeDateModule, FormsModule],
   templateUrl: './expense-transaction-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -95,13 +96,14 @@ export class ExpenseTransactionForm implements OnInit {
       transactionAmount: 0,
       attachment: undefined,
       attachmentName: undefined,
+      attachmentUrl: undefined,
       isUploadingAttachment: false,
     };
   }
 
   private createRowFromTransaction(record: ExpenseTransaction): ExpenseTransactionDraft {
     const vendor = this.resolveVendor(record.vendorId ?? '', record.vendorName ?? '');
-
+    console.log('Resolved vendor for transaction form:', { record, vendor });
     return {
       id: record.id,
       transactionDate: this.toDateInputValue(record.transactionDate),
@@ -112,6 +114,7 @@ export class ExpenseTransactionForm implements OnInit {
       transactionAmount: Number(record.transactionAmount ?? 0),
       attachment: record.attachment,
       attachmentName: this.fileUploadService.getFileName(record.attachment),
+      attachmentUrl: undefined,
       isUploadingAttachment: false,
     };
   }
@@ -119,7 +122,7 @@ export class ExpenseTransactionForm implements OnInit {
   private isValidRow(row: ExpenseTransactionDraft): boolean {
     return (
       !!row.expenseId &&
-      !!row.vendorId &&
+      !!row.vendorSearchTerm &&
       !!row.transactionDate &&
       Number(row.transactionAmount) > 0
     );
@@ -212,7 +215,7 @@ export class ExpenseTransactionForm implements OnInit {
     );
   }
 
-  updateVendorField(rowId: string, value: string) {
+  onVendorInput(rowId: string, value: string) {
     const vendor = this.resolveVendor('', value);
 
     this.rows.update((rows) =>
@@ -335,6 +338,31 @@ export class ExpenseTransactionForm implements OnInit {
     }
   }
 
+  async previewAttachment(rowId: string) {
+    const row = this.rows().find((item) => item.id === rowId);
+    if (!row?.attachment) {
+      return;
+    }
+
+    const resolvedUrl = row.attachmentUrl || await this.fileUploadService.resolveFileUrl(row.attachment);
+    if (!resolvedUrl) {
+      this.errorMessage.set('Could not resolve attachment preview URL.');
+      return;
+    }
+
+    if (!row.attachmentUrl) {
+      this.rows.update((rows) =>
+        rows.map((item) =>
+          item.id === rowId
+            ? { ...item, attachmentUrl: resolvedUrl }
+            : item
+        )
+      );
+    }
+
+    window.open(resolvedUrl, '_blank');
+  }
+
   goBack() {
     this.close.emit();
   }
@@ -364,6 +392,7 @@ export class ExpenseTransactionForm implements OnInit {
           id: this.transaction()!.id,
           expenseId: row.expenseId,
           vendorId: row.vendorId,
+          vendorName: row.vendorSearchTerm.trim(),
           description: row.description.trim() || undefined,
           transactionAmount: Number(row.transactionAmount),
           transactionDate: this.toIsoDateValue(row.transactionDate),
@@ -378,6 +407,7 @@ export class ExpenseTransactionForm implements OnInit {
               id: row.id,
               expenseId: row.expenseId,
               vendorId: row.vendorId,
+              vendorName: row.vendorSearchTerm.trim(),
               description: row.description.trim() || undefined,
               transactionAmount: Number(row.transactionAmount),
               transactionDate: this.toIsoDateValue(row.transactionDate),
