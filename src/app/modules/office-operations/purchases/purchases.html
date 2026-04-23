@@ -28,34 +28,40 @@
       <div class="filter-row">
         <!-- Vendor Filter -->
         <div class="filter-item">
-          <label class="text-xs font-bold text-gray-700 mb-1 block">Vendor</label>
-          <select [ngModel]="filterVendorId()" (ngModelChange)="filterVendorId.set($event)"
-            class="select select-bordered select-sm w-full">
-            <option value="">All Vendors</option>
-            @for (vendor of vendorOptions(); track vendor.id) {
-            <option [value]="vendor.id">{{ vendor.vendorName }}</option>
-            }
-          </select>
+          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Vendor</label>
+          <div class="relative">
+            <select [ngModel]="filterVendorId()" (ngModelChange)="filterVendorId.set($event)"
+              class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+              <option value="">All Vendors</option>
+              @for (vendor of vendorOptions(); track vendor.id) {
+              <option [value]="vendor.id">{{ vendor.vendorName }}</option>
+              }
+            </select>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
         </div>
 
         <!-- From Date Filter -->
         <div class="filter-item">
-          <label class="text-xs font-bold text-gray-700 mb-1 block">From Date</label>
+          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">From Date</label>
           <input type="date" [ngModel]="filterFromDate()" (ngModelChange)="filterFromDate.set($event)"
-            class="input input-bordered input-sm w-full" />
+            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300" />
         </div>
 
         <!-- To Date Filter -->
         <div class="filter-item">
-          <label class="text-xs font-bold text-gray-700 mb-1 block">To Date</label>
+          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">To Date</label>
           <input type="date" [ngModel]="filterToDate()" (ngModelChange)="filterToDate.set($event)"
-            class="input input-bordered input-sm w-full" />
+            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300" />
         </div>
 
         <!-- Reset Filters Button -->
         <div class="filter-item flex items-end">
           <button type="button" (click)="filterVendorId.set(''); filterFromDate.set(''); filterToDate.set('')"
-            class="btn btn-ghost btn-sm w-full">
+            class="w-full border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 hover:text-[#f25f2f] hover:border-[#f8b9a2] rounded-lg px-3 py-2.5 text-[13px] font-bold transition-colors">
             Reset Filters
           </button>
         </div>

@@ -177,6 +177,36 @@ export class PurchaseOrderForm implements OnInit {
     });
   }
 
+  toDateValue(value: string | Date | null | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  toDateString(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onOrderDateChanged(value: Date | null) {
+    this.draft.update((draft) => ({ ...draft!, orderDate: this.toDateString(value) }));
+  }
+
+  onApprovedDateChanged(value: Date | null) {
+    this.draft.update((draft) => ({ ...draft!, approvedDate: this.toDateString(value) }));
+  }
+
+  onCompletionDateChanged(value: Date | null) {
+    this.draft.update((draft) => ({ ...draft!, completionDate: this.toDateString(value) }));
+  }
+
   async onSave() {
     const d = this.draft();
     if (!d || !this.canSave()) {

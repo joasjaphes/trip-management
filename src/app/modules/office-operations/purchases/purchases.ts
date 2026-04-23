@@ -207,7 +207,7 @@ export class Purchases implements OnInit {
   onAdd() {
     this.selectedPurchaseOrder.set(undefined);
     this.viewType.set('add');
-    this.splitSize.set('half');
+    this.splitSize.set('full');
     this.formTitle.set('Create Purchase Order');
     this.formDescription.set('Create a new purchase order with items and vendor details.');
     this.viewDetails.set(true);
@@ -221,7 +221,7 @@ export class Purchases implements OnInit {
 
     this.selectedPurchaseOrder.set(order);
     this.viewType.set('edit');
-    this.splitSize.set('half');
+    this.splitSize.set('full');
     this.formTitle.set('Edit Purchase Order');
     this.formDescription.set('Update purchase order details and items.');
     this.viewDetails.set(true);
