@@ -8,12 +8,14 @@ import { ExpenseCategoryService } from '../../../services/expense-category.servi
 import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { PurchaseOrderForm } from './purchase-order-form/purchase-order-form';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 type PurchaseStatusTab = 'pending' | 'approved' | 'completed';
 
 @Component({
   selector: 'app-purchases',
-  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm],
+  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -277,6 +279,32 @@ export class Purchases implements OnInit {
     return this.purchaseOrderService
       .allPurchaseOrders()
       .filter((order) => order.orderStatus.toLowerCase() === normalizedStatus).length;
+  }
+
+  toDateValue(value: string | Date | null | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  private toDateString(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onFromDateChanged(value: Date | null) {
+    this.filterFromDate.set(this.toDateString(value));
+  }
+
+  onToDateChanged(value: Date | null) {
+    this.filterToDate.set(this.toDateString(value));
   }
 
   private formatDate(value?: string): string {

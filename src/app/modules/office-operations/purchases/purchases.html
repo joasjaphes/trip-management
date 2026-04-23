@@ -47,19 +47,45 @@
         <!-- From Date Filter -->
         <div class="filter-item">
           <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">From Date</label>
-          <input type="date" [ngModel]="filterFromDate()" (ngModelChange)="filterFromDate.set($event)"
-            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300" />
+          <div class="relative">
+            <input [matDatepicker]="fromDatePicker" [value]="toDateValue(filterFromDate())"
+              (dateChange)="onFromDateChanged($event.value)" placeholder="mm/dd/yyyy" readonly
+              class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 cursor-pointer" />
+            <button type="button" (click)="fromDatePicker.open()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+              aria-label="Open from-date picker">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <mat-datepicker #fromDatePicker></mat-datepicker>
+          </div>
         </div>
 
         <!-- To Date Filter -->
         <div class="filter-item">
           <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">To Date</label>
-          <input type="date" [ngModel]="filterToDate()" (ngModelChange)="filterToDate.set($event)"
-            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300" />
+          <div class="relative">
+            <input [matDatepicker]="toDatePicker" [value]="toDateValue(filterToDate())"
+              (dateChange)="onToDateChanged($event.value)" placeholder="mm/dd/yyyy" readonly
+              [min]="toDateValue(filterFromDate())"
+              class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 cursor-pointer" />
+            <button type="button" (click)="toDatePicker.open()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+              aria-label="Open to-date picker">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <mat-datepicker #toDatePicker></mat-datepicker>
+          </div>
         </div>
 
         <!-- Reset Filters Button -->
-        <div class="filter-item flex items-end">
+        <div class="filter-item">
+          <label class="text-[11px] font-extrabold tracking-widest text-transparent uppercase mb-2 select-none" aria-hidden="true">Reset</label>
           <button type="button" (click)="filterVendorId.set(''); filterFromDate.set(''); filterToDate.set('')"
             class="w-full border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 hover:text-[#f25f2f] hover:border-[#f8b9a2] rounded-lg px-3 py-2.5 text-[13px] font-bold transition-colors">
             Reset Filters
