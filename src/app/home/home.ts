@@ -115,7 +115,6 @@ export class Home implements OnInit {
     setInterval(() => {
       this.tripManagementBadge.reload();
     }, 30000); // Refresh every 30 seconds
-    console.log('trip management home init');
 
   }
 
