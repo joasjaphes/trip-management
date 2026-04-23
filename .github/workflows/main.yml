@@ -1,9 +1,9 @@
 name: Deployment
 on:
   push:
-    branches: [master]
+    branches: [develop]
   pull_request:
-    branches: [master]
+    branches: [develop]
 
 jobs:
   build:
@@ -33,4 +33,4 @@ jobs:
 
       - name: Deploy with rsync
         run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i deploy.key -p ${{ secrets.LIVE_SERVER_PORT }}" dist/trip-management/browser/* ${{ secrets.SERVER_USER }}@${{ secrets.LIVE_SERVER_HOST }}:${{secrets.LIVE_SERVER_DEPLOY_PATH}}
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i deploy.key -p ${{ secrets.SERVER_PORT }}" dist/trip-management/browser/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{secrets.SERVER_DEPLOY_PATH}}
