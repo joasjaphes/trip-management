@@ -114,6 +114,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./modules/office-operations/expense-transactions/expense-transactions').then(m => m.ExpenseTransactions),
             },
             {
+                path: 'purchases',
+                loadComponent: () => import('./modules/office-operations/purchases/purchases').then(m => m.Purchases),
+            },
+            {
                 path: 'cargo-types',
                 loadComponent: () => import('./modules/configurations/cargo-types/cargo-types').then(m => m.CargoTypes),
             },
