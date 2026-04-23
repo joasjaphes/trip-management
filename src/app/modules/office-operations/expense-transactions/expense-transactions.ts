@@ -24,7 +24,7 @@ export class ExpenseTransactions implements OnInit {
   private expenseTransactionService = inject(ExpenseTransactionService);
   private vendorService = inject(VendorService);
 
-  title = signal('Office Expense Transactions');
+  title = signal('Office Expenses');
   description = signal('Post and manage office expense transactions.');
   addText = signal('Post office transaction');
   viewType = signal('');
@@ -86,8 +86,8 @@ export class ExpenseTransactions implements OnInit {
   onAdd() {
     this.selectedTransaction.set(undefined);
     this.viewType.set('add');
-    this.formTitle.set('Post office transaction');
-    this.formDescription.set('Capture a new office expense transaction.');
+    this.formTitle.set('Post office expense');
+    this.formDescription.set('Capture a new office expense.');
     this.viewDetails.set(true);
   }
 
@@ -99,8 +99,8 @@ export class ExpenseTransactions implements OnInit {
 
     this.selectedTransaction.set(transaction);
     this.viewType.set('edit');
-    this.formTitle.set('Edit office transaction');
-    this.formDescription.set('Update office expense transaction details.');
+    this.formTitle.set('Edit office expense');
+    this.formDescription.set('Update office expense details.');
     this.viewDetails.set(true);
   }
 
