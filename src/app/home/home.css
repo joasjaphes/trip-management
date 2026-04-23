@@ -1,6 +1,15 @@
 .active {
-    background-color: black;
-    color: white;
+    background-color: #f25f2f;
+    color: #ffffff;
+}
+
+.active:hover {
+    background-color: #f25f2f !important;
+    color: #ffffff !important;
+}
+
+.active:hover .group-hover\:scale-110 {
+    transform: none !important;
 }
 
 .group-menu-panel {
