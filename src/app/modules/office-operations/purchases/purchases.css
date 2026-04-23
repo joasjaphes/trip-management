@@ -1,0 +1,109 @@
+.purchase-summary-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.summary-card {
+  background: linear-gradient(135deg, #fff7f2 0%, #ffffff 100%);
+  border: 1px solid #fde3d5;
+  border-radius: 0.9rem;
+  padding: 1rem 1.1rem;
+}
+
+.summary-label {
+  color: #9ca3af;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.summary-value {
+  color: #f25f2f;
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-top: 0.35rem;
+}
+
+.status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.35rem;
+  border: 1px solid #f1f5f9;
+  border-radius: 0.85rem;
+  background: #ffffff;
+}
+
+.status-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #374151;
+  border-radius: 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.62rem 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.status-tab:hover {
+  border-color: #f8b9a2;
+  color: #f25f2f;
+}
+
+.status-tab-active {
+  border-color: #f25f2f;
+  background: #f25f2f;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(242, 95, 47, 0.25);
+}
+
+.status-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 0 0.35rem;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.status-tab-active .status-count {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Advanced Filters Styles */
+.filters-panel {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.85rem;
+  padding: 1rem;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-item label {
+  margin-bottom: 0.35rem;
+}
+
+.filter-item select,
+.filter-item input {
+  font-size: 0.9rem;
+}
+

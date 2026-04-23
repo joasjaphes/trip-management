@@ -1,0 +1,149 @@
+<div class="form-container">
+  @if (errorMessage()) {
+  <div class="alert alert-error mb-4">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l-2-2m0 0l-2-2m2 2l2-2m-2 2l-2 2m8-2l-2 2m0 0l-2-2m2 2l2-2m-2 2l-2-2" />
+    </svg>
+    <span>{{ errorMessage() }}</span>
+  </div>
+  }
+
+  @if (successMessage()) {
+  <div class="alert alert-success mb-4">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span>{{ successMessage() }}</span>
+  </div>
+  }
+
+  @if (draft()) {
+  <form (ngSubmit)="onSave()" class="space-y-6">
+    <!-- Reference Number -->
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-1">Reference Number</label>
+      <input type="text" [(ngModel)]="draft()!.purchaseOrderReferenceNumber" name="refNumber"
+        class="input input-bordered w-full" placeholder="e.g., PO-2026-001" [disabled]="isEditMode()" />
+    </div>
+
+    <!-- Vendor Selection -->
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-1">Vendor</label>
+      <select [(ngModel)]="draft()!.vendorId" name="vendor" (change)="onVendorChange(draft()!.vendorId)"
+        class="select select-bordered w-full">
+        <option value="" disabled>Select a vendor...</option>
+        @for (vendor of vendors(); track vendor.id) {
+        <option [value]="vendor.id">{{ vendor.vendorName }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Order Date -->
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-1">Order Date</label>
+      <input type="date" [(ngModel)]="draft()!.orderDate" name="orderDate" class="input input-bordered w-full"
+        [max]="today | date:'yyyy-MM-dd'" />
+    </div>
+
+    <!-- Status -->
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-1">Status</label>
+      <select [(ngModel)]="draft()!.orderStatus" name="status" class="select select-bordered w-full">
+        @for (status of statusOptions; track status) {
+        <option [value]="status">{{ status }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Approved Date (conditional) -->
+    @if (draft()!.orderStatus === 'Approved' || draft()!.orderStatus === 'Completed') {
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-1">Approved Date</label>
+      <input type="date" [(ngModel)]="draft()!.approvedDate" name="approvedDate" class="input input-bordered w-full"
+        [max]="today | date:'yyyy-MM-dd'" />
+    </div>
+    }
+
+    <!-- Completion Date (conditional) -->
+    @if (draft()!.orderStatus === 'Completed') {
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-1">Completion Date</label>
+      <input type="date" [(ngModel)]="draft()!.completionDate" name="completionDate" class="input input-bordered w-full"
+        [max]="today | date:'yyyy-MM-dd'" />
+    </div>
+    }
+
+    <!-- Order Items Section -->
+    <div class="border-t pt-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-bold text-gray-900">Order Items</h3>
+        @if (canAddItem()) {
+        <button type="button" (click)="onAddItem()"
+          class="btn btn-sm bg-[#f25f2f] hover:bg-[#ff5117] text-white border-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Item
+        </button>
+        }
+      </div>
+
+      <div class="space-y-4 max-h-96 overflow-y-auto">
+        @for (item of draft()!.orderItems; track item.id; let i = $index) {
+        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold text-gray-500">Item {{ i + 1 }}</span>
+            @if (draft()!.orderItems.length > 1) {
+            <button type="button" (click)="onRemoveItem(i)" class="text-red-500 hover:text-red-700 text-xs font-bold">
+              Remove
+            </button>
+            }
+          </div>
+
+          <div class="space-y-3">
+            <!-- Expense Selection -->
+            <div>
+              <label class="text-xs font-bold text-gray-700 mb-1 block">Expense/Item</label>
+              <select [(ngModel)]="item.itemId" [name]="'expense_' + item.id"
+                (change)="onExpenseChange(i, item.itemId)" class="select select-bordered select-sm w-full">
+                <option value="" disabled>Select expense...</option>
+                @for (expense of officeExpenses(); track expense.id) {
+                <option [value]="expense.id">{{ expense.name }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label class="text-xs font-bold text-gray-700 mb-1 block">Description</label>
+              <input type="text" [(ngModel)]="item.description" [name]="'desc_' + item.id"
+                class="input input-bordered input-sm w-full" placeholder="Item details (optional)" />
+            </div>
+
+            <!-- Amount -->
+            <div>
+              <label class="text-xs font-bold text-gray-700 mb-1 block">Amount</label>
+              <input type="number" [(ngModel)]="item.amount" [name]="'amount_' + item.id"
+                (change)="onItemAmountChange(i, item.amount)" class="input input-bordered input-sm w-full"
+                placeholder="0" min="0" step="1000" />
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Total -->
+      <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-bold text-gray-700">Total Amount:</span>
+          <span class="text-lg font-extrabold text-[#f25f2f]">{{ totalAmount() | number }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <app-save-area [saveText]="'Save Purchase Order'" [loading]="saving()" [disabled]="!canSave()" (save)="onSave()" (cancel)="close.emit()"></app-save-area>
+  </form>
+  }
+</div>
