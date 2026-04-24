@@ -9,7 +9,8 @@
     }
 
     @if (successMessage()) {
-    <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">
+    <div
+      class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">
       {{ successMessage() }}
     </div>
     }
@@ -17,17 +18,29 @@
     @if (draft()) {
     <form (ngSubmit)="onSave()">
       <!-- Main Details Form Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-8 mb-8 relative z-10">
-        <!-- Reference Number -->
-        <div class="flex flex-col gap-2 md:col-span-2">
-          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Reference Number*</label>
-          <input type="text" [(ngModel)]="draft()!.purchaseOrderReferenceNumber" name="refNumber"
-            placeholder="e.g. PO-2026-001" [disabled]="isEditMode()"
-            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 disabled:bg-gray-50 disabled:text-gray-500">
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 mb-8 relative z-10">
 
+        <!-- Order Date -->
+        <div class="flex flex-col gap-2">
+          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Order Date*</label>
+          <div class="relative">
+            <input [matDatepicker]="orderDatePicker" [value]="toDateValue(draft()!.orderDate)"
+              (dateChange)="onOrderDateChanged($event.value)" [max]="today" readonly
+              class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+            <button type="button" (click)="orderDatePicker.open()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+              aria-label="Open order date picker">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <mat-datepicker #orderDatePicker></mat-datepicker>
+          </div>
+        </div>
         <!-- Vendor -->
-        <div class="flex flex-col gap-2 md:col-span-2">
+        <div class="flex flex-col gap-2">
           <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor*</label>
           <div class="relative">
             <select [(ngModel)]="draft()!.vendorId" name="vendor" (change)="onVendorChange(draft()!.vendorId)"
@@ -44,83 +57,6 @@
           </div>
         </div>
 
-        <!-- Order Date -->
-        <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Order Date*</label>
-          <div class="relative">
-            <input [matDatepicker]="orderDatePicker" [value]="toDateValue(draft()!.orderDate)"
-              (dateChange)="onOrderDateChanged($event.value)" [max]="today" readonly
-              class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-            <button type="button" (click)="orderDatePicker.open()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
-              aria-label="Open order date picker">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </button>
-            <mat-datepicker #orderDatePicker></mat-datepicker>
-          </div>
-        </div>
-
-        <!-- Status -->
-        <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Status*</label>
-          <div class="relative">
-            <select [(ngModel)]="draft()!.orderStatus" name="status"
-              class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-              @for (status of statusOptions; track status) {
-              <option [value]="status">{{ status }}</option>
-              }
-            </select>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-              class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-
-        <!-- Approved Date (conditional) -->
-        @if (draft()!.orderStatus === 'Approved' || draft()!.orderStatus === 'Completed') {
-        <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Approved Date</label>
-          <div class="relative">
-            <input [matDatepicker]="approvedDatePicker" [value]="toDateValue(draft()!.approvedDate)"
-              (dateChange)="onApprovedDateChanged($event.value)" [max]="today" readonly
-              class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-            <button type="button" (click)="approvedDatePicker.open()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
-              aria-label="Open approved date picker">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </button>
-            <mat-datepicker #approvedDatePicker></mat-datepicker>
-          </div>
-        </div>
-        }
-
-        <!-- Completion Date (conditional) -->
-        @if (draft()!.orderStatus === 'Completed') {
-        <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Completion Date</label>
-          <div class="relative">
-            <input [matDatepicker]="completionDatePicker" [value]="toDateValue(draft()!.completionDate)"
-              (dateChange)="onCompletionDateChanged($event.value)" [max]="today" readonly
-              class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-            <button type="button" (click)="completionDatePicker.open()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
-              aria-label="Open completion date picker">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </button>
-            <mat-datepicker #completionDatePicker></mat-datepicker>
-          </div>
-        </div>
-        }
       </div>
 
       <!-- Order Items Section Divider -->
@@ -149,7 +85,8 @@
         <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Expense / Item</div>
         <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Description</div>
         <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Amount</div>
-        <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Delete</div>
+        <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Delete
+        </div>
       </div>
 
       <!-- Order Item Rows -->
@@ -157,8 +94,7 @@
       <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-12 gap-x-4 items-center mb-3 relative z-10">
         <!-- Expense Selection -->
         <div class="col-span-4 relative">
-          <select [(ngModel)]="item.itemId" [name]="'expense_' + item.id"
-            (change)="onExpenseChange(i, item.itemId)"
+          <select [(ngModel)]="item.itemId" [name]="'expense_' + item.id" (change)="onExpenseChange(i, item.itemId)"
             class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
             <option value="" disabled>Select expense...</option>
             @for (expense of officeExpenses(); track expense.id) {
@@ -189,8 +125,7 @@
         <div class="col-span-1 text-right">
           @if (draft()!.orderItems.length > 1) {
           <button type="button" (click)="onRemoveItem(i)"
-            class="text-gray-400 hover:text-[#f25f2f] transition-colors shrink-0 p-1"
-            aria-label="Remove item">
+            class="text-gray-400 hover:text-[#f25f2f] transition-colors shrink-0 p-1" aria-label="Remove item">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
               class="w-[18px] h-[18px]">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -203,11 +138,13 @@
       }
 
       @if (officeExpenses().length === 0) {
-      <p class="text-[12px] text-amber-600 mb-6">No active office expense categories found. Add categories in Configurations first.</p>
+      <p class="text-[12px] text-amber-600 mb-6">No active office expense categories found. Add categories in
+        Configurations first.</p>
       }
 
       <!-- Total Card -->
-      <div class="mt-6 rounded-2xl border border-orange-100 bg-gradient-to-br from-[#fff7f2] to-white p-5 relative z-10">
+      <div
+        class="mt-6 rounded-2xl border border-orange-100 bg-gradient-to-br from-[#fff7f2] to-white p-5 relative z-10">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <span class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Total Amount</span>
@@ -218,8 +155,8 @@
       </div>
 
       <!-- Form Actions -->
-      <app-save-area [saveText]="isEditMode() ? 'Update Purchase Order' : 'Create Purchase Order'"
-        [loading]="saving()" [disabled]="!canSave()" (save)="onSave()" (cancel)="close.emit()"></app-save-area>
+      <app-save-area [saveText]="isEditMode() ? 'Update Purchase Order' : 'Create Purchase Order'" [loading]="saving()"
+        [disabled]="!canSave()" (save)="onSave()" (cancel)="close.emit()"></app-save-area>
     </form>
     }
 

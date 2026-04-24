@@ -4,7 +4,6 @@ import { PurchaseOrder } from '../models/purchase-order.model';
 import { HttpClientService } from './http-client.service';
 
 export type CreatePurchaseOrderPayload = {
-  purchaseOrderReferenceNumber: string;
   vendorId: string;
   orderDate: string;
   approvedDate?: string;
@@ -115,7 +114,6 @@ export class PurchaseOrderService {
       if (!order) throw new Error('Purchase order not found');
 
       const payload: UpdatePurchaseOrderPayload = {
-        purchaseOrderReferenceNumber: order.purchaseOrderReferenceNumber,
         vendorId: order.vendorId,
         orderDate: order.orderDate,
         approvedDate: status === 'Approved' ? dates?.approvedDate ?? new Date().toISOString() : order.approvedDate,

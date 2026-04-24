@@ -14,7 +14,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 type PurchaseOrderDraft = {
   id: string;
-  purchaseOrderReferenceNumber: string;
   vendorId: string;
   vendorSearchTerm: string;
   orderDate: string;
@@ -65,7 +64,6 @@ export class PurchaseOrderForm implements OnInit {
     const d = this.draft();
     return (
       !this.saving() &&
-      !!d?.purchaseOrderReferenceNumber &&
       !!d?.vendorId &&
       !!d?.orderDate &&
       !!d?.orderStatus &&
@@ -99,7 +97,6 @@ export class PurchaseOrderForm implements OnInit {
         const vendor = this.vendors().find((v) => v.id === order.vendorId);
         this.draft.set({
           id: order.id,
-          purchaseOrderReferenceNumber: order.purchaseOrderReferenceNumber,
           vendorId: order.vendorId,
           vendorSearchTerm: vendor?.vendorName ?? '',
           orderDate: this.toDateInputValue(order.orderDate),
@@ -218,7 +215,6 @@ export class PurchaseOrderForm implements OnInit {
 
     try {
       const payload = {
-        purchaseOrderReferenceNumber: d.purchaseOrderReferenceNumber,
         vendorId: d.vendorId,
         orderDate: d.orderDate,
         approvedDate: d.approvedDate || undefined,
@@ -250,7 +246,6 @@ export class PurchaseOrderForm implements OnInit {
   private createEmptyDraft(): PurchaseOrderDraft {
     return {
       id: this.commonService.makeid(),
-      purchaseOrderReferenceNumber: '',
       vendorId: '',
       vendorSearchTerm: '',
       orderDate: this.getTodayDateValue(),
