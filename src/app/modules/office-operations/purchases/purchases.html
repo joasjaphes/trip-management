@@ -32,6 +32,9 @@
     @if (viewType() === 'add' || viewType() === 'edit') {
     <app-purchase-order-form [purchaseOrder]="selectedPurchaseOrder()" [vendors]="vendorService.allVendors()"
       [expenses]="expenseCategoryService.purchaseCategories()" (close)="onCloseForm()"></app-purchase-order-form>
+    } @else if ((viewType() === 'approve' || viewType() === 'complete') && selectedPurchaseOrder()) {
+    <app-purchase-order-review [purchaseOrder]="selectedPurchaseOrder()!" [mode]="reviewMode()"
+      [expenses]="expenseCategoryService.purchaseCategories()" (close)="onCloseForm()"></app-purchase-order-review>
     }
   </ng-container>
 </app-layout>

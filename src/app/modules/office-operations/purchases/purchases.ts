@@ -8,6 +8,7 @@ import { ExpenseCategoryService } from '../../../services/expense-category.servi
 import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { PurchaseOrderForm } from './purchase-order-form/purchase-order-form';
+import { PurchaseOrderReview, PurchaseOrderReviewMode } from './purchase-order-review/purchase-order-review';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
@@ -15,7 +16,7 @@ type PurchaseStatusTab = 'pending' | 'approved' | 'completed';
 
 @Component({
   selector: 'app-purchases',
-  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,7 +33,8 @@ export class Purchases implements OnInit {
   title = signal('Purchases');
   description = signal('Track purchase orders from pending request to final completion.');
   viewDetails = signal(false);
-  viewType = signal<'add' | 'edit' | ''>('');
+  viewType = signal<'add' | 'edit' | 'approve' | 'complete' | ''>('');
+  reviewMode = signal<PurchaseOrderReviewMode>('approve');
   showAddButton = signal(true);
   splitSize = signal<'half' | 'full'>('full');
   formTitle = signal('');
@@ -229,32 +231,34 @@ export class Purchases implements OnInit {
     this.viewDetails.set(true);
   }
 
-  async onApprove(row: any) {
-    if (!confirm('Approve this purchase order?')) {
+  onApprove(row: any) {
+    const order = this.purchaseOrderService.getById(row.id);
+    if (!order) {
       return;
     }
 
-    try {
-      await this.purchaseOrderService.updateStatus(row.id, 'Approved');
-      await this.purchaseOrderService.getAll();
-    } catch (err) {
-      console.error('Failed to approve order', err);
-      alert('Failed to approve order: ' + err);
-    }
+    this.selectedPurchaseOrder.set(order);
+    this.reviewMode.set('approve');
+    this.viewType.set('approve');
+    this.splitSize.set('full');
+    this.formTitle.set('Approve Purchase Order');
+    this.formDescription.set('Review items and approve the purchase order.');
+    this.viewDetails.set(true);
   }
 
-  async onComplete(row: any) {
-    if (!confirm('Complete this purchase order?')) {
+  onComplete(row: any) {
+    const order = this.purchaseOrderService.getById(row.id);
+    if (!order) {
       return;
     }
 
-    try {
-      await this.purchaseOrderService.updateStatus(row.id, 'Completed');
-      await this.purchaseOrderService.getAll();
-    } catch (err) {
-      console.error('Failed to complete order', err);
-      alert('Failed to complete order: ' + err);
-    }
+    this.selectedPurchaseOrder.set(order);
+    this.reviewMode.set('complete');
+    this.viewType.set('complete');
+    this.splitSize.set('full');
+    this.formTitle.set('Complete Purchase Order');
+    this.formDescription.set('Review items and complete the purchase order.');
+    this.viewDetails.set(true);
   }
 
   async onCloseForm() {

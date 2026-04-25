@@ -18,7 +18,7 @@
     @if (draft()) {
     <form (ngSubmit)="onSave()">
       <!-- Main Details Form Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 mb-8 relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8 mb-8 relative z-10">
 
         <!-- Order Date -->
         <div class="flex flex-col gap-2">
@@ -39,22 +39,34 @@
             <mat-datepicker #orderDatePicker></mat-datepicker>
           </div>
         </div>
+
         <!-- Vendor -->
         <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor*</label>
-          <div class="relative">
-            <select [(ngModel)]="draft()!.vendorId" name="vendor" (change)="onVendorChange(draft()!.vendorId)"
-              class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-              <option value="" disabled>Select a vendor...</option>
-              @for (vendor of vendors(); track vendor.id) {
-              <option [value]="vendor.id">{{ vendor.vendorName }}</option>
-              }
-            </select>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-              class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
+          <div class="flex items-center justify-between">
+            <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor*</label>
+            <button type="button" (click)="openVendorDialog()"
+              class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[11px] tracking-wide">
+              + New Vendor
+            </button>
           </div>
+          <input type="text" autocomplete="off" list="purchase-order-vendor-options"
+            placeholder="Select existing vendor or type a new name"
+            [ngModel]="draft()!.vendorSearchTerm" name="vendorName"
+            (input)="onVendorInput($any($event.target).value)"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <datalist id="purchase-order-vendor-options">
+            @for (vendor of vendors(); track vendor.id) {
+            <option [value]="vendor.vendorName">{{ vendor.vendorTIN }}</option>
+            }
+          </datalist>
+        </div>
+
+        <!-- Vendor TIN -->
+        <div class="flex flex-col gap-2">
+          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor TIN</label>
+          <input type="text" [(ngModel)]="draft()!.vendorTIN" name="vendorTIN" placeholder="e.g. TIN-123456789"
+            [disabled]="!!draft()!.vendorId"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 disabled:bg-gray-50 disabled:text-gray-500">
         </div>
 
       </div>
