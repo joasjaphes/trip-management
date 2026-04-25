@@ -1,0 +1,142 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+
+  <div class="bg-white border border-gray-100 rounded-2xl p-8 relative overflow-hidden shadow-sm">
+
+    <!-- Header -->
+    <div class="flex items-start justify-between mb-8 relative z-10 gap-4">
+      <div class="flex items-center gap-3">
+        <div class="h-11 w-11 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#f25f2f] shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Reference #</span>
+          <span class="text-[18px] font-extrabold text-gray-900">
+            {{ purchaseOrder().purchaseOrderReferenceNumber || '-' }}
+          </span>
+        </div>
+      </div>
+      <span class="px-3 py-1.5 rounded-full text-[11px] font-extrabold tracking-widest uppercase border"
+        [ngClass]="statusClasses(purchaseOrder().orderStatus)">
+        {{ purchaseOrder().orderStatus }}
+      </span>
+    </div>
+
+    <!-- Vendor Card -->
+    <div class="rounded-2xl border border-gray-100 bg-gray-50 p-5 mb-6 relative z-10">
+      <div class="flex items-center gap-3 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="w-5 h-5 text-[#f25f2f]">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <h3 class="text-[14px] font-extrabold text-gray-900 tracking-wide">Vendor</h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Name</span>
+          <span class="text-[14px] font-bold text-gray-800">{{ purchaseOrder().vendor?.vendorName || '-' }}</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">TIN</span>
+          <span class="text-[14px] font-bold text-gray-800">{{ purchaseOrder().vendor?.vendorTIN || '-' }}</span>
+        </div>
+        @if (purchaseOrder().vendor?.vendorContact) {
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Contact</span>
+          <span class="text-[14px] font-bold text-gray-800">{{ purchaseOrder().vendor?.vendorContact }}</span>
+        </div>
+        }
+        @if (purchaseOrder().vendor?.vendorAddress) {
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Address</span>
+          <span class="text-[14px] font-bold text-gray-800">{{ purchaseOrder().vendor?.vendorAddress }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Dates Card -->
+    <div class="rounded-2xl border border-gray-100 bg-gray-50 p-5 mb-8 relative z-10">
+      <div class="flex items-center gap-3 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="w-5 h-5 text-[#f25f2f]">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <h3 class="text-[14px] font-extrabold text-gray-900 tracking-wide">Timeline</h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Order Date</span>
+          <span class="text-[14px] font-bold text-gray-800">
+            {{ (purchaseOrder().orderDate | date:'mediumDate') || '-' }}
+          </span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Approved Date</span>
+          <span class="text-[14px] font-bold text-gray-800">
+            {{ purchaseOrder().approvedDate ? (purchaseOrder().approvedDate | date:'mediumDate') : '-' }}
+          </span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Completion Date</span>
+          <span class="text-[14px] font-bold text-gray-800">
+            {{ purchaseOrder().completionDate ? (purchaseOrder().completionDate | date:'mediumDate') : '-' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="flex items-center gap-3 mb-4 relative z-10">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+        class="w-5 h-5 text-[#f25f2f]">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+      <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">Order Items</h3>
+    </div>
+
+    <div class="rounded-2xl border border-gray-100 overflow-hidden mb-6 relative z-10">
+      <div class="grid grid-cols-12 gap-x-4 px-4 py-3 bg-gray-50 border-b border-gray-100">
+        <div class="col-span-5 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Expense / Item</div>
+        <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Description</div>
+        <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Amount</div>
+      </div>
+
+      @for (item of purchaseOrder().orderItems; track item.id) {
+      <div class="grid grid-cols-12 gap-x-4 px-4 py-3 border-b border-gray-100 last:border-b-0 items-center">
+        <div class="col-span-5 text-[14px] font-semibold text-gray-800">{{ expenseName(item.itemId) }}</div>
+        <div class="col-span-4 text-[13px] text-gray-600">{{ item.description || '-' }}</div>
+        <div class="col-span-3 text-[14px] font-bold text-gray-900 text-right">{{ item.amount | number }}</div>
+      </div>
+      }
+
+      @if (!purchaseOrder().orderItems?.length) {
+      <div class="px-4 py-6 text-center text-[12px] text-gray-400">No items on this order.</div>
+      }
+    </div>
+
+    <!-- Total Card -->
+    <div class="mt-2 rounded-2xl border border-orange-100 bg-gradient-to-br from-[#fff7f2] to-white p-5 relative z-10">
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-1">
+          <span class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Total Amount</span>
+          <span class="text-[12px] text-gray-500">Sum of all order items above</span>
+        </div>
+        <span class="text-[22px] font-extrabold text-[#f25f2f]">{{ totalAmount() | number }}</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-end gap-3 pt-8 relative z-10">
+      <button type="button" (click)="close.emit()"
+        class="border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 hover:text-[#f25f2f] hover:border-[#f8b9a2] rounded-lg px-5 py-2.5 text-[13px] font-bold transition-colors">
+        Close
+      </button>
+    </div>
+  </div>
+</div>

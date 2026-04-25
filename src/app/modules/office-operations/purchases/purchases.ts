@@ -9,6 +9,7 @@ import { DataTable, TableConfig } from '../../../shared/components/data-table/da
 import { Layout } from '../../../shared/components/layout/layout';
 import { PurchaseOrderForm } from './purchase-order-form/purchase-order-form';
 import { PurchaseOrderReview, PurchaseOrderReviewMode } from './purchase-order-review/purchase-order-review';
+import { PurchaseOrderDetail } from './purchase-order-detail/purchase-order-detail';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
@@ -16,7 +17,7 @@ type PurchaseStatusTab = 'pending' | 'approved' | 'completed';
 
 @Component({
   selector: 'app-purchases',
-  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, PurchaseOrderDetail, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,7 +34,7 @@ export class Purchases implements OnInit {
   title = signal('Purchases');
   description = signal('Track purchase orders from pending request to final completion.');
   viewDetails = signal(false);
-  viewType = signal<'add' | 'edit' | 'approve' | 'complete' | ''>('');
+  viewType = signal<'add' | 'edit' | 'approve' | 'complete' | 'detail' | ''>('');
   reviewMode = signal<PurchaseOrderReviewMode>('approve');
   showAddButton = signal(true);
   splitSize = signal<'half' | 'full'>('full');
@@ -189,6 +190,8 @@ export class Purchases implements OnInit {
       { key: 'completionDateDisplay', label: 'Completed Date' },
     ],
     actions: {
+      view: true,
+      edit: true,
       more: true,
     },
   };
@@ -222,6 +225,24 @@ export class Purchases implements OnInit {
     this.formTitle.set('Edit Purchase Order');
     this.formDescription.set('Update purchase order details and items.');
     this.viewDetails.set(true);
+  }
+
+  onView(row: any) {
+    const order = this.purchaseOrderService.getById(row.id);
+    if (!order) {
+      return;
+    }
+
+    this.selectedPurchaseOrder.set(order);
+    this.viewType.set('detail');
+    this.splitSize.set('full');
+    this.formTitle.set('Purchase Order Details');
+    this.formDescription.set(order.purchaseOrderReferenceNumber || '');
+    this.viewDetails.set(true);
+  }
+
+  onEditIcon(_row: any) {
+    // Edit icon placeholder — no functionality wired yet.
   }
 
   onApprove(row: any) {

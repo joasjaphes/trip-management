@@ -25,7 +25,7 @@
 
     <!-- Data Table -->
     <app-data-table [data]="filteredRows()" [config]="tableConfigurations" [loading]="loading()"
-      [moreActions]="moreActions()"></app-data-table>
+      [moreActions]="moreActions()" (view)="onView($event)" (edit)="onEditIcon($event)"></app-data-table>
   </ng-container>
 
   <ng-container ngProjectAs="form">
@@ -35,6 +35,9 @@
     } @else if ((viewType() === 'approve' || viewType() === 'complete') && selectedPurchaseOrder()) {
     <app-purchase-order-review [purchaseOrder]="selectedPurchaseOrder()!" [mode]="reviewMode()"
       [expenses]="expenseCategoryService.purchaseCategories()" (close)="onCloseForm()"></app-purchase-order-review>
+    } @else if (viewType() === 'detail' && selectedPurchaseOrder()) {
+    <app-purchase-order-detail [purchaseOrder]="selectedPurchaseOrder()!"
+      (close)="onCloseForm()"></app-purchase-order-detail>
     }
   </ng-container>
 </app-layout>
