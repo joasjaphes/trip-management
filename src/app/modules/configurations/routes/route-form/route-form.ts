@@ -30,8 +30,8 @@ export class RouteForm implements OnInit {
   isActive = true;
   isVATZeroRated = true;
   vatPercentage = '18';
-  currency = 'TZS';
-  currencyOptions = ['TZS', 'USD', 'EUR', 'KES', 'UGX', 'RWF', 'GBP'];
+  currency = 'USD';
+  currencyOptions = ['TZS', 'USD'];
   close = output();
 
   get isEditMode(): boolean {
@@ -52,7 +52,7 @@ export class RouteForm implements OnInit {
     this.isActive = route.isActive;
     this.isVATZeroRated = route.isVATZeroRated ?? true;
     this.vatPercentage = String(route.vatPercentage ?? '18');
-    this.currency = route.currency ?? 'TZS';
+    this.currency = route.currency ?? 'USD';
   }
 
   goBack() {
