@@ -662,12 +662,10 @@ Content-Type: application/json
 {
   "id": "purchase-order-uid-123",
   "purchaseOrderReferenceNumber": "PO-2026-001",
-  "vendorId": "vendor-uid-123",
+  "vendorName": "Petrol Station Ltd",
+  "vendorTIN": "TIN-123456789",
   "orderDate": "2026-04-22T10:30:00.000Z",
-  "approvedDate": "2026-04-22T12:00:00.000Z",
-  "approvedByUserId": "user-uid-456",
-  "completedByUserId": "user-uid-789",
-  "orderStatus": "Approved",
+  "orderStatus": "Pending",
   "orderItems": [
     {
       "itemId": "expense-uid-123",
@@ -692,6 +690,8 @@ Content-Type: application/json
   "id": "purchase-order-uid-123",
   "purchaseOrderReferenceNumber": "PO-2026-001",
   "vendorId": "vendor-uid-123",
+  "vendorName": "Petrol Station Ltd",
+  "vendorTIN": "TIN-123456789",
   "orderDate": "2026-04-22T10:30:00.000Z",
   "completionDate": "2026-04-25T14:00:00.000Z",
   "approvedDate": "2026-04-22T12:00:00.000Z",
@@ -708,9 +708,54 @@ Content-Type: application/json
 }
 ```
 
+#### Approve Purchase Order
+```http
+PUT /api/purchaseOrders/:id/approve
+Content-Type: application/json
+
+{
+  "approvedDate": "2026-04-23T09:00:00.000Z",
+  "orderItems": [
+    {
+      "itemId": "expense-uid-123",
+      "description": "Fuel for trip operations",
+      "amount": 360000
+    },
+    {
+      "itemId": "expense-uid-456",
+      "description": "Tire replacement",
+      "amount": 190000
+    }
+  ]
+}
+```
+
+`approvedByUserId` is derived from the authenticated request user and is not required in the request body for this endpoint.
+
+#### Complete Purchase Order
+```http
+PUT /api/purchaseOrders/:id/complete
+Content-Type: application/json
+
+{
+  "completionDate": "2026-04-25T14:00:00.000Z",
+  "orderItems": [
+    {
+      "itemId": "expense-uid-123",
+      "description": "Fuel for trip operations",
+      "amount": 365000
+    }
+  ]
+}
+```
+
+`completedByUserId` is derived from the authenticated request user and is not required in the request body for this endpoint.
+
 Purchase order fields:
 - `purchaseOrderReferenceNumber` is the business reference for the order
 - `vendorId` links the purchase order to an existing vendor
+- `vendorName` can be provided instead of `vendorId`; the API will reuse or create a vendor
+- `vendorTIN` is optional and used with `vendorName` to match existing vendors
 - `orderDate` stores when the order was created
 - `completionDate` stores when the order was completed
 - `approvedDate` stores when the order was approved
@@ -728,7 +773,7 @@ Order status options: `Pending`, `Approved`, `Completed`
 
 Required fields for posting (`POST /api/purchaseOrders`):
 - `purchaseOrderReferenceNumber`
-- `vendorId`
+- `vendorId` or `vendorName`
 - `orderDate`
 - `orderStatus`
 - `orderItems`
@@ -738,8 +783,11 @@ Optional fields:
 - `approvedDate`
 - `completedByUserId`
 - `approvedByUserId`
+- `vendorTIN`
 
 Each purchase order can contain multiple items, and each item must reference an existing expense.
+
+When calling approve or complete endpoints, incoming `orderItems` replace existing purchase order items.
 
 ---
 
