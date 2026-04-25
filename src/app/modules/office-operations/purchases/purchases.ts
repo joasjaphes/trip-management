@@ -111,10 +111,10 @@ export class Purchases implements OnInit {
         normalizedStatus,
         orderDateRaw: order.orderDate,
         _order: order,
+        canEdit: normalizedStatus === 'pending',
         actions: {
           approve: normalizedStatus === 'pending',
           complete: normalizedStatus === 'approved',
-          edit: normalizedStatus !== 'completed',
         }
       };
     });
@@ -191,7 +191,7 @@ export class Purchases implements OnInit {
     ],
     actions: {
       view: true,
-      edit: true,
+      edit: false,
       more: true,
     },
   };
