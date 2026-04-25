@@ -110,6 +110,11 @@ export class Purchases implements OnInit {
         normalizedStatus,
         orderDateRaw: order.orderDate,
         _order: order,
+        actions: {
+          approve: normalizedStatus === 'pending',
+          complete: normalizedStatus === 'approved',
+          edit: normalizedStatus !== 'completed',
+        }
       };
     });
   });
@@ -153,34 +158,22 @@ export class Purchases implements OnInit {
     return filtered;
   });
 
+
   moreActions = computed(() => {
     const selected = this.selectedStatus();
-    const actions = [];
-
-    if (selected === 'pending') {
-      actions.push({
-        label: 'Approve Order',
-        key: 'approve',
-        icon: 'fa-solid fa-check text-green-500',
-        action: (row: any) => this.onApprove(row),
-      });
+    const actions = [{
+      label: 'Approve Order',
+      key: 'approve',
+      icon: 'fa-solid fa-check text-green-500',
+      action: (row: any) => this.onApprove(row),
+    },
+    {
+      label: 'Complete Order',
+      key: 'complete',
+      icon: 'fa-solid fa-flag-checkered text-blue-500',
+      action: (row: any) => this.onComplete(row),
     }
-
-    if (selected === 'approved') {
-      actions.push({
-        label: 'Complete Order',
-        key: 'complete',
-        icon: 'fa-solid fa-flag-checkered text-blue-500',
-        action: (row: any) => this.onComplete(row),
-      });
-    }
-
-    actions.push({
-      label: 'Edit Order',
-      key: 'edit',
-      icon: 'fa-solid fa-pen text-gray-500',
-      action: (row: any) => this.onEdit(row),
-    });
+    ];
 
     return actions;
   });
