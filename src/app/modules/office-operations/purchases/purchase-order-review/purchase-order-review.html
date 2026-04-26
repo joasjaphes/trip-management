@@ -53,6 +53,46 @@
       </div>
     </div>
 
+    @if (mode() === 'complete') {
+    <div class="mb-8 rounded-2xl border border-orange-100 bg-gradient-to-br from-[#fff7f2] to-white p-5 relative z-10">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <div class="flex flex-col gap-1">
+          <span class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Completion Attachment</span>
+          <span class="text-[12px] text-gray-500">Upload a PDF or image before completing the order.</span>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+          @if (completionAttachment().path) {
+          <button type="button" (click)="previewCompletionAttachment()"
+            class="rounded-lg border border-orange-200 bg-white px-4 py-2 text-[12px] font-bold text-[#f25f2f] hover:bg-orange-50 transition-colors">
+            Preview
+          </button>
+          <button type="button" (click)="removeCompletionAttachment()"
+            class="rounded-lg border border-gray-200 bg-white px-4 py-2 text-[12px] font-bold text-gray-600 hover:bg-gray-50 transition-colors">
+            Remove
+          </button>
+          }
+          <button type="button" (click)="completionAttachmentInput.click()"
+            [disabled]="saving() || completionAttachmentUploading()"
+            class="rounded-lg bg-[#f25f2f] px-4 py-2 text-[12px] font-bold text-white hover:bg-[#ff5117] disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+            {{ completionAttachmentUploading() ? 'Uploading...' : (completionAttachment().path ? 'Replace Attachment' : 'Upload Attachment') }}
+          </button>
+          <input #completionAttachmentInput type="file" class="hidden"
+            accept=".pdf,.png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp,application/pdf"
+            (change)="onCompletionAttachmentSelected($event)">
+        </div>
+      </div>
+
+      @if (completionAttachment().name) {
+      <div class="rounded-xl border border-gray-200 bg-white px-4 py-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-[12px] font-bold text-gray-800 truncate">{{ completionAttachment().name }}</p>
+          <p class="text-[11px] text-gray-500">Ready to attach to the completion record.</p>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
     <!-- Order Items Section Divider -->
     <hr class="border-gray-100 my-8 relative z-10">
 

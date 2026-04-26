@@ -63,6 +63,11 @@
   box-shadow: 0 2px 8px rgba(242, 95, 47, 0.25);
 }
 
+.status-tab-active:hover {
+  color: #ffffff !important;
+}
+
+
 .status-count {
   display: inline-flex;
   align-items: center;

@@ -90,6 +90,22 @@
       </div>
     </div>
 
+    @if (purchaseOrder().completionAttachment) {
+    <div class="rounded-2xl border border-gray-100 bg-gray-50 p-5 mb-8 relative z-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Completion Attachment</span>
+          <span class="text-[14px] font-bold text-gray-800 truncate">{{ completionAttachmentName() || 'Attachment' }}</span>
+          <span class="text-[12px] text-gray-500">Attached when the order was completed.</span>
+        </div>
+        <button type="button" (click)="previewCompletionAttachment()" [disabled]="!completionAttachmentUrl()"
+          class="rounded-lg border border-orange-200 bg-white px-4 py-2 text-[12px] font-bold text-[#f25f2f] hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          Preview Attachment
+        </button>
+      </div>
+    </div>
+    }
+
     <!-- Order Items -->
     <div class="flex items-center gap-3 mb-4 relative z-10">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"

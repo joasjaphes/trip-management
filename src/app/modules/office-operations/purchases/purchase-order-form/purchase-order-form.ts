@@ -257,11 +257,7 @@ export class PurchaseOrderForm implements OnInit {
       const trimmedName = d.vendorSearchTerm.trim();
       const matchedVendor = this.resolveVendor(d.vendorId, trimmedName);
 
-      const referenceNumber =
-        d.purchaseOrderReferenceNumber?.trim() || this.generateReferenceNumber();
-
       const payload = {
-        purchaseOrderReferenceNumber: referenceNumber,
         vendorId: matchedVendor?.id || undefined,
         vendorName: matchedVendor?.id ? undefined : trimmedName,
         vendorTIN: matchedVendor?.id ? undefined : d.vendorTIN.trim() || undefined,
@@ -288,12 +284,6 @@ export class PurchaseOrderForm implements OnInit {
     } finally {
       this.saving.set(false);
     }
-  }
-
-  private generateReferenceNumber(): string {
-    const year = new Date().getFullYear();
-    const random = Math.floor(Math.random() * 9000 + 1000);
-    return `PO-${year}-${random}`;
   }
 
   private createEmptyDraft(): PurchaseOrderDraft {

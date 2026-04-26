@@ -15,7 +15,7 @@
     <!-- Status Tabs -->
     <div class="status-tabs mb-4" role="tablist" aria-label="Purchase order status tabs">
       @for (tab of statusTabs(); track tab.key) {
-      <button type="button" class="status-tab" [class.status-tab-active]="selectedStatus() === tab.key"
+      <button type="button" class="status-tab cursor-pointer" [class.status-tab-active]="selectedStatus() === tab.key"
         role="tab" [attr.aria-selected]="selectedStatus() === tab.key" (click)="selectedStatus.set(tab.key)">
         <span>{{ tab.label }}</span>
         <span class="status-count">{{ tab.count }}</span>

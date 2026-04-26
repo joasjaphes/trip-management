@@ -192,7 +192,7 @@ export class Purchases implements OnInit {
     actions: {
       view: true,
       edit: false,
-      more: true,
+      more: false,
     },
   };
 

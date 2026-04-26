@@ -30,6 +30,7 @@ export type ApprovePurchaseOrderPayload = {
 
 export type CompletePurchaseOrderPayload = {
   completionDate: string;
+  completionAttachment?: string;
   orderItems: PurchaseOrderItemPayload[];
 };
 

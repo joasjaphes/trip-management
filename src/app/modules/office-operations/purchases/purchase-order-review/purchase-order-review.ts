@@ -6,6 +6,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { ExpenseCategory } from '../../../../models/expense-category.model';
 import { PurchaseOrder } from '../../../../models/purchase-order.model';
 import { CommonService } from '../../../../services/common.service';
+import { FileUploadService } from '../../../../services/file-upload.service';
 import { PurchaseOrderService } from '../../../../services/purchase-order.service';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
 
@@ -18,6 +19,12 @@ type ReviewItem = {
   amount: number;
 };
 
+type CompletionAttachment = {
+  path?: string;
+  name?: string;
+  url?: string;
+};
+
 @Component({
   selector: 'app-purchase-order-review',
   standalone: true,
@@ -28,6 +35,7 @@ type ReviewItem = {
 export class PurchaseOrderReview {
   private purchaseOrderService = inject(PurchaseOrderService);
   private commonService = inject(CommonService);
+  private fileUploadService = inject(FileUploadService);
 
   purchaseOrder = input.required<PurchaseOrder>();
   expenses = input<ExpenseCategory[]>([]);
@@ -41,6 +49,8 @@ export class PurchaseOrderReview {
 
   reviewDate = signal<string>('');
   items = signal<ReviewItem[]>([]);
+  completionAttachment = signal<CompletionAttachment>({});
+  completionAttachmentUploading = signal(false);
   today = new Date();
 
   modeLabel = computed(() => (this.mode() === 'approve' ? 'Approve' : 'Complete'));
@@ -60,6 +70,7 @@ export class PurchaseOrderReview {
   canSave = computed(() => {
     return (
       !this.saving() &&
+      !this.completionAttachmentUploading() &&
       !!this.reviewDate() &&
       this.items().length > 0 &&
       this.items().every((item) => item.itemId && Number(item.amount) > 0)
@@ -81,6 +92,15 @@ export class PurchaseOrderReview {
       );
 
       this.reviewDate.set(this.toDateString(new Date()));
+      this.completionAttachment.set({
+        path: order.completionAttachment,
+        name: this.fileUploadService.getFileName(order.completionAttachment),
+        url: undefined,
+      });
+
+      if (this.mode() === 'complete' && order.completionAttachment) {
+        void this.hydrateCompletionAttachment(order.completionAttachment);
+      }
     });
   }
 
@@ -100,6 +120,78 @@ export class PurchaseOrderReview {
 
   onReviewDateChanged(value: Date | null) {
     this.reviewDate.set(this.toDateString(value));
+  }
+
+  private async hydrateCompletionAttachment(path: string | undefined) {
+    if (!path) {
+      this.completionAttachment.update((attachment) => ({ ...attachment, url: undefined }));
+      return;
+    }
+
+    const url = await this.fileUploadService.resolveFileUrl(path);
+    this.completionAttachment.update((attachment) => ({
+      ...attachment,
+      path,
+      name: this.fileUploadService.getFileName(path),
+      url,
+    }));
+  }
+
+  async onCompletionAttachmentSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0] ? input.files[0] : undefined;
+    if (!file) {
+      return;
+    }
+
+    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp'];
+    const lowerName = file.name.toLowerCase();
+    const hasAllowedExtension = ['.pdf', '.png', '.jpg', '.jpeg', '.webp'].some((ext) => lowerName.endsWith(ext));
+    if (!allowedMimeTypes.includes(file.type) && !hasAllowedExtension) {
+      this.errorMessage.set('Only PDF or image files are allowed.');
+      input.value = '';
+      return;
+    }
+
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.completionAttachmentUploading.set(true);
+    this.completionAttachment.update((attachment) => ({
+      ...attachment,
+      name: file.name,
+      url: undefined,
+    }));
+
+    try {
+      const uploadedFile = await this.fileUploadService.uploadFile(file);
+      this.completionAttachment.set({
+        path: uploadedFile.filePath,
+        name: uploadedFile.fileName,
+        url: uploadedFile.fileUrl,
+      });
+      this.successMessage.set('Completion attachment uploaded successfully.');
+    } catch (error) {
+      this.errorMessage.set(String(error || 'Could not upload the completion attachment.'));
+    } finally {
+      this.completionAttachmentUploading.set(false);
+      input.value = '';
+    }
+  }
+
+  removeCompletionAttachment() {
+    this.completionAttachment.set({});
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+  }
+
+  previewCompletionAttachment() {
+    const url = this.completionAttachment().url;
+    if (!url) {
+      this.errorMessage.set('Attachment preview is not available.');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   onAddItem() {
@@ -158,6 +250,7 @@ export class PurchaseOrderReview {
       } else {
         await this.purchaseOrderService.complete(this.purchaseOrder().id, {
           completionDate: isoDate,
+          completionAttachment: this.completionAttachment().path || undefined,
           orderItems,
         });
         this.successMessage.set('Purchase order completed successfully.');
