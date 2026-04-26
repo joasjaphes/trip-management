@@ -52,7 +52,7 @@
                     ? 'ascending'
                     : 'descending'
                   : 'none'
-              ">
+              " [style.text-align]="column.type === 'number' ? 'right' : 'left'">
                 <button *ngIf="column.sortable" class="sort-button" (click)="onSort(column.key)" [attr.aria-label]="
                   'Sort by ' + column.label + ', current direction: ' + sortDirection()
                 ">

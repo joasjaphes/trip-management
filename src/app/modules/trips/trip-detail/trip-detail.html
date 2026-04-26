@@ -169,13 +169,11 @@
           <div class="grid grid-cols-2 md:grid-cols-2 gap-x-8 gap-y-10 relative z-10">
             <div class="flex flex-col gap-2">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Trip Date</span>
-              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.tripDate ? (trip()!.tripDate | date:'MMM d,
-                yyyy') : '-' }}</span>
+              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.tripDate ? (trip()!.tripDate | date:'MMM d,yyyy') : '-' }}</span>
             </div>
             <div class="flex flex-col gap-2">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">End Date</span>
-              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.endDate ? (trip()!.endDate | date:'MMM d,
-                yyyy') : '-' }}</span>
+              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.endDate ? (trip()!.endDate | date:'MMM d,yyyy') : '-' }}</span>
             </div>
             <div class="flex flex-col gap-2 relative">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Revenue</span>
@@ -405,6 +403,11 @@
             <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">Attachment</h2>
           </div>
 
+
+          @if (!trip().completionDocument && !trip().tripDocument) {
+            <p class="text-[14px] text-gray-500">No trip attachment uploaded.</p>
+          }
+
           @if (trip()?.tripDocument) {
           <div class="rounded-xl border border-orange-100 bg-orange-50 px-4 py-4">
             <p class="text-[13px] font-bold text-gray-900 truncate mb-3">
@@ -415,8 +418,17 @@
               Preview Attachment
             </button>
           </div>
-          } @else {
-          <p class="text-[14px] text-gray-500">No trip attachment uploaded.</p>
+          }
+           @if (trip()?.completionDocument) {
+          <div class="rounded-xl border border-orange-100 bg-orange-50 px-4 py-4 mt-2">
+            <p class="text-[13px] font-bold text-gray-900 truncate mb-3">
+              {{ trip()?.completionDocument ? trip()?.completionDocument?.split('/').pop() : '-' }}
+            </p>
+            <button type="button" (click)="previewCompletionDocument()" [disabled]="!completionDocumentUrl()"
+              class="btn min-h-0 h-9 border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-4 text-[12px] font-extrabold rounded-lg disabled:bg-gray-300 disabled:hover:bg-gray-300 disabled:text-gray-500">
+              Preview Attachment
+            </button>
+          </div>
           }
         </div>
 

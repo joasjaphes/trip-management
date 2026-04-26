@@ -8,7 +8,7 @@ export interface Route {
   isActive: boolean;
   isVATZeroRated?: boolean;
   vatPercentage?: number;
-  currency?: string;
+  routeCurrency?: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -32,6 +32,8 @@ export interface Trip {
 	offloadingPlaceName?: string;
 	offloadingPlace?: OffloadingPlace;
 	revenue: number;
+	exchangeRate?: number;
+	equivalentAmount?: number;
 	paidAmount?: number;
 	income?: number;
 	expenses: TripExpense[];

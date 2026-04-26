@@ -30,7 +30,7 @@ export class RouteForm implements OnInit {
   isActive = true;
   isVATZeroRated = true;
   vatPercentage = '18';
-  currency = 'USD';
+  routeCurrency = 'USD';
   currencyOptions = ['TZS', 'USD'];
   close = output();
 
@@ -52,7 +52,7 @@ export class RouteForm implements OnInit {
     this.isActive = route.isActive;
     this.isVATZeroRated = route.isVATZeroRated ?? true;
     this.vatPercentage = String(route.vatPercentage ?? '18');
-    this.currency = route.currency ?? 'USD';
+    this.routeCurrency = route.routeCurrency ?? 'USD';
   }
 
   goBack() {
@@ -81,7 +81,7 @@ export class RouteForm implements OnInit {
         isActive: this.isActive,
         isVATZeroRated: this.isVATZeroRated,
         vatPercentage: this.vatPercentage ? Number(this.vatPercentage) : undefined,
-        currency: this.currency || undefined,
+        routeCurrency: this.routeCurrency || undefined,
       };
 
       if (this.isEditMode) {

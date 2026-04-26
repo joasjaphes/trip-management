@@ -106,7 +106,7 @@
                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </span>
-            <select [(ngModel)]="currency" name="currency"
+            <select [(ngModel)]="routeCurrency" name="routeCurrency"
               class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-10 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
               @for (option of currencyOptions; track option) {
               <option [value]="option">{{ option }}</option>

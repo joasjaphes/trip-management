@@ -58,11 +58,14 @@
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Start Date*</label>
         <div class="relative">
-          <input [matDatepicker]="tripDatePicker" [value]="toDateValue(tripDate)" (dateChange)="onTripDateChanged($event.value)" required
-            readonly class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <input [matDatepicker]="tripDatePicker" [value]="toDateValue(tripDate)"
+            (dateChange)="onTripDateChanged($event.value)" required readonly
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           <button type="button" (click)="tripDatePicker.open()"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]" aria-label="Open trip date picker">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+            aria-label="Open trip date picker">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
@@ -230,8 +233,9 @@
       <!-- Offloading Place (Autocomplete) -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Offloading Place</label>
-        <input type="text" [(ngModel)]="offloadingPlaceName" (ngModelChange)="onOffloadingPlaceInput($event)" name="offloadingPlaceName"
-          autocomplete="off" list="offloading-place-options" placeholder="Select existing place or type a new name"
+        <input type="text" [(ngModel)]="offloadingPlaceName" (ngModelChange)="onOffloadingPlaceInput($event)"
+          name="offloadingPlaceName" autocomplete="off" list="offloading-place-options"
+          placeholder="Select existing place or type a new name"
           class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         <datalist id="offloading-place-options">
           @for (place of offloadingPlaces(); track place.id) {
@@ -241,8 +245,9 @@
       </div>
 
       <!-- Projected Revenue -->
-      <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Projected Revenue/Income*
+      <div class="flex flex-col gap-2 col-span-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Projected Revenue/Income ({{
+          currency }}) *
           <!-- @if (revenue) {
           ({{ revenue |number:'1.0-2' }})
           } -->
@@ -253,13 +258,24 @@
           <input type="text" [(ngModel)]="revenue" name="revenue" placeholder="0.00" appNumberFormat matTooltip=""
             matTooltipPosition="above" matTooltipClass="with-arrow"
             class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-          <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">
-            @if (revenue) {
-            ({{ revenue | number:'1.0-2' }})
-            }
-          </div>
         </div>
       </div>
+      @if (currency == 'USD') {
+      <div class="flex flex-col col-span-2 gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Exchange Rate
+          <!-- @if (revenue) {
+          ({{ revenue |number:'1.0-2' }})
+          } -->
+        </label>
+        <div class="relative">
+          <!-- <div class="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[14px] pointer-events-none">
+            TZS</div> -->
+          <input type="text" [(ngModel)]="exchangeRate" name="exchangeRate" placeholder="0.00" appNumberFormat
+            matTooltip="" matTooltipPosition="above" matTooltipClass="with-arrow"
+            class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        </div>
+      </div>
+      }
       <!-- Status -->
       <!-- <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Status</label>
@@ -298,8 +314,10 @@
         <div class="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4 shadow-sm">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-3 min-w-0">
-              <div class="h-11 w-11 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#f25f2f] shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div
+                class="h-11 w-11 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#f25f2f] shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M7 7a2 2 0 012-2h6a2 2 0 012 2v10a2 2 0 01-2 2H9a2 2 0 01-2-2V7z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6M9 15h4" />
