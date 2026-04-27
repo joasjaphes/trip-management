@@ -15,6 +15,9 @@ export class ExpenseCategoryService {
 
   // Public readonly signals
   readonly allCategories = this.categories.asReadonly();
+  readonly purchaseCategories = computed(() =>
+    this.categories().filter((c) => c.isPurchase)
+  );
   readonly loading = this.isLoading.asReadonly();
   readonly errorMessage = this.error.asReadonly();
 

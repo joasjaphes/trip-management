@@ -8,12 +8,16 @@ import { ExpenseCategoryService } from '../../../services/expense-category.servi
 import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { PurchaseOrderForm } from './purchase-order-form/purchase-order-form';
+import { PurchaseOrderReview, PurchaseOrderReviewMode } from './purchase-order-review/purchase-order-review';
+import { PurchaseOrderDetail } from './purchase-order-detail/purchase-order-detail';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 type PurchaseStatusTab = 'pending' | 'approved' | 'completed';
 
 @Component({
   selector: 'app-purchases',
-  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm],
+  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, PurchaseOrderDetail, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,7 +34,8 @@ export class Purchases implements OnInit {
   title = signal('Purchases');
   description = signal('Track purchase orders from pending request to final completion.');
   viewDetails = signal(false);
-  viewType = signal<'add' | 'edit' | ''>('');
+  viewType = signal<'add' | 'edit' | 'approve' | 'complete' | 'detail' | ''>('');
+  reviewMode = signal<PurchaseOrderReviewMode>('approve');
   showAddButton = signal(true);
   splitSize = signal<'half' | 'full'>('full');
   formTitle = signal('');
@@ -106,6 +111,11 @@ export class Purchases implements OnInit {
         normalizedStatus,
         orderDateRaw: order.orderDate,
         _order: order,
+        canEdit: normalizedStatus === 'pending',
+        actions: {
+          approve: normalizedStatus === 'pending',
+          complete: normalizedStatus === 'approved',
+        }
       };
     });
   });
@@ -149,34 +159,22 @@ export class Purchases implements OnInit {
     return filtered;
   });
 
+
   moreActions = computed(() => {
     const selected = this.selectedStatus();
-    const actions = [];
-
-    if (selected === 'pending') {
-      actions.push({
-        label: 'Approve Order',
-        key: 'approve',
-        icon: 'fa-solid fa-check text-green-500',
-        action: (row: any) => this.onApprove(row),
-      });
+    const actions = [{
+      label: 'Approve Order',
+      key: 'approve',
+      icon: 'fa-solid fa-check text-green-500',
+      action: (row: any) => this.onApprove(row),
+    },
+    {
+      label: 'Complete Order',
+      key: 'complete',
+      icon: 'fa-solid fa-flag-checkered text-blue-500',
+      action: (row: any) => this.onComplete(row),
     }
-
-    if (selected === 'approved') {
-      actions.push({
-        label: 'Complete Order',
-        key: 'complete',
-        icon: 'fa-solid fa-flag-checkered text-blue-500',
-        action: (row: any) => this.onComplete(row),
-      });
-    }
-
-    actions.push({
-      label: 'Edit Order',
-      key: 'edit',
-      icon: 'fa-solid fa-pen text-gray-500',
-      action: (row: any) => this.onEdit(row),
-    });
+    ];
 
     return actions;
   });
@@ -192,7 +190,9 @@ export class Purchases implements OnInit {
       { key: 'completionDateDisplay', label: 'Completed Date' },
     ],
     actions: {
-      more: true,
+      view: true,
+      edit: false,
+      more: false,
     },
   };
 
@@ -207,7 +207,7 @@ export class Purchases implements OnInit {
   onAdd() {
     this.selectedPurchaseOrder.set(undefined);
     this.viewType.set('add');
-    this.splitSize.set('half');
+    this.splitSize.set('full');
     this.formTitle.set('Create Purchase Order');
     this.formDescription.set('Create a new purchase order with items and vendor details.');
     this.viewDetails.set(true);
@@ -221,38 +221,58 @@ export class Purchases implements OnInit {
 
     this.selectedPurchaseOrder.set(order);
     this.viewType.set('edit');
-    this.splitSize.set('half');
+    this.splitSize.set('full');
     this.formTitle.set('Edit Purchase Order');
     this.formDescription.set('Update purchase order details and items.');
     this.viewDetails.set(true);
   }
 
-  async onApprove(row: any) {
-    if (!confirm('Approve this purchase order?')) {
+  onView(row: any) {
+    const order = this.purchaseOrderService.getById(row.id);
+    if (!order) {
       return;
     }
 
-    try {
-      await this.purchaseOrderService.updateStatus(row.id, 'Approved');
-      await this.purchaseOrderService.getAll();
-    } catch (err) {
-      console.error('Failed to approve order', err);
-      alert('Failed to approve order: ' + err);
-    }
+    this.selectedPurchaseOrder.set(order);
+    this.viewType.set('detail');
+    this.splitSize.set('full');
+    this.formTitle.set('Purchase Order Details');
+    this.formDescription.set(order.purchaseOrderReferenceNumber || '');
+    this.viewDetails.set(true);
   }
 
-  async onComplete(row: any) {
-    if (!confirm('Complete this purchase order?')) {
+  onEditIcon(_row: any) {
+    // Edit icon placeholder — no functionality wired yet.
+  }
+
+  onApprove(row: any) {
+    const order = this.purchaseOrderService.getById(row.id);
+    if (!order) {
       return;
     }
 
-    try {
-      await this.purchaseOrderService.updateStatus(row.id, 'Completed');
-      await this.purchaseOrderService.getAll();
-    } catch (err) {
-      console.error('Failed to complete order', err);
-      alert('Failed to complete order: ' + err);
+    this.selectedPurchaseOrder.set(order);
+    this.reviewMode.set('approve');
+    this.viewType.set('approve');
+    this.splitSize.set('full');
+    this.formTitle.set('Approve Purchase Order');
+    this.formDescription.set('Review items and approve the purchase order.');
+    this.viewDetails.set(true);
+  }
+
+  onComplete(row: any) {
+    const order = this.purchaseOrderService.getById(row.id);
+    if (!order) {
+      return;
     }
+
+    this.selectedPurchaseOrder.set(order);
+    this.reviewMode.set('complete');
+    this.viewType.set('complete');
+    this.splitSize.set('full');
+    this.formTitle.set('Complete Purchase Order');
+    this.formDescription.set('Review items and complete the purchase order.');
+    this.viewDetails.set(true);
   }
 
   async onCloseForm() {
@@ -277,6 +297,32 @@ export class Purchases implements OnInit {
     return this.purchaseOrderService
       .allPurchaseOrders()
       .filter((order) => order.orderStatus.toLowerCase() === normalizedStatus).length;
+  }
+
+  toDateValue(value: string | Date | null | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  private toDateString(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onFromDateChanged(value: Date | null) {
+    this.filterFromDate.set(this.toDateString(value));
+  }
+
+  onToDateChanged(value: Date | null) {
+    this.filterToDate.set(this.toDateString(value));
   }
 
   private formatDate(value?: string): string {

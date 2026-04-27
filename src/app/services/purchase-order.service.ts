@@ -3,21 +3,36 @@ import { CommonService } from './common.service';
 import { PurchaseOrder } from '../models/purchase-order.model';
 import { HttpClientService } from './http-client.service';
 
+export type PurchaseOrderItemPayload = {
+  itemId: string;
+  description?: string;
+  amount: number;
+};
+
 export type CreatePurchaseOrderPayload = {
-  purchaseOrderReferenceNumber: string;
-  vendorId: string;
+  purchaseOrderReferenceNumber?: string;
+  vendorId?: string;
+  vendorName?: string;
+  vendorTIN?: string;
   orderDate: string;
   approvedDate?: string;
   completionDate?: string;
   orderStatus: 'Pending' | 'Approved' | 'Completed';
-  orderItems: Array<{
-    itemId: string;
-    description?: string;
-    amount: number;
-  }>;
+  orderItems: PurchaseOrderItemPayload[];
 };
 
 export type UpdatePurchaseOrderPayload = CreatePurchaseOrderPayload;
+
+export type ApprovePurchaseOrderPayload = {
+  approvedDate: string;
+  orderItems: PurchaseOrderItemPayload[];
+};
+
+export type CompletePurchaseOrderPayload = {
+  completionDate: string;
+  completionAttachment?: string;
+  orderItems: PurchaseOrderItemPayload[];
+};
 
 @Injectable({
   providedIn: 'root',
@@ -102,37 +117,32 @@ export class PurchaseOrderService {
     }
   }
 
-  async updateStatus(
-    id: string,
-    status: 'Approved' | 'Completed',
-    dates?: { approvedDate?: string; completionDate?: string }
-  ): Promise<void> {
+  async approve(id: string, payload: ApprovePurchaseOrderPayload): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      const order = this.getById(id);
-      if (!order) throw new Error('Purchase order not found');
-
-      const payload: UpdatePurchaseOrderPayload = {
-        purchaseOrderReferenceNumber: order.purchaseOrderReferenceNumber,
-        vendorId: order.vendorId,
-        orderDate: order.orderDate,
-        approvedDate: status === 'Approved' ? dates?.approvedDate ?? new Date().toISOString() : order.approvedDate,
-        completionDate: status === 'Completed' ? dates?.completionDate ?? new Date().toISOString() : order.completionDate,
-        orderStatus: status,
-        orderItems: order.orderItems.map((item) => ({
-          itemId: item.itemId,
-          description: item.description,
-          amount: item.amount,
-        })),
-      };
-
-      await this.http.put('purchaseOrders', { id, ...payload });
+      await this.http.put(`purchaseOrders/${id}/approve`, payload);
       await this.getAll();
     } catch (err) {
-      this.error.set(err?.toString() || 'Failed to update purchase order status');
-      console.error('Failed to update purchase order status', err);
+      this.error.set(err?.toString() || 'Failed to approve purchase order');
+      console.error('Failed to approve purchase order', err);
+      throw err;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async complete(id: string, payload: CompletePurchaseOrderPayload): Promise<void> {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    try {
+      await this.http.put(`purchaseOrders/${id}/complete`, payload);
+      await this.getAll();
+    } catch (err) {
+      this.error.set(err?.toString() || 'Failed to complete purchase order');
+      console.error('Failed to complete purchase order', err);
       throw err;
     } finally {
       this.isLoading.set(false);

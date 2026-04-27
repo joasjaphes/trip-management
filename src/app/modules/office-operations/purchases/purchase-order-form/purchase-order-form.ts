@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ExpenseCategory } from '../../../../models/expense-category.model';
-import { PurchaseOrder, PurchaseOrderItem, PurchaseOrderStatus } from '../../../../models/purchase-order.model';
+import { PurchaseOrder, PurchaseOrderStatus } from '../../../../models/purchase-order.model';
 import { Vendor } from '../../../../models/vendor.model';
 import { CommonService } from '../../../../services/common.service';
 import { ExpenseCategoryService } from '../../../../services/expense-category.service';
@@ -11,12 +11,15 @@ import { VendorService } from '../../../../services/vendor.service';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
+import { VendorFormDialog, VendorFormDialogData } from '../../../configurations/vendors/vendor-form/vendor-form';
 
 type PurchaseOrderDraft = {
   id: string;
   purchaseOrderReferenceNumber: string;
   vendorId: string;
   vendorSearchTerm: string;
+  vendorTIN: string;
   orderDate: string;
   approvedDate: string;
   completionDate: string;
@@ -44,6 +47,7 @@ export class PurchaseOrderForm implements OnInit {
   private vendorService = inject(VendorService);
   private expenseCategoryService = inject(ExpenseCategoryService);
   private commonService = inject(CommonService);
+  private dialog = inject(MatDialog);
 
   purchaseOrder = input<PurchaseOrder | undefined>();
   vendors = input<Vendor[]>([]);
@@ -57,7 +61,6 @@ export class PurchaseOrderForm implements OnInit {
   successMessage = signal<string | null>(null);
 
   isEditMode = computed(() => !!this.purchaseOrder()?.id);
-  statusOptions: PurchaseOrderStatus[] = ['Pending', 'Approved', 'Completed'];
   today = new Date();
 
   canAddItem = computed(() => !this.saving() && (this.draft()?.orderItems.length ?? 0) < MAX_ORDER_ITEMS);
@@ -65,10 +68,8 @@ export class PurchaseOrderForm implements OnInit {
     const d = this.draft();
     return (
       !this.saving() &&
-      !!d?.purchaseOrderReferenceNumber &&
-      !!d?.vendorId &&
+      !!d?.vendorSearchTerm?.trim() &&
       !!d?.orderDate &&
-      !!d?.orderStatus &&
       d?.orderItems.length > 0 &&
       d?.orderItems.every((item) => item.itemId && item.amount > 0)
     );
@@ -80,8 +81,6 @@ export class PurchaseOrderForm implements OnInit {
       .sort((a, b) => a.name.localeCompare(b.name))
   );
 
-  vendorDisplayName = computed(() => this.draft()?.vendorSearchTerm ?? '');
-
   totalAmount = computed(() =>
     this.draft()?.orderItems.reduce((sum, item) => sum + Number(item.amount || 0), 0) ?? 0
   );
@@ -89,6 +88,9 @@ export class PurchaseOrderForm implements OnInit {
   ngOnInit(): void {
     if (this.expenseCategoryService.allCategories().length === 0) {
       void this.expenseCategoryService.getAll();
+    }
+    if (this.vendorService.allVendors().length === 0) {
+      void this.vendorService.getAll();
     }
   }
 
@@ -102,6 +104,7 @@ export class PurchaseOrderForm implements OnInit {
           purchaseOrderReferenceNumber: order.purchaseOrderReferenceNumber,
           vendorId: order.vendorId,
           vendorSearchTerm: vendor?.vendorName ?? '',
+          vendorTIN: vendor?.vendorTIN ?? '',
           orderDate: this.toDateInputValue(order.orderDate),
           approvedDate: this.toDateInputValue(order.approvedDate),
           completionDate: this.toDateInputValue(order.completionDate),
@@ -121,16 +124,58 @@ export class PurchaseOrderForm implements OnInit {
     });
   }
 
-  onVendorChange(vendorId: string) {
-    const d = this.draft();
-    if (d) {
-      const vendor = this.vendors().find((v) => v.id === vendorId);
-      this.draft.update((draft) => ({
-        ...draft!,
-        vendorId,
-        vendorSearchTerm: vendor?.vendorName ?? '',
-      }));
+  onVendorInput(value: string) {
+    const vendor = this.resolveVendor('', value);
+    this.draft.update((draft) => ({
+      ...draft!,
+      vendorSearchTerm: value,
+      vendorId: vendor?.id ?? '',
+      vendorTIN: vendor?.vendorTIN ?? draft!.vendorTIN,
+    }));
+  }
+
+  openVendorDialog() {
+    const data: VendorFormDialogData = {
+      title: 'Add vendor',
+      description: 'Create a vendor to use on this purchase order.',
+    };
+
+    this.dialog
+      .open(VendorFormDialog, {
+        width: '720px',
+        maxWidth: '95vw',
+        autoFocus: false,
+        restoreFocus: true,
+        data,
+      })
+      .afterClosed()
+      .subscribe((vendor: Vendor | null | undefined) => {
+        if (!vendor) {
+          return;
+        }
+
+        this.draft.update((draft) => ({
+          ...draft!,
+          vendorId: vendor.id,
+          vendorSearchTerm: vendor.vendorName,
+          vendorTIN: vendor.vendorTIN ?? '',
+        }));
+      });
+  }
+
+  private resolveVendor(vendorId: string, vendorName: string): Vendor | undefined {
+    if (vendorId) {
+      const byId = this.vendorService.getById(vendorId);
+      if (byId) {
+        return byId;
+      }
     }
+
+    if (vendorName.trim()) {
+      return this.vendorService.findByName(vendorName);
+    }
+
+    return undefined;
   }
 
   onAddItem() {
@@ -177,6 +222,28 @@ export class PurchaseOrderForm implements OnInit {
     });
   }
 
+  toDateValue(value: string | Date | null | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  toDateString(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onOrderDateChanged(value: Date | null) {
+    this.draft.update((draft) => ({ ...draft!, orderDate: this.toDateString(value) }));
+  }
+
   async onSave() {
     const d = this.draft();
     if (!d || !this.canSave()) {
@@ -187,12 +254,14 @@ export class PurchaseOrderForm implements OnInit {
     this.errorMessage.set(null);
 
     try {
+      const trimmedName = d.vendorSearchTerm.trim();
+      const matchedVendor = this.resolveVendor(d.vendorId, trimmedName);
+
       const payload = {
-        purchaseOrderReferenceNumber: d.purchaseOrderReferenceNumber,
-        vendorId: d.vendorId,
+        vendorId: matchedVendor?.id || undefined,
+        vendorName: matchedVendor?.id ? undefined : trimmedName,
+        vendorTIN: matchedVendor?.id ? undefined : d.vendorTIN.trim() || undefined,
         orderDate: d.orderDate,
-        approvedDate: d.approvedDate || undefined,
-        completionDate: d.completionDate || undefined,
         orderStatus: d.orderStatus,
         orderItems: d.orderItems.map((item) => ({
           itemId: item.itemId,
@@ -223,6 +292,7 @@ export class PurchaseOrderForm implements OnInit {
       purchaseOrderReferenceNumber: '',
       vendorId: '',
       vendorSearchTerm: '',
+      vendorTIN: '',
       orderDate: this.getTodayDateValue(),
       approvedDate: '',
       completionDate: '',

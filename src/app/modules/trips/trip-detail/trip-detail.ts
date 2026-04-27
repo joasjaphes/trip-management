@@ -79,7 +79,7 @@ export class TripDetail {
 
   canComplete = computed(() => {
     const status = this.trip()?.status;
-    return (status === 'Pending payment' || status === 'Inprogress') && Number(this.trip()?.paidAmount) >= Number(this.trip()?.revenue);
+    return (status === 'Pending payment' || status === 'Inprogress');
   });
 
   requestComplete() {

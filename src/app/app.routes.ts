@@ -1,16 +1,53 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { CompanyProfilePage } from './modules/configurations/company-profile/company-profile';
+import { Login } from './login/login';
+import { Home } from './home/home';
+import { Dashboard } from './modules/dashboard/dashboard';
+import { Trips } from './modules/trips/trips';
+import { Invoicing } from './modules/trips/invoicing/invoicing';
+import { DebtorsStatementReport } from './modules/reports/debtors-statement-report/debtors-statement-report';
+import { TripStatusReport } from './modules/reports/trip-status-report/trip-status-report';
+import { ExpiringPermitsReport } from './modules/reports/expiring-permits-report/expiring-permits-report';
+import { TripForm } from './modules/trips/trip-form/trip-form';
+import { TripDetail } from './modules/trips/trip-detail/trip-detail';
+import { DriverList } from './modules/configurations/drivers/driver-list/driver-list';
+import { DriverForm } from './modules/configurations/drivers/driver-form/driver-form';
+import { DriverDetail } from './modules/configurations/drivers/driver-detail/driver-detail';
+import { VehicleList } from './modules/configurations/vehicles/vehicle-list/vehicle-list';
+import { VehicleForm } from './modules/configurations/vehicles/vehicle-form/vehicle-form';
+import { VehicleDetail } from './modules/configurations/vehicles/vehicle-detail/vehicle-detail';
+import { VehiclePermits } from './modules/configurations/vehicle-permits/vehicle-permits';
+import { IssuingBodyComponent } from './modules/configurations/issuing-body/issuing-body';
+import { PermitForm } from './modules/configurations/vehicle-permits/permit-form/permit-form';
+import { PermitDetail } from './modules/configurations/vehicle-permits/permit-detail/permit-detail';
+import { RouteList } from './modules/configurations/routes/route-list/route-list';
+import { RouteForm } from './modules/configurations/routes/route-form/route-form';
+import { RouteDetail } from './modules/configurations/routes/route-detail/route-detail';
+import { ExpenseCategories } from './modules/configurations/expense-categories/expense-categories';
+import { ExpenseTransactions } from './modules/office-operations/expense-transactions/expense-transactions';
+import { Purchases } from './modules/office-operations/purchases/purchases';
+import { CargoTypes } from './modules/configurations/cargo-types/cargo-types';
+import { CargoTypeForm } from './modules/configurations/cargo-types/cargo-type-form/cargo-type-form';
+import { Customers } from './modules/configurations/customers/customers';
+import { Vendors } from './modules/configurations/vendors/vendors';
+import { OffloadingPlaces } from './modules/configurations/offloading-places/offloading-places';
+import { ExpenseCategoryForm } from './modules/configurations/expense-categories/expense-category-form/expense-category-form';
+import { ExpenseCategoryDetail } from './modules/configurations/expense-categories/expense-category-detail/expense-category-detail';
+import { UserList } from './modules/users/user-list/user-list';
+import { UserRoles } from './modules/users/user-roles/user-roles';
+import { UserForm } from './modules/users/user-form/user-form';
+import { UserDetail } from './modules/users/user-detail/user-detail';
 
 export const routes: Routes = [
     {
         path: 'login',
-        loadComponent: () => import('./login/login').then(m => m.Login),
+        component: Login
     },
     {
         path: '',
         canActivate: [authGuard],
-        loadComponent: () => import('./home/home').then(m => m.Home),
+        component: Home,
         children: [
             {
                 path: '',
@@ -19,67 +56,67 @@ export const routes: Routes = [
             },
             {
                 path: 'dashboard',
-                loadComponent: () => import('./modules/dashboard/dashboard').then(m => m.Dashboard),
+                component: Dashboard,
             },
             {
                 path: 'trips',
-                loadComponent: () => import('./modules/trips/trips').then(m => m.Trips),
+                component: Trips,
             },
             {
                 path: 'invoicing',
-                loadComponent: () => import('./modules/trips/invoicing/invoicing').then(m => m.Invoicing),
+                component: Invoicing,
             },
             {
                 path: 'reports/debtors-statement',
-                loadComponent: () => import('./modules/reports/debtors-statement-report/debtors-statement-report').then(m => m.DebtorsStatementReport),
+                component: DebtorsStatementReport,
             },
             {
                 path: 'reports/trip-status',
-                loadComponent: () => import('./modules/reports/trip-status-report/trip-status-report').then(m => m.TripStatusReport),
+                component: TripStatusReport,
             },
             {
                 path: 'reports/expiring-permits',
-                loadComponent: () => import('./modules/reports/expiring-permits-report/expiring-permits-report').then(m => m.ExpiringPermitsReport),
+                component: ExpiringPermitsReport,
             },
             {
                 path: 'trips/new',
-                loadComponent: () => import('./modules/trips/trip-form/trip-form').then(m => m.TripForm),
+                component: TripForm,
             },
             {
                 path: 'trips/:id',
-                loadComponent: () => import('./modules/trips/trip-detail/trip-detail').then(m => m.TripDetail),
+                component: TripDetail,
             },
             {
                 path: 'drivers',
-                loadComponent: () => import('./modules/configurations/drivers/driver-list/driver-list').then(m => m.DriverList),
+                component: DriverList,
             },
             {
                 path: 'drivers/new',
-                loadComponent: () => import('./modules/configurations/drivers/driver-form/driver-form').then(m => m.DriverForm),
+                component: DriverForm,
             },
             {
                 path: 'drivers/:id',
-                loadComponent: () => import('./modules/configurations/drivers/driver-detail/driver-detail').then(m => m.DriverDetail),
+                component: DriverDetail,
             },
             {
                 path: 'vehicles',
-                loadComponent: () => import('./modules/configurations/vehicles/vehicle-list/vehicle-list').then(m => m.VehicleList),
+                component: VehicleList,
             },
             {
                 path: 'vehicles/new',
-                loadComponent: () => import('./modules/configurations/vehicles/vehicle-form/vehicle-form').then(m => m.VehicleForm),
+                component: VehicleForm,
             },
             {
                 path: 'vehicles/:id',
-                loadComponent: () => import('./modules/configurations/vehicles/vehicle-detail/vehicle-detail').then(m => m.VehicleDetail),
+                component: VehicleDetail,
             },
             {
                 path: 'vehicle-permits',
-                loadComponent: () => import('./modules/configurations/vehicle-permits/vehicle-permits').then(m => m.VehiclePermits),
+                component: VehiclePermits,
             },
             {
                 path: 'issuing-bodies',
-                loadComponent: () => import('./modules/configurations/issuing-body/issuing-body').then(m => m.IssuingBodyComponent),
+                component: IssuingBodyComponent,
             },
             {
                 path: 'company-profile',
@@ -87,88 +124,88 @@ export const routes: Routes = [
             },
             {
                 path: 'vehicle-permits/new',
-                loadComponent: () => import('./modules/configurations/vehicle-permits/permit-form/permit-form').then(m => m.PermitForm),
+                component: PermitForm,
             },
             {
                 path: 'vehicle-permits/:id',
-                loadComponent: () => import('./modules/configurations/vehicle-permits/permit-detail/permit-detail').then(m => m.PermitDetail),
+                component: PermitDetail,
             },
             {
                 path: 'routes',
-                loadComponent: () => import('./modules/configurations/routes/route-list/route-list').then(m => m.RouteList),
+                component: RouteList,
             },
             {
                 path: 'routes/new',
-                loadComponent: () => import('./modules/configurations/routes/route-form/route-form').then(m => m.RouteForm),
+                component: RouteForm,
             },
             {
                 path: 'routes/:id',
-                loadComponent: () => import('./modules/configurations/routes/route-detail/route-detail').then(m => m.RouteDetail),
+                component: RouteDetail,
             },
             {
                 path: 'expense-categories',
-                loadComponent: () => import('./modules/configurations/expense-categories/expense-categories').then(m => m.ExpenseCategories),
+                component: ExpenseCategories,
             },
             {
                 path: 'expense-transactions',
-                loadComponent: () => import('./modules/office-operations/expense-transactions/expense-transactions').then(m => m.ExpenseTransactions),
+                component: ExpenseTransactions,
             },
             {
                 path: 'purchases',
-                loadComponent: () => import('./modules/office-operations/purchases/purchases').then(m => m.Purchases),
+                component: Purchases,
             },
             {
                 path: 'cargo-types',
-                loadComponent: () => import('./modules/configurations/cargo-types/cargo-types').then(m => m.CargoTypes),
+                component: CargoTypes,
             },
             {
                 path: 'cargo-types/new',
-                loadComponent: () => import('./modules/configurations/cargo-types/cargo-type-form/cargo-type-form').then(m => m.CargoTypeForm),
+                component: CargoTypeForm,
             },
             {
                 path: 'customers',
-                loadComponent: () => import('./modules/configurations/customers/customers').then(m => m.Customers),
+                component: Customers,
             },
             {
                 path: 'vendors',
-                loadComponent: () => import('./modules/configurations/vendors/vendors').then(m => m.Vendors),
+                component: Vendors,
             },
             {
                 path: 'offloading-places',
-                loadComponent: () => import('./modules/configurations/offloading-places/offloading-places').then(m => m.OffloadingPlaces),
+                component: OffloadingPlaces,
             },
             {
                 path: 'expense-categories/new',
-                loadComponent: () => import('./modules/configurations/expense-categories/expense-category-form/expense-category-form').then(m => m.ExpenseCategoryForm),
+                component: ExpenseCategoryForm,
             },
             {
                 path: 'expense-categories/:id',
-                loadComponent: () => import('./modules/configurations/expense-categories/expense-category-detail/expense-category-detail').then(m => m.ExpenseCategoryDetail),
+                component: ExpenseCategoryDetail,
             },
             {
                 path: 'users',
-                loadComponent: () => import('./modules/users/user-list/user-list').then(m => m.UserList),
+                component: UserList,
             },
             {
                 path: 'user-roles',
-                loadComponent: () => import('./modules/users/user-roles/user-roles').then(m => m.UserRoles),
+                component: UserRoles,
             },
             {
                 path: 'users/new',
-                loadComponent: () => import('./modules/users/user-form/user-form').then(m => m.UserForm),
+                component: UserForm,
             },
             {
                 path: 'users/:id',
-                loadComponent: () => import('./modules/users/user-detail/user-detail').then(m => m.UserDetail),
+                component: UserDetail,
             },
             {
                 path: 'users/:id/edit',
-                loadComponent: () => import('./modules/users/user-form/user-form').then(m => m.UserForm),
+                component: UserForm,
             }
         ]
     },
     {
         path: '**',
-        redirectTo: 'login'
+        redirectTo: 'dashboard'
     }
 ];

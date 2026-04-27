@@ -1,0 +1,192 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+
+  <div class="bg-white border border-gray-100 rounded-2xl p-8 relative overflow-hidden shadow-sm">
+
+    @if (errorMessage()) {
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">
+      {{ errorMessage() }}
+    </div>
+    }
+
+    @if (successMessage()) {
+    <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">
+      {{ successMessage() }}
+    </div>
+    }
+
+    <!-- Order Summary Card (read-only) -->
+    <div class="rounded-2xl border border-gray-100 bg-gray-50 p-5 mb-8 relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Reference #</span>
+          <span class="text-[14px] font-bold text-gray-800">{{ purchaseOrder().purchaseOrderReferenceNumber || '-' }}</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Vendor</span>
+          <span class="text-[14px] font-bold text-gray-800">{{ purchaseOrder().vendor?.vendorName || '-' }}</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Order Date</span>
+          <span class="text-[14px] font-bold text-gray-800">{{ purchaseOrder().orderDate | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Date Field -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8 mb-8 relative z-10">
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">{{ dateLabel() }}*</label>
+        <div class="relative">
+          <input [matDatepicker]="reviewDatePicker" [value]="toDateValue(reviewDate())"
+            (dateChange)="onReviewDateChanged($event.value)" [max]="today" readonly
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <button type="button" (click)="reviewDatePicker.open()"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+            [attr.aria-label]="'Open ' + dateLabel().toLowerCase() + ' picker'">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </button>
+          <mat-datepicker #reviewDatePicker></mat-datepicker>
+        </div>
+      </div>
+    </div>
+
+    @if (mode() === 'complete') {
+    <div class="mb-8 rounded-2xl border border-orange-100 bg-gradient-to-br from-[#fff7f2] to-white p-5 relative z-10">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <div class="flex flex-col gap-1">
+          <span class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Completion Attachment</span>
+          <span class="text-[12px] text-gray-500">Upload a PDF or image before completing the order.</span>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+          @if (completionAttachment().path) {
+          <button type="button" (click)="previewCompletionAttachment()"
+            class="rounded-lg border border-orange-200 bg-white px-4 py-2 text-[12px] font-bold text-[#f25f2f] hover:bg-orange-50 transition-colors">
+            Preview
+          </button>
+          <button type="button" (click)="removeCompletionAttachment()"
+            class="rounded-lg border border-gray-200 bg-white px-4 py-2 text-[12px] font-bold text-gray-600 hover:bg-gray-50 transition-colors">
+            Remove
+          </button>
+          }
+          <button type="button" (click)="completionAttachmentInput.click()"
+            [disabled]="saving() || completionAttachmentUploading()"
+            class="rounded-lg bg-[#f25f2f] px-4 py-2 text-[12px] font-bold text-white hover:bg-[#ff5117] disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+            {{ completionAttachmentUploading() ? 'Uploading...' : (completionAttachment().path ? 'Replace Attachment' : 'Upload Attachment') }}
+          </button>
+          <input #completionAttachmentInput type="file" class="hidden"
+            accept=".pdf,.png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp,application/pdf"
+            (change)="onCompletionAttachmentSelected($event)">
+        </div>
+      </div>
+
+      @if (completionAttachment().name) {
+      <div class="rounded-xl border border-gray-200 bg-white px-4 py-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-[12px] font-bold text-gray-800 truncate">{{ completionAttachment().name }}</p>
+          <p class="text-[11px] text-gray-500">Ready to attach to the completion record.</p>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Order Items Section Divider -->
+    <hr class="border-gray-100 my-8 relative z-10">
+
+    <!-- Order Items Header -->
+    <div class="flex items-center justify-between mb-3 relative z-10">
+      <div class="flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="w-5 h-5 text-[#f25f2f]">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+        <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">Review Order Items</h3>
+      </div>
+      <button type="button" (click)="onAddItem()"
+        class="text-[#f25f2f] hover:text-[#ff5117] transition-colors font-bold text-[13px] tracking-wide inline-flex items-center gap-2">
+        + Add Item
+      </button>
+    </div>
+    <p class="text-[12px] text-gray-500 mb-6 relative z-10">
+      Adjust amounts, remove unwanted lines, or add new items before {{ mode() === 'approve' ? 'approving' : 'completing' }} the order.
+    </p>
+
+    <!-- Order Items Row Header -->
+    <div class="grid grid-cols-12 gap-x-4 mb-2 px-2 relative z-10">
+      <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Expense / Item</div>
+      <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Description</div>
+      <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Amount</div>
+      <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Delete</div>
+    </div>
+
+    <!-- Order Item Rows -->
+    @for (item of items(); track item.id) {
+    <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-12 gap-x-4 items-center mb-3 relative z-10">
+      <!-- Expense Selection -->
+      <div class="col-span-4 relative">
+        <select [ngModel]="item.itemId" [name]="'expense_' + item.id"
+          (ngModelChange)="onItemFieldChange(item.id, 'itemId', $event)"
+          class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+          <option value="" disabled>Select expense...</option>
+          @for (expense of officeExpenses(); track expense.id) {
+          <option [value]="expense.id">{{ expense.name }}</option>
+          }
+        </select>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+
+      <!-- Description -->
+      <div class="col-span-4">
+        <input type="text" [ngModel]="item.description" [name]="'desc_' + item.id"
+          (ngModelChange)="onItemFieldChange(item.id, 'description', $event)"
+          placeholder="Item details (optional)"
+          class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+      </div>
+
+      <!-- Amount -->
+      <div class="col-span-3">
+        <input type="number" [ngModel]="item.amount" [name]="'amount_' + item.id"
+          (ngModelChange)="onItemFieldChange(item.id, 'amount', $event)" placeholder="0" min="0" step="1000"
+          class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+      </div>
+
+      <!-- Delete -->
+      <div class="col-span-1 text-right">
+        <button type="button" (click)="onRemoveItem(item.id)"
+          class="text-gray-400 hover:text-[#f25f2f] transition-colors shrink-0 p-1" aria-label="Remove item">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="w-[18px] h-[18px]">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    }
+
+    @if (items().length === 0) {
+    <p class="text-[12px] text-amber-600 mb-6 relative z-10">No items left. Add at least one item before {{ saveLabel().toLowerCase() }}.</p>
+    }
+
+    <!-- Total Card -->
+    <div class="mt-6 rounded-2xl border border-orange-100 bg-gradient-to-br from-[#fff7f2] to-white p-5 relative z-10">
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-1">
+          <span class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Total Amount</span>
+          <span class="text-[12px] text-gray-500">Sum of all order items above</span>
+        </div>
+        <span class="text-[22px] font-extrabold text-[#f25f2f]">{{ totalAmount() | number }}</span>
+      </div>
+    </div>
+
+    <app-save-area [saveText]="saveLabel()" [loading]="saving()" [disabled]="!canSave()"
+      (save)="onSave()" (cancel)="close.emit()"></app-save-area>
+  </div>
+</div>

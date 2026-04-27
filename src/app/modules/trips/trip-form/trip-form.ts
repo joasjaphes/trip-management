@@ -35,7 +35,7 @@ type ExpenseDraft = {
 @Component({
   selector: 'app-trip-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, DecimalPipe, NumberFormatDirective, MatTooltipModule, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './trip-form.html',
 })
 export class TripForm implements OnInit {
@@ -72,6 +72,7 @@ export class TripForm implements OnInit {
   trailerId = '';
   cargoQuantity = null;
   docNumber = null;
+  exchangeRate = 1;
 
   vehicles = this.vehicleService.allVehicles;
   trucks = computed(() => this.vehicles().filter((v) => v.type === 'TRUCK' && this.trips().filter((t) => t.status === TripStatus.IN_PROGRESS && t.vehicleId === v.id).length === 0 || this.trip()?.vehicleId === v.id));
@@ -201,6 +202,7 @@ export class TripForm implements OnInit {
     this.driverId = trip.driverId || '';
     this.routeId = trip.routeId || '';
     this.cargoTypeId = trip.cargoTypeId || '';
+    this.exchangeRate = trip.exchangeRate || 1;
     this.revenue = String(trip.revenue ?? '');
     this.status = (trip.status || TripStatus.IN_PROGRESS) as TripStatus;
     this.notes = trip.notes || '';
@@ -498,6 +500,7 @@ export class TripForm implements OnInit {
         docNumber: this.docNumber || undefined,
         tripDocument: this.tripDocumentPath() || undefined,
         revenue: Number(this.revenue || 0),
+        exchangeRate: Number(this.exchangeRate || 1) || undefined,
         income: Number(this.revenue || 0),
         status: this.status,
         notes: this.notes || undefined,
@@ -570,6 +573,12 @@ export class TripForm implements OnInit {
     const cargoType = this.cargoTypes().find((type) => type.id === this.cargoTypeId);
     return cargoType?.unitOfMeasure || '';
   }
+
+  get currency() {
+    const route = this.routes().find((r) => r.id === this.routeId);
+    return route?.routeCurrency || 'TZS';
+  }
+
   get hasChanges() {
     const initial = this.trip();
     if (

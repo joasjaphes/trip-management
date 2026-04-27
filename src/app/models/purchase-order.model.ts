@@ -17,6 +17,7 @@ export interface PurchaseOrder {
   orderDate: string;
   approvedDate?: string;
   completionDate?: string;
+  completionAttachment?: string;
   approvedByUserId?: string;
   completedByUserId?: string;
   orderStatus: PurchaseOrderStatus;
