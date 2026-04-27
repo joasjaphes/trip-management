@@ -12,7 +12,7 @@ import { SaveArea } from '../../../shared/components/save-area/save-area';
 @Component({
   selector: 'app-expense-categories',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, ExpenseCategoryForm, MatTabsModule, FormsModule,SaveArea],
+  imports: [CommonModule, DataTable, Layout, ExpenseCategoryForm, MatTabsModule, FormsModule],
   templateUrl: './expense-categories.html',
 })
 export class ExpenseCategories implements OnInit {

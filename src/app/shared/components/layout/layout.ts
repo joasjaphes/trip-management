@@ -20,7 +20,7 @@ const SPLIT_SIZES: Record<SplitSize, SplitConfig> = {
 
 @Component({
   selector: 'app-layout',
-  imports: [ProgressBar],
+  standalone: true,
   templateUrl: './layout.html',
   styleUrl: './layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

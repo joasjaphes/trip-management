@@ -11,7 +11,7 @@ import { Placeholder } from '../../../../shared/components/placeholder/placehold
 @Component({
     selector: 'app-company-profile-form',
     standalone: true,
-    imports: [CommonModule,FormsModule, SaveArea,Placeholder],
+    imports: [CommonModule,FormsModule, SaveArea],
     templateUrl: './company-profile-form.html',
 })
 export class CompanyProfileForm implements OnChanges {

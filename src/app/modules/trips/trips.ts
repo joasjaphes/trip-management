@@ -15,7 +15,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, MatTooltipModule, Tabs, MatTabsModule],
+  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, MatTooltipModule, MatTabsModule],
   templateUrl: './trips.html'
 })
 export class Trips implements OnInit {

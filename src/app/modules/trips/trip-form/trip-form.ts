@@ -35,7 +35,7 @@ type ExpenseDraft = {
 @Component({
   selector: 'app-trip-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, DecimalPipe, NumberFormatDirective, MatTooltipModule, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, SaveArea, NumberFormatDirective, MatTooltipModule, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './trip-form.html',
 })
 export class TripForm implements OnInit {
