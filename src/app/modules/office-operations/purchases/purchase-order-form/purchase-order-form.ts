@@ -13,6 +13,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { VendorFormDialog, VendorFormDialogData } from '../../../configurations/vendors/vendor-form/vendor-form';
+import { NumberFormatDirective } from '../../../../shared/directives/number-format';
 
 type PurchaseOrderDraft = {
   id: string;
@@ -37,7 +38,7 @@ const MAX_ORDER_ITEMS = 20;
 
 @Component({
   selector: 'app-purchase-order-form',
-  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule, NumberFormatDirective],
   templateUrl: './purchase-order-form.html',
   styleUrl: './purchase-order-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -38,6 +38,20 @@ export class Layout {
   // Split size input
   splitSize = input<SplitSize>('half'); // default to 50/50 split
 
+  mainOpacityValue = computed(() => {
+    if (this.viewDetails()) {
+      switch (this.splitSize()) {
+        case 'half':
+          return '0.3';
+        case 'full':
+          return '0';
+        default:
+          return '1';
+      }
+    }
+    return '1';
+  })
+
   // Computed split widths
   splitConfig = computed(() => {
     const size = this.splitSize();

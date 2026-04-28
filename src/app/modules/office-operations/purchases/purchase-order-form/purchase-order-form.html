@@ -128,7 +128,8 @@
 
         <!-- Amount -->
         <div class="col-span-3">
-          <input type="number" [(ngModel)]="item.amount" [name]="'amount_' + item.id"
+          <input appNumberFormat matTooltip=""
+            matTooltipPosition="above" matTooltipClass="with-arrow"  type="text" [(ngModel)]="item.amount" [name]="'amount_' + item.id"
             (change)="onItemAmountChange(i, item.amount)" placeholder="0" min="0" step="1000"
             class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         </div>
