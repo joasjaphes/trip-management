@@ -244,6 +244,7 @@ export class PurchaseOrderReview {
       const orderItems = this.items().map((item) => ({
         itemId: item.itemId,
         description: item.description || undefined,
+        quantity: Number(item.quantity),
         amount: Number(item.amount),
       }));
 

@@ -251,6 +251,7 @@ export class PurchaseOrderForm implements OnInit {
   }
 
   async onSave() {
+    console.log('Attempting to save purchase order');
     const d = this.draft();
     if (!d || !this.canSave()) {
       return;
@@ -272,6 +273,7 @@ export class PurchaseOrderForm implements OnInit {
         orderItems: d.orderItems.map((item) => ({
           itemId: item.itemId,
           description: item.description || undefined,
+          quantity: Number(item.quantity),
           amount: Number(item.amount),
         })),
       };
@@ -283,8 +285,9 @@ export class PurchaseOrderForm implements OnInit {
         await this.purchaseOrderService.create(payload);
         this.successMessage.set('Purchase order created successfully');
       }
+      this.close.emit();
 
-      setTimeout(() => this.close.emit(), 1000);
+      // setTimeout(() => this.close.emit(), 1000);
     } catch (err) {
       this.errorMessage.set(err?.toString() ?? 'Failed to save purchase order');
     } finally {
