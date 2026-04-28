@@ -68,7 +68,7 @@ export class Purchases implements OnInit {
         },
         {
           key: 'completed' as const,
-          label: 'Completed Orders',
+          label: 'Received Orders',
           count: this.countByStatus('Completed'),
         },
       ] satisfies Array<{ key: PurchaseStatusTab; label: string; count: number }>
@@ -169,7 +169,7 @@ export class Purchases implements OnInit {
       action: (row: any) => this.onApprove(row),
     },
     {
-      label: 'Complete Order',
+      label: 'Receive Order',
       key: 'complete',
       icon: 'fa-solid fa-flag-checkered text-blue-500',
       action: (row: any) => this.onComplete(row),
@@ -233,12 +233,18 @@ export class Purchases implements OnInit {
       return;
     }
 
-    this.selectedPurchaseOrder.set(order);
-    this.viewType.set('detail');
-    this.splitSize.set('full');
-    this.formTitle.set('Purchase Order Details');
-    this.formDescription.set(order.purchaseOrderReferenceNumber || '');
-    this.viewDetails.set(true);
+    if (order.orderStatus === 'Pending') {
+      this.onApprove(row);
+    } else {
+
+
+      this.selectedPurchaseOrder.set(order);
+      this.viewType.set('detail');
+      this.splitSize.set('full');
+      this.formTitle.set('Purchase Order Details');
+      this.formDescription.set(order.purchaseOrderReferenceNumber || '');
+      this.viewDetails.set(true);
+    }
   }
 
   onEditIcon(_row: any) {

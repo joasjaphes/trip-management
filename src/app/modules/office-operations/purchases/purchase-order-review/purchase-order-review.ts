@@ -53,9 +53,9 @@ export class PurchaseOrderReview {
   completionAttachmentUploading = signal(false);
   today = new Date();
 
-  modeLabel = computed(() => (this.mode() === 'approve' ? 'Approve' : 'Complete'));
-  dateLabel = computed(() => (this.mode() === 'approve' ? 'Approval Date' : 'Completion Date'));
-  saveLabel = computed(() => (this.mode() === 'approve' ? 'Approve Order' : 'Complete Order'));
+  modeLabel = computed(() => (this.mode() === 'approve' ? 'Approve' : 'Receive'));
+  dateLabel = computed(() => (this.mode() === 'approve' ? 'Approval Date' : 'Receiving Date'));
+  saveLabel = computed(() => (this.mode() === 'approve' ? 'Approve Order' : 'Receive Order'));
 
   totalAmount = computed(() =>
     this.items().reduce((sum, item) => sum + Number(item.amount || 0), 0)
@@ -63,7 +63,7 @@ export class PurchaseOrderReview {
 
   officeExpenses = computed(() =>
     this.expenses()
-      .filter((category) => category.type === 'OFFICE' && !this.hasChildren(category))
+      .filter((category) => category.type === 'OFFICE' && !this.hasChildren(category) && category.isPurchase)
       .sort((a, b) => a.name.localeCompare(b.name))
   );
 
@@ -253,9 +253,8 @@ export class PurchaseOrderReview {
           completionAttachment: this.completionAttachment().path || undefined,
           orderItems,
         });
-        this.successMessage.set('Purchase order completed successfully.');
+        this.successMessage.set('Purchase order received successfully.');
       }
-
       setTimeout(() => this.close.emit(), 800);
     } catch (err) {
       this.errorMessage.set(err?.toString() ?? `Failed to ${this.mode()} purchase order`);
