@@ -12,12 +12,14 @@ import { PurchaseOrderReview, PurchaseOrderReviewMode } from './purchase-order-r
 import { PurchaseOrderDetail } from './purchase-order-detail/purchase-order-detail';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmDialog } from '../../../shared/components/delete-confirm-dialog/delete-confirm-dialog';
 
 type PurchaseStatusTab = 'pending' | 'approved' | 'completed';
 
 @Component({
   selector: 'app-purchases',
-  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, PurchaseOrderDetail, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, PurchaseOrderDetail, MatDatepickerModule, MatNativeDateModule, DeleteConfirmDialog],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +28,7 @@ export class Purchases implements OnInit {
   private purchaseOrderService = inject(PurchaseOrderService);
   private vendorServicePrivate = inject(VendorService);
   private expenseCategoryServicePrivate = inject(ExpenseCategoryService);
+  private dialog = inject(MatDialog);
 
   // Expose services to template
   vendorService = this.vendorServicePrivate;
@@ -114,6 +117,7 @@ export class Purchases implements OnInit {
         canEdit: normalizedStatus === 'pending',
         actions: {
           approve: normalizedStatus === 'pending',
+          delete: normalizedStatus === 'pending',
           complete: normalizedStatus === 'approved',
         }
       };
@@ -161,7 +165,6 @@ export class Purchases implements OnInit {
 
 
   moreActions = computed(() => {
-    const selected = this.selectedStatus();
     const actions = [{
       label: 'Approve Order',
       key: 'approve',
@@ -173,6 +176,12 @@ export class Purchases implements OnInit {
       key: 'complete',
       icon: 'fa-solid fa-flag-checkered text-blue-500',
       action: (row: any) => this.onComplete(row),
+    },
+    {
+      label: 'Delete Order',
+      key: 'delete',
+      icon: 'fa-solid fa-trash text-red-500',
+      action: (row: any) => this.onDelete(row),
     }
     ];
 
@@ -247,9 +256,6 @@ export class Purchases implements OnInit {
     }
   }
 
-  onEditIcon(_row: any) {
-    // Edit icon placeholder — no functionality wired yet.
-  }
 
   onApprove(row: any) {
     const order = this.purchaseOrderService.getById(row.id);
@@ -279,6 +285,38 @@ export class Purchases implements OnInit {
     this.formTitle.set('Complete Purchase Order');
     this.formDescription.set('Review items and complete the purchase order.');
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: any) {
+    const order = this.purchaseOrderService.getById(row.id);
+    if (!order) {
+      return;
+    }
+
+    this.dialog
+      .open(DeleteConfirmDialog, {
+        width: '400px',
+        maxWidth: '95vw',
+        disableClose: false,
+        data: {
+          title: 'Delete Purchase Order',
+          message: `Are you sure you want to delete order "${order.purchaseOrderReferenceNumber || order.id}"? This action cannot be undone.`,
+          confirmText: 'Delete',
+          cancelText: 'Cancel',
+        },
+      })
+      .afterClosed()
+      .subscribe(async (confirmed: boolean) => {
+        if (!confirmed) {
+          return;
+        }
+
+        try {
+          await this.purchaseOrderService.delete(row.id);
+        } catch (err) {
+          console.error('Failed to delete purchase order', err);
+        }
+      });
   }
 
   async onCloseForm() {

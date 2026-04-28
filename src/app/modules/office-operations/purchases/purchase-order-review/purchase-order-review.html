@@ -118,7 +118,7 @@
     <!-- Order Items Row Header -->
     <div class="grid grid-cols-12 gap-x-4 mb-2 px-2 relative z-10">
       <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Expense / Item</div>
-      <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Description</div>
+      <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Quantity</div>
       <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Amount</div>
       <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Delete</div>
     </div>
@@ -142,17 +142,17 @@
         </svg>
       </div>
 
-      <!-- Description -->
+      <!-- Quantity -->
       <div class="col-span-4">
-        <input type="text" [ngModel]="item.description" [name]="'desc_' + item.id"
-          (ngModelChange)="onItemFieldChange(item.id, 'description', $event)"
-          placeholder="Item details (optional)"
+        <input type="text" appNumberFormat [ngModel]="item.quantity" [name]="'quantity_' + item.id"
+          (ngModelChange)="onItemFieldChange(item.id, 'quantity', $event)"
+          placeholder="Quantity "
           class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
 
       <!-- Amount -->
       <div class="col-span-3">
-        <input type="number" [ngModel]="item.amount" [name]="'amount_' + item.id"
+        <input type="text" appNumberFormat matTooltip="" matTooltipPosition="above" matTooltipClass="with-arrow" [ngModel]="item.amount" [name]="'amount_' + item.id"
           (ngModelChange)="onItemFieldChange(item.id, 'amount', $event)" placeholder="0" min="0" step="1000"
           class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>

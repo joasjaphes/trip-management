@@ -9,6 +9,8 @@ import { CommonService } from '../../../../services/common.service';
 import { FileUploadService } from '../../../../services/file-upload.service';
 import { PurchaseOrderService } from '../../../../services/purchase-order.service';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
+import { NumberFormatDirective } from '../../../../shared/directives/number-format';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export type PurchaseOrderReviewMode = 'approve' | 'complete';
 
@@ -17,6 +19,7 @@ type ReviewItem = {
   itemId: string;
   description: string;
   amount: number;
+  quantity: number;
 };
 
 type CompletionAttachment = {
@@ -28,7 +31,7 @@ type CompletionAttachment = {
 @Component({
   selector: 'app-purchase-order-review',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule,NumberFormatDirective,MatTooltipModule],
   templateUrl: './purchase-order-review.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -88,6 +91,7 @@ export class PurchaseOrderReview {
           itemId: item.itemId,
           description: item.description ?? '',
           amount: Number(item.amount || 0),
+          quantity: Number(item.quantity || 1),
         }))
       );
 
@@ -202,6 +206,7 @@ export class PurchaseOrderReview {
         itemId: '',
         description: '',
         amount: 0,
+        quantity: 1,
       },
     ]);
   }
@@ -210,12 +215,15 @@ export class PurchaseOrderReview {
     this.items.update((items) => items.filter((item) => item.id !== id));
   }
 
-  onItemFieldChange(id: string, field: 'itemId' | 'description' | 'amount', value: string | number) {
+  onItemFieldChange(id: string, field: 'itemId' | 'description' | 'amount' | 'quantity', value: string | number) {
     this.items.update((items) =>
       items.map((item) => {
         if (item.id !== id) return item;
         if (field === 'amount') {
           return { ...item, amount: Number(value || 0) };
+        }
+        if (field === 'quantity') {
+          return { ...item, quantity: Number(value || 0) };
         }
         return { ...item, [field]: value as string };
       })
