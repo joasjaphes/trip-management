@@ -14,6 +14,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { VendorFormDialog, VendorFormDialogData } from '../../../configurations/vendors/vendor-form/vendor-form';
 import { NumberFormatDirective } from '../../../../shared/directives/number-format';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 type PurchaseOrderDraft = {
   id: string;
@@ -31,6 +32,7 @@ type PurchaseOrderDraft = {
     expenseName: string;
     description: string;
     amount: number;
+    quantity: number;
   }>;
 };
 
@@ -38,7 +40,7 @@ const MAX_ORDER_ITEMS = 20;
 
 @Component({
   selector: 'app-purchase-order-form',
-  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule, NumberFormatDirective],
+  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule, NumberFormatDirective, MatTooltipModule],
   templateUrl: './purchase-order-form.html',
   styleUrl: './purchase-order-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -117,6 +119,7 @@ export class PurchaseOrderForm implements OnInit {
               this.expenses().find((e) => e.id === item.itemId)?.name ?? item.description ?? '-',
             description: item.description ?? '',
             amount: Number(item.amount || 0),
+            quantity: item.quantity || 1,
           })),
         });
       } else {
@@ -190,6 +193,7 @@ export class PurchaseOrderForm implements OnInit {
           expenseName: '',
           description: '',
           amount: 0,
+          quantity: 1,
         },
       ],
     }));
@@ -208,6 +212,7 @@ export class PurchaseOrderForm implements OnInit {
       const items = [...draft!.orderItems];
       items[index] = {
         ...items[index],
+        description: expense.name ?? '',
         itemId: expenseId,
         expenseName: expense?.name ?? '-',
       };
@@ -302,6 +307,7 @@ export class PurchaseOrderForm implements OnInit {
         {
           id: this.commonService.makeid(),
           itemId: '',
+          quantity: 1,
           expenseName: '',
           description: '',
           amount: 0,
@@ -333,5 +339,9 @@ export class PurchaseOrderForm implements OnInit {
 
   private hasChildren(category: ExpenseCategory): boolean {
     return (category.children?.length ?? 0) > 0 || (category as any).childrens?.length > 0;
+  }
+
+  isSelected(itemId: string): boolean {
+    return this.draft()?.orderItems.some((item) => item.itemId === itemId) ?? false;
   }
 }

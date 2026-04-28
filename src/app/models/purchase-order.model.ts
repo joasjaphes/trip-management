@@ -6,6 +6,7 @@ export interface PurchaseOrderItem {
   id?: string;
   itemId: string;
   description?: string;
+  quantity?: number;
   amount: number;
 }
 

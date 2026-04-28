@@ -95,7 +95,7 @@
       <!-- Order Items Row Header -->
       <div class="grid grid-cols-12 gap-x-4 mb-2 px-2 relative z-10">
         <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Expense / Item</div>
-        <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Description</div>
+        <div class="col-span-4 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Quantity</div>
         <div class="col-span-3 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Amount</div>
         <div class="col-span-1 text-[10px] font-extrabold tracking-widest text-gray-400 uppercase text-right">Delete
         </div>
@@ -110,7 +110,7 @@
             class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
             <option value="" disabled>Select expense...</option>
             @for (expense of officeExpenses(); track expense.id) {
-            <option [value]="expense.id">{{ expense.name }}</option>
+            <option [value]="expense.id" [disabled]="isSelected(expense.id)">{{ expense.name }}</option>
             }
           </select>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -119,10 +119,10 @@
           </svg>
         </div>
 
-        <!-- Description -->
+        <!-- Quantity -->
         <div class="col-span-4">
-          <input type="text" [(ngModel)]="item.description" [name]="'desc_' + item.id"
-            placeholder="Item details (optional)"
+          <input type="text" appNumberFormat [(ngModel)]="item.quantity" [name]="'quantity_' + item.id"
+            placeholder="Quantity"
             class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         </div>
 
