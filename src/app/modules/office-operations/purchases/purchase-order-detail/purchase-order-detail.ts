@@ -76,6 +76,10 @@ export class PurchaseOrderDetail {
     return colors[status] ?? 'bg-gray-50 text-gray-700 border-gray-200';
   }
 
+  displayStatus(status: string): string {
+    return status === 'Completed' ? 'Received' : status;
+  }
+
   onPrint() {
     if (!this.canPrint()) {
       return;
@@ -103,9 +107,9 @@ export class PurchaseOrderDetail {
     const companyTIN = profile?.tin ? `TIN ${profile.tin}` : '';
     const companyVRN = profile?.vrn ? `VRN ${profile.vrn}` : '';
 
-    const logoBlock = profile?.logoUrl
-      ? `<img src="${this.escape(profile.logoUrl)}" alt="Logo" style="height: 88px; object-fit: contain;">`
-      : `<div style="height: 88px; width: 160px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid #000; border-radius: 50%; font-size: 20px; letter-spacing: 0.05em;">LOGO</div>`;
+    const fallbackLogoUrl = `${window.location.origin}/assets/images/easytruckinglogo.png`;
+    const logoUrl = profile?.logoUrl || fallbackLogoUrl;
+    const logoBlock = `<img src="${this.escape(logoUrl)}" alt="Logo" style="height: 88px; object-fit: contain;">`;
 
     const items = order.orderItems ?? [];
     const itemRows = items
@@ -114,7 +118,6 @@ export class PurchaseOrderDetail {
       <tr>
         <td class="cell center">${idx + 1}</td>
         <td class="cell">${this.escape(this.expenseName(item.itemId))}</td>
-        <td class="cell">${this.escape(item.description || '-')}</td>
         <td class="cell center">${formatAmount(Number((item as PurchaseOrderItem & { quantity?: number }).quantity ?? 1))}</td>
         <td class="cell right">${formatAmount(Number(item.amount || 0))}</td>
       </tr>`
@@ -122,6 +125,7 @@ export class PurchaseOrderDetail {
       .join('');
 
     const total = formatAmount(this.totalAmount());
+    const statusLabel = this.displayStatus(order.orderStatus);
 
     return `
     <div class="po-document">
@@ -150,7 +154,7 @@ export class PurchaseOrderDetail {
           </td>
           <td class="cell" style="width: 32%;">
             <div class="cell-label">Status</div>
-            <div class="cell-value bold uppercase">${this.escape(order.orderStatus)}</div>
+            <div class="cell-value bold uppercase">${this.escape(statusLabel)}</div>
           </td>
         </tr>
         <tr>
@@ -159,7 +163,7 @@ export class PurchaseOrderDetail {
             <div class="cell-value bold">${formatDate(order.approvedDate)}</div>
           </td>
           <td class="cell" colspan="2">
-            <div class="cell-label">Completion Date</div>
+            <div class="cell-label">Received Date</div>
             <div class="cell-value bold">${formatDate(order.completionDate)}</div>
           </td>
         </tr>
@@ -183,26 +187,29 @@ export class PurchaseOrderDetail {
       <table class="items-table">
         <thead>
           <tr>
-            <th class="cell head" style="width: 6%;">S/N</th>
-            <th class="cell head" style="width: 30%;">Expense / Item</th>
-            <th class="cell head" style="width: 32%;">Description</th>
-            <th class="cell head" style="width: 12%;">Quantity</th>
-            <th class="cell head" style="width: 20%;">Amount</th>
+            <th class="cell head" style="width: 8%;">S/N</th>
+            <th class="cell head" style="width: 52%;">Expense / Item</th>
+            <th class="cell head" style="width: 14%;">Quantity</th>
+            <th class="cell head" style="width: 26%;">Amount</th>
           </tr>
         </thead>
         <tbody>
           ${
             itemRows ||
-            `<tr><td class="cell center" colspan="5" style="padding: 24px;">No items on this order.</td></tr>`
+            `<tr><td class="cell center" colspan="4" style="padding: 24px;">No items on this order.</td></tr>`
           }
           <tr class="total-row">
-            <td class="cell bold" colspan="4">Total Amount</td>
+            <td class="cell bold" colspan="3">Total Amount</td>
             <td class="cell right bold">${total}</td>
           </tr>
         </tbody>
       </table>
 
       <div class="po-footer">
+        <div class="signature">
+          <div class="signature-line"></div>
+          <div class="signature-label">Prepared By</div>
+        </div>
         <div class="signature">
           <div class="signature-line"></div>
           <div class="signature-label">Authorized By</div>
@@ -254,7 +261,7 @@ export class PurchaseOrderDetail {
     .items-table tbody tr { page-break-inside: avoid; }
     .total-row td { background: #f0f0f0; font-size: 14px; }
 
-    .po-footer { display: flex; justify-content: space-between; gap: 80px; margin-top: 56px; }
+    .po-footer { display: flex; justify-content: space-between; gap: 40px; margin-top: 56px; }
     .signature { flex: 1; text-align: center; }
     .signature-line { border-top: 1px solid #000; height: 1px; margin-bottom: 6px; }
     .signature-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }

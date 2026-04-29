@@ -20,7 +20,7 @@
       </div>
       <span class="px-3 py-1.5 rounded-full text-[11px] font-extrabold tracking-widest uppercase border"
         [ngClass]="statusClasses(purchaseOrder().orderStatus)">
-        {{ purchaseOrder().orderStatus }}
+        {{ displayStatus(purchaseOrder().orderStatus) }}
       </span>
     </div>
 
@@ -124,8 +124,13 @@
       </div>
 
       @for (item of purchaseOrder().orderItems; track item.id) {
-      <div class="grid grid-cols-12 gap-x-4 px-4 py-3 border-b border-gray-100 last:border-b-0 items-center">
-        <div class="col-span-5 text-[14px] font-semibold text-gray-800">{{ expenseName(item.itemId) }}</div>
+      <div class="grid grid-cols-12 gap-x-4 px-4 py-3 border-b border-gray-100 last:border-b-0 items-start">
+        <div class="col-span-5 flex flex-col gap-1">
+          <span class="text-[14px] font-semibold text-gray-800">{{ expenseName(item.itemId) }}</span>
+          @if (item.description) {
+          <span class="text-[12px] text-gray-500 leading-snug">{{ item.description }}</span>
+          }
+        </div>
         <div class="col-span-4 text-[13px] text-gray-600">{{ (item.quantity | number)}}</div>
         <div class="col-span-3 text-[14px] font-bold text-gray-900 text-right">{{ item.amount | number }}</div>
       </div>
