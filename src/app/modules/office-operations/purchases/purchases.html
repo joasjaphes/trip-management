@@ -12,15 +12,64 @@
       </div>
     </div>
 
-    <!-- Status Tabs -->
-    <div class="status-tabs mb-4" role="tablist" aria-label="Purchase order status tabs">
-      @for (tab of statusTabs(); track tab.key) {
-      <button type="button" class="status-tab cursor-pointer" [class.status-tab-active]="selectedStatus() === tab.key"
-        role="tab" [attr.aria-selected]="selectedStatus() === tab.key" (click)="selectedStatus.set(tab.key)">
-        <span>{{ tab.label }}</span>
-        <span class="status-count">{{ tab.count }}</span>
-      </button>
-      }
+    <!-- Status Tabs + Period Filter -->
+    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
+      <div class="status-tabs" role="tablist" aria-label="Purchase order status tabs">
+        @for (tab of statusTabs(); track tab.key) {
+        <button type="button" class="status-tab cursor-pointer" [class.status-tab-active]="selectedStatus() === tab.key"
+          role="tab" [attr.aria-selected]="selectedStatus() === tab.key" (click)="selectedStatus.set(tab.key)">
+          <span>{{ tab.label }}</span>
+          <span class="status-count">{{ tab.count }}</span>
+        </button>
+        }
+      </div>
+
+      <div class="flex items-center gap-3">
+        @if (period() === 'custom') {
+        <div class="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+          <div class="relative">
+            <input [matDatepicker]="startPicker" [value]="toDateValue(customStartDate())"
+              (dateChange)="setCustomStartDate($event.value)" readonly style="color-scheme: light;"
+              class="bg-[#fffaf0] border border-[#f25f2f] rounded-xl px-3 py-2 pr-9 text-sm text-black outline-none focus:border-[#f25f2f] focus:ring-1 focus:ring-[#f25f2f] shadow-sm transition-all" />
+            <button type="button" (click)="startPicker.open()"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+              aria-label="Open start date picker">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </div>
+          <span class="text-gray-400 text-sm font-medium">to</span>
+          <div class="relative">
+            <input [matDatepicker]="endPicker" [value]="toDateValue(customEndDate())"
+              (dateChange)="setCustomEndDate($event.value)" [min]="toDateValue(customStartDate())" readonly
+              style="color-scheme: light;"
+              class="bg-[#fffaf0] border border-[#f25f2f] rounded-xl px-3 py-2 pr-9 text-sm text-black outline-none focus:border-[#f25f2f] focus:ring-1 focus:ring-[#f25f2f] shadow-sm transition-all" />
+            <button type="button" (click)="endPicker.open()"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+              aria-label="Open end date picker">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </div>
+        </div>
+        }
+        <select [(ngModel)]="period"
+          class="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 outline-none focus:border-[#f25f2f] focus:ring-1 focus:ring-[#f25f2f] cursor-pointer shadow-sm transition-all appearance-none pr-10 relative">
+          <option value="all">All Time</option>
+          <option value="today">Today</option>
+          <option value="weekly">This Week</option>
+          <option value="monthly">This Month</option>
+          <option value="custom">Custom Range</option>
+        </select>
+      </div>
     </div>
 
     <!-- Data Table -->

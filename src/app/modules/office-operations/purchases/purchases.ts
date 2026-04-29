@@ -47,8 +47,34 @@ export class Purchases implements OnInit {
 
   selectedStatus = signal<PurchaseStatusTab>('pending');
   filterVendorId = signal('');
-  filterFromDate = signal('');
-  filterToDate = signal('');
+  period = signal<'all' | 'today' | 'weekly' | 'monthly' | 'custom'>('all');
+  customStartDate = signal('');
+  customEndDate = signal('');
+
+  dateRange = computed<{ start: Date | null; end: Date | null }>(() => {
+    const today = new Date();
+    switch (this.period()) {
+      case 'all':
+        return { start: null, end: null };
+      case 'today':
+        return { start: today, end: today };
+      case 'weekly': {
+        const start = new Date(today);
+        start.setDate(today.getDate() - 7);
+        return { start, end: today };
+      }
+      case 'monthly': {
+        const start = new Date(today);
+        start.setMonth(today.getMonth() - 1);
+        return { start, end: today };
+      }
+      case 'custom':
+        return {
+          start: this.toDateValue(this.customStartDate()),
+          end: this.toDateValue(this.customEndDate()),
+        };
+    }
+  });
 
   loading = computed(() =>
     this.purchaseOrderService.loading() ||
@@ -124,43 +150,49 @@ export class Purchases implements OnInit {
     });
   });
 
-  filteredRows = computed(() => {
+  // Rows after the period + vendor filters, but BEFORE the status-tab filter.
+  // This is the source for the summary cards and tab counts so they reflect
+  // the selected period without being narrowed by the active tab.
+  private rowsInRange = computed(() => {
     let filtered = this.orderRows();
-    const selected = this.selectedStatus();
     const vendorFilter = this.filterVendorId();
-    const fromDate = this.filterFromDate();
-    const toDate = this.filterToDate();
+    const range = this.dateRange();
 
-    // Filter by status tab
-    if (selected === 'pending') {
-      filtered = filtered.filter((row) => row.normalizedStatus === 'pending');
-    } else if (selected === 'approved') {
-      filtered = filtered.filter((row) => row.normalizedStatus === 'approved');
-    } else if (selected === 'completed') {
-      filtered = filtered.filter((row) => row.normalizedStatus === 'completed');
-    }
-
-    // Filter by vendor
     if (vendorFilter) {
       filtered = filtered.filter((row) => row.vendorId === vendorFilter);
     }
 
-    // Filter by date range
-    if (fromDate) {
-      const from = new Date(fromDate).getTime();
+    if (range.start) {
+      const fromTime = this.startOfDay(range.start).getTime();
       filtered = filtered.filter(
-        (row) => new Date(row.orderDateRaw).getTime() >= from
+        (row) => new Date(row.orderDateRaw).getTime() >= fromTime
       );
     }
 
-    if (toDate) {
-      const to = new Date(toDate).getTime();
+    if (range.end) {
+      const toTime = this.endOfDay(range.end).getTime();
       filtered = filtered.filter(
-        (row) => new Date(row.orderDateRaw).getTime() <= to
+        (row) => new Date(row.orderDateRaw).getTime() <= toTime
       );
     }
 
     return filtered;
+  });
+
+  filteredRows = computed(() => {
+    const selected = this.selectedStatus();
+    const rows = this.rowsInRange();
+
+    if (selected === 'pending') {
+      return rows.filter((row) => row.normalizedStatus === 'pending');
+    }
+    if (selected === 'approved') {
+      return rows.filter((row) => row.normalizedStatus === 'approved');
+    }
+    if (selected === 'completed') {
+      return rows.filter((row) => row.normalizedStatus === 'completed');
+    }
+    return rows;
   });
 
 
@@ -330,17 +362,17 @@ export class Purchases implements OnInit {
     await this.purchaseOrderService.getAll();
   }
 
-  totalOrders = computed(() => this.purchaseOrderService.allPurchaseOrders().length);
+  totalOrders = computed(() => this.rowsInRange().length);
 
   totalOrderAmount = computed(() =>
-    this.orderRows().reduce((sum, row) => sum + row.totalAmount, 0)
+    this.rowsInRange().reduce((sum, row) => sum + row.totalAmount, 0)
   );
 
   private countByStatus(status: PurchaseOrderStatus): number {
     const normalizedStatus = status.toLowerCase();
-    return this.purchaseOrderService
-      .allPurchaseOrders()
-      .filter((order) => order.orderStatus.toLowerCase() === normalizedStatus).length;
+    return this.rowsInRange().filter(
+      (row) => row.normalizedStatus === normalizedStatus
+    ).length;
   }
 
   toDateValue(value: string | Date | null | undefined): Date | null {
@@ -361,12 +393,24 @@ export class Purchases implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  onFromDateChanged(value: Date | null) {
-    this.filterFromDate.set(this.toDateString(value));
+  setCustomStartDate(value: Date | null) {
+    this.customStartDate.set(this.toDateString(value));
   }
 
-  onToDateChanged(value: Date | null) {
-    this.filterToDate.set(this.toDateString(value));
+  setCustomEndDate(value: Date | null) {
+    this.customEndDate.set(this.toDateString(value));
+  }
+
+  private startOfDay(value: Date): Date {
+    const copy = new Date(value);
+    copy.setHours(0, 0, 0, 0);
+    return copy;
+  }
+
+  private endOfDay(value: Date): Date {
+    const copy = new Date(value);
+    copy.setHours(23, 59, 59, 999);
+    return copy;
   }
 
   private formatDate(value?: string): string {
