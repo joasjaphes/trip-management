@@ -19,7 +19,7 @@ type PurchaseStatusTab = 'pending' | 'approved' | 'completed';
 
 @Component({
   selector: 'app-purchases',
-  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, PurchaseOrderDetail, MatDatepickerModule, MatNativeDateModule, DeleteConfirmDialog],
+  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, PurchaseOrderDetail, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
