@@ -28,7 +28,7 @@ export class UserService {
         username,
         password,
       });
-      console.log('user', user);
+      console.log('logged user', user);
       localStorage.setItem('trip-management-token', token);
       localStorage.setItem('trip-management-user', JSON.stringify(user));
       return true;

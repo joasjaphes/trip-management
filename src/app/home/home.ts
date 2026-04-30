@@ -32,6 +32,7 @@ export class Home implements OnInit {
 
   isSidebarOpen = signal(true);
   username = signal('');
+  userRole = signal('');
   expandedGroups = signal<Record<string, boolean>>({
     Dashboard: false,
     'Trip Management': false,
@@ -111,7 +112,9 @@ export class Home implements OnInit {
       return;
     }
     const currentUser: User = JSON.parse(localStorage.getItem('trip-management-user'));
-    this.username.set(currentUser?.username || '');
+    console.log('Current user:', currentUser);
+    this.username.set((`${currentUser?.firstName} ${currentUser?.surname}`) || '');
+    this.userRole.set(currentUser?.roleName || '');
     this.userService.getUsers().then();
     setInterval(() => {
       this.tripManagementBadge.reload();

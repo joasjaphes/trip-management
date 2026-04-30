@@ -23,5 +23,6 @@ export interface User {
   status?: string;
   createdAt?: string | Date;
   updatedAt?: string | Date;
+  roleName?: string;
   initials?: string;
 }
