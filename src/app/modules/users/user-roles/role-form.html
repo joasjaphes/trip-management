@@ -1,0 +1,70 @@
+<div class="role-form">
+  <form [formGroup]="roleForm">
+    <div class="field-group">
+      <label class="field-label" for="roleName">Role name</label>
+      <input id="roleName" type="text" formControlName="name" class="field-input" placeholder="Enter role name" />
+    </div>
+
+    <div class="permissions-section">
+      <div class="permissions-header">
+        <div>
+          <h2>Module permissions</h2>
+          <p>Select the permissions available to this role.</p>
+        </div>
+        <div class="permissions-summary">
+            {{ selectedPermissions().size }} selected
+        </div>
+      </div>
+
+      <div class="module-list">
+        @for (module of permissionModules(); track module.key) {
+          <section class="module-card">
+            <div class="module-card-header">
+              <div>
+                <h3>{{ module.label }}</h3>
+                <p>{{ module.permissions.length }} permissions</p>
+              </div>
+
+              <button type="button" class="module-toggle" (click)="toggleModule(module)">
+                {{ isModuleFullySelected(module) ? 'Clear module' : 'Select module' }}
+              </button>
+            </div>
+
+            <div class="permission-table-wrap">
+              <table class="permission-table">
+                <thead>
+                  <tr>
+                    <th>Permission label</th>
+                    <th class="permission-action-col">Access</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (permission of module.permissions; track permission.key) {
+                    <tr>
+                      <td>{{ permission.label }}</td>
+                      <td class="permission-action-col">
+                        <label class="permission-check">
+                          <input
+                            #permissionToggle
+                            type="checkbox"
+                            [checked]="isPermissionSelected(permission.key)"
+                            (change)="togglePermission(permission.key, permissionToggle.checked)"
+                          />
+                          <span>{{ isPermissionSelected(permission.key) ? 'Granted' : 'Not granted' }}</span>
+                        </label>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        }
+      </div>
+    </div>
+
+    <div class="role-form-actions">
+      <app-save-area [saveText]="saveText()" [loading]="loading()" (save)="onSave()" (cancel)="cancel()"></app-save-area>
+    </div>
+  </form>
+</div>

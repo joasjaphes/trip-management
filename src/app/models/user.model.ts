@@ -6,6 +6,8 @@ export interface UserRole {
   deleted: boolean;
   createdAt: string;
   updatedAt: string;
+  isActive?: boolean;
+  status?: string;
 }
 
 export interface User {

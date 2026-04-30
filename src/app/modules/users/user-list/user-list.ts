@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models';
@@ -27,6 +27,7 @@ export class UserList {
   formTitle = signal('');
   formDescription = signal('');
   selectedUser = signal<User | null>(null);
+  loading = this.userService.loadingUsers;
   tableConfigurations: TableConfig = {
     columns: [
       {
@@ -74,5 +75,11 @@ export class UserList {
     this.formTitle.set('');
     this.formDescription.set('');
     this.selectedUser.set(null);
+    // refresh users list after changes
+    this.userService.getUsers().catch((e) => console.error('Failed to refresh users', e));
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.userService.getUsers();
   }
 }

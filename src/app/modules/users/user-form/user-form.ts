@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SaveArea } from '../../../shared/components/save-area/save-area';
-import { RoleService, RoleResponse } from '../../../services/role.service';
+import { RoleService } from '../../../services/role.service';
 import { UserService } from '../../../services/user.service';
-import { User } from '../../../models';
+import { User, UserRole } from '../../../models';
 
 @Component({
   selector: 'app-user-form',
@@ -35,7 +35,7 @@ export class UserForm implements OnInit {
   // show/hide dedicated change-password section when editing
   changePasswordMode = signal(false);
 
-  availableRoles = signal<RoleResponse[]>([]);
+  availableRoles = signal<UserRole[]>([]);
   loadingRoles = signal(false);
 
   saveText = signal('Save changes');
