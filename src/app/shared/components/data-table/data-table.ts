@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Placeholder } from '../placeholder/placeholder';
 import { MatMenuModule } from '@angular/material/menu';
+import { HasPermissionDirective } from '../../directives/has-permission.directive';
 
 export interface TableColumn {
   key: string;
@@ -36,9 +37,26 @@ export interface TableConfig {
   }
 }
 
+export interface MoreActionItem {
+  label: string;
+  key: string;
+  action: (row: any) => void;
+  icon?: string;
+}
+
+export interface ActionPermision {
+  edit?: string[];
+  delete?: string[];
+  view?: string[];
+  add?: string[];
+  more?: { [key: string]: string[] };
+}
+
+
+
 @Component({
   selector: 'app-data-table',
-  imports: [CommonModule, FormsModule, FontAwesomeModule, DecimalPipe, Placeholder, MatMenuModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, DecimalPipe, Placeholder, MatMenuModule, HasPermissionDirective],
   templateUrl: './data-table.html',
   styleUrl: './data-table.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,9 +76,11 @@ export class DataTable {
       more: false,
     },
   });
-  moreActions = input<{ label: string; key: string; action: (row: any) => void; icon?: string; }[]>([]);
+  moreActions = input<MoreActionItem[]>([]);
   data = input<any[]>([]);
   title = input<string>('');
+
+  permissions = input<ActionPermision>();
 
   // Outputs
   rowClick = output<any>();
@@ -327,8 +347,6 @@ export class DataTable {
   }
 
   getMoreActionsForRow(row: any) {
-    return this.moreActions().filter(action => {
-      return row.actions[action.key]
-    });
+    return this.moreActions().filter((action) => !!row?.actions?.[action.key]);
   }
 }

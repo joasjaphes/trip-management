@@ -1,6 +1,6 @@
 <app-layout [title]="title()" [description]="description()" [showAddButton]="showAddButton()"
     [(viewDetails)]="viewDetails" formTitle="Edit Company Profile"
-    formDescription="Update your company identity and contact details" splitSize="half">
+    formDescription="Update your company identity and contact details" splitSize="half" [addPermission]="addPermission()">
 
     <!-- Read-Only View (Main Content) -->
     <ng-container ngProjectAs='main'>

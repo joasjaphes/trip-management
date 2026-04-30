@@ -35,6 +35,7 @@ export class Trips implements OnInit {
   tabs = ['In Progress', 'Completed']
   selectedTab = signal<'In Progress' | 'Completed'>('In Progress');
 
+
   trips = computed(() =>
     this.tripService.allTrips().map((trip) => ({
       id: trip.id,
@@ -61,7 +62,21 @@ export class Trips implements OnInit {
     }))
   );
 
+  permissions = signal({
+    edit: ['EDIT_TRIP'],
+    view: ['VIEW_TRIPS'],
+    add: ['CREATE_TRIP'],
+    delete: ['DELETE_TRIP'],
+    more: {
+      reviewComplete: ['COMPLETE_TRIP'],
+      manageExpense: ['ADD_TRIP_EXPENSES']
+    }
+  })
+
+  addPermision = signal('CREATE_TRIP');
+
   activeTab = signal<'in-progress' | 'completed'>('in-progress');
+
 
   setTab(tab: 'In Progress' | 'Completed') {
     console.log('Selected tab:', tab);

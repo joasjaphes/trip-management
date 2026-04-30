@@ -55,6 +55,16 @@ export class ExpenseCategories implements OnInit {
 
   loading = this.expenseCategoryService.loading;
 
+  permissions = signal({
+    edit: ['EDIT_EXPENSE_CATEGORY'],
+    view: ['VIEW_EXPENSE_CATEGORIES'],
+    add: ['CREATE_EXPENSE_CATEGORY'],
+    delete: ['DELETE_EXPENSE_CATEGORY'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_EXPENSE_CATEGORY');
+
   tableConfigurations: TableConfig = {
     columns: [
       {

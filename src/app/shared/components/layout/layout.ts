@@ -1,5 +1,6 @@
 import { Component, EventEmitter, model, Output, input, computed, ChangeDetectionStrategy } from '@angular/core';
 import { ProgressBar } from '../progress-bar/progress-bar';
+import { HasPermissionDirective } from '../../directives/has-permission.directive';
 
 export type SplitSize = 'zero' | 'full' | 'half' | 'third' | 'quarter' | 'two-thirds' | 'three-quarters';
 
@@ -21,6 +22,7 @@ const SPLIT_SIZES: Record<SplitSize, SplitConfig> = {
 @Component({
   selector: 'app-layout',
   standalone: true,
+  imports: [HasPermissionDirective],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,7 +36,7 @@ export class Layout {
   addText = input('Add New');
   formTitle = input('Add New Item');
   formDescription = input('');
-
+  addPermission = input<string | string[]>('');
   // Split size input
   splitSize = input<SplitSize>('half'); // default to 50/50 split
 

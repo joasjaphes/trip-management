@@ -1,6 +1,6 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()" [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [splitSize]="splitSize()">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="roles()" [config]="tableConfigurations" [loading]="loading()" (edit)="onEdit($event)"></app-data-table>
+    <app-data-table [data]="roles()" [config]="tableConfigurations" [loading]="loading()" (edit)="onEdit($event)" [permissions]="permissions()"></app-data-table>
   </ng-container>
 
   <ng-container ngProjectAs="form">

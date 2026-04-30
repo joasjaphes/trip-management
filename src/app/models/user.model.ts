@@ -25,4 +25,5 @@ export interface User {
   updatedAt?: string | Date;
   roleName?: string;
   initials?: string;
+  permissions?: string[];
 }

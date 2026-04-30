@@ -36,6 +36,16 @@ export class IssuingBodyComponent implements OnInit {
     }))
   );
 
+  permissions = signal({
+    edit: ['MANAGE_ISSUING_AUTHORITIES'],
+    view: ['VIEW_ISSUING_AUTHORITIES'],
+    add: ['MANAGE_ISSUING_AUTHORITIES'],
+    delete: ['MANAGE_ISSUING_AUTHORITIES'],
+    more: {}
+  });
+
+  addPermission = signal('MANAGE_ISSUING_AUTHORITIES');
+
   loading = this.issuingBodyService.loading;
 
   tableConfigurations: TableConfig = {

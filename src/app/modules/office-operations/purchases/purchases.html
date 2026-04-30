@@ -1,5 +1,5 @@
 <app-layout [title]="title()" [description]="description()" [addText]="'Create Order'" (add)="onAdd()"
-  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [splitSize]="splitSize()">
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [splitSize]="splitSize()" [addPermission]="addPermission()">
   <ng-container ngProjectAs="main">
     <div class="purchase-summary-grid mb-4">
       <div class="summary-card">
@@ -25,7 +25,7 @@
 
     <!-- Data Table -->
     <app-data-table [data]="filteredRows()" [config]="tableConfigurations" [loading]="loading()"
-      [moreActions]="moreActions()" (view)="onView($event)" (edit)="onEdit($event)"></app-data-table>
+      [moreActions]="moreActions()" (view)="onView($event)" (edit)="onEdit($event)" [permissions]="permissions()"></app-data-table>
   </ng-container>
 
   <ng-container ngProjectAs="form">

@@ -37,6 +37,16 @@ export class DriverList implements OnInit {
     }))
   );
 
+  permissions = signal({
+    edit: ['EDIT_DRIVER'],
+    view: ['VIEW_DRIVERS'],
+    add: ['CREATE_DRIVER'],
+    delete: ['DELETE_DRIVER'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_DRIVER');
+
   tableConfigurations: TableConfig = {
     columns: [
       {

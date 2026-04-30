@@ -27,6 +27,16 @@ export class CompanyProfilePage implements OnInit {
   viewType = signal<'details' | 'edit'>('details');
   viewDetails = signal(false);
 
+  permissions = signal({
+    edit: ['EDIT_COMPANY_PROFILE'],
+    view: ['VIEW_COMPANY_PROFILE'],
+    add: [],
+    delete: [],
+    more: {}
+  });
+
+  addPermission = signal('EDIT_COMPANY_PROFILE');
+
   async ngOnInit(): Promise<void> {
     console.log('Loading company profile...',this.profile());
     this.companyProfileService.get().then();

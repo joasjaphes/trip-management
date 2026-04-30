@@ -38,6 +38,16 @@ export class VehiclePermits implements OnInit {
         : '-',
     }))
   );
+
+  permissions = signal({
+    edit: ['MANAGE_VEHICLE_PERMITS'],
+    view: ['VIEW_VEHICLE_PERMITS'],
+    add: ['MANAGE_VEHICLE_PERMITS'],
+    delete: ['MANAGE_VEHICLE_PERMITS'],
+    more: {}
+  });
+
+  addPermission = signal('MANAGE_VEHICLE_PERMITS');
   async ngOnInit(): Promise<void> {
     await this.permitRegistrationService.getAll();
   }

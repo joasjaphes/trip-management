@@ -1,7 +1,7 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
-  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()">
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [addPermission]="addPermission()">
   <ng-container ngProjectAs="main">
-    <app-data-table [data]="users()" [config]="tableConfigurations" [loading]="loading()" (edit)="onEdit($event)"></app-data-table>
+    <app-data-table [data]="users()" [config]="tableConfigurations" [loading]="loading()" (edit)="onEdit($event)" [permissions]="permissions()"></app-data-table>
   </ng-container>
   <ng-container ngProjectAs="form">
     @if (viewType() == 'add') {

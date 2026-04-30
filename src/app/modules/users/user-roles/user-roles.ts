@@ -68,6 +68,16 @@ export class UserRoles implements OnInit {
   loadingRoles = signal(false);
   saving = signal(false);
 
+  permissions = signal({
+    edit: ['EDIT_ROLE'],
+    view: ['VIEW_ROLES'],
+    add: ['CREATE_ROLE'],
+    delete: ['DELETE_ROLE'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_ROLE');
+
   ngOnInit() {
     this.roleService.getRoles().then();
   }

@@ -36,6 +36,16 @@ export class RouteList implements OnInit {
     }))
   );
 
+  permissions = signal({
+    edit: ['EDIT_ROUTE'],
+    view: ['VIEW_ROUTES'],
+    add: ['CREATE_ROUTE'],
+    delete: ['DELETE_ROUTE'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_ROUTE');
+
   tableConfigurations: TableConfig = {
     columns: [
       {

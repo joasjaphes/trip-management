@@ -98,6 +98,7 @@ export class RoleForm implements OnInit {
         try {
             const values = this.roleForm.value;
             const payload: CreateRoleRequest = {
+                id: this.role()?.id || '',
                 name: (values.name || '').trim(),
                 permissions: Array.from(this.selectedPermissions()),
             };

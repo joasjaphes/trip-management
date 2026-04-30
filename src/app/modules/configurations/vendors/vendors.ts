@@ -45,6 +45,16 @@ export class Vendors implements OnInit {
     actions: { edit: true },
   };
 
+  permissions = signal({
+    edit: ['EDIT_VENDOR'],
+    view: ['VIEW_VENDORS'],
+    add: ['CREATE_VENDOR'],
+    delete: ['DELETE_VENDOR'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_VENDOR');
+
   async ngOnInit(): Promise<void> {
     await this.vendorService.getAll();
   }

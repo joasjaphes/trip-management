@@ -11,6 +11,7 @@
       </div>
       @if (showAddButton()) {
       <a (click)="onAdd()"
+        *appHasPermission="permissions()?.add"
         class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -119,16 +120,16 @@
               @if (hasActions()) {
               <td class="col-actions">
                 @if (config().actions?.edit || row.canEdit) {
-                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(row)" title="Edit"></i>&nbsp;&nbsp;
+                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(row)" title="Edit" *appHasPermission="permissions()?.edit"></i>&nbsp;&nbsp;
                 <!-- <button class="action-btn" (click)="onEdit(row)">Edit</button> -->
                 }
                 @if (config().actions?.view) {
-                <i class="fa-solid fa-eye cursor-pointer" (click)="onView(row)" title="View"></i>&nbsp;&nbsp;
+                <i class="fa-solid fa-eye cursor-pointer" (click)="onView(row)" title="View" *appHasPermission="permissions()?.view"></i>&nbsp;&nbsp;
                 <!-- <button class="action-btn" (click)="onView(row)">View</button> -->
                 }
                 @if (config().actions?.delete) {
                 <i class="fa-solid fa-trash text-red-500 cursor-pointer" (click)="onDelete(row)"
-                  title="Delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                  title="Delete" *appHasPermission="permissions()?.delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
 
                 <!-- <button class="action-btn" (click)="onDelete(row)">Delete</button> -->
                 }
@@ -140,7 +141,12 @@
                 </button>
                 <mat-menu #menu="matMenu" style="background-color:red">
                   @for (action of getMoreActionsForRow(row); track action.key) {
-                  <button mat-menu-item (click)="onMoreMenuAction(action, row, $event)" class="cursor-pointer">
+                  <button
+                    mat-menu-item
+                    *appHasPermission="permissions()?.more?.[action.key]"
+                    (click)="onMoreMenuAction(action, row, $event)"
+                    class="cursor-pointer"
+                  >
                     <i [class]="action.icon || 'fa-solid fa-question-circle'"></i> &nbsp;
                     {{ action.label }}
                   </button>

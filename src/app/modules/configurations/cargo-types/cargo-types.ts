@@ -36,6 +36,16 @@ export class CargoTypes implements OnInit {
     }))
   );
 
+  permissions = signal({
+    edit: ['EDIT_CARGO_TYPE'],
+    view: ['VIEW_CARGO_TYPES'],
+    add: ['CREATE_CARGO_TYPE'],
+    delete: ['DELETE_CARGO_TYPE'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_CARGO_TYPE');
+
   loading = this.cargoTypeService.loading;
 
   tableConfigurations: TableConfig = {

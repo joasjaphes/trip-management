@@ -19,7 +19,7 @@ type PurchaseStatusTab = 'pending' | 'approved' | 'completed';
 
 @Component({
   selector: 'app-purchases',
-  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, PurchaseOrderDetail, MatDatepickerModule, MatNativeDateModule, DeleteConfirmDialog],
+  imports: [CommonModule, FormsModule, Layout, DataTable, PurchaseOrderForm, PurchaseOrderReview, PurchaseOrderDetail, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +40,16 @@ export class Purchases implements OnInit {
   viewType = signal<'add' | 'edit' | 'approve' | 'complete' | 'detail' | ''>('');
   reviewMode = signal<PurchaseOrderReviewMode>('approve');
   showAddButton = signal(true);
+
+  permissions = signal({
+    edit: ['EDIT_PURCHASE_ORDER'],
+    view: ['VIEW_PURCHASE_ORDER'],
+    add: ['CREATE_PURCHASE_ORDER'],
+    delete: ['DELETE_PURCHASE_ORDER'],
+    more: { approve: ['APPROVE_PURCHASE_ORDER'], complete: ['RECEIVE_PURCHASE_ORDER'] }
+  });
+
+  addPermission = signal('CREATE_PURCHASE_ORDER');
   splitSize = signal<'half' | 'full'>('full');
   formTitle = signal('');
   formDescription = signal('');

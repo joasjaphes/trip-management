@@ -31,7 +31,7 @@
     }
 
     <app-data-table [data]="filteredInvoices()" [config]="tableConfigurations" (view)="onView($event)" [loading]="loading()"
-      [moreActions]="moreActions()"></app-data-table>
+      [moreActions]="moreActions()" [permissions]="permissions()"></app-data-table>
   </ng-container>
 
   <ng-container ngProjectAs="form">

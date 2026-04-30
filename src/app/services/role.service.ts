@@ -3,6 +3,7 @@ import { HttpClientService } from './http-client.service';
 import { UserRole } from '../models';
 
 export interface CreateRoleRequest {
+  id?: string;
   name: string;
   permissions: string[];
 }

@@ -28,6 +28,16 @@ export class UserList {
   formDescription = signal('');
   selectedUser = signal<User | null>(null);
   loading = this.userService.loadingUsers;
+
+  permissions = signal({
+    edit: ['EDIT_USER'],
+    view: ['VIEW_USERS'],
+    add: ['CREATE_USER'],
+    delete: ['DELETE_USER'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_USER');
   tableConfigurations: TableConfig = {
     columns: [
       {

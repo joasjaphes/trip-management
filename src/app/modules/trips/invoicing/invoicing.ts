@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Invoice, InvoiceStatus } from '../../../models/invoice.model';
 import { InvoiceService } from '../../../services/invoice.service';
 import { TripService } from '../../../services/trip.service';
-import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
+import { ActionPermision, DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { InvoiceReceiptsManage } from './invoice-receipts-manage/invoice-receipts-manage';
 import { InvoiceReceiptService } from '../../../services/invoice-receipt.service';
@@ -207,6 +207,13 @@ export class Invoicing implements OnInit {
       action: (row: { _invoice: Invoice }) => this.onManageReceipt(row),
     },
   ]);
+
+  permissions = signal<ActionPermision>({
+    more:{
+      viewReceipts: ['VIEW_INVOICE_PAYMENTS'],
+      manageReceipts: ['RECEIVE_PAYMENTS'],
+    }
+  })
 
   numberToWords(amount: number): string {
     if (!amount) return 'zero';

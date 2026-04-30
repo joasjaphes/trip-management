@@ -38,6 +38,16 @@ export class Customers implements OnInit {
     }))
   );
 
+  permissions = signal({
+    edit: ['EDIT_CUSTOMER'],
+    view: ['VIEW_CUSTOMERS'],
+    add: ['CREATE_CUSTOMER'],
+    delete: ['DELETE_CUSTOMER'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_CUSTOMER');
+
   tableConfigurations: TableConfig = {
     columns: [
       { key: 'name', label: 'Name' },
