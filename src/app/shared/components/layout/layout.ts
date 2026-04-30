@@ -42,7 +42,7 @@ export class Layout {
     if (this.viewDetails()) {
       switch (this.splitSize()) {
         case 'half':
-          return '0.3';
+          return '0.8';
         case 'full':
           return '0';
         default:

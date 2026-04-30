@@ -5,6 +5,7 @@ A comprehensive backend API for managing trips, customers, vendors, purchase ord
 ## Table of Contents
 - [Base Configuration](#base-configuration)
 - [Authentication](#authentication)
+- [Roles and Permissions](#roles-and-permissions)
 - [API Endpoints](#api-endpoints)
 - [Purchase Orders](#purchaseOrders-api-purchaseOrders)
 - [Data Models](#data-models)
@@ -66,6 +67,196 @@ fetch('http://localhost:3000/api/users/me', {
 Most endpoints require authentication. The following endpoints are public:
 - `POST /api/users` - Create new user
 
+## Roles and Permissions
+
+The API implements a **Role-Based Access Control (RBAC)** system to manage user permissions and authorization.
+
+### Overview
+- **Users** can have one or more **Roles**
+- **Roles** can have one or more **Permissions**
+- **Permissions** are defined by keys (e.g., `user.create`, `trip.delete`)
+- Users are authorized to perform actions based on their assigned roles and the permissions associated with those roles
+
+### Roles API (`/api/roles`)
+
+#### Get All Roles
+```http
+GET /api/roles
+Authorization: Basic <credentials>
+```
+
+**Response:**
+```json
+[
+  {
+    "id": "role-uid-123",
+    "name": "admin",
+    "permissions": ["user.create", "user.delete", "user.update", "trip.create", "trip.delete"],
+    "active": true,
+    "deleted": false,
+    "createdAt": "2026-01-01T10:00:00.000Z",
+    "updatedAt": "2026-01-01T10:00:00.000Z"
+  },
+  {
+    "id": "role-uid-456",
+    "name": "user",
+    "permissions": ["trip.create", "trip.read"],
+    "active": true,
+    "deleted": false,
+    "createdAt": "2026-01-02T10:00:00.000Z",
+    "updatedAt": "2026-01-02T10:00:00.000Z"
+  }
+]
+```
+
+#### Create Role
+```http
+POST /api/roles
+Authorization: Basic <credentials>
+Content-Type: application/json
+
+{
+  "name": "manager",
+  "permissions": ["user.create", "trip.create", "trip.update", "invoice.read", "invoice.update"]
+}
+```
+
+**Request Fields:**
+- `name` (string, required): Unique role name
+- `permissions` (array, optional): Array of permission keys. Permissions are auto-created if they don't exist.
+
+### Permissions
+
+Permissions are defined by a unique key string and an optional description. They are automatically created when referenced in a role.
+
+**Common Permission Keys:**
+- `user.create` - Create new users
+- `user.read` - View user information
+- `user.update` - Update user information
+- `user.delete` - Delete users
+- `trip.create` - Create new trips
+- `trip.read` - View trips
+- `trip.update` - Update trips
+- `trip.delete` - Delete trips
+- `invoice.create` - Create invoices
+- `invoice.read` - View invoices
+- `invoice.update` - Update invoices
+- `invoice.delete` - Delete invoices
+- `role.create` - Create new roles
+- `role.read` - View roles
+- `role.update` - Update roles
+- `role.delete` - Delete roles
+
+### User Roles
+
+Users are linked to roles through a many-to-many relationship. A user can have multiple roles, and each role provides a set of permissions.
+
+#### Create User with Roles
+```http
+POST /api/users
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "surname": "Doe",
+  "phoneNumber": "255712345678",
+  "password": "StrongPassword123!",
+  "email": "user@example.com",
+  "roles": ["role-uid-123", "role-uid-456"]
+}
+```
+
+#### Get User with Roles
+```http
+GET /api/users/:id
+Authorization: Basic <credentials>
+```
+
+**Response (without eager loading):**
+```json
+{
+  "id": "user-uid-123",
+  "firstName": "John",
+  "surname": "Doe",
+  "email": "user@example.com",
+  "phoneNumber": "255712345678",
+  "username": "john.doe",
+  "roles": ["role-uid-123", "role-uid-456"],
+  "createdAt": "2026-01-01T10:00:00.000Z",
+  "updatedAt": "2026-01-01T10:00:00.000Z"
+}
+```
+
+By default, the `GET /api/users/:id` endpoint returns role UIDs. To retrieve complete role details including permissions, call:
+
+```http
+GET /api/users/:id
+Authorization: Basic <credentials>
+```
+
+And the response will include full role objects with their permissions:
+```json
+{
+  "id": "user-uid-123",
+  "firstName": "John",
+  "surname": "Doe",
+  "email": "user@example.com",
+  "phoneNumber": "255712345678",
+  "username": "john.doe",
+  "roles": [
+    {
+      "id": "role-uid-123",
+      "name": "admin",
+      "permissions": ["user.create", "user.delete", "trip.create"],
+      "active": true,
+      "deleted": false
+    },
+    {
+      "id": "role-uid-456",
+      "name": "manager",
+      "permissions": ["trip.create", "trip.update"],
+      "active": true,
+      "deleted": false
+    }
+  ],
+  "createdAt": "2026-01-01T10:00:00.000Z",
+  "updatedAt": "2026-01-01T10:00:00.000Z"
+}
+```
+
+#### Get All Users with Roles
+```http
+GET /api/users
+Authorization: Basic <credentials>
+```
+
+This endpoint returns all users with their roles and permissions eagerly loaded.
+
+### Role Assignment Implementation
+
+When creating or updating a user with roles:
+
+1. **Validation**: All provided role UIDs are validated against the database. If any role UID does not exist, the operation fails with a `400 Bad Request` error listing the invalid role UIDs.
+
+2. **Transaction Safety**: Role assignment is performed within the user creation/update transaction, ensuring consistency.
+
+3. **Error Response**: If invalid roles are provided, the API returns:
+   ```json
+   {
+     "statusCode": 400,
+     "message": "The following role(s) do not exist: role-uid-invalid-1, role-uid-invalid-2"
+   }
+   ```
+
+4. **Empty Roles**: When updating a user:
+   - If `roles` is not provided, existing roles are preserved
+   - If `roles` is provided as an empty array `[]`, all roles are removed from the user
+
+5. **Role Loading**: 
+   - Create and update operations return the user with roles eagerly loaded
+   - Get operations by default return role UIDs only
+   - For complete role details with permissions, use the dedicated GET endpoints
+
 ## API Endpoints
 
 ### Users (`/api/users`)
@@ -98,9 +289,48 @@ Content-Type: application/json
   "surname": "Doe",
   "phoneNumber": "255712345678",
   "password": "StrongPassword123!",
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "roles": ["role-uid-123", "role-uid-456"]
 }
 ```
+
+**Request Fields:**
+- `firstName` (string, required): User's first name
+- `surname` (string, required): User's surname/last name
+- `phoneNumber` (string, required): User's phone number (must be unique)
+- `password` (string, required): Password meeting security requirements
+- `email` (string, optional): User's email address
+- `roles` (array, optional): Array of role UIDs to assign to the user
+
+**Password Requirements:**
+- Minimum 8 characters
+- At least one uppercase letter
+- At least one lowercase letter
+- At least one number
+- At least one special character
+
+**Response:**
+```json
+{
+  "id": "user-uid-123",
+  "firstName": "John",
+  "surname": "Doe",
+  "email": "user@example.com",
+  "phoneNumber": "255712345678",
+  "username": "255712345678",
+  "roles": ["role-uid-123", "role-uid-456"],
+  "createdAt": "2026-01-01T10:00:00.000Z",
+  "updatedAt": "2026-01-01T10:00:00.000Z"
+}
+```
+
+**Error Handling:**
+- If any role UID in the roles array does not exist, the request will fail with a `400 Bad Request`:
+  ```json
+  {
+    "message": "The following role(s) do not exist: role-uid-invalid"
+  }
+  ```
 
 #### Update User
 ```http
@@ -113,10 +343,40 @@ Content-Type: application/json
   "firstName": "John",
   "surname": "Doe",
   "phoneNumber": "255712345678",
-  "password": "StrongPassword123!",
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "roles": ["role-uid-123"]
 }
 ```
+
+**Request Fields:**
+- `id` (string, required): User's unique identifier
+- `firstName` (string, optional): User's first name
+- `surname` (string, optional): User's surname/last name
+- `email` (string, optional): User's email address
+- `roles` (array, optional): Array of role UIDs to assign to the user. Pass empty array to remove all roles.
+
+**Response:**
+```json
+{
+  "id": "user-id",
+  "firstName": "John",
+  "surname": "Doe",
+  "email": "user@example.com",
+  "phoneNumber": "255712345678",
+  "username": "255712345678",
+  "roles": ["role-uid-123"],
+  "createdAt": "2026-01-01T10:00:00.000Z",
+  "updatedAt": "2026-01-01T10:00:00.000Z"
+}
+```
+
+**Error Handling:**
+- If any role UID in the roles array does not exist, the request will fail with a `400 Bad Request`:
+  ```json
+  {
+    "message": "The following role(s) do not exist: role-uid-invalid"
+  }
+  ```
 
 #### Change Password
 ```http

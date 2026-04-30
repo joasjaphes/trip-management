@@ -3,18 +3,22 @@
   <div class="max-w-[900px] mx-auto">
 
     @if (actionMessage()) {
-      <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
-        <span class="loading loading-spinner loading-sm"></span>
-        <span>{{ actionMessage() }}</span>
-      </div>
+    <div
+      class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+      <span class="loading loading-spinner loading-sm"></span>
+      <span>{{ actionMessage() }}</span>
+    </div>
     }
 
     @if (successMessage()) {
-      <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">{{ successMessage() }}</div>
+    <div
+      class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">
+      {{ successMessage() }}</div>
     }
 
     @if (errorMessage()) {
-      <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{ errorMessage() }}</div>
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{
+      errorMessage() }}</div>
     }
 
     <!-- Header -->
@@ -45,38 +49,6 @@
       <!-- Username / Email -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-7">
         <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">Username</label>
-          <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-              </svg>
-            </span>
-            <input type="text" placeholder="Enter username" [(ngModel)]="username" name="username"
-              class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">Email Address</label>
-          <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </span>
-            <input type="email" placeholder="Enter email address" [(ngModel)]="email" name="email"
-              class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-          </div>
-        </div>
-      </div>
-
-      <!-- Phone / Role -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="flex flex-col gap-2">
           <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">Phone Number</label>
           <div class="relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
@@ -91,19 +63,143 @@
           </div>
         </div>
         <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">User Role</label>
+          <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">Email Address</label>
           <div class="relative">
-            <select [(ngModel)]="role" name="role"
-              class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
-              <option value="ADMIN">ADMIN</option>
-              <option value="MANAGER">MANAGER</option>
-              <option value="VIEWER">VIEWER</option>
-            </select>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-              class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </span>
+            <input type="email" placeholder="Enter email address" [(ngModel)]="email" name="email" autocomplete="email"
+              class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           </div>
+        </div>
+      </div>
+
+      <!-- Phone / Password -->
+      <div class="grid grid-cols-2 md:grid-cols-2 gap-6 mb-7">
+
+        @if (!isEditMode()) {
+        <div class="flex flex-col col-span-2 gap-2">
+          <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">Username</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+              </svg>
+            </span>
+            <input type="text" placeholder="Enter username" [(ngModel)]="username" name="username" autocomplete="username"
+              class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          </div>
+        </div>
+        }
+
+        @if (!isEditMode()) {
+        <div class="flex flex-col gap-2">
+          <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">Password</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </span>
+            <input type="password" placeholder="Enter password" [(ngModel)]="password" name="password"
+              autocomplete="new-password"
+              class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          </div>
+        </div>
+
+
+        <!-- Confirm Password -->
+        <div class="flex flex-col gap-2 mb-7">
+          <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">Confirm Password</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </span>
+            <input type="password" placeholder="Confirm password" [(ngModel)]="confirmPassword" name="confirmPassword"
+              autocomplete="new-password"
+              class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          </div>
+        </div>
+        }
+
+        @if (isEditMode()) {
+        <!-- Change Password (edit mode) -->
+        <div class="col-span-2 bg-gray-50 border border-gray-100 rounded-xl p-4 mb-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-[13px] font-extrabold text-gray-900">Change Password</h4>
+              <p class="text-[12px] text-gray-400">Use this to update the user's password separately.</p>
+            </div>
+            <div>
+              @if (!changePasswordMode()) {
+                <button (click)="changePasswordMode.set(true)" class="btn btn-sm bg-white border border-gray-200 cursor-pointer">Change Password</button>
+              } @else {
+                <button (click)="changePasswordMode.set(false)" class="btn btn-sm bg-white border border-gray-200 cursor-pointer">Cancel</button>
+              }
+            </div>
+          </div>
+
+          @if (changePasswordMode()) {
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">New Password</label>
+                <input type="password" placeholder="New password" [(ngModel)]="password" name="newPassword" autocomplete="new-password"
+                  class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f]">
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">Confirm New Password</label>
+                <input type="password" placeholder="Confirm new password" [(ngModel)]="confirmPassword" name="confirmNewPassword" autocomplete="new-password"
+                  class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f]">
+              </div>
+              <div class="col-span-full flex items-center gap-3">
+                <button (click)="onChangePassword()" class="btn bg-[#f25f2f] text-white px-4 py-2 rounded cursor-pointer">Save Password</button>
+              </div>
+            </div>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- User Roles -->
+      <div class="flex flex-col gap-2 mb-8">
+        <label class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase">Assign Roles</label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          @if (loadingRoles()) {
+          <div class="flex items-center justify-center col-span-full">
+            <span class="loading loading-spinner loading-sm"></span>
+            <span class="ml-2 text-gray-500">Loading roles...</span>
+          </div>
+          }
+          @if (!loadingRoles()) {
+          @for (role of availableRoles(); track role.id) {
+          <div (click)="toggleRole(role.id)"
+            [ngClass]="selectedRoles.includes(role.id) ? 'bg-white border-[#f25f2f]' : 'bg-gray-50 border-gray-200'"
+            class="flex items-center gap-3 p-4 border rounded-lg hover:border-[#f25f2f] transition-colors cursor-pointer">
+            <input type="checkbox" [id]="'role-' + role.id" [checked]="selectedRoles.includes(role.id)"
+              (change)="toggleRole(role.id)"
+              class="w-5 h-5 cursor-pointer rounded appearance-none border-2 border-gray-300 bg-white checked:bg-[#f25f2f] checked:border-[#f25f2f] checked:after:content-['✓'] checked:after:text-white checked:after:text-center checked:after:flex checked:after:items-center checked:after:justify-center"
+              style="accent-color: #f25f2f;">
+            <div class="flex-1">
+              <label [for]="'role-' + role.id" class="text-[14px] font-bold text-gray-900 cursor-pointer">
+                {{ role.name | uppercase }}
+              </label>
+              <p class="text-[12px] text-gray-500">{{ role.permissions.length }} permissions</p>
+            </div>
+          </div>
+          }
+          }
         </div>
       </div>
 
@@ -129,7 +225,8 @@
     </div>
 
     <div>
-      <app-save-area [saveText]="saveText()" [loading]="loading()" (cancel)="cancel()" (save)="onSubmit()"></app-save-area>
+      <app-save-area [saveText]="saveText()" [loading]="loading()" (cancel)="cancel()"
+        (save)="onSubmit()"></app-save-area>
     </div>
 
   </div>
