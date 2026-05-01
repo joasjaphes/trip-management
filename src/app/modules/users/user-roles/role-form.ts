@@ -1,6 +1,7 @@
 import { Component, inject, input, output, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SaveArea } from '../../../shared/components/save-area/save-area';
 import { RoleService, CreateRoleRequest } from '../../../services/role.service';
 import { PERMISSION_MODULES, DEFAULT_ROLE_PERMISSIONS, PermissionModule } from './permission-modules';
@@ -9,7 +10,7 @@ import { UserRole } from '../../../models';
 @Component({
     selector: 'app-role-form',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, SaveArea],
+    imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, SaveArea],
     templateUrl: './role-form.html',
     styleUrls: ['./role-form.css'],
 })
@@ -23,6 +24,7 @@ export class RoleForm implements OnInit {
 
     permissionModules = signal<PermissionModule[]>(PERMISSION_MODULES);
     selectedPermissions = signal<Set<string>>(new Set(DEFAULT_ROLE_PERMISSIONS));
+    expandedModuleKey = signal<string | null>(null);
     saveText = signal('Save role');
     loading = signal(false);
     formTitle = signal('Add new role');
@@ -60,27 +62,27 @@ export class RoleForm implements OnInit {
         return module.permissions.every((permission) => this.selectedPermissions().has(permission.key));
     }
 
-    toggleAllPermissions(selectAll: boolean) {
-        // const next = new Set('ALL');
-        if (selectAll) {
-            this.selectedPermissions().clear();
-            this.selectedPermissions().add('ALL');
-        }else {
-            this.selectedPermissions().clear();
-        }
-
-    }
-
-    toggleModule(module: PermissionModule) {
+    toggleModuleSelection(module: PermissionModule) {
         const next = new Set(this.selectedPermissions());
         const selectAll = !this.isModuleFullySelected(module);
 
         module.permissions.forEach((permission) => {
-            if (selectAll) next.add(permission.key);
-            else next.delete(permission.key);
+            if (selectAll) {
+                next.add(permission.key);
+            } else {
+                next.delete(permission.key);
+            }
         });
 
         this.selectedPermissions.set(next);
+    }
+
+    toggleModule(module: PermissionModule) {
+        this.expandedModuleKey.update((currentKey) => (currentKey === module.key ? null : module.key));
+    }
+
+    isModuleExpanded(moduleKey: string): boolean {
+        return this.expandedModuleKey() === moduleKey;
     }
 
     togglePermission(permissionKey: string, checked: boolean) {
