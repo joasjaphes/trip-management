@@ -21,6 +21,7 @@ interface MenuGroup {
   label: string;
   icon?: string;
   items: MenuItem[];
+  permission?: string | string[];
 }
 
 @Component({
@@ -61,6 +62,7 @@ export class Home implements OnInit {
     {
       label: 'Trip Management',
       icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+      permission: ['VIEW_TRIPS', 'VIEW_INVOICE_PAYMENTS'],
       items: [
         { label: 'Trips', icon: 'M13 10V3L4 14h7v7l9-11h-7z', route: '/trips', badge: `${this.tripManagementBadge.value()}`, permission: 'VIEW_TRIPS' },
         { label: 'Invoicing', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1M14.599 9C14.08 8.402 13.11 8 12 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z', route: '/invoicing', permission: 'VIEW_INVOICE_PAYMENTS' },
@@ -69,6 +71,7 @@ export class Home implements OnInit {
     {
       label: 'Office Operations',
       icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+      permission: ['VIEW_PURCHASE_ORDER', 'VIEW_EXPENSE_TRANSACTION'],
       items: [
         { label: 'Purchases', icon: 'M3 4h18M3 10h18M3 16h18M3 22h18', route: '/purchases', permission: 'VIEW_PURCHASE_ORDER' },
         { label: 'Expense Transactions', icon: 'M4 7h16M4 12h16M4 17h10', route: '/expense-transactions', permission: 'VIEW_EXPENSE_TRANSACTION' },
@@ -77,6 +80,7 @@ export class Home implements OnInit {
     {
       label: 'Reports',
       icon: 'M9 17v-6m4 6V7m4 10v-3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z',
+      permission: ['VIEW_DEBTORS_STATEMENT_REPORT', 'VIEW_TRIP_STATUS_REPORT', 'VIEW_EXPIRING_PERMITS_REPORT'],
       items: [
         { label: 'Debtors Statement Report', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1M14.599 9C14.08 8.402 13.11 8 12 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z', route: '/reports/debtors-statement', permission: 'VIEW_DEBTORS_STATEMENT_REPORT' },
         { label: 'Trip Status', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', route: '/reports/trip-status', permission: 'VIEW_TRIP_STATUS_REPORT' },
@@ -86,6 +90,7 @@ export class Home implements OnInit {
     {
       label: 'Configuration',
       icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z',
+      permission: ['VIEW_DRIVERS', 'VIEW_VEHICLES', 'VIEW_VEHICLE_PERMITS', 'VIEW_ISSUING_AUTHORITIES', 'VIEW_ROUTES', 'VIEW_CARGO_TYPES', 'VIEW_CUSTOMERS', 'VIEW_VENDORS', 'VIEW_OFFLOADING_PLACES', 'VIEW_EXPENSE_CATEGORIES', 'VIEW_COMPANY_PROFILE'],
       items: [
         { label: 'Drivers', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', route: '/drivers', permission: 'VIEW_DRIVERS' },
         { label: 'Vehicles', icon: 'M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2', route: '/vehicles', permission: 'VIEW_VEHICLES' },
@@ -103,6 +108,7 @@ export class Home implements OnInit {
     {
       label: 'User Management',
       icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
+      permission: ['VIEW_USERS', 'VIEW_ROLES'],
       items: [
         { label: 'Users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', route: '/users', permission: 'VIEW_USERS' },
         { label: 'User Roles', icon: 'M9 12l2 2 4-4m5.618 5.091A9 9 0 1112 3a9 9 0 018.618 12.091z', route: '/user-roles', permission: 'VIEW_ROLES' },

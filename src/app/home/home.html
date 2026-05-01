@@ -154,7 +154,7 @@
       <div class="flex-1 overflow-y-auto no-scrollbar px-4 py-5">
         @for (group of menuGroups; track group.label) {
         @if (group.items.length === 1) {
-        <section class="mb-4 last:mb-0 rounded-2xl border border-gray-100 bg-white/80 px-2 py-1">
+        <section class="mb-4 last:mb-0 rounded-2xl border border-gray-100 bg-white/80 px-2 py-1" *appHasPermission="group?.items[0]?.permission">
           <a [routerLink]="group.items[0].route"
             routerLinkActive="active bg-[#f25f2f]  text-white font-bold rounded-xl shadow-[0_4px_12px_rgba(240,43,60,0.2)]"
             [routerLinkActiveOptions]="{exact: group.items[0].route === '/dashboard'}"
@@ -189,7 +189,7 @@
           </ul> -->
         </section>
         } @else {
-        <section class="mb-4 last:mb-0 rounded-2xl border border-gray-100 bg-white/80 px-2 py-1">
+        <section class="mb-4 last:mb-0 rounded-2xl border border-gray-100 bg-white/80 px-2 py-1" *appHasPermission="group?.permission">
           <button type="button"
             class="flex w-full items-center justify-between px-4 py-3.5 text-gray-500 hover:bg-gray-50 hover:text-gray-800 rounded-xl transition-all font-medium group cursor-pointer"
             [attr.aria-expanded]="isGroupExpanded(group.label)" [attr.aria-controls]="'menu-group-' + $index"
