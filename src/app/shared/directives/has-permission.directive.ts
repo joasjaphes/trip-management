@@ -44,7 +44,6 @@ export class HasPermissionDirective {
         userPermissions: Set<string>,
         required: string[],
     ): boolean {
-        console.log('Checking permissions. Required:', required);
         if (!userPermissions.size || !required.length || required.includes('ALL')) {
             return true;
         }

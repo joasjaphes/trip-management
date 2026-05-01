@@ -82,9 +82,12 @@ export class Home implements OnInit {
       icon: 'M9 17v-6m4 6V7m4 10v-3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z',
       permission: ['VIEW_DEBTORS_STATEMENT_REPORT', 'VIEW_TRIP_STATUS_REPORT', 'VIEW_EXPIRING_PERMITS_REPORT'],
       items: [
-        { label: 'Debtors Statement Report', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1M14.599 9C14.08 8.402 13.11 8 12 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z', route: '/reports/debtors-statement', permission: 'VIEW_DEBTORS_STATEMENT_REPORT' },
-        { label: 'Trip Status', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', route: '/reports/trip-status', permission: 'VIEW_TRIP_STATUS_REPORT' },
-        { label: 'Expiring Permits', icon: 'M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2', route: '/reports/expiring-permits', permission: 'VIEW_EXPIRING_PERMITS_REPORT' },
+        // { label: 'Debtors Statement Report', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1M14.599 9C14.08 8.402 13.11 8 12 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z', route: '/reports/debtors-statement', permission: 'VIEW_DEBTORS_STATEMENT_REPORT' },
+        // { label: 'Trip Status', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', route: '/reports/trip-status', permission: 'VIEW_TRIP_STATUS_REPORT' },
+        // { label: 'Expiring Permits', icon: 'M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2', route: '/reports/expiring-permits', permission: 'VIEW_EXPIRING_PERMITS_REPORT' },
+        { label: 'Drivers Permit Status', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7', route: '/reports/drivers-permit-status', permission: 'VIEW_DRIVERS' },
+        { label: 'Vehicles Permit Status', icon: 'M8 7v8a2 2 0 002 2h6', route: '/reports/vehicles-permit-status', permission: 'VIEW_VEHICLE_PERMITS' },
+        { label: 'Expenditure Report', icon: 'M4 7h16M4 12h16M4 17h10', route: '/reports/expenditure', permission: 'VIEW_EXPENDITURE_REPORT' },
       ]
     },
     {

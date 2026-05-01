@@ -9,6 +9,9 @@ import { Invoicing } from './modules/trips/invoicing/invoicing';
 import { DebtorsStatementReport } from './modules/reports/debtors-statement-report/debtors-statement-report';
 import { TripStatusReport } from './modules/reports/trip-status-report/trip-status-report';
 import { ExpiringPermitsReport } from './modules/reports/expiring-permits-report/expiring-permits-report';
+import { DriversPermitStatusReport } from './modules/reports/drivers-permit-status/drivers-permit-status-report';
+import { VehiclesPermitStatusReport } from './modules/reports/vehicles-permit-status/vehicles-permit-status-report';
+import { ExpenditureReport } from './modules/reports/expenditure-report/expenditure-report';
 import { TripForm } from './modules/trips/trip-form/trip-form';
 import { TripDetail } from './modules/trips/trip-detail/trip-detail';
 import { DriverList } from './modules/configurations/drivers/driver-list/driver-list';
@@ -73,6 +76,18 @@ export const routes: Routes = [
             {
                 path: 'reports/trip-status',
                 component: TripStatusReport,
+            },
+            {
+                path: 'reports/drivers-permit-status',
+                component: DriversPermitStatusReport,
+            },
+            {
+                path: 'reports/vehicles-permit-status',
+                component: VehiclesPermitStatusReport,
+            },
+            {
+                path: 'reports/expenditure',
+                component: ExpenditureReport,
             },
             {
                 path: 'reports/expiring-permits',

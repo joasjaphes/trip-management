@@ -1,0 +1,72 @@
+<app-layout [title]="'Drivers permit status'" [showAddButton]="false">
+    <ng-container ngProjectAs="main">
+        @if (loading()) {
+            <div class="w-full flex items-center justify-center">
+                <app-placeholder></app-placeholder>
+            </div>
+        }@else {
+            <div class="w-full space-y-4">
+                <!-- Legend + Actions -->
+                <div class="flex items-center justify-between gap-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">Good</span>
+                            <span class="text-sm text-gray-600">&gt; 60 days</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">Warning</span>
+                            <span class="text-sm text-gray-600">30-60 days</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">Critical</span>
+                            <span class="text-sm text-gray-600">&lt; 30 days</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" (click)="exportCsv()" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export CSV</button>
+                        <button type="button" (click)="exportPdf()" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export PDF</button>
+                    </div>
+                </div>
+                <!-- Table -->
+                <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="border-collapse border border-gray-200 text-black text-center">Driver Name</th>
+                            <th rowspan="2" class="border-collapse border border-gray-200 text-black">Driver Phone</th>
+                            <th colspan="4" class="border-collapse border border-gray-200 text-black text-center" style="text-align:center">Permit Status</th>
+                        </tr>
+                        <tr>
+                            <th class="border-collapse border border-gray-200 text-black text-center">Name</th>
+                            <th class="border-collapse border border-gray-200 text-black text-center">Expiration Date</th>
+                            <th class="border-collapse border border-gray-200 text-black text-center">Days Remaining</th>
+                            <th class="border-collapse border border-gray-200 text-black text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for(driver of drivers(); track $index) {
+                            @for(permit of driver.permits; track $index; let first = $first) {
+                                <tr>
+                                    @if(first) {
+                                        <td [attr.rowspan]="driver?.permits?.length" class="border-collapse border border-gray-200 font-medium">{{ driver.driverName }} </td>
+                                        <td [attr.rowspan]="driver?.permits?.length" class="border-collapse border border-gray-200">{{ driver.phoneNumber }}</td>
+                                    }
+                                    <td class="border-collapse border border-gray-200">{{ permit.permitName }}</td>
+                                    <td class="border-collapse border border-gray-200">{{ permit.expiryDate ? (permit.expiryDate | date:'mediumDate') : '—' }}</td>
+                                    <td class="border-collapse border border-gray-200 text-center">{{ permit.daysToExpiry ?? permit.daysRemaining ?? '—' }}</td>
+                                    <td class="border-collapse border border-gray-200 text-center">
+                                        <span [class]="'px-3 py-1 rounded-full text-sm font-semibold ' + getBadgeColor(permit.daysToExpiry ?? permit.daysRemaining)">
+                                            {{ getBadgeLabel(permit.daysToExpiry ?? permit.daysRemaining) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                </div>
+            </div>
+        }
+    </ng-container>
+</app-layout>

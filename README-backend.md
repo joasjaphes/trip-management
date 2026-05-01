@@ -8,6 +8,7 @@ A comprehensive backend API for managing trips, customers, vendors, purchase ord
 - [Roles and Permissions](#roles-and-permissions)
 - [API Endpoints](#api-endpoints)
 - [Purchase Orders](#purchaseOrders-api-purchaseOrders)
+- [Reports](#reports-api-reports)
 - [Data Models](#data-models)
 - [Migrations](#migrations)
 - [Error Handling](#error-handling)
@@ -1377,6 +1378,153 @@ file: <binary-file-data>
 ```
 
 Use this file path in fields like `driverPhoto`, `licenseFrontPagePhoto`, `receiptAttachment`, etc.
+
+---
+
+### Reports (`/api/reports`)
+
+Reports provide aggregated insights into drivers' permit statuses, vehicles' permit statuses, and expenditure breakdowns.
+
+#### Get Driver Permit Status Report
+```http
+GET /api/reports/drivers-permit-status
+Authorization: Basic <credentials>
+```
+
+**Response:**
+```json
+[
+  {
+    "driverName": "John Doe",
+    "phoneNumber": "+255712345678",
+    "permits": [
+      {
+        "permitName": "Driving License",
+        "daysToExpiry": 120,
+        "expiryDate": "2026-09-01T00:00:00.000Z"
+      },
+      {
+        "permitName": "Passport",
+        "daysToExpiry": 365,
+        "expiryDate": "2027-05-01T00:00:00.000Z"
+      }
+    ]
+  }
+]
+```
+
+**Response Fields:**
+- `driverName`: Full name of the driver (first name + last name)
+- `phoneNumber`: Driver's phone number
+- `permits`: Array of permit objects
+  - `permitName`: Name of the permit (Driving License or Passport)
+  - `daysToExpiry`: Number of days until the permit expires (null if not set)
+  - `expiryDate`: ISO 8601 formatted expiry date (null if not set)
+
+#### Get Vehicle Permit Status Report
+```http
+GET /api/reports/vehicles-permit-status
+Authorization: Basic <credentials>
+```
+
+**Response:**
+```json
+[
+  {
+    "registrationNo": "T123 ABC",
+    "vehicleType": "Truck",
+    "permits": [
+      {
+        "name": "Road License",
+        "issuingAuthority": null,
+        "expiryDate": "2026-12-31T00:00:00.000Z",
+        "daysToExpiry": 245
+      },
+      {
+        "name": "Insurance Certificate",
+        "issuingAuthority": null,
+        "expiryDate": "2026-08-15T00:00:00.000Z",
+        "daysToExpiry": 106
+      }
+    ]
+  }
+]
+```
+
+**Response Fields:**
+- `registrationNo`: Vehicle registration number
+- `vehicleType`: Type of vehicle (Truck or Trailer)
+- `permits`: Array of permit objects
+  - `name`: Permit name/description
+  - `issuingAuthority`: Authority that issued the permit (currently null)
+  - `expiryDate`: ISO 8601 formatted expiry date
+  - `daysToExpiry`: Number of days until the permit expires (null if no expiry date)
+
+#### Get Expenditure Report
+```http
+GET /api/reports/expenditure?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Basic <credentials>
+```
+
+**Query Parameters:**
+- `startDate` (optional): ISO 8601 date string (YYYY-MM-DD) for filtering start date
+- `endDate` (optional): ISO 8601 date string (YYYY-MM-DD) for filtering end date
+
+**Response:**
+```json
+{
+  "tripExpenses": {
+    "items": [
+      {
+        "itemId": "expense-uid-123",
+        "itemName": null,
+        "totalAmount": 500000
+      },
+      {
+        "itemId": "expense-uid-456",
+        "itemName": null,
+        "totalAmount": 250000
+      }
+    ],
+    "total": 750000
+  },
+  "purchases": {
+    "items": [
+      {
+        "itemId": "expense-uid-789",
+        "itemName": null,
+        "totalAmount": 1000000
+      }
+    ],
+    "total": 1000000
+  },
+  "officeExpenses": {
+    "items": [
+      {
+        "itemId": "expense-uid-101",
+        "itemName": null,
+        "totalAmount": 300000
+      }
+    ],
+    "total": 300000
+  },
+  "grandTotal": 2050000
+}
+```
+
+**Response Structure:**
+- `tripExpenses`: Trip-related expenses aggregated by expense item
+  - `items`: Array of aggregated expense items with `itemId`, `itemName`, and `totalAmount`
+  - `total`: Sum of all trip expenses
+- `purchases`: Purchase order items aggregated by item
+  - `items`: Array of aggregated purchase items with `itemId`, `itemName`, and `totalAmount`
+  - `total`: Sum of all purchases
+- `officeExpenses`: Office expense transactions aggregated by expense item
+  - `items`: Array of aggregated office expense items with `itemId`, `itemName`, and `totalAmount`
+  - `total`: Sum of all office expenses
+- `grandTotal`: Total of all expenses (tripExpenses.total + purchases.total + officeExpenses.total)
+
+---
 
 ## Data Models
 
