@@ -104,12 +104,14 @@
 
                   <th class="pb-4">Trip #</th>
                   <th class="pb-4">Route</th>
+                  <th class="pb-4">Destination</th>
                   <th class="pb-4">Driver</th>
                   <th class="pb-4">Truck</th>
                   <th class="pb-4">Trailer</th>
                   <th class="pb-4">Start Date</th>
+                  <th class="pb-4">Distance</th>
+                  <th class="pb-4">Actual Position</th>
                   <th class="pb-4">Status</th>
-                  <!-- <th class="pb-4">Revenue</th> -->
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-50">
@@ -117,6 +119,7 @@
                 <tr class="hover:bg-gray-50 transition-colors">
                   <td class="font-semibold text-gray-900 py-4 pr-4">{{ trip.tripReferenceNumber }}</td>
                   <td class="font-semibold text-gray-900 py-4 pr-4">{{ trip.route?.name }}</td>
+                  <td class="py-4 pr-4 text-gray-400">-</td>
                   <td class="py-4 pr-4 text-gray-600 flex items-center gap-2">
                     <span
                       class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold flex items-center justify-center shrink-0 uppercase">{{
@@ -132,6 +135,8 @@
                       trip.trailer?.registrationNo }}</div>
                   </td>
                   <td class="py-4 pr-4 text-gray-400">{{ trip.tripDate | date:'yyyy-MM-dd' }}</td>
+                  <td class="py-4 pr-4 text-gray-400">-</td>
+                  <td class="py-4 pr-4 text-gray-400">-</td>
                   <td class="py-4 pr-4">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
                       [ngClass]="getStatusBadgeClass(trip.status)">
@@ -141,7 +146,6 @@
                       <span class="capitalize">{{ trip.status }}</span>
                     </span>
                   </td>
-                  <!-- <td class="font-bold text-gray-900 py-4">TZS {{ trip.revenue?.toLocaleString() }}</td> -->
                 </tr>
                 }
               </tbody>
