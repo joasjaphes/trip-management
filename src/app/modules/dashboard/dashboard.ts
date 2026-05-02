@@ -116,7 +116,7 @@ export class Dashboard {
   });
 
   readonly recentTrips = computed(() => {
-    return [...this.tripService.allTrips()]
+    return [...this.tripService.allTrips().filter(t => t.status === TripStatus.IN_PROGRESS)]
       .sort((a, b) => {
         const aTime = a.tripDate ? new Date(a.tripDate).getTime() : 0;
         const bTime = b.tripDate ? new Date(b.tripDate).getTime() : 0;
