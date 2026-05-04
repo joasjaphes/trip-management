@@ -32,6 +32,9 @@
     } @else if (viewType() == 'manage-expense') {
     <app-trip-expenses-manage [trip]="selectedTrip()" (saved)="onExpensesChanged()"
       (close)="onCloseDetail()"></app-trip-expenses-manage>
+    } @else if (viewType() == 'manage-actual-position') {
+    <app-trip-actual-position-manage [trip]="selectedTrip()" (saved)="onActualPositionChanged()"
+      (close)="onCloseDetail()"></app-trip-actual-position-manage>
     }
   </ng-container>
 </app-layout>

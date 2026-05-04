@@ -465,6 +465,45 @@ Content-Type: application/json
 }
 ```
 
+#### Update Trip Actual Position
+```http
+PATCH /api/trips/:id/actualPosition
+Content-Type: application/json
+
+{
+  "tripId": "trip-uid-123",
+  "tripActualPosition": "Lat: -6.7, Lng: 39.2"
+}
+```
+
+This endpoint updates the actual position of a trip. The position can be stored in any format (e.g., GPS coordinates, location name, etc.).
+
+**Response:**
+```json
+{
+  "id": "trip-uid-123",
+  "tripReferenceNumber": "TRP-1234567890",
+  "tripDate": "2026-03-07T10:00:00.000Z",
+  "endDate": "2026-03-08T10:00:00.000Z",
+  "tripActualPosition": "Lat: -6.7, Lng: 39.2",
+  "isOverstayed": false,
+  "daysExceeded": 0,
+  "vehicleId": "vehicle-uid-123",
+  "driverId": "driver-uid-123",
+  "routeId": "route-uid-123",
+  "cargoTypeId": "cargo-type-uid-123",
+  "revenue": 1500000,
+  "paidAmount": 200000,
+  "income": 1200000,
+  "status": "inprogress"
+}
+```
+
+**Trip Fields:**
+- `tripActualPosition` (string, optional): The actual position/location of the trip
+- `isOverstayed` (boolean, virtual): Indicates if the trip exceeded the estimated duration. Calculated as `daysExceeded > 0`
+- `daysExceeded` (number, virtual): Number of days the trip exceeded the estimated duration from the route. Calculated as `(endDate - tripDate) - route.estimatedDuration`. If positive, the trip is overdue; if zero or negative, no overstay
+
 ---
 
 ### Customers (`/api/customers`)
@@ -1523,6 +1562,84 @@ Authorization: Basic <credentials>
   - `items`: Array of aggregated office expense items with `itemId`, `itemName`, and `totalAmount`
   - `total`: Sum of all office expenses
 - `grandTotal`: Total of all expenses (tripExpenses.total + purchases.total + officeExpenses.total)
+
+#### Get Trip Revenue Report
+
+```http
+GET /api/reports/tripRevenue?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Basic <credentials>
+```
+
+Query Parameters:
+- `startDate` (optional): ISO 8601 date string (YYYY-MM-DD) to filter trip start
+- `endDate` (optional): ISO 8601 date string (YYYY-MM-DD) to filter trip end
+
+Notes:
+- All monetary amounts in the response are returned in TZS.
+- If a trip was charged in USD, the service converts the stored `revenue` using the trip's saved `exchangeRate` to compute TZS values.
+
+Example Response:
+```json
+{
+  "items": [
+    {
+      "tripDate": "2026-03-01T10:00:00.000Z",
+      "tripNumber": "TRP-1610000000000",
+      "route": "Dar - Mwanza",
+      "customerName": "Acme Corporation",
+      "tripRevenue": 2300000,
+      "totalTripExpenses": 450000,
+      "netIncome": 1850000
+    }
+  ],
+  "totalTripRevenue": 2300000,
+  "totalTripExpenses": 450000,
+  "totalNetIncome": 1850000
+}
+```
+
+#### Get Debtors Report
+
+```http
+GET /api/reports/debtors?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Basic <credentials>
+```
+
+Query Parameters:
+- `startDate` (optional): ISO 8601 date string (YYYY-MM-DD) to restrict receipts/invoices considered
+- `endDate` (optional): ISO 8601 date string (YYYY-MM-DD) to restrict receipts/invoices considered
+
+Notes:
+- The report groups outstanding invoices by customer.
+- For each invoice the paid amount is calculated from `receipts` tied to that invoice and filtered to the provided date range.
+- If an invoice or its receipts are denominated in USD, the values are converted to TZS using the invoice's saved `exchangeRate` before aggregation.
+- Only invoices with outstanding > 0 (after receipts in the date range) are included.
+
+Example Response:
+```json
+{
+  "items": [
+    {
+      "customerName": "Acme Corporation",
+      "totalInvoicedAmount": 5000000,
+      "totalPaidAmount": 3000000,
+      "outstandingAmount": 2000000,
+      "invoices": [
+        {
+          "invoiceNumber": "INV-1610000000000",
+          "amount": 3000000,
+          "paidAmount": 2000000,
+          "outstanding": 1000000,
+          "issuedAt": "2026-03-01T00:00:00.000Z"
+        }
+      ]
+    }
+  ],
+  "totalInvoicedAmount": 5000000,
+  "totalPaidAmount": 3000000,
+  "totalOutstandingAmount": 2000000
+}
+```
 
 ---
 

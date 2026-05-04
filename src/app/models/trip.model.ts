@@ -18,6 +18,7 @@ export interface Trip {
 	driverId: string;
 	docNumber?: string;
 	tripDocument?: string;
+	tripActualPosition?: string;
 	completionDocument?: string;
 	driver?: Driver;
 	routeId: string;

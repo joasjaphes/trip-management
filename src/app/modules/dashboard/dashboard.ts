@@ -21,12 +21,13 @@ export type DashboardSummary = {
   outstandingAmount: number;
   completedTrips: number;
   inProgressTrips: number;
+  overstayedTrips: number;
   recentTrips: Trip[];
 }
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterLink, FormsModule, MatDatepickerModule, MatNativeDateModule,Placeholder,DecimalPipe],
+  imports: [CommonModule, RouterLink, FormsModule, MatDatepickerModule, MatNativeDateModule, Placeholder, DecimalPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -116,13 +117,8 @@ export class Dashboard {
   });
 
   readonly recentTrips = computed(() => {
-    return [...this.tripService.allTrips().filter(t => t.status === TripStatus.IN_PROGRESS)]
-      .sort((a, b) => {
-        const aTime = a.tripDate ? new Date(a.tripDate).getTime() : 0;
-        const bTime = b.tripDate ? new Date(b.tripDate).getTime() : 0;
-        return bTime - aTime;
-      })
-      .slice(0, RECENT_TRIPS_LIMIT);
+    const summary = this.summary.value;
+    return summary()?.recentTrips;
   });
   tripStatus = TripStatus;
   readonly tripStatusSummary = computed(() => {
@@ -131,11 +127,13 @@ export class Dashboard {
     const countByStatus = {
       completed: summary()?.completedTrips || 0,
       'in-progress': summary()?.inProgressTrips || 0,
+      'overStayed': summary()?.overstayedTrips || 0,
     };
 
     const rows = [
       { key: 'completed', label: 'Completed', count: countByStatus.completed, color: '#10b981' },
       { key: 'in-progress', label: 'In Progress', count: countByStatus['in-progress'], color: '#3b82f6' },
+      { key: 'overStayed', label: 'Overstayed', count: countByStatus['overStayed'], color: '#efc744' },
     ];
 
     return rows.map((row) => ({

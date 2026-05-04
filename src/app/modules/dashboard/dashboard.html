@@ -103,43 +103,43 @@
                 class="bg-gray-50 text-xs text-gray-400 font-bold uppercase tracking-widest border-b border-gray-100">
                 <tr>
 
-                  <th class="p-4 border-r border-gray-100 pr-4">Trip #</th>
+                  <th class="p-4 border-r border-gray-100 pr-4" style="text-align:left">Trip #</th>
                   <!-- <th class="pb-4">Route</th> -->
-                  <th class="p-4 border-r border-gray-100" style="text-align: center;">Destination</th>
-                  <th class="p-4 border-r border-gray-100" style="text-align: center;">Driver</th>
-                  <th class="p-4 border-r border-gray-100" style="text-align: center;">Truck</th>
-                  <th class="p-4 border-r border-gray-100" style="text-align: center;">Trailer</th>
-                  <th class="p-4 border-r border-gray-100" style="text-align: center;">Start Date</th>
-                  <th class="p-4 border-r border-gray-100" style="text-align: center;">Distance</th>
-                  <th class="p-4 border-r border-gray-100" style="text-align: center;">Actual Position</th>
-                  <th class="p-4" style="text-align: center;">Status</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Destination</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Driver</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Truck</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Trailer</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Start Date</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Actual Position</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;" title="Distance to destination">Distance to destination</th>
+                  <th class="p-4" style="text-align: left;">Status</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-50">
                 @for (trip of recentTrips(); track trip.id) {
                 <tr class="hover:bg-gray-50 transition-colors">
-                  <td class="font-semibold text-gray-900 py-4 pr-4">{{ trip.tripReferenceNumber }}</td>
+                  <td class="font-semibold text-gray-900 p-4">{{ trip.tripReferenceNumber }}</td>
                   <!-- <td class="font-semibold text-gray-900 py-4 pr-4">{{ trip.route?.name }}</td> -->
-                  <td class="py-4 pr-4 text-gray-400">-</td>
-                  <td class="py-4 pr-4 text-gray-600 flex items-center gap-2">
+                  <td class="p-4 text-gray-400">{{trip?.route?.endLocation ?? '-'}}</td>
+                  <td class="p-4 text-gray-600 flex items-center gap-2">
                     <span
                       class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold flex items-center justify-center shrink-0 uppercase">{{
                       trip.driver?.firstName?.charAt(0) }}</span>
                     {{ trip.driver?.firstName }} {{ trip.driver?.lastName }}
                   </td>
-                  <td class="py-4 pr-4" style="text-align:center">
+                  <td class="p-4" style="text-align:center">
                     <div class="bg-gray-100 text-gray-500 px-2.5 py-1 rounded-lg text-xs font-bold w-max">{{
                       trip.vehicle?.registrationNo }}</div>
                   </td>
-                  <td class="py-4 pr-4" style="text-align:center">
+                  <td class="p-4" style="text-align:center">
                     <div class="bg-gray-100 text-gray-500 px-2.5 py-1 rounded-lg text-xs font-bold w-max">{{
                       trip.trailer?.registrationNo }}</div>
                   </td>
-                  <td class="py-4 pr-4 text-gray-400" style="text-align:center">{{ trip.tripDate | date:'yyyy-MM-dd' }}
+                  <td class="p-4 text-gray-400" style="text-align:center">{{ trip.tripDate | date:'yyyy-MM-dd' }}
                   </td>
-                  <td class="py-4 pr-4 text-gray-400" style="text-align:center">-</td>
-                  <td class="py-4 pr-4 text-gray-400" style="text-align:center">-</td>
-                  <td class="py-4 pr-4" style="text-align:center">
+                  <td class="p-4 text-gray-400" style="text-align:center">{{ trip.tripActualPosition ?? '-' }}</td>
+                  <td class="p-4 text-gray-400" style="text-align:center">-</td>
+                  <td class="p-4" style="text-align:center">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
                       [ngClass]="getStatusBadgeClass(trip.status)">
                       <span class="w-1.5 h-1.5 rounded-full"

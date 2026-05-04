@@ -151,6 +151,22 @@ export class TripService {
     }
   }
 
+  async updateActualPosition(id: string, tripActualPosition: string): Promise<void> {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    try {
+      await this.http.patch(`trips/${id}/actualPosition`, { tripId: id, tripActualPosition });
+      await this.getAll();
+    } catch (err) {
+      this.error.set(err?.toString() || 'Failed to update trip actual position');
+      console.error('Failed to update trip actual position', err);
+      throw err;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   getTripsByVehicle(vehicleId: string): Trip[] {
     return this.trips().filter((t) => t.vehicleId === vehicleId);
   }
