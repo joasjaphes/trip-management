@@ -4,6 +4,60 @@
 	gap: 1.5rem;
 }
 
+.report-toolbar {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.report-search {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	max-width: 32rem;
+}
+
+.report-search-label {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: #374151;
+}
+
+.report-search-input {
+	width: 100%;
+	border: 1px solid #d1d5db;
+	border-radius: 0.75rem;
+	padding: 0.875rem 1rem;
+	font-size: 0.95rem;
+	color: #111827;
+	background-color: #ffffff;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.report-search-input::placeholder {
+	color: #9ca3af;
+}
+
+.report-search-input:focus {
+	outline: none;
+	border-color: #2563eb;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.report-actions-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.report-empty-state {
+	margin: 0;
+	color: #6b7280;
+	font-size: 0.95rem;
+}
+
 .report-title {
 	font-size: 1.5rem;
 	font-weight: 600;

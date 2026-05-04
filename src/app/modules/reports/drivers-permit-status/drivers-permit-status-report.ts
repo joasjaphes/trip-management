@@ -16,7 +16,42 @@ export class DriversPermitStatusReport implements OnInit {
     private reportService = inject(ReportService);
 
     loading = signal(false);
+    searchTerm = signal('');
     drivers = signal<any[]>([]);
+    filteredDrivers = computed(() => {
+        const term = this.normalizeSearchTerm(this.searchTerm());
+        const drivers = this.drivers();
+
+        if (!term) {
+            return drivers;
+        }
+
+        const filtered: any[] = [];
+
+        for (const driver of drivers) {
+            const driverName = this.normalizeSearchTerm(driver?.driverName || '');
+            const permits = Array.isArray(driver?.permits) ? driver.permits : [];
+
+            if (driverName.includes(term)) {
+                filtered.push({ ...driver, permits });
+                continue;
+            }
+
+            const matchingPermits = permits.filter((permit: any) =>
+                this.normalizeSearchTerm(permit?.permitName || '').includes(term)
+            );
+
+            if (matchingPermits.length > 0) {
+                filtered.push({ ...driver, permits: matchingPermits });
+            }
+        }
+
+        return filtered;
+    });
+
+    get hasSearchTerm(): boolean {
+        return this.searchTerm().trim().length > 0;
+    }
 
     ngOnInit() {
         this.loadReport().then();
@@ -34,6 +69,15 @@ export class DriversPermitStatusReport implements OnInit {
             this.drivers.set([]);
         }
         this.loading.set(false);
+    }
+
+    updateSearchTerm(event: Event): void {
+        const target = event.target as HTMLInputElement | null;
+        this.searchTerm.set(target?.value ?? '');
+    }
+
+    private normalizeSearchTerm(value: unknown): string {
+        return String(value ?? '').trim().toLowerCase();
     }
 
     getBadgeColor(daysRemaining: number | null | undefined): string {
@@ -55,7 +99,7 @@ export class DriversPermitStatusReport implements OnInit {
         const header = ['Driver Name','Phone','Permit','Expiry Date','Days Remaining','Status'];
         items.push(header.map(escapeCsv).join(','));
 
-        for (const d of this.drivers()) {
+        for (const d of this.filteredDrivers()) {
             const permits = d?.permits || [];
             for (const p of permits) {
                 const days = p.daysToExpiry ?? p.daysRemaining ?? '';
@@ -89,7 +133,7 @@ export class DriversPermitStatusReport implements OnInit {
                 '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Status</th>' +
                 '</tr></thead><tbody>';
 
-            for (const d of this.drivers()) {
+            for (const d of this.filteredDrivers()) {
                 const permits = d?.permits || [];
                 let first = true;
                 for (const p of permits) {

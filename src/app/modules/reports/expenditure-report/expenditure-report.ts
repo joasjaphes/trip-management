@@ -87,7 +87,7 @@ export class ExpenditureReport implements OnInit {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `expenditure-${new Date().toISOString().slice(0,10)}.csv`;
+    a.download = `expenditure-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -96,43 +96,48 @@ export class ExpenditureReport implements OnInit {
 
   exportPdf() {
     const buildTable = () => {
+      const decimalPipe = new DecimalPipe('en-US');
       let html = '<table style="width:100%;border-collapse:collapse">';
       html += '<thead><tr><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Item</th><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Total</th></tr></thead><tbody>';
       for (const r of this.rows()) {
-        html += `<tr><td style="border:1px solid #ddd;padding:8px">${r.itemName || r.itemId}</td><td style="border:1px solid #ddd;padding:8px">${r.totalAmount}</td></tr>`;
-      }
+        html += `<tr><td style="border:1px solid #ddd;padding:8px">${r.itemName || r.itemId}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(r.totalAmount || 0, '1.2-2') }</td></tr>`;
+        if (r.items) {
+          for (const i of r.items) {
+            html += `<tr><td style="border:1px solid #ddd;padding:8px 8px 8px 32px">${i.itemName || i.itemId}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(i.amount || 0, '1.2-2') }</td></tr>`;
+          }
+        }
+      };  
+      html += `<tr><td style="border:1px solid #ddd;padding:8px;font-weight:bold">Overall Total</td><td style="border:1px solid #ddd;padding:8px;font-weight:bold; text-align: right;">${decimalPipe.transform(this.grandTotal() || 0, '1.2-2') }</td></tr>`;
       html += '</tbody></table>';
       return html;
-    };
-
-    const content = `<!doctype html><html><head><meta charset="utf-8"><title>Expenditure</title>` +
-      `<style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}th{background:#f3f4f6}</style>` +
-      `</head><body><h1>Expenditure</h1>${buildTable()}</body></html>`;
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    if (!printWindow) return;
-    printWindow.document.open();
-    printWindow.document.write(content);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); }, 500);
+    }
+      const content = `<!doctype html><html><head><meta charset="utf-8"><title>Expenditure</title>` +
+        `<style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}th{background:#f3f4f6}</style>` +
+        `</head><body><h1>Expenditure</h1>${buildTable()}</body></html>`;
+      const printWindow = window.open('', '_blank', 'width=900,height=700');
+      printWindow.document.open();
+      printWindow.document.write(content);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => { printWindow.print(); }, 500);
   }
 
-  async ngOnInit(): Promise<void> {
-    await this.loadReport();
-  }
+  async ngOnInit(): Promise < void> {
+      await this.loadReport();
+    }
 
-  constructor() {
-    // clamp month/quarter/half to current when selecting the current year
-    effect(() => {
-        
-      const y = this.year();
-      if (y === this.currentYear()) {
-        if (this.month() > this.currentMonth()) this.month.set(this.currentMonth());
-        if (this.quarter() > this.currentQuarter()) this.quarter.set(this.currentQuarter());
-        if (this.half() > this.currentHalf()) this.half.set(this.currentHalf());
-      }
-    });
-  }
+    constructor() {
+      // clamp month/quarter/half to current when selecting the current year
+      effect(() => {
+
+        const y = this.year();
+        if (y === this.currentYear()) {
+          if (this.month() > this.currentMonth()) this.month.set(this.currentMonth());
+          if (this.quarter() > this.currentQuarter()) this.quarter.set(this.currentQuarter());
+          if (this.half() > this.currentHalf()) this.half.set(this.currentHalf());
+        }
+      });
+    }
 
   private periodRange() {
     const y = this.year();
@@ -177,23 +182,23 @@ export class ExpenditureReport implements OnInit {
       console.log('Expenditure report response', resp);
       this.rows.set([
         {
-            itemName: 'Purchases',
-            total: resp?.purchases?.total,
-            items: resp?.purchases?.items || [],
+          itemName: 'Purchases',
+          total: resp?.purchases?.total,
+          items: resp?.purchases?.items || [],
         },
         {
-            itemName: 'Office Expenses',
-            total: resp?.officeExpenses?.total,
-            items: resp?.officeExpenses?.items || [],
+          itemName: 'Office Expenses',
+          total: resp?.officeExpenses?.total,
+          items: resp?.officeExpenses?.items || [],
         },
         {
-            itemName: 'Trip Expenses',
-            total: resp?.tripExpenses?.total,
-            items: resp?.tripExpenses?.items || [],
+          itemName: 'Trip Expenses',
+          total: resp?.tripExpenses?.total,
+          items: resp?.tripExpenses?.items || [],
         }
       ])
       this.grandTotal.set(resp.grandTotal || 0);
-    //   this.rows.set(resp|| []);
+      //   this.rows.set(resp|| []);
     } catch (e) {
       console.error('Failed to load expenditure', e);
       this.rows.set([]);

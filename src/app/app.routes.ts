@@ -6,9 +6,6 @@ import { Home } from './home/home';
 import { Dashboard } from './modules/dashboard/dashboard';
 import { Trips } from './modules/trips/trips';
 import { Invoicing } from './modules/trips/invoicing/invoicing';
-import { DebtorsStatementReport } from './modules/reports/debtors-statement-report/debtors-statement-report';
-import { TripStatusReport } from './modules/reports/trip-status-report/trip-status-report';
-import { ExpiringPermitsReport } from './modules/reports/expiring-permits-report/expiring-permits-report';
 import { DriversPermitStatusReport } from './modules/reports/drivers-permit-status/drivers-permit-status-report';
 import { VehiclesPermitStatusReport } from './modules/reports/vehicles-permit-status/vehicles-permit-status-report';
 import { ExpenditureReport } from './modules/reports/expenditure-report/expenditure-report';
@@ -70,14 +67,6 @@ export const routes: Routes = [
                 component: Invoicing,
             },
             {
-                path: 'reports/debtors-statement',
-                component: DebtorsStatementReport,
-            },
-            {
-                path: 'reports/trip-status',
-                component: TripStatusReport,
-            },
-            {
                 path: 'reports/drivers-permit-status',
                 component: DriversPermitStatusReport,
             },
@@ -88,10 +77,6 @@ export const routes: Routes = [
             {
                 path: 'reports/expenditure',
                 component: ExpenditureReport,
-            },
-            {
-                path: 'reports/expiring-permits',
-                component: ExpiringPermitsReport,
             },
             {
                 path: 'trips/new',

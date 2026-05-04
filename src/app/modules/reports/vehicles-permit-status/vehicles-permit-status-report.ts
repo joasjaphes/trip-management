@@ -17,7 +17,43 @@ export class VehiclesPermitStatusReport implements OnInit {
   private reportService = inject(ReportService);
 
   loading = signal(false);
+  searchTerm = signal('');
   vehicles = signal<any[]>([]);
+  filteredVehicles = computed(() => {
+    const term = this.normalizeSearchTerm(this.searchTerm());
+    const vehicles = this.vehicles();
+
+    if (!term) {
+      return vehicles;
+    }
+
+    const filtered: any[] = [];
+
+    for (const vehicle of vehicles) {
+      const permits = Array.isArray(vehicle?.permits) ? vehicle.permits : [vehicle];
+      const registration = this.normalizeSearchTerm(vehicle?.registrationNo || vehicle?.registration || '');
+      const vehicleType = this.normalizeSearchTerm(vehicle?.vehicleType || vehicle?.type || '');
+
+      if (registration.includes(term) || vehicleType.includes(term)) {
+        filtered.push({ ...vehicle, permits });
+        continue;
+      }
+
+      const matchingPermits = permits.filter((permit: any) =>
+        this.normalizeSearchTerm(permit?.permitName || permit?.name || '').includes(term)
+      );
+
+      if (matchingPermits.length > 0) {
+        filtered.push({ ...vehicle, permits: matchingPermits });
+      }
+    }
+
+    return filtered;
+  });
+
+  get hasSearchTerm(): boolean {
+    return this.searchTerm().trim().length > 0;
+  }
 
   async ngOnInit(): Promise<void> {
     this.loading.set(true);
@@ -29,6 +65,15 @@ export class VehiclesPermitStatusReport implements OnInit {
       this.vehicles.set([]);
     }
     this.loading.set(false);
+  }
+
+  updateSearchTerm(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.searchTerm.set(target?.value ?? '');
+  }
+
+  private normalizeSearchTerm(value: unknown): string {
+    return String(value ?? '').trim().toLowerCase();
   }
 
   getBadgeColor(daysRemaining: number | null | undefined): string {
@@ -50,7 +95,7 @@ export class VehiclesPermitStatusReport implements OnInit {
     const header = ['Registration', 'Vehicle Type', 'Permit', 'Expiry Date', 'Days Remaining', 'Status'];
     items.push(header.map(escapeCsv).join(','));
 
-    for (const v of this.vehicles()) {
+    for (const v of this.filteredVehicles()) {
       const permits = v?.permits || (Array.isArray(v) ? v : [v]);
       for (const p of permits) {
         const days = p.daysToExpiry ?? p.daysRemaining ?? '';
@@ -84,7 +129,7 @@ export class VehiclesPermitStatusReport implements OnInit {
         '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Status</th>' +
         '</tr></thead><tbody>';
 
-      for (const v of this.vehicles()) {
+      for (const v of this.filteredVehicles()) {
         const permits = v?.permits || [v];
         let first = true;
         for (const p of permits) {

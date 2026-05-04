@@ -22,7 +22,7 @@ const SPLIT_SIZES: Record<SplitSize, SplitConfig> = {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [ProgressBar, HasPermissionDirective],
+  imports: [HasPermissionDirective],
   templateUrl: './layout.html',
   styleUrls: ['./layout.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -105,20 +105,20 @@
                     </button>
                     {{ row.itemName || row.itemId }}
                   </td>
-                  <td class="font-bold text-right">{{ row.total | number }}</td>
+                  <td class="font-bold text-right">{{ row.total | number:'0.2-2' }}</td>
                 </tr>
                 @if (expanded() === $index) {
                   @for (item of row.items; track $index) {
                     <tr>
                       <td class="pl-6">{{ item.itemName }}</td>
-                      <td class="text-right">{{ item.totalAmount | number }}</td>
+                      <td class="text-right">{{ item.totalAmount | number:'0.2-2' }}</td>
                     </tr>
                   }
                 }
               }
               <tr>
                 <td class="font-extrabold text-gray-900">Overall Total</td>
-                <td class="font-extrabold text-gray-900 text-right">{{ grandTotal() | number }}</td>
+                <td class="font-extrabold text-gray-900 text-right">{{ grandTotal() | number:'0.2-2' }}</td>
               </tr>
             </tbody>
           </table>
