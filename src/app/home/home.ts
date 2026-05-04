@@ -135,7 +135,7 @@ export class Home implements OnInit {
     void this.notificationService.loadAll();
     setInterval(() => {
       this.tripManagementBadge.reload();
-      void this.notificationService.loadAll();
+      // void this.notificationService.loadAll();
     }, 30000); // Refresh every 30 seconds
 
   }
