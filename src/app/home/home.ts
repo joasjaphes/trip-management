@@ -4,6 +4,7 @@ import { UserService } from '../services/user.service';
 import { User } from '../models';
 import { HttpClientService } from '../services/http-client.service';
 import { TripService } from '../services/trip.service';
+import { NotificationService } from '../services/notification.service';
 import { HasPermissionDirective } from '../shared/directives/has-permission.directive';
 
 type PermissionMode = 'any' | 'all';
@@ -35,6 +36,7 @@ export class Home implements OnInit {
   private router = inject(Router);
   private userService = inject(UserService);
   private tripService = inject(TripService);
+  notificationService = inject(NotificationService);
 
   isSidebarOpen = signal(true);
   username = signal('');
@@ -130,8 +132,10 @@ export class Home implements OnInit {
     this.username.set((`${currentUser?.firstName} ${currentUser?.surname}`) || '');
     this.userRole.set(currentUser?.roleName || '');
     this.userService.getUsers().then();
+    void this.notificationService.loadAll();
     setInterval(() => {
       this.tripManagementBadge.reload();
+      void this.notificationService.loadAll();
     }, 30000); // Refresh every 30 seconds
 
   }
