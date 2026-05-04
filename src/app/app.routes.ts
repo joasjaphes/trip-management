@@ -4,6 +4,7 @@ import { CompanyProfilePage } from './modules/configurations/company-profile/com
 import { Login } from './login/login';
 import { Home } from './home/home';
 import { Dashboard } from './modules/dashboard/dashboard';
+import { Notifications } from './modules/notifications/notifications';
 import { Trips } from './modules/trips/trips';
 import { Invoicing } from './modules/trips/invoicing/invoicing';
 import { DriversPermitStatusReport } from './modules/reports/drivers-permit-status/drivers-permit-status-report';
@@ -57,6 +58,10 @@ export const routes: Routes = [
             {
                 path: 'dashboard',
                 component: Dashboard,
+            },
+            {
+                path: 'notifications',
+                component: Notifications,
             },
             {
                 path: 'trips',
