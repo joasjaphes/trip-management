@@ -102,7 +102,11 @@ export class Trips implements OnInit {
   });
 
   inProgressTrips = computed(() => {
-    return this.trips().filter((trip: any) => !this.isTripCompleted(trip));
+    return this.trips().filter((trip: any) => !this.isTripCompleted(trip) && !trip.isOverstayed);
+  });
+
+  overStayedTrips = computed(() => { 
+    return this.trips().filter((trip: any) =>  trip.isOverstayed);
   });
 
   filteredTrips = computed(() => {

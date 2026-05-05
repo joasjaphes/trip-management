@@ -13,6 +13,13 @@
         <app-data-table [data]="inProgressTrips()" [config]="tableConfigurations" (view)="onView($event)"
           (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
       </mat-tab>
+      <mat-tab label="Overstayed">
+        <ng-template mat-tab-label>
+          <span>Overstayed ({{ overStayedTrips().length }})</span>
+        </ng-template>
+        <app-data-table [data]="overStayedTrips()" [config]="tableConfigurations" (view)="onView($event)"
+          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
+      </mat-tab>
       <mat-tab label="Completed">
         <ng-template mat-tab-label>
           <span>Completed ({{ completedTrips().length }})</span>
