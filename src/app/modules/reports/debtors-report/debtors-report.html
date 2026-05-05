@@ -1,0 +1,147 @@
+<app-layout title="Debtors Report" [showAddButton]="showAddButton()" [(viewDetails)]="viewDetails"
+    [formTitle]="formTitle()" [formDescription]="formDescription()" splitSize="half">
+    <ng-container ngProjectAs="main">
+        <div class="report-page">
+            <!-- Legend + actions -->
+            <div class="flex items-center justify-end gap-4 mb-4">
+                <div class="flex items-center gap-2">
+                    <button type="button" (click)="exportCsv()"
+                        class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export CSV</button>
+                    <button type="button" (click)="exportPdf()"
+                        class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export PDF</button>
+                </div>
+            </div>
+
+            <div class="period-controls">
+                <label>Period:
+                    <select [value]="period()" (change)="period.set($any($event.target).value)">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="semiannual">Semi-annual</option>
+                        <option value="yearly">Yearly</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </label>
+
+                @if (period() === 'monthly') {
+                <label>Year:
+                    <select [value]="year()" (change)="year.set(+$any($event.target).value)">
+                        @for (y of years(); track y) {
+                        <option value="{{y}}">{{y}}</option>
+                        }
+                    </select>
+                </label>
+                <label>Month:
+                    <select [value]="month()" (change)="month.set(+$any($event.target).value)">
+                        @for (m of months(); track m.v) {
+                        <option value="{{m.v}}" [disabled]="year() === currentYear() && m.v > currentMonth()">
+                            {{m.label}}</option>
+                        }
+                    </select>
+                </label>
+                } @else if (period() === 'quarterly') {
+                <label>Year:
+                    <select [value]="year()" (change)="year.set(+$any($event.target).value)">
+                        @for (y of years(); track y) {
+                        <option value="{{y}}">{{y}}</option>
+                        }
+                    </select>
+                </label>
+                <label>Quarter:
+                    <select [value]="quarter()" (change)="quarter.set(+$any($event.target).value)">
+                        @for (q of quarters(); track q.v) {
+                        <option value="{{q.v}}" [disabled]="year() === currentYear() && q.v > currentQuarter()">
+                            {{q.label}}</option>
+                        }
+                    </select>
+                </label>
+                } @else if (period() === 'semiannual') {
+                <label>Year:
+                    <select [value]="year()" (change)="year.set(+$any($event.target).value)">
+                        @for (y of years(); track y) {
+                        <option value="{{y}}">{{y}}</option>
+                        }
+                    </select>
+                </label>
+                <label>Half:
+                    <select [value]="half()" (change)="half.set(+$any($event.target).value)">
+                        @for (h of halves(); track h.v) {
+                        <option value="{{h.v}}" [disabled]="year() === currentYear() && h.v > currentHalf()">{{h.label}}
+                        </option>
+                        }
+                    </select>
+                </label>
+                } @else if (period() === 'yearly') {
+                <label>Year:
+                    <select [value]="year()" (change)="year.set(+$any($event.target).value)">
+                        @for (y of years(); track y) {
+                        <option value="{{y}}">{{y}}</option>
+                        }
+                    </select>
+                </label>
+                } @else {
+                <label>Start: <input type="date" [value]="customStart()"
+                        (change)="customStart.set($any($event.target).value)" /></label>
+                <label>End: <input type="date" [value]="customEnd()"
+                        (change)="customEnd.set($any($event.target).value)" /></label>
+                }
+
+                <button type="button" (click)="loadReport()">Run</button>
+            </div>
+
+            <p class="text-sm text-gray-500">Click a customer to open the statement and printout view.</p>
+
+            @if(loading()) {
+            <div class="w-full flex items-center justify-center">
+                <app-placeholder></app-placeholder>
+            </div>
+            } @else if (rows().length === 0) {
+            <p>No debtors found</p>
+            } @else {
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Customer Name</th>
+                            <th class="text-right">Total Invoiced Amount</th>
+                            <th class="text-right">Total Paid Amount</th>
+                            <th class="text-right">Outstanding Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (row of rows(); track $index) {
+                        <tr class="cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-inset"
+                            role="button" tabindex="0" [attr.aria-label]="'Open statement for ' + row.customerName"
+                            (click)="openStatement(row)" (keydown.enter)="openStatement(row)"
+                            (keydown.space)="$event.preventDefault(); openStatement(row)">
+                            <td class="text-left">{{ row.customerName }}</td>
+                            <td class="text-right">{{ row.totalInvoicedAmount | number: '1.2-2' }}</td>
+                            <td class="text-right">{{ row.totalPaidAmount | number: '1.2-2' }}</td>
+                            <td class="text-right">{{ row.outstandingAmount | number: '1.2-2' }}</td>
+                        </tr>
+                        }
+                        <tr class="font-bold bg-gray-100 border-t-2 border-gray-400">
+                            <td class="text-left">TOTAL</td>
+                            <td class="text-right">{{ totals().totalInvoicedAmount | number: '1.2-2' }}</td>
+                            <td class="text-right">{{ totals().totalPaidAmount | number: '1.2-2' }}</td>
+                            <td class="text-right">{{ totals().totalOutstandingAmount | number: '1.2-2' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+    </ng-container>
+
+    <ng-container ngProjectAs="form">
+        @if (selectedDebtor()) {
+        <app-debtors-statement [customerName]="selectedDebtor()!.customerName"
+            [dateRange]="{ startDate: reportStartDate(), endDate: reportEndDate() }"
+            [invoices]="selectedDebtor()!.invoices || []" [totals]="{
+          totalInvoicedAmount: selectedDebtor()!.totalInvoicedAmount,
+          totalPaidAmount: selectedDebtor()!.totalPaidAmount,
+          totalOutstandingAmount: selectedDebtor()!.outstandingAmount
+        }" (close)="closeStatement()"></app-debtors-statement>
+        }
+    </ng-container>
+</app-layout>

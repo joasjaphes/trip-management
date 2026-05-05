@@ -10,6 +10,8 @@ import { Invoicing } from './modules/trips/invoicing/invoicing';
 import { DriversPermitStatusReport } from './modules/reports/drivers-permit-status/drivers-permit-status-report';
 import { VehiclesPermitStatusReport } from './modules/reports/vehicles-permit-status/vehicles-permit-status-report';
 import { ExpenditureReport } from './modules/reports/expenditure-report/expenditure-report';
+import { DebtorsReport } from './modules/reports/debtors-report/debtors-report';
+import { TripRevenueReport } from './modules/reports/trip-revenue-report/trip-revenue-report';
 import { TripForm } from './modules/trips/trip-form/trip-form';
 import { TripDetail } from './modules/trips/trip-detail/trip-detail';
 import { DriverList } from './modules/configurations/drivers/driver-list/driver-list';
@@ -82,6 +84,14 @@ export const routes: Routes = [
             {
                 path: 'reports/expenditure',
                 component: ExpenditureReport,
+            },
+            {
+                path: 'reports/debtors',
+                component: DebtorsReport,
+            },
+            {
+                path: 'reports/trip-revenue',
+                component: TripRevenueReport,
             },
             {
                 path: 'trips/new',

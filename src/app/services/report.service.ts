@@ -20,4 +20,20 @@ export class ReportService {
     const q = query.length ? `?${query.join('&')}` : '';
     return await this.http.get<any>(`reports/expenditure${q}`);
   }
+
+  async getDebtors(params: { startDate?: string; endDate?: string } = {}): Promise<any> {
+    const query = [] as string[];
+    if (params.startDate) query.push(`startDate=${encodeURIComponent(params.startDate)}`);
+    if (params.endDate) query.push(`endDate=${encodeURIComponent(params.endDate)}`);
+    const q = query.length ? `?${query.join('&')}` : '';
+    return await this.http.get<any>(`reports/debtors${q}`);
+  }
+
+  async getTripRevenue(params: { startDate?: string; endDate?: string } = {}): Promise<any> {
+    const query = [] as string[];
+    if (params.startDate) query.push(`startDate=${encodeURIComponent(params.startDate)}`);
+    if (params.endDate) query.push(`endDate=${encodeURIComponent(params.endDate)}`);
+    const q = query.length ? `?${query.join('&')}` : '';
+    return await this.http.get<any>(`reports/tripRevenue${q}`);
+  }
 }

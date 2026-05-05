@@ -1,0 +1,68 @@
+<div class="statement-page">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <p class="statement-kicker">Debtors report</p>
+      <h1 class="statement-title">Customer Statement</h1>
+      <p class="statement-subtitle">{{ customerName() }}</p>
+      @if (dateRange().startDate || dateRange().endDate) {
+        <p class="statement-subtitle">
+          Period:
+          {{ dateRange().startDate ? (dateRange().startDate | date: 'mediumDate') : 'All dates' }}
+          -
+          {{ dateRange().endDate ? (dateRange().endDate | date: 'mediumDate') : 'All dates' }}
+        </p>
+      }
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button type="button" (click)="closePanel()" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Close</button>
+      <button type="button" (click)="printStatement()" class="px-3 py-1 rounded bg-orange-600 hover:bg-orange-700 text-white">Print Statement</button>
+    </div>
+  </div>
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <span class="summary-label">Invoices</span>
+      <strong>{{ invoiceCount() }}</strong>
+    </article>
+    <article class="summary-card">
+      <span class="summary-label">Invoiced</span>
+      <strong>{{ totals().totalInvoicedAmount | number: '1.2-2' }}</strong>
+    </article>
+    <article class="summary-card">
+      <span class="summary-label">Outstanding</span>
+      <strong>{{ totals().totalOutstandingAmount | number: '1.2-2' }}</strong>
+    </article>
+  </section>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="text-left">Invoice date</th>
+          <th class="text-left">Invoice number</th>
+          <th class="text-right">Invoice amount</th>
+          <th class="text-right">Paid amount</th>
+          <th class="text-right">Outstanding amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (invoice of invoices(); track invoice.invoiceNumber) {
+          <tr>
+            <td class="text-left">{{ invoice.issuedAt | date: 'mediumDate' }}</td>
+            <td class="text-left">{{ invoice.invoiceNumber }}</td>
+            <td class="text-right">{{ invoice.invoiceAmount | number: '1.2-2' }}</td>
+            <td class="text-right">{{ invoice.paidAmount | number: '1.2-2' }}</td>
+            <td class="text-right">{{ invoice.outstandingAmount | number: '1.2-2' }}</td>
+          </tr>
+        }
+        <tr class="font-bold bg-gray-100 border-t-2 border-gray-400">
+          <td class="text-left" colspan="2">TOTAL</td>
+          <td class="text-right">{{ totals().totalInvoicedAmount | number: '1.2-2' }}</td>
+          <td class="text-right">{{ totals().totalPaidAmount | number: '1.2-2' }}</td>
+          <td class="text-right">{{ totals().totalOutstandingAmount | number: '1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
