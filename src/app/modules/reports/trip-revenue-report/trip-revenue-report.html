@@ -104,7 +104,7 @@
             <tbody>
               @for (row of rows(); track $index) {
                 <tr>
-                  <td class="text-left">{{ row.tripDate | date: 'medium' }}</td>
+                  <td class="text-left">{{ row.tripDate | date }}</td>
                   <td class="text-left">{{ row.tripNumber }}</td>
                   <td class="text-left">{{ row.route }}</td>
                   <td class="text-left">{{ row.customerName }}</td>
