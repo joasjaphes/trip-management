@@ -1,9 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ReportService } from '../../../services/report.service';
+import { CompanyProfileService } from '../../../services/company-profile.service';
 import { Layout } from '../../../shared/components/layout/layout';
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
 import { escapeCsv } from './exports-helper';
+import {
+  escapeHtml,
+  openReportPrintWindow,
+  renderBrandedHeader,
+  renderReportNote,
+  renderSignatures,
+} from '../report-print.util';
 
 @Component({
     selector: 'app-drivers-permit-status',
@@ -14,6 +22,7 @@ import { escapeCsv } from './exports-helper';
 })
 export class DriversPermitStatusReport implements OnInit {
     private reportService = inject(ReportService);
+    private companyService = inject(CompanyProfileService);
 
     loading = signal(false);
     searchTerm = signal('');
@@ -122,53 +131,95 @@ export class DriversPermitStatusReport implements OnInit {
     }
 
     exportPdf() {
-        const buildTable = () => {
-            let html = '<table style="width:100%;border-collapse:collapse">';
-            html += '<thead><tr>' +
-                '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Driver</th>' +
-                '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Phone</th>' +
-                '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Permit</th>' +
-                '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Expiry</th>' +
-                '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Days Remaining</th>' +
-                '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Status</th>' +
-                '</tr></thead><tbody>';
+        openReportPrintWindow('Drivers Permit Status', this.renderReportBody());
+    }
 
-            for (const d of this.filteredDrivers()) {
-                const permits = d?.permits || [];
-                let first = true;
-                for (const p of permits) {
-                    html += '<tr>';
-                    if (first) {
-                        html += `<td style="border:1px solid #ddd;padding:8px" rowspan="${permits.length}">${d.driverName || ''}</td>`;
-                        html += `<td style="border:1px solid #ddd;padding:8px" rowspan="${permits.length}">${d.phoneNumber || ''}</td>`;
-                        first = false;
-                    }
-                    const expiry = p.expiryDate ? new Date(p.expiryDate).toLocaleDateString() : '';
-                    const days = p.daysToExpiry ?? p.daysRemaining ?? '';
-                    html += `<td style="border:1px solid #ddd;padding:8px">${p.permitName || ''}</td>`;
-                    html += `<td style="border:1px solid #ddd;padding:8px">${expiry}</td>`;
-                    html += `<td style="border:1px solid #ddd;padding:8px;text-align:center">${days}</td>`;
-                    html += `<td style="border:1px solid #ddd;padding:8px;text-align:center">${this.getBadgeLabel(days === '' ? null : Number(days))}</td>`;
-                    html += '</tr>';
-                }
-            }
-
-            html += '</tbody></table>';
-            return html;
+    private renderReportBody(): string {
+        const profile = this.companyService.profile();
+        const datePipe = new DatePipe('en-US');
+        const formatDate = (v: unknown) => {
+            if (!v) return '-';
+            const d = new Date(v as string);
+            return Number.isNaN(d.getTime()) ? '-' : (datePipe.transform(d, 'dd/MM/yyyy') ?? '-');
         };
 
-        const content = `<!doctype html><html><head><meta charset="utf-8"><title>Drivers Permit Status</title>` +
-            `<style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}th{background:#f3f4f6}</style>` +
-            `</head><body><h1>Drivers Permit Status</h1>${buildTable()}</body></html>`;
+        const drivers = this.filteredDrivers();
+        const totalPermits = drivers.reduce((sum, d) => sum + ((d?.permits || []).length), 0);
+        const searchTerm = this.searchTerm().trim();
 
-        const printWindow = window.open('', '_blank', 'width=900,height=700');
-        if (!printWindow) return;
-        printWindow.document.open();
-        printWindow.document.write(content);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => {
-            printWindow.print();
-        }, 500);
+        const rowsHtml = totalPermits === 0
+            ? `<tr><td class="cell center" colspan="6" style="padding:24px;color:#888;">No driver permits to display.</td></tr>`
+            : drivers.map((d: any) => {
+                const permits = (d?.permits || []) as any[];
+                if (permits.length === 0) return '';
+                return permits.map((p, idx) => {
+                    const days = p.daysToExpiry ?? p.daysRemaining ?? null;
+                    const numericDays = days === null || days === '' ? null : Number(days);
+                    const badgeClass = this.getPdfBadgeClass(numericDays);
+                    const badgeLabel = this.getBadgeLabel(numericDays);
+                    const driverCell = idx === 0
+                        ? `<td class="cell" rowspan="${permits.length}"><strong>${escapeHtml(d.driverName || '-')}</strong></td><td class="cell" rowspan="${permits.length}">${escapeHtml(d.phoneNumber || '-')}</td>`
+                        : '';
+                    return `
+                        <tr>
+                            ${driverCell}
+                            <td class="cell">${escapeHtml(p.permitName || '-')}</td>
+                            <td class="cell">${formatDate(p.expiryDate)}</td>
+                            <td class="cell center">${days === null || days === '' ? '-' : escapeHtml(String(days))}</td>
+                            <td class="cell center"><span class="status-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span></td>
+                        </tr>`;
+                }).join('');
+            }).join('');
+
+        return `
+        <div class="report-document">
+            ${renderBrandedHeader(profile)}
+
+            <h2 class="report-title">Drivers Permit Status</h2>
+
+            <table class="meta-table">
+                <tr>
+                    <td class="cell" style="width: 33%;">
+                        <div class="cell-label">Total Drivers</div>
+                        <div class="cell-value bold">${drivers.length}</div>
+                    </td>
+                    <td class="cell" style="width: 33%;">
+                        <div class="cell-label">Total Permits</div>
+                        <div class="cell-value bold">${totalPermits}</div>
+                    </td>
+                    <td class="cell" style="width: 34%;">
+                        <div class="cell-label">Filter</div>
+                        <div class="cell-value bold">${searchTerm ? escapeHtml(searchTerm) : 'All Drivers'}</div>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th class="cell head" style="width: 22%;">Driver</th>
+                        <th class="cell head" style="width: 14%;">Phone</th>
+                        <th class="cell head" style="width: 24%;">Permit</th>
+                        <th class="cell head" style="width: 14%;">Expiry Date</th>
+                        <th class="cell head center" style="width: 12%;">Days Left</th>
+                        <th class="cell head center" style="width: 14%;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+
+            ${renderSignatures(['Prepared By', 'Verified By', 'Approved By'])}
+
+            ${renderReportNote()}
+        </div>`;
+    }
+
+    private getPdfBadgeClass(days: number | null): string {
+        if (days === null) return 'status-warning';
+        if (days > 60) return 'status-good';
+        if (days >= 30) return 'status-warning';
+        return 'status-critical';
     }
 }

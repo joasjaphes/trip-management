@@ -1,9 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ReportService } from '../../../services/report.service';
+import { CompanyProfileService } from '../../../services/company-profile.service';
 import { Layout } from '../../../shared/components/layout/layout';
 import { escapeCsv } from '../drivers-permit-status/exports-helper';
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
+import {
+  escapeHtml,
+  openReportPrintWindow,
+  renderBrandedHeader,
+  renderReportNote,
+  renderSignatures,
+} from '../report-print.util';
 
 @Component({
   selector: 'app-vehicles-permit-status',
@@ -15,6 +23,7 @@ import { Placeholder } from '../../../shared/components/placeholder/placeholder'
 })
 export class VehiclesPermitStatusReport implements OnInit {
   private reportService = inject(ReportService);
+  private companyService = inject(CompanyProfileService);
 
   loading = signal(false);
   searchTerm = signal('');
@@ -118,53 +127,95 @@ export class VehiclesPermitStatusReport implements OnInit {
   }
 
   exportPdf() {
-    const buildTable = () => {
-      let html = '<table style="width:100%;border-collapse:collapse">';
-      html += '<thead><tr>' +
-        '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Registration</th>' +
-        '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Type</th>' +
-        '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Permit</th>' +
-        '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Expiry</th>' +
-        '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Days Remaining</th>' +
-        '<th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Status</th>' +
-        '</tr></thead><tbody>';
+    openReportPrintWindow('Vehicles Permit Status', this.renderReportBody());
+  }
 
-      for (const v of this.filteredVehicles()) {
-        const permits = v?.permits || [v];
-        let first = true;
-        for (const p of permits) {
-          html += '<tr>';
-          if (first) {
-            html += `<td style="border:1px solid #ddd;padding:8px" rowspan="${permits.length}">${v.registrationNo || v.registration || ''}</td>`;
-            html += `<td style="border:1px solid #ddd;padding:8px" rowspan="${permits.length}">${v.vehicleType || ''}</td>`;
-            first = false;
-          }
-          const expiry = p.expiryDate ? new Date(p.expiryDate).toLocaleDateString() : '';
-          const days = p.daysToExpiry ?? p.daysRemaining ?? '';
-          html += `<td style="border:1px solid #ddd;padding:8px">${p.permitName || p.name || ''}</td>`;
-          html += `<td style="border:1px solid #ddd;padding:8px">${expiry}</td>`;
-          html += `<td style="border:1px solid #ddd;padding:8px;text-align:center">${days}</td>`;
-          html += `<td style="border:1px solid #ddd;padding:8px;text-align:center">${this.getBadgeLabel(days === '' ? null : Number(days))}</td>`;
-          html += '</tr>';
-        }
-      }
-
-      html += '</tbody></table>';
-      return html;
+  private renderReportBody(): string {
+    const profile = this.companyService.profile();
+    const datePipe = new DatePipe('en-US');
+    const formatDate = (v: unknown) => {
+      if (!v) return '-';
+      const d = new Date(v as string);
+      return Number.isNaN(d.getTime()) ? '-' : (datePipe.transform(d, 'dd/MM/yyyy') ?? '-');
     };
 
-    const content = `<!doctype html><html><head><meta charset="utf-8"><title>Vehicles Permit Status</title>` +
-      `<style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}th{background:#f3f4f6}</style>` +
-      `</head><body><h1>Vehicles Permit Status</h1>${buildTable()}</body></html>`;
+    const vehicles = this.filteredVehicles();
+    const totalPermits = vehicles.reduce((sum, v) => sum + ((v?.permits || []).length), 0);
+    const searchTerm = this.searchTerm().trim();
 
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    if (!printWindow) return;
-    printWindow.document.open();
-    printWindow.document.write(content);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-      printWindow.print();
-    }, 500);
+    const rowsHtml = totalPermits === 0
+      ? `<tr><td class="cell center" colspan="6" style="padding:24px;color:#888;">No vehicle permits to display.</td></tr>`
+      : vehicles.map((v: any) => {
+          const permits = (v?.permits || []) as any[];
+          if (permits.length === 0) return '';
+          return permits.map((p, idx) => {
+            const days = p.daysToExpiry ?? p.daysRemaining ?? null;
+            const numericDays = days === null || days === '' ? null : Number(days);
+            const badgeClass = this.getPdfBadgeClass(numericDays);
+            const badgeLabel = this.getBadgeLabel(numericDays);
+            const vehicleCell = idx === 0
+              ? `<td class="cell" rowspan="${permits.length}"><strong>${escapeHtml(v.registrationNo || v.registration || '-')}</strong></td><td class="cell" rowspan="${permits.length}">${escapeHtml(v.vehicleType || '-')}</td>`
+              : '';
+            return `
+              <tr>
+                ${vehicleCell}
+                <td class="cell">${escapeHtml(p.permitName || p.name || '-')}</td>
+                <td class="cell">${formatDate(p.expiryDate)}</td>
+                <td class="cell center">${days === null || days === '' ? '-' : escapeHtml(String(days))}</td>
+                <td class="cell center"><span class="status-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span></td>
+              </tr>`;
+          }).join('');
+        }).join('');
+
+    return `
+    <div class="report-document">
+      ${renderBrandedHeader(profile)}
+
+      <h2 class="report-title">Vehicles Permit Status</h2>
+
+      <table class="meta-table">
+        <tr>
+          <td class="cell" style="width: 33%;">
+            <div class="cell-label">Total Vehicles</div>
+            <div class="cell-value bold">${vehicles.length}</div>
+          </td>
+          <td class="cell" style="width: 33%;">
+            <div class="cell-label">Total Permits</div>
+            <div class="cell-value bold">${totalPermits}</div>
+          </td>
+          <td class="cell" style="width: 34%;">
+            <div class="cell-label">Filter</div>
+            <div class="cell-value bold">${searchTerm ? escapeHtml(searchTerm) : 'All Vehicles'}</div>
+          </td>
+        </tr>
+      </table>
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th class="cell head" style="width: 18%;">Registration</th>
+            <th class="cell head" style="width: 14%;">Type</th>
+            <th class="cell head" style="width: 28%;">Permit</th>
+            <th class="cell head" style="width: 14%;">Expiry Date</th>
+            <th class="cell head center" style="width: 12%;">Days Left</th>
+            <th class="cell head center" style="width: 14%;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+
+      ${renderSignatures(['Prepared By', 'Verified By', 'Approved By'])}
+
+      ${renderReportNote()}
+    </div>`;
+  }
+
+  private getPdfBadgeClass(days: number | null): string {
+    if (days === null) return 'status-warning';
+    if (days > 60) return 'status-good';
+    if (days >= 30) return 'status-warning';
+    return 'status-critical';
   }
 }

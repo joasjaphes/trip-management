@@ -1,11 +1,21 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit, effect } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportService } from '../../../services/report.service';
+import { CompanyProfileService } from '../../../services/company-profile.service';
 import { Layout } from '../../../shared/components/layout/layout';
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
 import { DebtorsStatement } from '../debtors-statement/debtors-statement';
 import { escapeCsv } from '../drivers-permit-status/exports-helper';
+import {
+  escapeHtml,
+  formatPeriodLabel,
+  openReportPrintWindow,
+  renderBrandedHeader,
+  renderPeriodMeta,
+  renderReportNote,
+  renderSignatures,
+} from '../report-print.util';
 
 type PeriodType = 'custom' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
 
@@ -59,6 +69,7 @@ interface DebtorsReportResponse {
 })
 export class DebtorsReport implements OnInit {
   private reportService = inject(ReportService);
+  private companyService = inject(CompanyProfileService);
 
   loading = signal(false);
   rows = signal<DebtorRow[]>([]);
@@ -190,31 +201,88 @@ export class DebtorsReport implements OnInit {
   }
 
   exportPdf() {
-    const buildTable = () => {
-      const decimalPipe = new DecimalPipe('en-US');
-      let html = '<table style="width:100%;border-collapse:collapse">';
-      html += '<thead><tr><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Customer</th><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Total Invoiced</th><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Total Paid</th><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Outstanding</th></tr></thead><tbody>';
-      for (const r of this.rows()) {
-        html += `<tr><td style="border:1px solid #ddd;padding:8px;font-weight:bold">${r.customerName}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(r.totalInvoicedAmount || 0, '1.2-2')}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(r.totalPaidAmount || 0, '1.2-2')}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(r.outstandingAmount || 0, '1.2-2')}</td></tr>`;
-        if (r.invoices) {
-          for (const i of r.invoices) {
-            html += `<tr><td style="border:1px solid #ddd;padding:8px 8px 8px 32px">${i.invoiceNumber}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(i.invoiceAmount || 0, '1.2-2')}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(i.paidAmount || 0, '1.2-2')}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(i.outstandingAmount || 0, '1.2-2')}</td></tr>`;
-          }
-        }
-      };
-      html += `<tr><td style="border:1px solid #ddd;padding:8px;font-weight:bold">Overall Total</td><td style="border:1px solid #ddd;padding:8px;font-weight:bold; text-align: right;">${decimalPipe.transform(this.totals().totalInvoicedAmount || 0, '1.2-2')}</td><td style="border:1px solid #ddd;padding:8px;font-weight:bold; text-align: right;">${decimalPipe.transform(this.totals().totalPaidAmount || 0, '1.2-2')}</td><td style="border:1px solid #ddd;padding:8px;font-weight:bold; text-align: right;">${decimalPipe.transform(this.totals().totalOutstandingAmount || 0, '1.2-2')}</td></tr>`;
-      html += '</tbody></table>';
-      return html;
-    }
-    const content = `<!doctype html><html><head><meta charset="utf-8"><title>Debtors</title>` +
-      `<style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}th{background:#f3f4f6}</style>` +
-      `</head><body><h1>Debtors Report</h1>${buildTable()}</body></html>`;
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    printWindow.document.open();
-    printWindow.document.write(content);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); }, 500);
+    const label = formatPeriodLabel({
+      type: this.period(),
+      year: this.year(),
+      month: this.month(),
+      quarter: this.quarter(),
+      half: this.half(),
+      customStart: this.customStart(),
+      customEnd: this.customEnd(),
+    });
+    openReportPrintWindow(`Debtors Report - ${label}`, this.renderReportBody(label));
+  }
+
+  private renderReportBody(periodLabel: string): string {
+    const profile = this.companyService.profile();
+    const datePipe = new DatePipe('en-US');
+    const numberPipe = new DecimalPipe('en-US');
+    const formatAmount = (v: unknown) => numberPipe.transform(Number(v) || 0, '1.2-2') ?? '0.00';
+    const formatDate = (v: unknown) => {
+      if (!v) return '-';
+      const d = new Date(v as string);
+      return Number.isNaN(d.getTime()) ? '-' : (datePipe.transform(d, 'dd/MM/yyyy') ?? '-');
+    };
+
+    const range = this.periodRange();
+    const totals = this.totals();
+    const rows = this.rows();
+
+    const rowsHtml = rows.length === 0
+      ? `<tr><td class="cell center" colspan="5" style="padding:24px;color:#888;">No outstanding debtors in this period.</td></tr>`
+      : rows.map((r) => {
+          const invoicesHtml = (r.invoices || []).map((i) => `
+            <tr class="item-row">
+              <td class="cell item-name">${escapeHtml(i.invoiceNumber || '-')}</td>
+              <td class="cell">${formatDate(i.issuedAt)}</td>
+              <td class="cell right">${formatAmount(i.invoiceAmount)}</td>
+              <td class="cell right">${formatAmount(i.paidAmount)}</td>
+              <td class="cell right">${formatAmount(i.outstandingAmount)}</td>
+            </tr>`).join('');
+
+          return `
+            <tr class="category-row">
+              <td class="cell category-name" colspan="2">${escapeHtml(r.customerName || '-')}</td>
+              <td class="cell right">${formatAmount(r.totalInvoicedAmount)}</td>
+              <td class="cell right">${formatAmount(r.totalPaidAmount)}</td>
+              <td class="cell right category-total">${formatAmount(r.outstandingAmount)}</td>
+            </tr>
+            ${invoicesHtml}`;
+        }).join('');
+
+    return `
+    <div class="report-document">
+      ${renderBrandedHeader(profile)}
+
+      <h2 class="report-title">Debtors Report</h2>
+
+      ${renderPeriodMeta(periodLabel, range.start, range.end)}
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th class="cell head" style="width: 24%;">Customer / Invoice #</th>
+            <th class="cell head" style="width: 14%;">Issued On</th>
+            <th class="cell head right" style="width: 20%;">Invoiced</th>
+            <th class="cell head right" style="width: 20%;">Paid</th>
+            <th class="cell head right" style="width: 22%;">Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+          <tr class="grand-total-row">
+            <td class="cell bold" colspan="2">GRAND TOTAL</td>
+            <td class="cell right bold">${formatAmount(totals.totalInvoicedAmount)}</td>
+            <td class="cell right bold">${formatAmount(totals.totalPaidAmount)}</td>
+            <td class="cell right bold">${formatAmount(totals.totalOutstandingAmount)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      ${renderSignatures(['Prepared By', 'Reviewed By', 'Approved By'])}
+
+      ${renderReportNote()}
+    </div>`;
   }
 
   async ngOnInit(): Promise<void> {
