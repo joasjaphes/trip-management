@@ -33,6 +33,7 @@ export class TripDetail {
   completionDocumentError = signal<string | null>(null);
   completionDocumentSuccess = signal<string | null>(null);
   tripDocumentUrl = signal<string | undefined>(undefined);
+  today = new Date();
 
   canConfirmCompletion = computed(() => {
     return !!this.tripEndDate && !this.completing() && !this.completionDocumentUploading();
