@@ -69,14 +69,20 @@ export class Purchases implements OnInit {
       case 'today':
         return { start: today, end: today };
       case 'weekly': {
+        // Current calendar week: Monday → Sunday.
+        const day = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+        const diffToMonday = day === 0 ? -6 : 1 - day;
         const start = new Date(today);
-        start.setDate(today.getDate() - 7);
-        return { start, end: today };
+        start.setDate(today.getDate() + diffToMonday);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        return { start, end };
       }
       case 'monthly': {
-        const start = new Date(today);
-        start.setMonth(today.getMonth() - 1);
-        return { start, end: today };
+        // Current calendar month: 1st → last day of the month.
+        const start = new Date(today.getFullYear(), today.getMonth(), 1);
+        const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        return { start, end };
       }
       case 'custom':
         return {
