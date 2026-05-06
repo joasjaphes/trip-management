@@ -13,7 +13,6 @@ import {
   renderBrandedHeader,
   renderPeriodMeta,
   renderReportNote,
-  renderSignatures,
 } from '../report-print.util';
 
 type PeriodType = 'custom' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
@@ -191,8 +190,6 @@ export class ExpenditureReport implements OnInit {
           </tr>
         </tbody>
       </table>
-
-      ${renderSignatures()}
 
       ${renderReportNote()}
     </div>`;

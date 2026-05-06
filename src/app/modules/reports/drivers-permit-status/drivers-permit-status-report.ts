@@ -10,7 +10,6 @@ import {
   openReportPrintWindow,
   renderBrandedHeader,
   renderReportNote,
-  renderSignatures,
 } from '../report-print.util';
 
 @Component({
@@ -209,8 +208,6 @@ export class DriversPermitStatusReport implements OnInit {
                     ${rowsHtml}
                 </tbody>
             </table>
-
-            ${renderSignatures(['Prepared By', 'Verified By', 'Approved By'])}
 
             ${renderReportNote()}
         </div>`;

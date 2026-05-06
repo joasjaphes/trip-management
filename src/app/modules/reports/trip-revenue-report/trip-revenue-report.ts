@@ -13,7 +13,6 @@ import {
   renderBrandedHeader,
   renderPeriodMeta,
   renderReportNote,
-  renderSignatures,
 } from '../report-print.util';
 
 type PeriodType = 'custom' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
@@ -199,8 +198,6 @@ export class TripRevenueReport implements OnInit {
           </tr>
         </tbody>
       </table>
-
-      ${renderSignatures(['Prepared By', 'Reviewed By', 'Approved By'])}
 
       ${renderReportNote()}
     </div>`;
