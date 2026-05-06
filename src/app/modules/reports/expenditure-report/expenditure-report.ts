@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit, effect } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ReportService } from '../../../services/report.service';
 import { Layout } from '../../../shared/components/layout/layout';
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
@@ -10,7 +11,7 @@ type PeriodType = 'custom' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
 @Component({
   selector: 'app-expenditure-report',
   standalone: true,
-  imports: [CommonModule, Layout, Placeholder, DecimalPipe],
+  imports: [CommonModule, Layout, Placeholder, DecimalPipe, FormsModule],
   templateUrl: './expenditure-report.html',
   styleUrl: './expenditure-report.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +29,28 @@ export class ExpenditureReport implements OnInit {
   half = signal<number>(new Date().getMonth() < 6 ? 1 : 2);
   customStart = signal<string>('');
   customEnd = signal<string>('');
+
+  // ngModel proxies for template two-way binding
+  get periodModel(): PeriodType { return this.period(); }
+  set periodModel(v: PeriodType) { this.period.set(v); }
+
+  get yearModel(): number { return this.year(); }
+  set yearModel(v: any) { this.year.set(Number(v)); }
+
+  get monthModel(): number { return this.month(); }
+  set monthModel(v: any) { this.month.set(Number(v)); }
+
+  get quarterModel(): number { return this.quarter(); }
+  set quarterModel(v: any) { this.quarter.set(Number(v)); }
+
+  get halfModel(): number { return this.half(); }
+  set halfModel(v: any) { this.half.set(Number(v)); }
+
+  get customStartModel(): string { return this.customStart(); }
+  set customStartModel(v: string) { this.customStart.set(v); }
+
+  get customEndModel(): string { return this.customEnd(); }
+  set customEndModel(v: string) { this.customEnd.set(v); }
 
   months = computed(() => [
     { v: 1, label: 'January' },
@@ -71,6 +94,8 @@ export class ExpenditureReport implements OnInit {
   grandTotal = signal(0);
   expanded = signal<number | null>(null);
 
+ 
+
   toggleRow(i: number) {
     this.expanded.set(this.expanded() === i ? null : i);
   }
@@ -80,7 +105,7 @@ export class ExpenditureReport implements OnInit {
     const header = ['Item', 'Total'];
     items.push(header.map(escapeCsv).join(','));
     for (const r of this.rows()) {
-      items.push([r.itemName || r.itemId, r.totalAmount].map(escapeCsv).join(','));
+      items.push([r.itemName || r.itemId, r.total].map(escapeCsv).join(','));
     }
     const csv = items.join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -95,15 +120,17 @@ export class ExpenditureReport implements OnInit {
   }
 
   exportPdf() {
+
     const buildTable = () => {
       const decimalPipe = new DecimalPipe('en-US');
       let html = '<table style="width:100%;border-collapse:collapse">';
       html += '<thead><tr><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Item</th><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Total</th></tr></thead><tbody>';
       for (const r of this.rows()) {
-        html += `<tr><td style="border:1px solid #ddd;padding:8px">${r.itemName || r.itemId}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(r.totalAmount || 0, '1.2-2') }</td></tr>`;
+        console.log('Row', r);
+        html += `<tr><td style="border:1px solid #ddd;padding:8px">${r.itemName || r.itemId}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(r.total || 0, '1.2-2') }</td></tr>`;
         if (r.items) {
           for (const i of r.items) {
-            html += `<tr><td style="border:1px solid #ddd;padding:8px 8px 8px 32px">${i.itemName || i.itemId}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(i.amount || 0, '1.2-2') }</td></tr>`;
+            html += `<tr><td style="border:1px solid #ddd;padding:8px 8px 8px 32px">${i.itemName || i.itemId}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(i.totalAmount || 0, '1.2-2') }</td></tr>`;
           }
         }
       };  
@@ -123,6 +150,7 @@ export class ExpenditureReport implements OnInit {
   }
 
   async ngOnInit(): Promise < void> {
+    console.log('this month', this.month(), 'quarter', this.quarter(), 'half', this.half());
       await this.loadReport();
     }
 

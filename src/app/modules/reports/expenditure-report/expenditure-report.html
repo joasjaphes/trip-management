@@ -11,7 +11,7 @@
 
       <div class="period-controls">
         <label>Period:
-          <select [value]="period()" (change)="period.set($any($event.target).value)">
+          <select [(ngModel)]="periodModel">
             <option value="monthly">Monthly</option>
             <option value="quarterly">Quarterly</option>
             <option value="semiannual">Semi-annual</option>
@@ -22,60 +22,60 @@
 
         @if (period() === 'monthly') {
           <label>Year:
-            <select [value]="year()" (change)="year.set(+$any($event.target).value)">
+            <select [(ngModel)]="yearModel">
               @for (y of years(); track y) {
-                <option value="{{y}}">{{y}}</option>
+                <option [value]="y">{{y}}</option>
               }
             </select>
           </label>
           <label>Month:
-            <select [value]="month()" (change)="month.set(+$any($event.target).value)">
+            <select [(ngModel)]="monthModel">
               @for (m of months(); track m.v) {
-                <option value="{{m.v}}" [disabled]="year() === currentYear() && m.v > currentMonth()">{{m.label}}</option>
+                <option [value]="m.v" [disabled]="year() === currentYear() && m.v > currentMonth()">{{m.label}}</option>
               }
             </select>
           </label>
         } @else if (period() === 'quarterly') {
           <label>Year:
-            <select [value]="year()" (change)="year.set(+$any($event.target).value)">
+            <select [(ngModel)]="yearModel">
               @for (y of years(); track y) {
-                <option value="{{y}}">{{y}}</option>
+                <option [value]="y">{{y}}</option>
               }
             </select>
           </label>
           <label>Quarter:
-            <select [value]="quarter()" (change)="quarter.set(+$any($event.target).value)">
+            <select [(ngModel)]="quarterModel">
               @for (q of quarters(); track q.v) {
-                <option value="{{q.v}}" [disabled]="year() === currentYear() && q.v > currentQuarter()">{{q.label}}</option>
+                <option [value]="q.v" [disabled]="year() === currentYear() && q.v > currentQuarter()">{{q.label}}</option>
               }
             </select>
           </label>
         } @else if (period() === 'semiannual') {
           <label>Year:
-            <select [value]="year()" (change)="year.set(+$any($event.target).value)">
+            <select [(ngModel)]="yearModel">
               @for (y of years(); track y) {
-                <option value="{{y}}">{{y}}</option>
+                <option [value]="y">{{y}}</option>
               }
             </select>
           </label>
           <label>Half:
-            <select [value]="half()" (change)="half.set(+$any($event.target).value)">
+            <select [(ngModel)]="halfModel">
               @for (h of halves(); track h.v) {
-                <option value="{{h.v}}" [disabled]="year() === currentYear() && h.v > currentHalf()">{{h.label}}</option>
+                <option [value]="h.v" [disabled]="year() === currentYear() && h.v > currentHalf()">{{h.label}}</option>
               }
             </select>
           </label>
         } @else if (period() === 'yearly') {
           <label>Year:
-            <select [value]="year()" (change)="year.set(+$any($event.target).value)">
+            <select [(ngModel)]="yearModel">
               @for (y of years(); track y) {
-                <option value="{{y}}">{{y}}</option>
+                <option [value]="y">{{y}}</option>
               }
             </select>
           </label>
         } @else {
-          <label>Start: <input type="date" [value]="customStart()" (change)="customStart.set($any($event.target).value)" /></label>
-          <label>End: <input type="date" [value]="customEnd()" (change)="customEnd.set($any($event.target).value)" /></label>
+          <label>Start: <input type="date" [(ngModel)]="customStartModel" /></label>
+          <label>End: <input type="date" [(ngModel)]="customEndModel" /></label>
         }
 
         <button type="button" (click)="loadReport()">Run</button>

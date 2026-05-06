@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit, effect } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ReportService } from '../../../services/report.service';
 import { Layout } from '../../../shared/components/layout/layout';
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
@@ -51,7 +52,7 @@ interface DebtorsReportResponse {
 @Component({
   selector: 'app-debtors-report',
   standalone: true,
-  imports: [CommonModule, Layout, Placeholder, DecimalPipe, DebtorsStatement],
+  imports: [CommonModule, Layout, Placeholder, DecimalPipe, DebtorsStatement, FormsModule],
   templateUrl: './debtors-report.html',
   styleUrl: './debtors-report.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -74,6 +75,28 @@ export class DebtorsReport implements OnInit {
   half = signal<number>(new Date().getMonth() < 6 ? 1 : 2);
   customStart = signal<string>('');
   customEnd = signal<string>('');
+
+  // ngModel proxies for template two-way binding
+  get periodModel(): PeriodType { return this.period(); }
+  set periodModel(v: PeriodType) { this.period.set(v); }
+
+  get yearModel(): number { return this.year(); }
+  set yearModel(v: any) { this.year.set(Number(v)); }
+
+  get monthModel(): number { return this.month(); }
+  set monthModel(v: any) { this.month.set(Number(v)); }
+
+  get quarterModel(): number { return this.quarter(); }
+  set quarterModel(v: any) { this.quarter.set(Number(v)); }
+
+  get halfModel(): number { return this.half(); }
+  set halfModel(v: any) { this.half.set(Number(v)); }
+
+  get customStartModel(): string { return this.customStart(); }
+  set customStartModel(v: string) { this.customStart.set(v); }
+
+  get customEndModel(): string { return this.customEnd(); }
+  set customEndModel(v: string) { this.customEnd.set(v); }
 
   months = computed(() => [
     { v: 1, label: 'January' },
