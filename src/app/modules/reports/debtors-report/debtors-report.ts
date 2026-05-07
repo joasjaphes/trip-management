@@ -262,9 +262,9 @@ export class DebtorsReport implements OnInit {
           <tr>
             <th class="cell head" style="width: 24%;">Customer / Invoice #</th>
             <th class="cell head" style="width: 14%;">Issued On</th>
-            <th class="cell head right" style="width: 20%;">Invoiced</th>
-            <th class="cell head right" style="width: 20%;">Paid</th>
-            <th class="cell head right" style="width: 22%;">Outstanding</th>
+            <th class="cell head right" style="width: 20%;">Invoiced (TZS)</th>
+            <th class="cell head right" style="width: 20%;">Paid (TZS)</th>
+            <th class="cell head right" style="width: 22%;">Outstanding (TZS)</th>
           </tr>
         </thead>
         <tbody>

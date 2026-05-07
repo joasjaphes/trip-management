@@ -26,11 +26,11 @@
       <strong>{{ invoiceCount() }}</strong>
     </article>
     <article class="summary-card">
-      <span class="summary-label">Invoiced</span>
+      <span class="summary-label">Invoiced (TZS)</span>
       <strong>{{ totals().totalInvoicedAmount | number: '1.2-2' }}</strong>
     </article>
     <article class="summary-card">
-      <span class="summary-label">Outstanding</span>
+      <span class="summary-label">Outstanding (TZS)</span>
       <strong>{{ totals().totalOutstandingAmount | number: '1.2-2' }}</strong>
     </article>
   </section>
@@ -41,9 +41,9 @@
         <tr>
           <th class="text-left">Invoice date</th>
           <th class="text-left">Invoice number</th>
-          <th class="text-right">Invoice amount</th>
-          <th class="text-right">Paid amount</th>
-          <th class="text-right">Outstanding amount</th>
+          <th class="text-right">Invoice amount (TZS)</th>
+          <th class="text-right">Paid amount (TZS)</th>
+          <th class="text-right">Outstanding amount (TZS)</th>
         </tr>
       </thead>
       <tbody>

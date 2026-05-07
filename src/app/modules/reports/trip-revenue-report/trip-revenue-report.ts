@@ -183,9 +183,9 @@ export class TripRevenueReport implements OnInit {
             <th class="cell head" style="width: 14%;">Trip #</th>
             <th class="cell head" style="width: 22%;">Route</th>
             <th class="cell head" style="width: 18%;">Customer</th>
-            <th class="cell head right" style="width: 12%;">Revenue</th>
-            <th class="cell head right" style="width: 11%;">Expenses</th>
-            <th class="cell head right" style="width: 11%;">Net Income</th>
+            <th class="cell head right" style="width: 12%;">Revenue (TZS)</th>
+            <th class="cell head right" style="width: 11%;">Expenses (TZS)</th>
+            <th class="cell head right" style="width: 11%;">Net Income (TZS)</th>
           </tr>
         </thead>
         <tbody>

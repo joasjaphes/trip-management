@@ -179,7 +179,7 @@ export class ExpenditureReport implements OnInit {
         <thead>
           <tr>
             <th class="cell head" style="width: 70%;">Category / Item</th>
-            <th class="cell head right" style="width: 30%;">Amount</th>
+            <th class="cell head right" style="width: 30%;">Amount (TZS)</th>
           </tr>
         </thead>
         <tbody>
