@@ -191,7 +191,7 @@ export class TripRevenueReport implements OnInit {
         <tbody>
           ${rowsHtml}
           <tr class="grand-total-row">
-            <td class="cell bold" colspan="4">GRAND TOTAL</td>
+            <td class="cell bold" colspan="4">GRAND TOTAL (TZS)</td>
             <td class="cell right bold">${formatAmount(totals.totalTripRevenue)}</td>
             <td class="cell right bold">${formatAmount(totals.totalTripExpenses)}</td>
             <td class="cell right bold">${formatAmount(totals.totalNetIncome)}</td>
