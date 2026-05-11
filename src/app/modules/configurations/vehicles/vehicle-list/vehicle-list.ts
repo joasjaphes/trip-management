@@ -91,6 +91,16 @@ export class VehicleList implements OnInit {
     actions: { edit: true, view: true },
   };
 
+  permissions = signal({
+    edit: ['EDIT_VEHICLE'],
+    view: ['VIEW_VEHICLES'],
+    add: ['CREATE_VEHICLE'],
+    delete: ['DELETE_VEHICLE'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_VEHICLE');
+
   async ngOnInit(): Promise<void> {
     await this.vehicleService.getAll();
   }

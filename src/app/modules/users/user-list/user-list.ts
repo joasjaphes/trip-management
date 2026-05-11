@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models';
@@ -17,7 +17,7 @@ export class UserList {
 
   title = signal('User management');
   description = signal('Manage system users');
-  addText = signal('Add new user')
+  addText = signal('Add new user');
   openMenuId: string | null = null;
   users = this.userService.users;
   loadingUsers = this.userService.loadingUsers;
@@ -26,6 +26,18 @@ export class UserList {
   viewDetails = signal(false);
   formTitle = signal('');
   formDescription = signal('');
+  selectedUser = signal<User | null>(null);
+  loading = this.userService.loadingUsers;
+
+  permissions = signal({
+    edit: ['EDIT_USER'],
+    view: ['VIEW_USERS'],
+    add: ['CREATE_USER'],
+    delete: ['DELETE_USER'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_USER');
   tableConfigurations: TableConfig = {
     columns: [
       {
@@ -42,15 +54,28 @@ export class UserList {
       },
       {
         key: 'status',
-        label: 'Status'
+        label: 'Status',
+        type:'status'
       }
-    ]
+    ],
+    actions: {
+      edit: true,
+    },
   }
 
   onAdd() {
+    this.selectedUser.set(null);
     this.viewType.set('add');
-    this.formTitle.set('Add new user')
-    this.formDescription.set('Create a new user account with access permissions.')
+    this.formTitle.set('Add new user');
+    this.formDescription.set('Create a new user account with access permissions.');
+    this.viewDetails.set(true);
+  }
+
+  onEdit(user: User) {
+    this.selectedUser.set(user);
+    this.viewType.set('edit');
+    this.formTitle.set('Edit user');
+    this.formDescription.set('Update user details or change the password separately.');
     this.viewDetails.set(true);
   }
 
@@ -59,5 +84,12 @@ export class UserList {
     this.viewType.set('');
     this.formTitle.set('');
     this.formDescription.set('');
+    this.selectedUser.set(null);
+    // refresh users list after changes
+    this.userService.getUsers().catch((e) => console.error('Failed to refresh users', e));
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.userService.getUsers();
   }
 }

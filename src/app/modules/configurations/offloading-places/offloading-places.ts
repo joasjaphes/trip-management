@@ -36,6 +36,16 @@ export class OffloadingPlaces implements OnInit {
     }))
   );
 
+  permissions = signal({
+    edit: ['EDIT_OFFLOADING_PLACE'],
+    view: ['VIEW_OFFLOADING_PLACES'],
+    add: ['CREATE_OFFLOADING_PLACE'],
+    delete: ['DELETE_OFFLOADING_PLACE'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_OFFLOADING_PLACE');
+
   tableConfigurations: TableConfig = {
     columns: [
       { key: 'name', label: 'Name' },

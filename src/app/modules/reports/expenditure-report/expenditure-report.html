@@ -1,0 +1,129 @@
+<app-layout title="Expenditure Report" [showAddButton]="false">
+  <main>
+    <div class="report-page">
+      <!-- Legend + actions -->
+      <div class="flex items-center justify-end gap-4 mb-4">
+        <div class="flex items-center gap-2">
+          <button type="button" (click)="exportCsv()" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export CSV</button>
+          <button type="button" (click)="exportPdf()" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export PDF</button>
+        </div>
+      </div>
+
+      <div class="period-controls">
+        <label>Period:
+          <select [(ngModel)]="periodModel">
+            <option value="monthly">Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="semiannual">Semi-annual</option>
+            <option value="yearly">Yearly</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+
+        @if (period() === 'monthly') {
+          <label>Year:
+            <select [(ngModel)]="yearModel">
+              @for (y of years(); track y) {
+                <option [value]="y">{{y}}</option>
+              }
+            </select>
+          </label>
+          <label>Month:
+            <select [(ngModel)]="monthModel">
+              @for (m of months(); track m.v) {
+                <option [value]="m.v" [disabled]="year() === currentYear() && m.v > currentMonth()">{{m.label}}</option>
+              }
+            </select>
+          </label>
+        } @else if (period() === 'quarterly') {
+          <label>Year:
+            <select [(ngModel)]="yearModel">
+              @for (y of years(); track y) {
+                <option [value]="y">{{y}}</option>
+              }
+            </select>
+          </label>
+          <label>Quarter:
+            <select [(ngModel)]="quarterModel">
+              @for (q of quarters(); track q.v) {
+                <option [value]="q.v" [disabled]="year() === currentYear() && q.v > currentQuarter()">{{q.label}}</option>
+              }
+            </select>
+          </label>
+        } @else if (period() === 'semiannual') {
+          <label>Year:
+            <select [(ngModel)]="yearModel">
+              @for (y of years(); track y) {
+                <option [value]="y">{{y}}</option>
+              }
+            </select>
+          </label>
+          <label>Half:
+            <select [(ngModel)]="halfModel">
+              @for (h of halves(); track h.v) {
+                <option [value]="h.v" [disabled]="year() === currentYear() && h.v > currentHalf()">{{h.label}}</option>
+              }
+            </select>
+          </label>
+        } @else if (period() === 'yearly') {
+          <label>Year:
+            <select [(ngModel)]="yearModel">
+              @for (y of years(); track y) {
+                <option [value]="y">{{y}}</option>
+              }
+            </select>
+          </label>
+        } @else {
+          <label>Start: <input type="date" [(ngModel)]="customStartModel" /></label>
+          <label>End: <input type="date" [(ngModel)]="customEndModel" /></label>
+        }
+
+        <button type="button" (click)="loadReport()">Run</button>
+      </div>
+
+      @if(loading()) {
+        <div class="w-full flex items-center justify-center">
+            <app-placeholder></app-placeholder>
+        </div>
+      } @else if (rows().length === 0) {
+        <p>No data available</p>
+      } @else {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="text-left">Item</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows(); track $index) {
+                <tr (click)="toggleRow($index); $event.stopPropagation()" class="cursor-pointer">
+                  <td class="font-bold">
+                    <button type="button" class="mr-2 px-2 py-1 rounded bg-gray-100 hover:bg-gray-200" (click)="toggleRow($index); $event.stopPropagation()">
+                      @if (expanded() === $index) { - } @else { + }
+                    </button>
+                    {{ row.itemName || row.itemId }}
+                  </td>
+                  <td class="font-bold text-right">{{ row.total | number:'0.2-2' }}</td>
+                </tr>
+                @if (expanded() === $index) {
+                  @for (item of row.items; track $index) {
+                    <tr>
+                      <td class="pl-6">{{ item.itemName }}</td>
+                      <td class="text-right">{{ item.totalAmount | number:'0.2-2' }}</td>
+                    </tr>
+                  }
+                }
+              }
+              <tr>
+                <td class="font-extrabold text-gray-900">Overall Total</td>
+                <td class="font-extrabold text-gray-900 text-right">{{ grandTotal() | number:'0.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </main>
+</app-layout>

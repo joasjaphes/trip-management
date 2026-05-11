@@ -78,7 +78,7 @@
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">End Date</label>
         <div class="relative">
           <input [matDatepicker]="tripEndDatePicker" [value]="toDateValue(tripEndDate)"
-            (dateChange)="onTripEndDateSelected($event.value)" [min]="toDateValue(trip()?.tripDate)" readonly
+            (dateChange)="onTripEndDateSelected($event.value)" [min]="toDateValue(trip()?.tripDate)" [max]="toDateValue(today)" readonly
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           <button type="button" (click)="tripEndDatePicker.open()"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"

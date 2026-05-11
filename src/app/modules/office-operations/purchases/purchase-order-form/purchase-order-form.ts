@@ -13,6 +13,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { VendorFormDialog, VendorFormDialogData } from '../../../configurations/vendors/vendor-form/vendor-form';
+import { NumberFormatDirective } from '../../../../shared/directives/number-format';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 type PurchaseOrderDraft = {
   id: string;
@@ -30,6 +32,7 @@ type PurchaseOrderDraft = {
     expenseName: string;
     description: string;
     amount: number;
+    quantity: number;
   }>;
 };
 
@@ -37,7 +40,7 @@ const MAX_ORDER_ITEMS = 20;
 
 @Component({
   selector: 'app-purchase-order-form',
-  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule, NumberFormatDirective, MatTooltipModule],
   templateUrl: './purchase-order-form.html',
   styleUrl: './purchase-order-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -116,6 +119,7 @@ export class PurchaseOrderForm implements OnInit {
               this.expenses().find((e) => e.id === item.itemId)?.name ?? item.description ?? '-',
             description: item.description ?? '',
             amount: Number(item.amount || 0),
+            quantity: item.quantity || 1,
           })),
         });
       } else {
@@ -189,6 +193,7 @@ export class PurchaseOrderForm implements OnInit {
           expenseName: '',
           description: '',
           amount: 0,
+          quantity: 1,
         },
       ],
     }));
@@ -207,6 +212,7 @@ export class PurchaseOrderForm implements OnInit {
       const items = [...draft!.orderItems];
       items[index] = {
         ...items[index],
+        description: expense.name ?? '',
         itemId: expenseId,
         expenseName: expense?.name ?? '-',
       };
@@ -245,6 +251,7 @@ export class PurchaseOrderForm implements OnInit {
   }
 
   async onSave() {
+    console.log('Attempting to save purchase order');
     const d = this.draft();
     if (!d || !this.canSave()) {
       return;
@@ -266,6 +273,7 @@ export class PurchaseOrderForm implements OnInit {
         orderItems: d.orderItems.map((item) => ({
           itemId: item.itemId,
           description: item.description || undefined,
+          quantity: Number(item.quantity),
           amount: Number(item.amount),
         })),
       };
@@ -277,8 +285,9 @@ export class PurchaseOrderForm implements OnInit {
         await this.purchaseOrderService.create(payload);
         this.successMessage.set('Purchase order created successfully');
       }
+      this.close.emit();
 
-      setTimeout(() => this.close.emit(), 1000);
+      // setTimeout(() => this.close.emit(), 1000);
     } catch (err) {
       this.errorMessage.set(err?.toString() ?? 'Failed to save purchase order');
     } finally {
@@ -301,6 +310,7 @@ export class PurchaseOrderForm implements OnInit {
         {
           id: this.commonService.makeid(),
           itemId: '',
+          quantity: 1,
           expenseName: '',
           description: '',
           amount: 0,
@@ -332,5 +342,9 @@ export class PurchaseOrderForm implements OnInit {
 
   private hasChildren(category: ExpenseCategory): boolean {
     return (category.children?.length ?? 0) > 0 || (category as any).childrens?.length > 0;
+  }
+
+  isSelected(itemId: string): boolean {
+    return this.draft()?.orderItems.some((item) => item.itemId === itemId) ?? false;
   }
 }

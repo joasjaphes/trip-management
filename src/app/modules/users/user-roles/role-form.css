@@ -1,0 +1,355 @@
+.role-form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.field-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #f25f2f;
+}
+
+.field-input {
+  width: 100%;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.9rem;
+  padding: 0.9rem 1rem;
+  background: white;
+  color: rgb(15 23 42);
+  font: inherit;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: rgb(242 95 47);
+  box-shadow: 0 0 0 4px rgba(242, 95, 47, 0.12);
+}
+
+.permissions-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.permissions-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.permissions-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: rgb(15 23 42);
+}
+
+.permissions-header p {
+  margin: 0.25rem 0 0;
+  color: rgb(100 116 139);
+  font-size: 0.85rem;
+}
+
+.permissions-summary {
+  border-radius: 999px;
+  border: 1px solid rgb(255 219 201);
+  background: rgb(255 247 237);
+  color: rgb(194 65 12);
+  padding: 0.45rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.module-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.module-card {
+  border: 1px solid rgb(226 232 240);
+  border-radius: 1rem;
+  background: white;
+  overflow: hidden;
+}
+
+.module-card-header {
+  /* display: flex; */
+  /* align-items: flex-start; */
+  /* justify-content: space-between; */
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid rgb(241 245 249);
+}
+
+.module-card-header>div {
+  /* flex: 1; */
+}
+
+.module-card-header h3 {
+  margin: 0;
+  color: rgb(15 23 42);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.module-card-header p {
+  margin: 0.25rem 0 0;
+  color: rgb(100 116 139);
+  font-size: 0.8rem;
+}
+
+.module-card:not(.module-card--expanded) .module-card-header {
+  border-bottom-color: transparent;
+}
+
+.module-header-actions {
+  /* display: flex; */
+  /* align-items: center; */
+  gap: 0.6rem;
+}
+
+.module-toggle {
+  border: none;
+  background: rgb(255 247 237);
+  color: rgb(194 65 12);
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.module-toggle:hover {
+  background: rgb(255 235 213);
+}
+
+.module-toggle fa-icon {
+  display: inline-flex;
+}
+
+.module-select-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgb(255 219 201);
+  background: rgb(255 247 237);
+  color: rgb(194 65 12);
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.module-select-toggle:hover {
+  background: rgb(255 235 213);
+  border-color: rgb(255 206 174);
+}
+
+.permission-table-wrap {
+  overflow-x: auto;
+}
+
+.permission-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.permission-table th {
+  background: rgb(248 250 252);
+  color: rgb(71 85 105);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid rgb(226 232 240);
+}
+
+.permission-table td {
+  border-bottom: 1px solid rgb(241 245 249);
+  padding: 0.85rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+  background: white;
+}
+
+.permission-table tbody tr:hover td {
+  background: rgb(249 250 251);
+}
+
+.permission-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.permission-action-col {
+  width: 160px;
+  text-align: center;
+}
+
+.permission-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: rgb(71 85 105);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.permission-check input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 2px solid rgb(226 232 240);
+  border-radius: 0.4rem;
+  background: rgb(249 250 251);
+  cursor: pointer;
+  transition: all 160ms ease;
+  flex-shrink: 0;
+}
+
+.permission-check input[type="checkbox"]:hover:not(:checked) {
+  border-color: rgb(203 213 225);
+  background: rgb(241 245 249);
+}
+
+.permission-check input[type="checkbox"]:checked {
+  background: rgb(242 95 47);
+  border-color: rgb(242 95 47);
+  position: relative;
+}
+
+.permission-check input[type="checkbox"]:checked::after {
+  content: '✓';
+  display: block;
+  position: absolute;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  line-height: 1.2rem;
+  text-align: center;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.permission-check input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(242, 95, 47, 0.2);
+}
+
+.role-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(226 232 240);
+}
+
+.secondary-button,
+.primary-button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.25rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 160ms ease;
+}
+
+.secondary-button {
+  background: rgb(255 247 237);
+  color: rgb(194 65 12);
+}
+
+.secondary-button:hover {
+  background: rgb(255 235 213);
+}
+
+.primary-button {
+  background: linear-gradient(135deg, rgb(242 95 47), rgb(234 88 12));
+  color: white;
+  box-shadow: 0 4px 12px rgba(242, 95, 47, 0.3);
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(242, 95, 47, 0.35);
+}
+
+.primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .permissions-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .module-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .module-card-header>div {
+    margin-bottom: 0.5rem;
+  }
+
+  .module-header-actions {
+    width: 100%;
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
+
+  .module-select-toggle,
+  .module-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .module-toggle {
+    width: 100%;
+    text-align: center;
+  }
+
+  .permission-action-col {
+    width: auto;
+    text-align: left;
+  }
+
+  .role-form-actions {
+    flex-direction: column;
+  }
+
+  .secondary-button,
+  .primary-button {
+    width: 100%;
+  }
+
+  .permission-table {
+    font-size: 0.85rem;
+  }
+
+  .permission-table th,
+  .permission-table td {
+    padding: 0.65rem 0.75rem;
+  }
+}

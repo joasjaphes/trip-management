@@ -75,6 +75,16 @@ export class ExpenseTransactions implements OnInit {
     }
   };
 
+  permissions = signal({
+    edit: ['EDIT_EXPENSE_TRANSACTION'],
+    view: ['VIEW_EXPENSE_TRANSACTION'],
+    add: ['CREATE_EXPENSE_TRANSACTION'],
+    delete: ['DELETE_EXPENSE_TRANSACTION'],
+    more: {}
+  });
+
+  addPermission = signal('CREATE_EXPENSE_TRANSACTION');
+
   async ngOnInit(): Promise<void> {
     await Promise.all([
       this.expenseCategoryService.getAll(),

@@ -1,8 +1,8 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
-  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [showAddButton]="showAddButton()" [splitSize]="splitSize()">
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [showAddButton]="showAddButton()" [splitSize]="splitSize()" [addPermission]="addPermission()">
   <ng-container ngProjectAs="main">
     <app-data-table [data]="transactions()" [config]="tableConfigurations" (rowClick)="onEdit($event)" [loading]="loading()"
-      [showAddButton]="true" [addButtonText]="'Post expenses'" (add)="onAdd()"></app-data-table>
+      [showAddButton]="true" [addButtonText]="'Post expenses'" (add)="onAdd()" [permissions]="permissions()"></app-data-table>
   </ng-container>
 
   <ng-container ngProjectAs="form">

@@ -5,9 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { HttpClientService } from '../../services/http-client.service';
+import { TripService } from '../../services/trip.service';
 import moment from 'moment';
 import { Trip, TripStatus } from '../../models';
 import { Placeholder } from '../../shared/components/placeholder/placeholder';
+
+const RECENT_TRIPS_LIMIT = 10;
 
 
 
@@ -18,12 +21,13 @@ export type DashboardSummary = {
   outstandingAmount: number;
   completedTrips: number;
   inProgressTrips: number;
+  overstayedTrips: number;
   recentTrips: Trip[];
 }
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterLink, FormsModule, MatDatepickerModule, MatNativeDateModule,Placeholder,DecimalPipe],
+  imports: [CommonModule, RouterLink, FormsModule, MatDatepickerModule, MatNativeDateModule, Placeholder, DecimalPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -32,14 +36,20 @@ export class Dashboard {
   customStartDate = signal<string>('');
   customEndDate = signal<string>('');
   http = inject(HttpClientService);
-  summary = resource<DashboardSummary, DashboardSummary>({
-    loader: async () => {
-      const start = moment(this.dateRange().start).format('YYYY-MM-DD');
-      const end = moment(this.dateRange().end).format('YYYY-MM-DD');
-      return await this.http.get(`trips/stats?startDate=${start}&endDate=${end}`);
+  private tripService = inject(TripService);
+  summary = resource<DashboardSummary, { start: Date | null; end: Date | null }>({
+    params: () => this.dateRange(),
+    loader: async ({ params }) => {
+      const start = moment(params.start).format('YYYY-MM-DD');
+      const end = moment(params.end).format('YYYY-MM-DD');
+      return await this.http.get<DashboardSummary>(`trips/stats?startDate=${start}&endDate=${end}`);
     }
   });
   loading = this.summary.isLoading;
+
+  constructor() {
+    void this.tripService.getAll();
+  }
 
   dateRange = computed(() => {
     const today = new Date();
@@ -47,14 +57,20 @@ export class Dashboard {
       case 'today':
         return { start: today, end: today };
       case 'weekly': {
+        // Current calendar week: Monday → Sunday.
+        const day = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+        const diffToMonday = day === 0 ? -6 : 1 - day;
         const start = new Date(today);
-        start.setDate(today.getDate() - 7);
-        return { start, end: today };
+        start.setDate(today.getDate() + diffToMonday);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        return { start, end };
       }
       case 'monthly': {
-        const start = new Date(today);
-        start.setMonth(today.getMonth() - 1);
-        return { start, end: today };
+        // Current calendar month: 1st → last day of the month.
+        const start = new Date(today.getFullYear(), today.getMonth(), 1);
+        const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        return { start, end };
       }
       case 'custom':
         return {
@@ -71,6 +87,7 @@ export class Dashboard {
         title: 'Total Revenue (TZS)',
         value: summary()?.totalRevenue || 0,
         change: '0%',
+        // currency-dollar
         icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
         color: 'bg-teal-500',
         link: '/trips'
@@ -79,7 +96,8 @@ export class Dashboard {
         title: 'Total Trips',
         value: summary()?.totalTrips || 0,
         change: '0%',
-        icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+        // truck
+        icon: 'M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1',
         color: 'bg-blue-500',
         link: '/trips'
       },
@@ -87,27 +105,26 @@ export class Dashboard {
         title: 'Active Trips',
         value: summary()?.activeTrips || 0,
         change: '0%',
-        icon: 'M8 17a1 1 0 01-1-1V8a1 1 0 012 0v8a1 1 0 01-1 1zm4 0a1 1 0 01-1-1V8a1 1 0 012 0v8a1 1 0 01-1 1zm4 0a1 1 0 01-1-1V8a1 1 0 012 0v8a1 1 0 01-1 1z M3 19a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14z',
+        // play-circle (signifies running/active)
+        icon: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
         color: 'bg-emerald-500',
-        link: '/vehicles'
+        link: '/trips'
       },
       {
         title: 'Total Outstanding (TZS)',
         value: summary()?.outstandingAmount || 0,
         change: '0%',
-        icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+        // clock (signifies pending payment)
+        icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
         color: 'bg-rose-500',
-        link: '/drivers'
+        link: '/trips'
       },
     ];
   });
 
   readonly recentTrips = computed(() => {
     const summary = this.summary.value;
-    if (summary) {
-      return summary().recentTrips || [];
-    }
-    return [];
+    return summary()?.recentTrips;
   });
   tripStatus = TripStatus;
   readonly tripStatusSummary = computed(() => {
@@ -116,11 +133,13 @@ export class Dashboard {
     const countByStatus = {
       completed: summary()?.completedTrips || 0,
       'in-progress': summary()?.inProgressTrips || 0,
+      'overStayed': summary()?.overstayedTrips || 0,
     };
 
     const rows = [
       { key: 'completed', label: 'Completed', count: countByStatus.completed, color: '#10b981' },
       { key: 'in-progress', label: 'In Progress', count: countByStatus['in-progress'], color: '#3b82f6' },
+      { key: 'overStayed', label: 'Overstayed', count: countByStatus['overStayed'], color: '#efc744' },
     ];
 
     return rows.map((row) => ({
@@ -185,11 +204,9 @@ export class Dashboard {
 
   setCustomStartDate(value: Date | null) {
     this.customStartDate.set(this.toDateString(value));
-    this.summary.reload();
   }
 
   setCustomEndDate(value: Date | null) {
     this.customEndDate.set(this.toDateString(value));
-    this.summary.reload();
   }
 }

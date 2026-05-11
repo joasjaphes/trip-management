@@ -1,0 +1,231 @@
+<div class="px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  <!-- Page Header -->
+  <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+    <div>
+      <h1 class="text-[32px] font-extrabold text-gray-900 leading-tight flex items-center gap-3">
+        Notifications
+        @if (totalCount() > 0) {
+        <span class="inline-flex items-center justify-center min-w-[32px] h-7 px-2 rounded-full bg-[#f25f2f] text-white text-[12px] font-bold">
+          {{ totalCount() }}
+        </span>
+        }
+      </h1>
+      <p class="mt-1 text-[15px] font-medium text-gray-400">
+        Permits expiring within 60 days and invoices overdue more than 30 days.
+      </p>
+    </div>
+
+    <!-- Severity legend -->
+    <div class="flex items-center gap-4 text-[12px] font-semibold">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+        <span class="text-gray-600">Warning · 31–60 days</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+        <span class="text-gray-600">Urgent · ≤30 days or expired</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- VEHICLE PERMITS SECTION -->
+  <section class="mb-8 rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <div class="bg-orange-50 text-[#f25f2f] p-2 rounded-xl">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-[16px] font-extrabold text-gray-900">Vehicle &amp; Trailer Permits</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Permits expiring soon or already expired</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        @if (vehicleUrgent() > 0) {
+        <span class="px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold">
+          {{ vehicleUrgent() }} urgent
+        </span>
+        }
+        @if (vehicleWarning() > 0) {
+        <span class="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-bold">
+          {{ vehicleWarning() }} warning
+        </span>
+        }
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-100 bg-gray-50">
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Reg. No</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Type</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Permit</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Expiry Date</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400 text-right">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (n of vehiclePermits(); track n.id) {
+          <tr class="border-b border-gray-50 last:border-b-0" [class]="rowClass(n.severity)">
+            <td class="px-6 py-4 text-[14px] font-bold text-gray-900">{{ n.registrationNo }}</td>
+            <td class="px-6 py-4 text-[13px] text-gray-600 capitalize">{{ n.vehicleType }}</td>
+            <td class="px-6 py-4 text-[13px] text-gray-700">{{ n.permitDescription }}</td>
+            <td class="px-6 py-4 text-[13px] text-gray-600">{{ n.expiryDate | date:'mediumDate' }}</td>
+            <td class="px-6 py-4 text-right">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border"
+                [class]="badgeClass(n.severity)">
+                <span class="w-1.5 h-1.5 rounded-full"
+                  [class.bg-red-500]="n.severity === 'urgent'"
+                  [class.bg-amber-500]="n.severity === 'warning'"></span>
+                {{ daysLabel(n.daysRemaining) }}
+              </span>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="5" class="px-6 py-10 text-center text-[14px] font-medium text-gray-400">
+              No vehicle or trailer permits expiring soon.
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- DRIVER PERMITS SECTION -->
+  <section class="mb-8 rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-50 text-blue-500 p-2 rounded-xl">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-[16px] font-extrabold text-gray-900">Driver Permits</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Driving licenses and passports expiring soon or already expired</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        @if (driverUrgent() > 0) {
+        <span class="px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold">
+          {{ driverUrgent() }} urgent
+        </span>
+        }
+        @if (driverWarning() > 0) {
+        <span class="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-bold">
+          {{ driverWarning() }} warning
+        </span>
+        }
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-100 bg-gray-50">
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Driver</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Document</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Number</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Expiry Date</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400 text-right">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (n of driverPermits(); track n.id) {
+          <tr class="border-b border-gray-50 last:border-b-0" [class]="rowClass(n.severity)">
+            <td class="px-6 py-4 text-[14px] font-bold text-gray-900">{{ n.driverName }}</td>
+            <td class="px-6 py-4 text-[13px] text-gray-700">{{ n.documentType }}</td>
+            <td class="px-6 py-4 text-[13px] text-gray-600">{{ n.documentNumber }}</td>
+            <td class="px-6 py-4 text-[13px] text-gray-600">{{ n.expiryDate | date:'mediumDate' }}</td>
+            <td class="px-6 py-4 text-right">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border"
+                [class]="badgeClass(n.severity)">
+                <span class="w-1.5 h-1.5 rounded-full"
+                  [class.bg-red-500]="n.severity === 'urgent'"
+                  [class.bg-amber-500]="n.severity === 'warning'"></span>
+                {{ daysLabel(n.daysRemaining) }}
+              </span>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="5" class="px-6 py-10 text-center text-[14px] font-medium text-gray-400">
+              No driver licenses or passports expiring soon.
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- OVERDUE INVOICES SECTION -->
+  <section class="mb-8 rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <div class="bg-red-50 text-red-500 p-2 rounded-xl">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-[16px] font-extrabold text-gray-900">Overdue Invoices</h2>
+          <p class="text-[12px] text-gray-400 mt-0.5">Invoices unpaid for more than 30 days</p>
+        </div>
+      </div>
+      @if (overdueInvoices().length > 0) {
+      <span class="px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold">
+        {{ overdueInvoices().length }} overdue
+      </span>
+      }
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-100 bg-gray-50">
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Customer</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Trip #</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400">Route</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400 text-right">Invoiced</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400 text-right">Paid</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400 text-right">Outstanding</th>
+            <th class="px-6 py-3 text-[11px] font-extrabold uppercase tracking-widest text-gray-400 text-right">Debt Age</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (n of overdueInvoices(); track n.id) {
+          <tr class="border-b border-gray-50 last:border-b-0 bg-red-50/40">
+            <td class="px-6 py-4 text-[14px] font-bold text-gray-900">{{ n.customerName }}</td>
+            <td class="px-6 py-4 text-[13px] font-semibold text-gray-700">{{ n.tripReferenceNumber }}</td>
+            <td class="px-6 py-4 text-[13px] text-gray-600">{{ n.routeName }}</td>
+            <td class="px-6 py-4 text-[13px] text-gray-700 text-right">{{ n.invoicedAmount | number }}</td>
+            <td class="px-6 py-4 text-[13px] text-gray-600 text-right">{{ n.paidAmount | number }}</td>
+            <td class="px-6 py-4 text-[14px] font-extrabold text-red-700 text-right">{{ n.outstandingAmount | number }}</td>
+            <td class="px-6 py-4 text-right">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border bg-red-50 text-red-700 border-red-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                {{ ageLabel(n.debtAgeDays) }}
+              </span>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7" class="px-6 py-10 text-center text-[14px] font-medium text-gray-400">
+              No overdue invoices.
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

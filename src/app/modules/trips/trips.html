@@ -1,6 +1,6 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
   [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()"
-  [splitSize]="splitSize()" [(showAddButton)]="showAddButton">
+  [splitSize]="splitSize()" [(showAddButton)]="showAddButton" [addPermission]="addPermision()">
   <ng-container ngProjectAs="main">
     <!-- <div class="w-full">
       <app-tabs [tabs]="tabs" [selectedTab]="selectedTab()" [selectTab]="setTab"></app-tabs>
@@ -11,14 +11,21 @@
           <span>In Progress ({{ inProgressTrips().length }})</span>
         </ng-template>
         <app-data-table [data]="inProgressTrips()" [config]="tableConfigurations" (view)="onView($event)"
-          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"></app-data-table>
+          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
+      </mat-tab>
+      <mat-tab label="Overstayed">
+        <ng-template mat-tab-label>
+          <span>Overstayed ({{ overStayedTrips().length }})</span>
+        </ng-template>
+        <app-data-table [data]="overStayedTrips()" [config]="tableConfigurations" (view)="onView($event)"
+          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab label="Completed">
         <ng-template mat-tab-label>
           <span>Completed ({{ completedTrips().length }})</span>
         </ng-template>
         <app-data-table [data]="completedTrips()" [config]="tableConfigurations" (view)="onView($event)"
-          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"></app-data-table>
+          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
       </mat-tab>
     </mat-tab-group>
 
@@ -32,6 +39,9 @@
     } @else if (viewType() == 'manage-expense') {
     <app-trip-expenses-manage [trip]="selectedTrip()" (saved)="onExpensesChanged()"
       (close)="onCloseDetail()"></app-trip-expenses-manage>
+    } @else if (viewType() == 'manage-actual-position') {
+    <app-trip-actual-position-manage [trip]="selectedTrip()" (saved)="onActualPositionChanged()"
+      (close)="onCloseDetail()"></app-trip-actual-position-manage>
     }
   </ng-container>
 </app-layout>

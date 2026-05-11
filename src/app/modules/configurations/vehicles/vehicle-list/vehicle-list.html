@@ -1,6 +1,6 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
   [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()"
-  [splitSize]="splitSize()">
+  [splitSize]="splitSize()" [addPermission]="addPermission()">
   <ng-container ngProjectAs="main">
     <mat-tab-group>
       <mat-tab>
@@ -8,14 +8,14 @@
           Trucks ({{ trucks().length }})
         </ng-template>
         <app-data-table [data]="trucks()" [config]="truckTableConfigurations" [loading]="loading()"
-          (edit)="onEdit($event)" (view)="onView($event)"></app-data-table>
+          (edit)="onEdit($event)" (view)="onView($event)" [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab>
         <ng-template matTabLabel>
           Trailers ({{ trailers().length }})
         </ng-template>
         <app-data-table [data]="trailers()" [config]="trailerTableConfigurations" [loading]="loading()"
-          (edit)="onEdit($event)" (view)="onView($event)"></app-data-table>
+          (edit)="onEdit($event)" (view)="onView($event)" [permissions]="permissions()"></app-data-table>
       </mat-tab>
     </mat-tab-group>
   </ng-container>

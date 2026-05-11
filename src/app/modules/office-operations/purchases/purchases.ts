@@ -12,6 +12,8 @@ import { PurchaseOrderReview, PurchaseOrderReviewMode } from './purchase-order-r
 import { PurchaseOrderDetail } from './purchase-order-detail/purchase-order-detail';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmDialog } from '../../../shared/components/delete-confirm-dialog/delete-confirm-dialog';
 
 type PurchaseStatusTab = 'pending' | 'approved' | 'completed';
 
@@ -26,6 +28,7 @@ export class Purchases implements OnInit {
   private purchaseOrderService = inject(PurchaseOrderService);
   private vendorServicePrivate = inject(VendorService);
   private expenseCategoryServicePrivate = inject(ExpenseCategoryService);
+  private dialog = inject(MatDialog);
 
   // Expose services to template
   vendorService = this.vendorServicePrivate;
@@ -37,6 +40,16 @@ export class Purchases implements OnInit {
   viewType = signal<'add' | 'edit' | 'approve' | 'complete' | 'detail' | ''>('');
   reviewMode = signal<PurchaseOrderReviewMode>('approve');
   showAddButton = signal(true);
+
+  permissions = signal({
+    edit: ['EDIT_PURCHASE_ORDER'],
+    view: ['VIEW_PURCHASE_ORDER'],
+    add: ['CREATE_PURCHASE_ORDER'],
+    delete: ['DELETE_PURCHASE_ORDER'],
+    more: { approve: ['APPROVE_PURCHASE_ORDER'], complete: ['RECEIVE_PURCHASE_ORDER'] }
+  });
+
+  addPermission = signal('CREATE_PURCHASE_ORDER');
   splitSize = signal<'half' | 'full'>('full');
   formTitle = signal('');
   formDescription = signal('');
@@ -44,8 +57,40 @@ export class Purchases implements OnInit {
 
   selectedStatus = signal<PurchaseStatusTab>('pending');
   filterVendorId = signal('');
-  filterFromDate = signal('');
-  filterToDate = signal('');
+  period = signal<'all' | 'today' | 'weekly' | 'monthly' | 'custom'>('all');
+  customStartDate = signal('');
+  customEndDate = signal('');
+
+  dateRange = computed<{ start: Date | null; end: Date | null }>(() => {
+    const today = new Date();
+    switch (this.period()) {
+      case 'all':
+        return { start: null, end: null };
+      case 'today':
+        return { start: today, end: today };
+      case 'weekly': {
+        // Current calendar week: Monday → Sunday.
+        const day = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+        const diffToMonday = day === 0 ? -6 : 1 - day;
+        const start = new Date(today);
+        start.setDate(today.getDate() + diffToMonday);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        return { start, end };
+      }
+      case 'monthly': {
+        // Current calendar month: 1st → last day of the month.
+        const start = new Date(today.getFullYear(), today.getMonth(), 1);
+        const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        return { start, end };
+      }
+      case 'custom':
+        return {
+          start: this.toDateValue(this.customStartDate()),
+          end: this.toDateValue(this.customEndDate()),
+        };
+    }
+  });
 
   loading = computed(() =>
     this.purchaseOrderService.loading() ||
@@ -68,7 +113,7 @@ export class Purchases implements OnInit {
         },
         {
           key: 'completed' as const,
-          label: 'Completed Orders',
+          label: 'Received Orders',
           count: this.countByStatus('Completed'),
         },
       ] satisfies Array<{ key: PurchaseStatusTab; label: string; count: number }>
@@ -114,54 +159,60 @@ export class Purchases implements OnInit {
         canEdit: normalizedStatus === 'pending',
         actions: {
           approve: normalizedStatus === 'pending',
+          delete: normalizedStatus === 'pending',
           complete: normalizedStatus === 'approved',
         }
       };
     });
   });
 
-  filteredRows = computed(() => {
+  // Rows after the period + vendor filters, but BEFORE the status-tab filter.
+  // This is the source for the summary cards and tab counts so they reflect
+  // the selected period without being narrowed by the active tab.
+  private rowsInRange = computed(() => {
     let filtered = this.orderRows();
-    const selected = this.selectedStatus();
     const vendorFilter = this.filterVendorId();
-    const fromDate = this.filterFromDate();
-    const toDate = this.filterToDate();
+    const range = this.dateRange();
 
-    // Filter by status tab
-    if (selected === 'pending') {
-      filtered = filtered.filter((row) => row.normalizedStatus === 'pending');
-    } else if (selected === 'approved') {
-      filtered = filtered.filter((row) => row.normalizedStatus === 'approved');
-    } else if (selected === 'completed') {
-      filtered = filtered.filter((row) => row.normalizedStatus === 'completed');
-    }
-
-    // Filter by vendor
     if (vendorFilter) {
       filtered = filtered.filter((row) => row.vendorId === vendorFilter);
     }
 
-    // Filter by date range
-    if (fromDate) {
-      const from = new Date(fromDate).getTime();
+    if (range.start) {
+      const fromTime = this.startOfDay(range.start).getTime();
       filtered = filtered.filter(
-        (row) => new Date(row.orderDateRaw).getTime() >= from
+        (row) => new Date(row.orderDateRaw).getTime() >= fromTime
       );
     }
 
-    if (toDate) {
-      const to = new Date(toDate).getTime();
+    if (range.end) {
+      const toTime = this.endOfDay(range.end).getTime();
       filtered = filtered.filter(
-        (row) => new Date(row.orderDateRaw).getTime() <= to
+        (row) => new Date(row.orderDateRaw).getTime() <= toTime
       );
     }
 
     return filtered;
   });
 
+  filteredRows = computed(() => {
+    const selected = this.selectedStatus();
+    const rows = this.rowsInRange();
+
+    if (selected === 'pending') {
+      return rows.filter((row) => row.normalizedStatus === 'pending');
+    }
+    if (selected === 'approved') {
+      return rows.filter((row) => row.normalizedStatus === 'approved');
+    }
+    if (selected === 'completed') {
+      return rows.filter((row) => row.normalizedStatus === 'completed');
+    }
+    return rows;
+  });
+
 
   moreActions = computed(() => {
-    const selected = this.selectedStatus();
     const actions = [{
       label: 'Approve Order',
       key: 'approve',
@@ -169,10 +220,16 @@ export class Purchases implements OnInit {
       action: (row: any) => this.onApprove(row),
     },
     {
-      label: 'Complete Order',
+      label: 'Receive Order',
       key: 'complete',
       icon: 'fa-solid fa-flag-checkered text-blue-500',
       action: (row: any) => this.onComplete(row),
+    },
+    {
+      label: 'Delete Order',
+      key: 'delete',
+      icon: 'fa-solid fa-trash text-red-500',
+      action: (row: any) => this.onDelete(row),
     }
     ];
 
@@ -233,17 +290,20 @@ export class Purchases implements OnInit {
       return;
     }
 
-    this.selectedPurchaseOrder.set(order);
-    this.viewType.set('detail');
-    this.splitSize.set('full');
-    this.formTitle.set('Purchase Order Details');
-    this.formDescription.set(order.purchaseOrderReferenceNumber || '');
-    this.viewDetails.set(true);
+    if (order.orderStatus === 'Pending') {
+      this.onApprove(row);
+    } else {
+
+
+      this.selectedPurchaseOrder.set(order);
+      this.viewType.set('detail');
+      this.splitSize.set('full');
+      this.formTitle.set('Purchase Order Details');
+      this.formDescription.set(order.purchaseOrderReferenceNumber || '');
+      this.viewDetails.set(true);
+    }
   }
 
-  onEditIcon(_row: any) {
-    // Edit icon placeholder — no functionality wired yet.
-  }
 
   onApprove(row: any) {
     const order = this.purchaseOrderService.getById(row.id);
@@ -275,6 +335,38 @@ export class Purchases implements OnInit {
     this.viewDetails.set(true);
   }
 
+  async onDelete(row: any) {
+    const order = this.purchaseOrderService.getById(row.id);
+    if (!order) {
+      return;
+    }
+
+    this.dialog
+      .open(DeleteConfirmDialog, {
+        width: '400px',
+        maxWidth: '95vw',
+        disableClose: false,
+        data: {
+          title: 'Delete Purchase Order',
+          message: `Are you sure you want to delete order "${order.purchaseOrderReferenceNumber || order.id}"? This action cannot be undone.`,
+          confirmText: 'Delete',
+          cancelText: 'Cancel',
+        },
+      })
+      .afterClosed()
+      .subscribe(async (confirmed: boolean) => {
+        if (!confirmed) {
+          return;
+        }
+
+        try {
+          await this.purchaseOrderService.delete(row.id);
+        } catch (err) {
+          console.error('Failed to delete purchase order', err);
+        }
+      });
+  }
+
   async onCloseForm() {
     this.viewDetails.set(false);
     this.viewType.set('');
@@ -286,17 +378,17 @@ export class Purchases implements OnInit {
     await this.purchaseOrderService.getAll();
   }
 
-  totalOrders = computed(() => this.purchaseOrderService.allPurchaseOrders().length);
+  totalOrders = computed(() => this.rowsInRange().length);
 
   totalOrderAmount = computed(() =>
-    this.orderRows().reduce((sum, row) => sum + row.totalAmount, 0)
+    this.rowsInRange().reduce((sum, row) => sum + row.totalAmount, 0)
   );
 
   private countByStatus(status: PurchaseOrderStatus): number {
     const normalizedStatus = status.toLowerCase();
-    return this.purchaseOrderService
-      .allPurchaseOrders()
-      .filter((order) => order.orderStatus.toLowerCase() === normalizedStatus).length;
+    return this.rowsInRange().filter(
+      (row) => row.normalizedStatus === normalizedStatus
+    ).length;
   }
 
   toDateValue(value: string | Date | null | undefined): Date | null {
@@ -317,12 +409,24 @@ export class Purchases implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  onFromDateChanged(value: Date | null) {
-    this.filterFromDate.set(this.toDateString(value));
+  setCustomStartDate(value: Date | null) {
+    this.customStartDate.set(this.toDateString(value));
   }
 
-  onToDateChanged(value: Date | null) {
-    this.filterToDate.set(this.toDateString(value));
+  setCustomEndDate(value: Date | null) {
+    this.customEndDate.set(this.toDateString(value));
+  }
+
+  private startOfDay(value: Date): Date {
+    const copy = new Date(value);
+    copy.setHours(0, 0, 0, 0);
+    return copy;
+  }
+
+  private endOfDay(value: Date): Date {
+    const copy = new Date(value);
+    copy.setHours(23, 59, 59, 999);
+    return copy;
   }
 
   private formatDate(value?: string): string {

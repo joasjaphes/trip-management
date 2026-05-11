@@ -1,5 +1,5 @@
 <app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
-  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [showAddButton]="false">
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()" [showAddButton]="false" [addPermission]="addPermission()">
   <ng-container ngProjectAs="main">
     <mat-tab-group>
       <mat-tab label="Trip Expenses">
@@ -8,7 +8,7 @@
         </ng-template>
         <app-data-table [data]="tripCategories()" [config]="tableConfigurations" (edit)="onEdit($event)"
           [loading]="loading()" [showAddButton]="true" [addButtonText]="'Add Trip Expenses'"
-          (add)="onAdd()"></app-data-table>
+          (add)="onAdd()" [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab label="Office Expenses">
         <ng-template mat-tab-label>

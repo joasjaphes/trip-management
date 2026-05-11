@@ -5,6 +5,7 @@ import { Layout, SplitSize } from '../../shared/components/layout/layout';
 import { TripForm } from './trip-form/trip-form';
 import { TripDetail } from './trip-detail/trip-detail';
 import { TripExpensesManage } from './trip-expenses-manage/trip-expenses-manage';
+import { TripActualPositionManage } from './trip-actual-position-manage/trip-actual-position-manage';
 import { TripService } from '../../services/trip.service';
 import { Trip, TripStatus } from '../../models/trip.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -15,7 +16,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, MatTooltipModule, MatTabsModule],
+  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, TripActualPositionManage, MatTooltipModule, MatTabsModule],
   templateUrl: './trips.html'
 })
 export class Trips implements OnInit {
@@ -34,6 +35,7 @@ export class Trips implements OnInit {
   loading = this.tripService.loading;
   tabs = ['In Progress', 'Completed']
   selectedTab = signal<'In Progress' | 'Completed'>('In Progress');
+
 
   trips = computed(() =>
     this.tripService.allTrips().map((trip) => ({
@@ -56,12 +58,28 @@ export class Trips implements OnInit {
       canEdit: trip.status !== TripStatus.COMPLETED,
       actions: {
         reviewComplete: trip.status !== TripStatus.COMPLETED,
-        manageExpense: trip.status !== TripStatus.COMPLETED
+        manageExpense: trip.status !== TripStatus.COMPLETED,
+        manageActualPosition: trip.status !== TripStatus.COMPLETED
       }
     }))
   );
 
+  permissions = signal({
+    edit: ['EDIT_TRIP'],
+    view: ['VIEW_TRIPS'],
+    add: ['CREATE_TRIP'],
+    delete: ['DELETE_TRIP'],
+    more: {
+      reviewComplete: ['COMPLETE_TRIP'],
+      manageExpense: ['ADD_TRIP_EXPENSES'],
+      manageActualPosition: ['EDIT_TRIP']
+    }
+  })
+
+  addPermision = signal('CREATE_TRIP');
+
   activeTab = signal<'in-progress' | 'completed'>('in-progress');
+
 
   setTab(tab: 'In Progress' | 'Completed') {
     console.log('Selected tab:', tab);
@@ -84,7 +102,11 @@ export class Trips implements OnInit {
   });
 
   inProgressTrips = computed(() => {
-    return this.trips().filter((trip: any) => !this.isTripCompleted(trip));
+    return this.trips().filter((trip: any) => !this.isTripCompleted(trip) && !trip.isOverstayed);
+  });
+
+  overStayedTrips = computed(() => { 
+    return this.trips().filter((trip: any) =>  trip.isOverstayed);
   });
 
   filteredTrips = computed(() => {
@@ -163,6 +185,12 @@ export class Trips implements OnInit {
       icon: 'fa-solid fa-money-bill-wave text-orange-500',
       action: (row: any) => this.onManageExpense(row)
     },
+    {
+      label: 'Update actual position',
+      key: 'manageActualPosition',
+      icon: 'fa-solid fa-location-dot text-blue-500',
+      action: (row: any) => this.onManageActualPosition(row)
+    },
   ]);
 
   async ngOnInit(): Promise<void> {
@@ -206,6 +234,15 @@ export class Trips implements OnInit {
     this.viewDetails.set(true);
   }
 
+  onManageActualPosition(row: any) {
+    this.selectedTrip.set(row._trip);
+    this.formTitle.set('Update actual position');
+    this.formDescription.set('Update the current trip location/position.');
+    this.viewType.set('manage-actual-position');
+    this.showAddButton.set(false);
+    this.viewDetails.set(true);
+  }
+
   async onCloseForm() {
     this.viewDetails.set(false);
     this.viewType.set('');
@@ -239,6 +276,20 @@ export class Trips implements OnInit {
   }
 
   async onExpensesChanged() {
+    const tripId = this.selectedTrip()?.id;
+    await this.tripService.getAll();
+
+    if (!tripId) {
+      return;
+    }
+
+    const refreshedTrip = this.tripService.getById(tripId);
+    if (refreshedTrip) {
+      this.selectedTrip.set(refreshedTrip);
+    }
+  }
+
+  async onActualPositionChanged() {
     const tripId = this.selectedTrip()?.id;
     await this.tripService.getAll();
 

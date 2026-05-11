@@ -4,11 +4,14 @@ import { CompanyProfilePage } from './modules/configurations/company-profile/com
 import { Login } from './login/login';
 import { Home } from './home/home';
 import { Dashboard } from './modules/dashboard/dashboard';
+import { Notifications } from './modules/notifications/notifications';
 import { Trips } from './modules/trips/trips';
 import { Invoicing } from './modules/trips/invoicing/invoicing';
-import { DebtorsStatementReport } from './modules/reports/debtors-statement-report/debtors-statement-report';
-import { TripStatusReport } from './modules/reports/trip-status-report/trip-status-report';
-import { ExpiringPermitsReport } from './modules/reports/expiring-permits-report/expiring-permits-report';
+import { DriversPermitStatusReport } from './modules/reports/drivers-permit-status/drivers-permit-status-report';
+import { VehiclesPermitStatusReport } from './modules/reports/vehicles-permit-status/vehicles-permit-status-report';
+import { ExpenditureReport } from './modules/reports/expenditure-report/expenditure-report';
+import { DebtorsReport } from './modules/reports/debtors-report/debtors-report';
+import { TripRevenueReport } from './modules/reports/trip-revenue-report/trip-revenue-report';
 import { TripForm } from './modules/trips/trip-form/trip-form';
 import { TripDetail } from './modules/trips/trip-detail/trip-detail';
 import { DriverList } from './modules/configurations/drivers/driver-list/driver-list';
@@ -59,6 +62,10 @@ export const routes: Routes = [
                 component: Dashboard,
             },
             {
+                path: 'notifications',
+                component: Notifications,
+            },
+            {
                 path: 'trips',
                 component: Trips,
             },
@@ -67,16 +74,24 @@ export const routes: Routes = [
                 component: Invoicing,
             },
             {
-                path: 'reports/debtors-statement',
-                component: DebtorsStatementReport,
+                path: 'reports/drivers-permit-status',
+                component: DriversPermitStatusReport,
             },
             {
-                path: 'reports/trip-status',
-                component: TripStatusReport,
+                path: 'reports/vehicles-permit-status',
+                component: VehiclesPermitStatusReport,
             },
             {
-                path: 'reports/expiring-permits',
-                component: ExpiringPermitsReport,
+                path: 'reports/expenditure',
+                component: ExpenditureReport,
+            },
+            {
+                path: 'reports/debtors',
+                component: DebtorsReport,
+            },
+            {
+                path: 'reports/trip-revenue',
+                component: TripRevenueReport,
             },
             {
                 path: 'trips/new',

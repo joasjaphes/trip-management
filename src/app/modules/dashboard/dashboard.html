@@ -44,7 +44,7 @@
         </div>
       </div>
       }
-      <select [(ngModel)]="period" (selectionchange)="summary.reload()"
+      <select [(ngModel)]="period"
         class="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 outline-none focus:border-[#f25f2f] focus:ring-1 focus:ring-[#f25f2f] cursor-pointer shadow-sm transition-all appearance-none pr-10 relative">
         <option value="today">Today</option>
         <option value="weekly">This Week</option>
@@ -54,9 +54,9 @@
     </div>
   </div>
   @if(loading()) {
-    <div class="w-full flex items-center justify-center py-20">
-      <app-placeholder />
-    </div>
+  <div class="w-full flex items-center justify-center py-20">
+    <app-placeholder />
+  </div>
   }@else {
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 w-full">
     @for (stat of stats(); track stat.title) {
@@ -87,8 +87,8 @@
     }
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
-    <div class="lg:col-span-2">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full">
+    <div class="lg:col-span-3">
       <div class="bg-white border border-gray-100 rounded-2xl shadow-sm h-full">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
@@ -99,40 +99,47 @@
 
           <div class="overflow-x-auto w-full">
             <table class="w-full text-left text-sm whitespace-nowrap">
-              <thead class="text-xs text-gray-400 font-bold uppercase tracking-widest border-b border-gray-100">
+              <thead
+                class="bg-gray-50 text-xs text-gray-400 font-bold uppercase tracking-widest border-b border-gray-100">
                 <tr>
 
-                  <th class="pb-4">Trip #</th>
-                  <th class="pb-4">Route</th>
-                  <th class="pb-4">Driver</th>
-                  <th class="pb-4">Truck</th>
-                  <th class="pb-4">Trailer</th>
-                  <th class="pb-4">Start Date</th>
-                  <th class="pb-4">Status</th>
-                  <th class="pb-4">Revenue</th>
+                  <th class="p-4 border-r border-gray-100 pr-4" style="text-align:left">Trip #</th>
+                  <!-- <th class="pb-4">Route</th> -->
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Destination</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Driver</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Truck</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Trailer</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Start Date</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;">Actual Position</th>
+                  <th class="p-4 border-r border-gray-100" style="text-align: left;" title="Distance to destination">Distance to destination</th>
+                  <th class="p-4" style="text-align: left;">Status</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-50">
                 @for (trip of recentTrips(); track trip.id) {
                 <tr class="hover:bg-gray-50 transition-colors">
-                  <td class="font-semibold text-gray-900 py-4 pr-4">{{ trip.tripReferenceNumber }}</td>
-                  <td class="font-semibold text-gray-900 py-4 pr-4">{{ trip.route?.name }}</td>
-                  <td class="py-4 pr-4 text-gray-600 flex items-center gap-2">
+                  <td class="font-semibold text-gray-900 p-4">{{ trip.tripReferenceNumber }}</td>
+                  <!-- <td class="font-semibold text-gray-900 py-4 pr-4">{{ trip.route?.name }}</td> -->
+                  <td class="p-4 text-gray-400">{{trip?.route?.endLocation ?? '-'}}</td>
+                  <td class="p-4 text-gray-600 flex items-center gap-2">
                     <span
                       class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold flex items-center justify-center shrink-0 uppercase">{{
                       trip.driver?.firstName?.charAt(0) }}</span>
                     {{ trip.driver?.firstName }} {{ trip.driver?.lastName }}
                   </td>
-                  <td class="py-4 pr-4">
+                  <td class="p-4" style="text-align:center">
                     <div class="bg-gray-100 text-gray-500 px-2.5 py-1 rounded-lg text-xs font-bold w-max">{{
                       trip.vehicle?.registrationNo }}</div>
                   </td>
-                  <td class="py-4 pr-4">
+                  <td class="p-4" style="text-align:center">
                     <div class="bg-gray-100 text-gray-500 px-2.5 py-1 rounded-lg text-xs font-bold w-max">{{
                       trip.trailer?.registrationNo }}</div>
                   </td>
-                  <td class="py-4 pr-4 text-gray-400">{{ trip.tripDate | date:'yyyy-MM-dd' }}</td>
-                  <td class="py-4 pr-4">
+                  <td class="p-4 text-gray-400" style="text-align:center">{{ trip.tripDate | date:'yyyy-MM-dd' }}
+                  </td>
+                  <td class="p-4 text-gray-400" style="text-align:center">{{ trip.tripActualPosition ?? '-' }}</td>
+                  <td class="p-4 text-gray-400" style="text-align:center">-</td>
+                  <td class="p-4" style="text-align:center">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
                       [ngClass]="getStatusBadgeClass(trip.status)">
                       <span class="w-1.5 h-1.5 rounded-full"
@@ -141,7 +148,6 @@
                       <span class="capitalize">{{ trip.status }}</span>
                     </span>
                   </td>
-                  <td class="font-bold text-gray-900 py-4">TZS {{ trip.revenue?.toLocaleString() }}</td>
                 </tr>
                 }
               </tbody>

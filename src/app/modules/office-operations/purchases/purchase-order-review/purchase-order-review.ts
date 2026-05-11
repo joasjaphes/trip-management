@@ -9,6 +9,8 @@ import { CommonService } from '../../../../services/common.service';
 import { FileUploadService } from '../../../../services/file-upload.service';
 import { PurchaseOrderService } from '../../../../services/purchase-order.service';
 import { SaveArea } from '../../../../shared/components/save-area/save-area';
+import { NumberFormatDirective } from '../../../../shared/directives/number-format';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export type PurchaseOrderReviewMode = 'approve' | 'complete';
 
@@ -17,6 +19,7 @@ type ReviewItem = {
   itemId: string;
   description: string;
   amount: number;
+  quantity: number;
 };
 
 type CompletionAttachment = {
@@ -28,7 +31,7 @@ type CompletionAttachment = {
 @Component({
   selector: 'app-purchase-order-review',
   standalone: true,
-  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule, MatNativeDateModule,NumberFormatDirective,MatTooltipModule],
   templateUrl: './purchase-order-review.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -53,9 +56,9 @@ export class PurchaseOrderReview {
   completionAttachmentUploading = signal(false);
   today = new Date();
 
-  modeLabel = computed(() => (this.mode() === 'approve' ? 'Approve' : 'Complete'));
-  dateLabel = computed(() => (this.mode() === 'approve' ? 'Approval Date' : 'Completion Date'));
-  saveLabel = computed(() => (this.mode() === 'approve' ? 'Approve Order' : 'Complete Order'));
+  modeLabel = computed(() => (this.mode() === 'approve' ? 'Approve' : 'Receive'));
+  dateLabel = computed(() => (this.mode() === 'approve' ? 'Approval Date' : 'Receiving Date'));
+  saveLabel = computed(() => (this.mode() === 'approve' ? 'Approve Order' : 'Receive Order'));
 
   totalAmount = computed(() =>
     this.items().reduce((sum, item) => sum + Number(item.amount || 0), 0)
@@ -63,7 +66,7 @@ export class PurchaseOrderReview {
 
   officeExpenses = computed(() =>
     this.expenses()
-      .filter((category) => category.type === 'OFFICE' && !this.hasChildren(category))
+      .filter((category) => category.type === 'OFFICE' && !this.hasChildren(category) && category.isPurchase)
       .sort((a, b) => a.name.localeCompare(b.name))
   );
 
@@ -88,6 +91,7 @@ export class PurchaseOrderReview {
           itemId: item.itemId,
           description: item.description ?? '',
           amount: Number(item.amount || 0),
+          quantity: Number(item.quantity || 1),
         }))
       );
 
@@ -202,6 +206,7 @@ export class PurchaseOrderReview {
         itemId: '',
         description: '',
         amount: 0,
+        quantity: 1,
       },
     ]);
   }
@@ -210,12 +215,15 @@ export class PurchaseOrderReview {
     this.items.update((items) => items.filter((item) => item.id !== id));
   }
 
-  onItemFieldChange(id: string, field: 'itemId' | 'description' | 'amount', value: string | number) {
+  onItemFieldChange(id: string, field: 'itemId' | 'description' | 'amount' | 'quantity', value: string | number) {
     this.items.update((items) =>
       items.map((item) => {
         if (item.id !== id) return item;
         if (field === 'amount') {
           return { ...item, amount: Number(value || 0) };
+        }
+        if (field === 'quantity') {
+          return { ...item, quantity: Number(value || 0) };
         }
         return { ...item, [field]: value as string };
       })
@@ -236,6 +244,7 @@ export class PurchaseOrderReview {
       const orderItems = this.items().map((item) => ({
         itemId: item.itemId,
         description: item.description || undefined,
+        quantity: Number(item.quantity),
         amount: Number(item.amount),
       }));
 
@@ -253,9 +262,8 @@ export class PurchaseOrderReview {
           completionAttachment: this.completionAttachment().path || undefined,
           orderItems,
         });
-        this.successMessage.set('Purchase order completed successfully.');
+        this.successMessage.set('Purchase order received successfully.');
       }
-
       setTimeout(() => this.close.emit(), 800);
     } catch (err) {
       this.errorMessage.set(err?.toString() ?? `Failed to ${this.mode()} purchase order`);

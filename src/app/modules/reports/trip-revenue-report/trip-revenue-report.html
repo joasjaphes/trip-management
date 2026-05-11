@@ -1,0 +1,128 @@
+<app-layout title="Trip Revenue Report" [showAddButton]="false">
+  <main>
+    <div class="report-page">
+      <!-- Legend + actions -->
+      <div class="flex items-center justify-end gap-4 mb-4">
+        <div class="flex items-center gap-2">
+          <button type="button" (click)="exportCsv()" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export CSV</button>
+          <button type="button" (click)="exportPdf()" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export PDF</button>
+        </div>
+      </div>
+
+      <div class="period-controls">
+        <label>Period:
+          <select [(ngModel)]="periodModel">
+            <option value="monthly">Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="semiannual">Semi-annual</option>
+            <option value="yearly">Yearly</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+
+        @if (period() === 'monthly') {
+          <label>Year:
+            <select [(ngModel)]="yearModel">
+              @for (y of years(); track y) {
+                <option [value]="y">{{y}}</option>
+              }
+            </select>
+          </label>
+          <label>Month:
+            <select [(ngModel)]="monthModel">
+              @for (m of months(); track m.v) {
+                <option [value]="m.v" [disabled]="year() === currentYear() && m.v > currentMonth()">{{m.label}}</option>
+              }
+            </select>
+          </label>
+        } @else if (period() === 'quarterly') {
+          <label>Year:
+            <select [(ngModel)]="yearModel">
+              @for (y of years(); track y) {
+                <option [value]="y">{{y}}</option>
+              }
+            </select>
+          </label>
+          <label>Quarter:
+            <select [(ngModel)]="quarterModel">
+              @for (q of quarters(); track q.v) {
+                <option [value]="q.v" [disabled]="year() === currentYear() && q.v > currentQuarter()">{{q.label}}</option>
+              }
+            </select>
+          </label>
+        } @else if (period() === 'semiannual') {
+          <label>Year:
+            <select [value]="year()" (change)="year.set(+$any($event.target).value)">
+              @for (y of years(); track y) {
+                <option [value]="y">{{y}}</option>
+              }
+            </select>
+          </label>
+          <label>Half:
+            <select [value]="half()" (change)="half.set(+$any($event.target).value)">
+              @for (h of halves(); track h.v) {
+                <option [value]="h.v" [disabled]="year() === currentYear() && h.v > currentHalf()">{{h.label}}</option>
+              }
+            </select>
+          </label>
+        } @else if (period() === 'yearly') {
+          <label>Year:
+            <select [(ngModel)]="yearModel">
+              @for (y of years(); track y) {
+                <option [value]="y">{{y}}</option>
+              }
+            </select>
+          </label>
+        } @else {
+          <label>Start: <input type="date" [(ngModel)]="customStartModel" /></label>
+          <label>End: <input type="date" [(ngModel)]="customEndModel" /></label>
+        }
+
+        <button type="button" (click)="loadReport()">Run</button>
+      </div>
+
+      @if(loading()) {
+        <div class="w-full flex items-center justify-center">
+            <app-placeholder></app-placeholder>
+        </div>
+      } @else if (rows().length === 0) {
+        <p>No trip revenue data available</p>
+      } @else {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="text-left">Trip Date</th>
+                <th class="text-left">Trip Number</th>
+                <th class="text-left">Route</th>
+                <th class="text-left">Customer Name</th>
+                <th class="text-right">Gross Revenue</th>
+                <th class="text-right">Total Trip Expenses</th>
+                <th class="text-right">Trip Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows(); track $index) {
+                <tr>
+                  <td class="text-left">{{ row.tripDate | date }}</td>
+                  <td class="text-left">{{ row.tripNumber }}</td>
+                  <td class="text-left">{{ row.route }}</td>
+                  <td class="text-left">{{ row.customerName }}</td>
+                  <td class="text-right">{{ row.tripRevenue | number: '1.2-2' }}</td>
+                  <td class="text-right">{{ row.totalTripExpenses | number: '1.2-2' }}</td>
+                  <td class="text-right">{{ row.netIncome | number: '1.2-2' }}</td>
+                </tr>
+              }
+              <tr class="font-bold bg-gray-100 border-t-2 border-gray-400">
+                <td colspan="4" class="text-left">TOTAL</td>
+                <td class="text-right">{{ totals().totalTripRevenue | number: '1.2-2' }}</td>
+                <td class="text-right">{{ totals().totalTripExpenses | number: '1.2-2' }}</td>
+                <td class="text-right">{{ totals().totalNetIncome | number: '1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </main>
+</app-layout>

@@ -28,7 +28,7 @@ export class UserService {
         username,
         password,
       });
-      console.log('user', user);
+      console.log('logged user', user);
       localStorage.setItem('trip-management-token', token);
       localStorage.setItem('trip-management-user', JSON.stringify(user));
       return true;
@@ -51,7 +51,11 @@ export class UserService {
 
   async saveUser(user: User) {
     try {
-      await this.http.post('users', user);
+      if (user.id) {
+        await this.http.put(`users`, user);
+      } else {
+        await this.http.post('users', user);
+      }
       this.users.update((users) => {
         const index = users.findIndex((u) => u.id === user.id);
         if (index > -1) {
@@ -63,6 +67,15 @@ export class UserService {
       });
     } catch (e) {
       console.error('Failed to save user', e);
+      throw e;
+    }
+  }
+
+  async changePassword(userId: string, password: string) {
+    try {
+      return await this.http.patch(`users/${userId}/password`, { password });
+    } catch (e) {
+      console.error('Failed to change password', e);
       throw e;
     }
   }

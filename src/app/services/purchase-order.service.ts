@@ -148,4 +148,20 @@ export class PurchaseOrderService {
       this.isLoading.set(false);
     }
   }
+
+  async delete(id: string): Promise<void> {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    try {
+      await this.http.delete(`purchaseOrders/${id}`);
+      await this.getAll();
+    } catch (err) {
+      this.error.set(err?.toString() || 'Failed to delete purchase order');
+      console.error('Failed to delete purchase order', err);
+      throw err;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
 }

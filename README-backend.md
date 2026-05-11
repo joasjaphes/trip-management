@@ -5,8 +5,10 @@ A comprehensive backend API for managing trips, customers, vendors, purchase ord
 ## Table of Contents
 - [Base Configuration](#base-configuration)
 - [Authentication](#authentication)
+- [Roles and Permissions](#roles-and-permissions)
 - [API Endpoints](#api-endpoints)
 - [Purchase Orders](#purchaseOrders-api-purchaseOrders)
+- [Reports](#reports-api-reports)
 - [Data Models](#data-models)
 - [Migrations](#migrations)
 - [Error Handling](#error-handling)
@@ -66,6 +68,196 @@ fetch('http://localhost:3000/api/users/me', {
 Most endpoints require authentication. The following endpoints are public:
 - `POST /api/users` - Create new user
 
+## Roles and Permissions
+
+The API implements a **Role-Based Access Control (RBAC)** system to manage user permissions and authorization.
+
+### Overview
+- **Users** can have one or more **Roles**
+- **Roles** can have one or more **Permissions**
+- **Permissions** are defined by keys (e.g., `user.create`, `trip.delete`)
+- Users are authorized to perform actions based on their assigned roles and the permissions associated with those roles
+
+### Roles API (`/api/roles`)
+
+#### Get All Roles
+```http
+GET /api/roles
+Authorization: Basic <credentials>
+```
+
+**Response:**
+```json
+[
+  {
+    "id": "role-uid-123",
+    "name": "admin",
+    "permissions": ["user.create", "user.delete", "user.update", "trip.create", "trip.delete"],
+    "active": true,
+    "deleted": false,
+    "createdAt": "2026-01-01T10:00:00.000Z",
+    "updatedAt": "2026-01-01T10:00:00.000Z"
+  },
+  {
+    "id": "role-uid-456",
+    "name": "user",
+    "permissions": ["trip.create", "trip.read"],
+    "active": true,
+    "deleted": false,
+    "createdAt": "2026-01-02T10:00:00.000Z",
+    "updatedAt": "2026-01-02T10:00:00.000Z"
+  }
+]
+```
+
+#### Create Role
+```http
+POST /api/roles
+Authorization: Basic <credentials>
+Content-Type: application/json
+
+{
+  "name": "manager",
+  "permissions": ["user.create", "trip.create", "trip.update", "invoice.read", "invoice.update"]
+}
+```
+
+**Request Fields:**
+- `name` (string, required): Unique role name
+- `permissions` (array, optional): Array of permission keys. Permissions are auto-created if they don't exist.
+
+### Permissions
+
+Permissions are defined by a unique key string and an optional description. They are automatically created when referenced in a role.
+
+**Common Permission Keys:**
+- `user.create` - Create new users
+- `user.read` - View user information
+- `user.update` - Update user information
+- `user.delete` - Delete users
+- `trip.create` - Create new trips
+- `trip.read` - View trips
+- `trip.update` - Update trips
+- `trip.delete` - Delete trips
+- `invoice.create` - Create invoices
+- `invoice.read` - View invoices
+- `invoice.update` - Update invoices
+- `invoice.delete` - Delete invoices
+- `role.create` - Create new roles
+- `role.read` - View roles
+- `role.update` - Update roles
+- `role.delete` - Delete roles
+
+### User Roles
+
+Users are linked to roles through a many-to-many relationship. A user can have multiple roles, and each role provides a set of permissions.
+
+#### Create User with Roles
+```http
+POST /api/users
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "surname": "Doe",
+  "phoneNumber": "255712345678",
+  "password": "StrongPassword123!",
+  "email": "user@example.com",
+  "roles": ["role-uid-123", "role-uid-456"]
+}
+```
+
+#### Get User with Roles
+```http
+GET /api/users/:id
+Authorization: Basic <credentials>
+```
+
+**Response (without eager loading):**
+```json
+{
+  "id": "user-uid-123",
+  "firstName": "John",
+  "surname": "Doe",
+  "email": "user@example.com",
+  "phoneNumber": "255712345678",
+  "username": "john.doe",
+  "roles": ["role-uid-123", "role-uid-456"],
+  "createdAt": "2026-01-01T10:00:00.000Z",
+  "updatedAt": "2026-01-01T10:00:00.000Z"
+}
+```
+
+By default, the `GET /api/users/:id` endpoint returns role UIDs. To retrieve complete role details including permissions, call:
+
+```http
+GET /api/users/:id
+Authorization: Basic <credentials>
+```
+
+And the response will include full role objects with their permissions:
+```json
+{
+  "id": "user-uid-123",
+  "firstName": "John",
+  "surname": "Doe",
+  "email": "user@example.com",
+  "phoneNumber": "255712345678",
+  "username": "john.doe",
+  "roles": [
+    {
+      "id": "role-uid-123",
+      "name": "admin",
+      "permissions": ["user.create", "user.delete", "trip.create"],
+      "active": true,
+      "deleted": false
+    },
+    {
+      "id": "role-uid-456",
+      "name": "manager",
+      "permissions": ["trip.create", "trip.update"],
+      "active": true,
+      "deleted": false
+    }
+  ],
+  "createdAt": "2026-01-01T10:00:00.000Z",
+  "updatedAt": "2026-01-01T10:00:00.000Z"
+}
+```
+
+#### Get All Users with Roles
+```http
+GET /api/users
+Authorization: Basic <credentials>
+```
+
+This endpoint returns all users with their roles and permissions eagerly loaded.
+
+### Role Assignment Implementation
+
+When creating or updating a user with roles:
+
+1. **Validation**: All provided role UIDs are validated against the database. If any role UID does not exist, the operation fails with a `400 Bad Request` error listing the invalid role UIDs.
+
+2. **Transaction Safety**: Role assignment is performed within the user creation/update transaction, ensuring consistency.
+
+3. **Error Response**: If invalid roles are provided, the API returns:
+   ```json
+   {
+     "statusCode": 400,
+     "message": "The following role(s) do not exist: role-uid-invalid-1, role-uid-invalid-2"
+   }
+   ```
+
+4. **Empty Roles**: When updating a user:
+   - If `roles` is not provided, existing roles are preserved
+   - If `roles` is provided as an empty array `[]`, all roles are removed from the user
+
+5. **Role Loading**: 
+   - Create and update operations return the user with roles eagerly loaded
+   - Get operations by default return role UIDs only
+   - For complete role details with permissions, use the dedicated GET endpoints
+
 ## API Endpoints
 
 ### Users (`/api/users`)
@@ -98,9 +290,48 @@ Content-Type: application/json
   "surname": "Doe",
   "phoneNumber": "255712345678",
   "password": "StrongPassword123!",
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "roles": ["role-uid-123", "role-uid-456"]
 }
 ```
+
+**Request Fields:**
+- `firstName` (string, required): User's first name
+- `surname` (string, required): User's surname/last name
+- `phoneNumber` (string, required): User's phone number (must be unique)
+- `password` (string, required): Password meeting security requirements
+- `email` (string, optional): User's email address
+- `roles` (array, optional): Array of role UIDs to assign to the user
+
+**Password Requirements:**
+- Minimum 8 characters
+- At least one uppercase letter
+- At least one lowercase letter
+- At least one number
+- At least one special character
+
+**Response:**
+```json
+{
+  "id": "user-uid-123",
+  "firstName": "John",
+  "surname": "Doe",
+  "email": "user@example.com",
+  "phoneNumber": "255712345678",
+  "username": "255712345678",
+  "roles": ["role-uid-123", "role-uid-456"],
+  "createdAt": "2026-01-01T10:00:00.000Z",
+  "updatedAt": "2026-01-01T10:00:00.000Z"
+}
+```
+
+**Error Handling:**
+- If any role UID in the roles array does not exist, the request will fail with a `400 Bad Request`:
+  ```json
+  {
+    "message": "The following role(s) do not exist: role-uid-invalid"
+  }
+  ```
 
 #### Update User
 ```http
@@ -113,10 +344,40 @@ Content-Type: application/json
   "firstName": "John",
   "surname": "Doe",
   "phoneNumber": "255712345678",
-  "password": "StrongPassword123!",
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "roles": ["role-uid-123"]
 }
 ```
+
+**Request Fields:**
+- `id` (string, required): User's unique identifier
+- `firstName` (string, optional): User's first name
+- `surname` (string, optional): User's surname/last name
+- `email` (string, optional): User's email address
+- `roles` (array, optional): Array of role UIDs to assign to the user. Pass empty array to remove all roles.
+
+**Response:**
+```json
+{
+  "id": "user-id",
+  "firstName": "John",
+  "surname": "Doe",
+  "email": "user@example.com",
+  "phoneNumber": "255712345678",
+  "username": "255712345678",
+  "roles": ["role-uid-123"],
+  "createdAt": "2026-01-01T10:00:00.000Z",
+  "updatedAt": "2026-01-01T10:00:00.000Z"
+}
+```
+
+**Error Handling:**
+- If any role UID in the roles array does not exist, the request will fail with a `400 Bad Request`:
+  ```json
+  {
+    "message": "The following role(s) do not exist: role-uid-invalid"
+  }
+  ```
 
 #### Change Password
 ```http
@@ -203,6 +464,45 @@ Content-Type: application/json
   "status": "inprogress"
 }
 ```
+
+#### Update Trip Actual Position
+```http
+PATCH /api/trips/:id/actualPosition
+Content-Type: application/json
+
+{
+  "tripId": "trip-uid-123",
+  "tripActualPosition": "Lat: -6.7, Lng: 39.2"
+}
+```
+
+This endpoint updates the actual position of a trip. The position can be stored in any format (e.g., GPS coordinates, location name, etc.).
+
+**Response:**
+```json
+{
+  "id": "trip-uid-123",
+  "tripReferenceNumber": "TRP-1234567890",
+  "tripDate": "2026-03-07T10:00:00.000Z",
+  "endDate": "2026-03-08T10:00:00.000Z",
+  "tripActualPosition": "Lat: -6.7, Lng: 39.2",
+  "isOverstayed": false,
+  "daysExceeded": 0,
+  "vehicleId": "vehicle-uid-123",
+  "driverId": "driver-uid-123",
+  "routeId": "route-uid-123",
+  "cargoTypeId": "cargo-type-uid-123",
+  "revenue": 1500000,
+  "paidAmount": 200000,
+  "income": 1200000,
+  "status": "inprogress"
+}
+```
+
+**Trip Fields:**
+- `tripActualPosition` (string, optional): The actual position/location of the trip
+- `isOverstayed` (boolean, virtual): Indicates if the trip exceeded the estimated duration. Calculated as `daysExceeded > 0`
+- `daysExceeded` (number, virtual): Number of days the trip exceeded the estimated duration from the route. Calculated as `(endDate - tripDate) - route.estimatedDuration`. If positive, the trip is overdue; if zero or negative, no overstay
 
 ---
 
@@ -1117,6 +1417,231 @@ file: <binary-file-data>
 ```
 
 Use this file path in fields like `driverPhoto`, `licenseFrontPagePhoto`, `receiptAttachment`, etc.
+
+---
+
+### Reports (`/api/reports`)
+
+Reports provide aggregated insights into drivers' permit statuses, vehicles' permit statuses, and expenditure breakdowns.
+
+#### Get Driver Permit Status Report
+```http
+GET /api/reports/drivers-permit-status
+Authorization: Basic <credentials>
+```
+
+**Response:**
+```json
+[
+  {
+    "driverName": "John Doe",
+    "phoneNumber": "+255712345678",
+    "permits": [
+      {
+        "permitName": "Driving License",
+        "daysToExpiry": 120,
+        "expiryDate": "2026-09-01T00:00:00.000Z"
+      },
+      {
+        "permitName": "Passport",
+        "daysToExpiry": 365,
+        "expiryDate": "2027-05-01T00:00:00.000Z"
+      }
+    ]
+  }
+]
+```
+
+**Response Fields:**
+- `driverName`: Full name of the driver (first name + last name)
+- `phoneNumber`: Driver's phone number
+- `permits`: Array of permit objects
+  - `permitName`: Name of the permit (Driving License or Passport)
+  - `daysToExpiry`: Number of days until the permit expires (null if not set)
+  - `expiryDate`: ISO 8601 formatted expiry date (null if not set)
+
+#### Get Vehicle Permit Status Report
+```http
+GET /api/reports/vehicles-permit-status
+Authorization: Basic <credentials>
+```
+
+**Response:**
+```json
+[
+  {
+    "registrationNo": "T123 ABC",
+    "vehicleType": "Truck",
+    "permits": [
+      {
+        "name": "Road License",
+        "issuingAuthority": null,
+        "expiryDate": "2026-12-31T00:00:00.000Z",
+        "daysToExpiry": 245
+      },
+      {
+        "name": "Insurance Certificate",
+        "issuingAuthority": null,
+        "expiryDate": "2026-08-15T00:00:00.000Z",
+        "daysToExpiry": 106
+      }
+    ]
+  }
+]
+```
+
+**Response Fields:**
+- `registrationNo`: Vehicle registration number
+- `vehicleType`: Type of vehicle (Truck or Trailer)
+- `permits`: Array of permit objects
+  - `name`: Permit name/description
+  - `issuingAuthority`: Authority that issued the permit (currently null)
+  - `expiryDate`: ISO 8601 formatted expiry date
+  - `daysToExpiry`: Number of days until the permit expires (null if no expiry date)
+
+#### Get Expenditure Report
+```http
+GET /api/reports/expenditure?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Basic <credentials>
+```
+
+**Query Parameters:**
+- `startDate` (optional): ISO 8601 date string (YYYY-MM-DD) for filtering start date
+- `endDate` (optional): ISO 8601 date string (YYYY-MM-DD) for filtering end date
+
+**Response:**
+```json
+{
+  "tripExpenses": {
+    "items": [
+      {
+        "itemId": "expense-uid-123",
+        "itemName": null,
+        "totalAmount": 500000
+      },
+      {
+        "itemId": "expense-uid-456",
+        "itemName": null,
+        "totalAmount": 250000
+      }
+    ],
+    "total": 750000
+  },
+  "purchases": {
+    "items": [
+      {
+        "itemId": "expense-uid-789",
+        "itemName": null,
+        "totalAmount": 1000000
+      }
+    ],
+    "total": 1000000
+  },
+  "officeExpenses": {
+    "items": [
+      {
+        "itemId": "expense-uid-101",
+        "itemName": null,
+        "totalAmount": 300000
+      }
+    ],
+    "total": 300000
+  },
+  "grandTotal": 2050000
+}
+```
+
+**Response Structure:**
+- `tripExpenses`: Trip-related expenses aggregated by expense item
+  - `items`: Array of aggregated expense items with `itemId`, `itemName`, and `totalAmount`
+  - `total`: Sum of all trip expenses
+- `purchases`: Purchase order items aggregated by item
+  - `items`: Array of aggregated purchase items with `itemId`, `itemName`, and `totalAmount`
+  - `total`: Sum of all purchases
+- `officeExpenses`: Office expense transactions aggregated by expense item
+  - `items`: Array of aggregated office expense items with `itemId`, `itemName`, and `totalAmount`
+  - `total`: Sum of all office expenses
+- `grandTotal`: Total of all expenses (tripExpenses.total + purchases.total + officeExpenses.total)
+
+#### Get Trip Revenue Report
+
+```http
+GET /api/reports/tripRevenue?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Basic <credentials>
+```
+
+Query Parameters:
+- `startDate` (optional): ISO 8601 date string (YYYY-MM-DD) to filter trip start
+- `endDate` (optional): ISO 8601 date string (YYYY-MM-DD) to filter trip end
+
+Notes:
+- All monetary amounts in the response are returned in TZS.
+- If a trip was charged in USD, the service converts the stored `revenue` using the trip's saved `exchangeRate` to compute TZS values.
+
+Example Response:
+```json
+{
+  "items": [
+    {
+      "tripDate": "2026-03-01T10:00:00.000Z",
+      "tripNumber": "TRP-1610000000000",
+      "route": "Dar - Mwanza",
+      "customerName": "Acme Corporation",
+      "tripRevenue": 2300000,
+      "totalTripExpenses": 450000,
+      "netIncome": 1850000
+    }
+  ],
+  "totalTripRevenue": 2300000,
+  "totalTripExpenses": 450000,
+  "totalNetIncome": 1850000
+}
+```
+
+#### Get Debtors Report
+
+```http
+GET /api/reports/debtors?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Basic <credentials>
+```
+
+Query Parameters:
+- `startDate` (optional): ISO 8601 date string (YYYY-MM-DD) to restrict receipts/invoices considered
+- `endDate` (optional): ISO 8601 date string (YYYY-MM-DD) to restrict receipts/invoices considered
+
+Notes:
+- The report groups outstanding invoices by customer.
+- For each invoice the paid amount is calculated from `receipts` tied to that invoice and filtered to the provided date range.
+- If an invoice or its receipts are denominated in USD, the values are converted to TZS using the invoice's saved `exchangeRate` before aggregation.
+- Only invoices with outstanding > 0 (after receipts in the date range) are included.
+
+Example Response:
+```json
+{
+  "items": [
+    {
+      "customerName": "Acme Corporation",
+      "totalInvoicedAmount": 5000000,
+      "totalPaidAmount": 3000000,
+      "outstandingAmount": 2000000,
+      "invoices": [
+        {
+          "invoiceNumber": "INV-1610000000000",
+          "amount": 3000000,
+          "paidAmount": 2000000,
+          "outstanding": 1000000,
+          "issuedAt": "2026-03-01T00:00:00.000Z"
+        }
+      ]
+    }
+  ],
+  "totalInvoicedAmount": 5000000,
+  "totalPaidAmount": 3000000,
+  "totalOutstandingAmount": 2000000
+}
+```
+
+---
 
 ## Data Models
 
