@@ -50,9 +50,12 @@ export const PERMISSION_MODULES: PermissionModule[] = [
         key: 'reports',
         label: 'Reports',
         permissions: [
-            { key: 'VIEW_DEBTORS_STATEMENT_REPORT', label: 'View Debtors Statement Report' },
-            { key: 'VIEW_TRIP_STATUS_REPORT', label: 'View Trip Status Report' },
-            { key: 'VIEW_EXPIRING_PERMITS_REPORT', label: 'View Expiring Permits Report' },
+            { key: 'VIEW_DRIVER_PERMITS_STATUS', label: 'View Driver Permits Status' },
+            { key: 'VIEW_VEHICLE_PERMITS_STATUS', label: 'View Vehicle Permits Status' },
+            { key: 'VIEW_EXPENDITURE_REPORT', label: 'View Expenditure Report' },
+            { key: 'VIEW_DEBTORS_STATEMENT_REPORT', label: 'View Debtors Report' },
+            { key: 'VIEW_TRIP_REVENUE_REPORT', label: 'View Trip Revenue Report' },
+            { key: 'VIEW_CASH_REPORT', label: 'View Cash Report' },
         ],
     },
     {

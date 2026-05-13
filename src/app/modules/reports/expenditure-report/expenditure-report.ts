@@ -2,9 +2,18 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit, e
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportService } from '../../../services/report.service';
+import { CompanyProfileService } from '../../../services/company-profile.service';
 import { Layout } from '../../../shared/components/layout/layout';
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
 import { escapeCsv } from '../drivers-permit-status/exports-helper';
+import {
+  escapeHtml,
+  formatPeriodLabel,
+  openReportPrintWindow,
+  renderBrandedHeader,
+  renderPeriodMeta,
+  renderReportNote,
+} from '../report-print.util';
 
 type PeriodType = 'custom' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
 
@@ -18,6 +27,7 @@ type PeriodType = 'custom' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
 })
 export class ExpenditureReport implements OnInit {
   private reportService = inject(ReportService);
+  private companyService = inject(CompanyProfileService);
 
   loading = signal(false);
   rows = signal<any[]>([]);
@@ -120,33 +130,69 @@ export class ExpenditureReport implements OnInit {
   }
 
   exportPdf() {
+    const label = formatPeriodLabel({
+      type: this.period(),
+      year: this.year(),
+      month: this.month(),
+      quarter: this.quarter(),
+      half: this.half(),
+      customStart: this.customStart(),
+      customEnd: this.customEnd(),
+    });
+    openReportPrintWindow(`Expenditure Report - ${label}`, this.renderReportBody(label));
+  }
 
-    const buildTable = () => {
-      const decimalPipe = new DecimalPipe('en-US');
-      let html = '<table style="width:100%;border-collapse:collapse">';
-      html += '<thead><tr><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Item</th><th style="border:1px solid #ddd;padding:8px;background:#f3f4f6">Total</th></tr></thead><tbody>';
-      for (const r of this.rows()) {
-        console.log('Row', r);
-        html += `<tr><td style="border:1px solid #ddd;padding:8px">${r.itemName || r.itemId}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(r.total || 0, '1.2-2') }</td></tr>`;
-        if (r.items) {
-          for (const i of r.items) {
-            html += `<tr><td style="border:1px solid #ddd;padding:8px 8px 8px 32px">${i.itemName || i.itemId}</td><td style="border:1px solid #ddd;padding:8px; text-align: right;">${decimalPipe.transform(i.totalAmount || 0, '1.2-2') }</td></tr>`;
-          }
-        }
-      };  
-      html += `<tr><td style="border:1px solid #ddd;padding:8px;font-weight:bold">Overall Total</td><td style="border:1px solid #ddd;padding:8px;font-weight:bold; text-align: right;">${decimalPipe.transform(this.grandTotal() || 0, '1.2-2') }</td></tr>`;
-      html += '</tbody></table>';
-      return html;
-    }
-      const content = `<!doctype html><html><head><meta charset="utf-8"><title>Expenditure</title>` +
-        `<style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}th{background:#f3f4f6}</style>` +
-        `</head><body><h1>Expenditure</h1>${buildTable()}</body></html>`;
-      const printWindow = window.open('', '_blank', 'width=900,height=700');
-      printWindow.document.open();
-      printWindow.document.write(content);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => { printWindow.print(); }, 500);
+  private renderReportBody(periodLabel: string): string {
+    const profile = this.companyService.profile();
+    const numberPipe = new DecimalPipe('en-US');
+    const formatAmount = (v: unknown) => numberPipe.transform(Number(v) || 0, '1.2-2') ?? '0.00';
+    const range = this.periodRange();
+
+    const categoryRowsHtml = this.rows().length === 0
+      ? `<tr><td class="cell center" colspan="2" style="padding: 24px; color:#888;">No expenditure recorded in this period.</td></tr>`
+      : this.rows().map((r) => {
+          const items = (r.items as Array<{ itemName?: string; itemId?: string; totalAmount?: number }>) || [];
+          const itemsHtml = items.map((i) => `
+            <tr class="item-row">
+              <td class="cell item-name">${escapeHtml(i.itemName || i.itemId || '-')}</td>
+              <td class="cell right item-amount">${formatAmount(i.totalAmount)}</td>
+            </tr>`).join('');
+
+          return `
+            <tr class="category-row">
+              <td class="cell category-name">${escapeHtml(r.itemName || '-')}</td>
+              <td class="cell right category-total">${formatAmount(r.total)}</td>
+            </tr>
+            ${itemsHtml}
+          `;
+        }).join('');
+
+    return `
+    <div class="report-document">
+      ${renderBrandedHeader(profile)}
+
+      <h2 class="report-title">Expenditure Report</h2>
+
+      ${renderPeriodMeta(periodLabel, range.start, range.end)}
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th class="cell head" style="width: 70%;">Category / Item</th>
+            <th class="cell head right" style="width: 30%;">Amount (TZS)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${categoryRowsHtml}
+          <tr class="grand-total-row">
+            <td class="cell bold">GRAND TOTAL</td>
+            <td class="cell right bold">${formatAmount(this.grandTotal())}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      ${renderReportNote()}
+    </div>`;
   }
 
   async ngOnInit(): Promise < void> {

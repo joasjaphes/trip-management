@@ -1422,7 +1422,7 @@ Use this file path in fields like `driverPhoto`, `licenseFrontPagePhoto`, `recei
 
 ### Reports (`/api/reports`)
 
-Reports provide aggregated insights into drivers' permit statuses, vehicles' permit statuses, and expenditure breakdowns.
+Reports provide aggregated insights into permit status, expenditure, trip revenue, debtors, and invoice cash collections.
 
 #### Get Driver Permit Status Report
 ```http
@@ -1638,6 +1638,44 @@ Example Response:
   "totalInvoicedAmount": 5000000,
   "totalPaidAmount": 3000000,
   "totalOutstandingAmount": 2000000
+}
+```
+
+#### Get Cash Report
+
+```http
+GET /api/reports/cash?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Basic <credentials>
+```
+
+Query Parameters:
+- `startDate` (optional): ISO 8601 date string (YYYY-MM-DD) used to filter invoices and receipt dates.
+- `endDate` (optional): ISO 8601 date string (YYYY-MM-DD) used to filter invoices and receipt dates.
+
+Notes:
+- Returns one row per invoice with: invoice date, invoice number, invoiced amount, and actual received amount.
+- `actualReceivedAmount` is calculated from `receipts` linked to each invoice, using only receipts where `paidAt` is inside the provided date range.
+- Amounts are returned in TZS. When invoice currency is USD, both invoiced and received values are converted using the invoice `exchangeRate`.
+
+Example Response:
+```json
+{
+  "items": [
+    {
+      "invoiceDate": "2026-03-01T00:00:00.000Z",
+      "invoiceNumber": "INV-1610000000000",
+      "invoicedAmount": 3000000,
+      "actualReceivedAmount": 1800000
+    },
+    {
+      "invoiceDate": "2026-03-15T00:00:00.000Z",
+      "invoiceNumber": "INV-1610000000011",
+      "invoicedAmount": 2000000,
+      "actualReceivedAmount": 0
+    }
+  ],
+  "totalInvoicedAmount": 5000000,
+  "totalActualReceivedAmount": 1800000
 }
 ```
 

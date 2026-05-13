@@ -12,6 +12,7 @@ import { VehiclesPermitStatusReport } from './modules/reports/vehicles-permit-st
 import { ExpenditureReport } from './modules/reports/expenditure-report/expenditure-report';
 import { DebtorsReport } from './modules/reports/debtors-report/debtors-report';
 import { TripRevenueReport } from './modules/reports/trip-revenue-report/trip-revenue-report';
+import { CashReport } from './modules/reports/cash-report/cash-report';
 import { TripForm } from './modules/trips/trip-form/trip-form';
 import { TripDetail } from './modules/trips/trip-detail/trip-detail';
 import { DriverList } from './modules/configurations/drivers/driver-list/driver-list';
@@ -92,6 +93,10 @@ export const routes: Routes = [
             {
                 path: 'reports/trip-revenue',
                 component: TripRevenueReport,
+            },
+            {
+                path: 'reports/cash',
+                component: CashReport,
             },
             {
                 path: 'trips/new',

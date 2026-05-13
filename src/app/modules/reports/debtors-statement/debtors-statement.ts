@@ -120,15 +120,15 @@ export class DebtorsStatement {
 
     <div class="summary">
       <div class="card">
-        <div class="label">Invoiced</div>
+        <div class="label">Invoiced (TZS)</div>
         <div class="value">${money.transform(this.totals().totalInvoicedAmount || 0, '1.2-2')}</div>
       </div>
       <div class="card">
-        <div class="label">Paid</div>
+        <div class="label">Paid (TZS)</div>
         <div class="value">${money.transform(this.totals().totalPaidAmount || 0, '1.2-2')}</div>
       </div>
       <div class="card">
-        <div class="label">Outstanding</div>
+        <div class="label">Outstanding (TZS)</div>
         <div class="value">${money.transform(this.totals().totalOutstandingAmount || 0, '1.2-2')}</div>
       </div>
     </div>
@@ -138,9 +138,9 @@ export class DebtorsStatement {
         <tr>
           <th>Invoice Date</th>
           <th>Invoice Number</th>
-          <th class="right">Invoice Amount</th>
-          <th class="right">Paid Amount</th>
-          <th class="right">Outstanding Amount</th>
+          <th class="right">Invoice Amount (TZS)</th>
+          <th class="right">Paid Amount (TZS)</th>
+          <th class="right">Outstanding Amount (TZS)</th>
         </tr>
       </thead>
       <tbody>

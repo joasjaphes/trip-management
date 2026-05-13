@@ -82,13 +82,22 @@ export class Home implements OnInit {
     {
       label: 'Reports',
       icon: 'M9 17v-6m4 6V7m4 10v-3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z',
-      permission: ['VIEW_DEBTORS_STATEMENT_REPORT', 'VIEW_TRIP_STATUS_REPORT', 'VIEW_EXPIRING_PERMITS_REPORT'],
+      permission: [
+        'VIEW_EXPIRING_PERMITS_REPORT',
+        'VIEW_DRIVER_PERMITS_STATUS',
+        'VIEW_VEHICLE_PERMITS_STATUS',
+        'VIEW_EXPENDITURE_REPORT',
+        'VIEW_DEBTORS_STATEMENT_REPORT',
+        'VIEW_TRIP_REVENUE_REPORT',
+        'VIEW_CASH_REPORT',
+      ],
       items: [
-        { label: 'Drivers Permit Status', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7', route: '/reports/drivers-permit-status', permission: 'VIEW_DRIVERS' },
-        { label: 'Vehicles Permit Status', icon: 'M8 7v8a2 2 0 002 2h6', route: '/reports/vehicles-permit-status', permission: 'VIEW_VEHICLE_PERMITS' },
+        { label: 'Drivers Permit Status', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7', route: '/reports/drivers-permit-status', permission: 'VIEW_DRIVER_PERMITS_STATUS' },
+        { label: 'Vehicles Permit Status', icon: 'M8 7v8a2 2 0 002 2h6', route: '/reports/vehicles-permit-status', permission: 'VIEW_VEHICLE_PERMITS_STATUS' },
         { label: 'Expenditure Report', icon: 'M4 7h16M4 12h16M4 17h10', route: '/reports/expenditure', permission: 'VIEW_EXPENDITURE_REPORT' },
         { label: 'Debtors Report', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1M14.599 9C14.08 8.402 13.11 8 12 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z', route: '/reports/debtors', permission: 'VIEW_DEBTORS_STATEMENT_REPORT' },
-        { label: 'Trip Revenue Report', icon: 'M13 10V3L4 14h7v7l9-11h-7z', route: '/reports/trip-revenue', permission: 'VIEW_TRIP_STATUS_REPORT' },
+        { label: 'Trip Revenue Report', icon: 'M13 10V3L4 14h7v7l9-11h-7z', route: '/reports/trip-revenue', permission: 'VIEW_TRIP_REVENUE_REPORT' },
+        { label: 'Cash Report', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1M14.599 9C14.08 8.402 13.11 8 12 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z', route: '/reports/cash', permission: 'VIEW_CASH_REPORT' },
       ]
     },
     {
