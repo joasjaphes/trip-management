@@ -589,6 +589,7 @@ export class TripForm implements OnInit {
       || this.routeId !== (initial?.routeId || '')
       || this.cargoTypeId !== (initial?.cargoTypeId || '')
       || this.revenue !== String(initial?.revenue ?? '')
+      || this.exchangeRate !== Number(initial?.exchangeRate ?? 1)
       || this.status !== (initial?.status || TripStatus.IN_PROGRESS)
       || this.notes !== (initial?.notes || '')
       || this.customerName !== (initial?.customerName || initial?.customer?.name || '')
