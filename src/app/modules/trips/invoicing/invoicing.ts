@@ -326,13 +326,16 @@ export class Invoicing implements OnInit {
   }
 
   calculateAllowableLoss(trip: Trip | undefined): number {
-    return trip?.cargoType?.allowableLoss ?? 0;
+    return (trip?.cargoType?.allowableLoss ) ?? 0;
   }
 
   calculateNetLoss(trip: Trip | undefined): number | null {
     const loss = this.calculateLoss(trip);
     if (loss === null) return null;
-    return loss - this.calculateAllowableLoss(trip);
+    if(Math.abs(loss) <= Math.abs(this.calculateAllowableLoss(trip))) {
+      return 0;
+    }
+    return loss + (Math.abs(this.calculateAllowableLoss(trip)));
   }
 
   calculateChargeableLoss(trip: Trip | undefined): number | null {
