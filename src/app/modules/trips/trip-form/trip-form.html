@@ -147,6 +147,32 @@
         </div>
       </div>
 
+      <!-- Customer Name (Autocomplete) -->
+      <div class="flex flex-col gap-2 col-span-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Name*</label>
+        <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameInput($event)" name="customerName"
+          autocomplete="off" list="customer-name-options" placeholder="Select existing customer or type a new name"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        <datalist id="customer-name-options">
+          @for (customer of customers(); track customer.id) {
+          <option [value]="customer.name">{{ customer.tin }}</option>
+          }
+        </datalist>
+      </div>
+      <!-- Customer TIN -->
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer TIN</label>
+        <input type="text" [(ngModel)]="customerTIN" name="customerTIN" placeholder="e.g. 123456789"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+      </div>
+
+      <!-- Customer Phone -->
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Phone</label>
+        <input type="text" [(ngModel)]="customerPhone" name="customerPhone" placeholder="e.g. +255700000000"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+      </div>
+
       <!-- Route Selection -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Route Selection*</label>
@@ -163,6 +189,20 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
+      </div>
+
+      <!-- Offloading Place (Autocomplete) -->
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Offloading Place</label>
+        <input type="text" [(ngModel)]="offloadingPlaceName" (ngModelChange)="onOffloadingPlaceInput($event)"
+          name="offloadingPlaceName" autocomplete="off" list="offloading-place-options"
+          placeholder="Select existing place or type a new name"
+          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        <datalist id="offloading-place-options">
+          @for (place of offloadingPlaces(); track place.id) {
+          <option [value]="place.name">{{ place.name }}</option>
+          }
+        </datalist>
       </div>
       <!-- Cargo Type -->
       <div class="flex flex-col gap-2">
@@ -189,7 +229,7 @@
           class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
 
-      <div class="flex flex-col gap-2 relative">
+      <div class="flex flex-col gap-2 relative col-span-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Cargo Quantity</label>
         <div class="relative">
           <!-- <div class="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[14px] pointer-events-none">
@@ -204,48 +244,35 @@
           </div>
         </div>
       </div>
-      <!-- Customer Name (Autocomplete) -->
+      @if (unitOfMeasurement == 'Litres') {
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Name*</label>
-        <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameInput($event)" name="customerName"
-          autocomplete="off" list="customer-name-options" placeholder="Select existing customer or type a new name"
-          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-        <datalist id="customer-name-options">
-          @for (customer of customers(); track customer.id) {
-          <option [value]="customer.name">{{ customer.tin }}</option>
-          }
-        </datalist>
-      </div>
-      <!-- Customer TIN -->
-      <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer TIN</label>
-        <input type="text" [(ngModel)]="customerTIN" name="customerTIN" placeholder="e.g. 123456789"
-          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Loaded Amount</label>
+        <div class="relative">
+          <input type="text" [(ngModel)]="loadedQuantity" name="loadedQuantity" placeholder="0.00" appNumberFormat
+            (ngModelChange)="onLoadedQuantityChanged()"
+            matTooltip="" matTooltipPosition="above" matTooltipClass="with-arrow"
+            class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">{{
+            unitOfMeasurement }}</div>
+        </div>
       </div>
 
-      <!-- Customer Phone -->
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Customer Phone</label>
-        <input type="text" [(ngModel)]="customerPhone" name="customerPhone" placeholder="e.g. +255700000000"
-          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Rate (per {{ unitOfMeasurement
+          }})</label>
+        <div class="relative">
+          <input type="text" [(ngModel)]="ratePerUnit" name="ratePerUnit" placeholder="0.00" appNumberFormat
+            (ngModelChange)="onRatePerUnitChanged()"
+            matTooltip="" matTooltipPosition="above" matTooltipClass="with-arrow"
+            class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">{{
+            currency }}</div>
+        </div>
       </div>
-
-      <!-- Offloading Place (Autocomplete) -->
-      <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Offloading Place</label>
-        <input type="text" [(ngModel)]="offloadingPlaceName" (ngModelChange)="onOffloadingPlaceInput($event)"
-          name="offloadingPlaceName" autocomplete="off" list="offloading-place-options"
-          placeholder="Select existing place or type a new name"
-          class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
-        <datalist id="offloading-place-options">
-          @for (place of offloadingPlaces(); track place.id) {
-          <option [value]="place.name">{{ place.name }}</option>
-          }
-        </datalist>
-      </div>
+      }
 
       <!-- Projected Revenue -->
-      <div class="flex flex-col gap-2 col-span-2">
+      <div class="flex flex-col gap-2" [ngClass]="{'col-span-2': currency == 'TZS' || unitOfMeasurement == 'Litres' }">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Projected Revenue/Income ({{
           currency }}) *
           <!-- @if (revenue) {
@@ -261,7 +288,7 @@
         </div>
       </div>
       @if (currency == 'USD') {
-      <div class="flex flex-col col-span-2 gap-2">
+      <div class="flex flex-col  gap-2" [ngClass]="{'col-span-2': unitOfMeasurement == 'Litres'}">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Exchange Rate
           <!-- @if (revenue) {
           ({{ revenue |number:'1.0-2' }})

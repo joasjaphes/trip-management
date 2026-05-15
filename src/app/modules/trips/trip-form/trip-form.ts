@@ -71,6 +71,8 @@ export class TripForm implements OnInit {
   offloadingPlaceId = '';
   trailerId = '';
   cargoQuantity = null;
+  loadedQuantity: any = null;
+  ratePerUnit = '';
   docNumber = null;
   exchangeRate = 1;
 
@@ -187,6 +189,8 @@ export class TripForm implements OnInit {
       this.customerPhone = '';
       this.offloadingPlaceName = '';
       this.offloadingPlaceId = '';
+      this.loadedQuantity = null;
+      this.ratePerUnit = '';
       this.expenseRows = [this.createExpenseRow()];
       this.initialTripState.set(undefined);
       return;
@@ -199,11 +203,13 @@ export class TripForm implements OnInit {
     this.trailerId = trip.trailerId || '';
     this.docNumber = trip.docNumber || '';
     this.cargoQuantity = trip.cargoQuantity || null;
+    this.loadedQuantity = (trip as any).loadedQuantity || null;
     this.driverId = trip.driverId || '';
     this.routeId = trip.routeId || '';
     this.cargoTypeId = trip.cargoTypeId || '';
     this.exchangeRate = trip.exchangeRate || 1;
     this.revenue = String(trip.revenue ?? '');
+    this.ratePerUnit = String((trip as any).ratePerUnit ?? '');
     this.status = (trip.status || TripStatus.IN_PROGRESS) as TripStatus;
     this.notes = trip.notes || '';
     this.customerName = trip.customerName || trip.customer?.name || '';
@@ -279,6 +285,38 @@ export class TripForm implements OnInit {
       ...row,
       date: this.toDateString(value),
     }));
+  }
+
+  onLoadedQuantityChanged() {
+    this.autofillRevenueFromRate();
+  }
+
+  onRatePerUnitChanged() {
+    this.autofillRevenueFromRate();
+  }
+
+  private parseNumericInput(value: unknown): number | undefined {
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
+
+    const numericValue = Number(String(value).replace(/,/g, '').trim());
+    return Number.isFinite(numericValue) ? numericValue : undefined;
+  }
+
+  private autofillRevenueFromRate() {
+    if (this.unitOfMeasurement !== 'Litres') {
+      return;
+    }
+
+    const rate = this.parseNumericInput(this.ratePerUnit);
+    const loadedAmount = this.parseNumericInput(this.loadedQuantity);
+
+    if (rate === undefined || loadedAmount === undefined) {
+      return;
+    }
+
+    this.revenue = String((rate * loadedAmount) / 1000);
   }
 
   private async hydrateTripDocument(path: string | undefined) {
@@ -497,8 +535,10 @@ export class TripForm implements OnInit {
         // offloadingPlaceId: this.offloadingPlaceId || undefined,
         trailerId: this.trailerId || undefined,
         cargoQuantity: Number(this.cargoQuantity || 0) || undefined,
+        loadedQuantity: Number(this.loadedQuantity || 0) || undefined,
         docNumber: this.docNumber || undefined,
         tripDocument: this.tripDocumentPath() || undefined,
+        ratePerUnit: Number(this.ratePerUnit || 0) || undefined,
         revenue: Number(this.revenue || 0),
         exchangeRate: Number(this.exchangeRate || 1) || undefined,
         income: Number(this.revenue || 0),
@@ -598,6 +638,8 @@ export class TripForm implements OnInit {
       || this.offloadingPlaceName !== (initial?.offloadingPlaceName || initial?.offloadingPlace?.name || '')
       || this.trailerId !== (initial?.trailerId || '')
       || this.cargoQuantity !== (initial?.cargoQuantity || null)
+      || this.loadedQuantity !== ((initial as any)?.loadedQuantity || null)
+      || this.ratePerUnit !== String((initial as any)?.ratePerUnit ?? '')
       || this.docNumber !== (initial?.docNumber || null)
       || this.tripDocumentPath() !== (initial?.tripDocument || undefined)
       || JSON.stringify(this.expenseRows) !== JSON.stringify((initial?.expenses || []).map((expense) => this.mapExpenseToDraft(expense)))

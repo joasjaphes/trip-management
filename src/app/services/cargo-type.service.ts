@@ -49,6 +49,7 @@ export class CargoTypeService {
         id: this.commonService.makeid(),
         name: cargoType.name,
         unitOfMeasure: cargoType.unitOfMeasure,
+        allowableLoss: cargoType.allowableLoss,
         isActive: cargoType.isActive ?? true,
       });
       await this.getAll();
@@ -71,6 +72,7 @@ export class CargoTypeService {
         id,
         name: cargoType.name ?? existing?.name,
         unitOfMeasure: cargoType.unitOfMeasure ?? existing?.unitOfMeasure,
+        allowableLoss: cargoType.allowableLoss ?? existing?.allowableLoss,
         isActive: cargoType.isActive ?? existing?.isActive,
       });
       await this.getAll();
