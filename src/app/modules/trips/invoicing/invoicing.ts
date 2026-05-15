@@ -258,6 +258,7 @@ export class Invoicing implements OnInit {
   }
 
   onView(row: { _invoice: Invoice }) {
+    console.log('Viewing invoice', row._invoice);
     const invoice = row._invoice;
     this.selectedInvoice.set(invoice);
     this.selectedStatus = invoice.status;

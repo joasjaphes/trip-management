@@ -166,22 +166,22 @@
             <tr>
               <td class="w-[36%] border border-black p-2 font-bold align-top h-10">{{ companyProfile()?.companyName || 'EASY TRUCKING LIMITED' }}</td>
               <td class="w-[34%] border border-black p-0 align-top">
-                <table class="w-full h-full border-collapse bg-white">
+                <table class="w-full h-full bg-white">
                   <tr>
-                    <td class="border-b border-black p-1 pl-2 w-[40%] text-[12px]">Invoice No.</td>
-                    <td class="border-b border-l border-black p-1 pl-2 w-[60%] font-bold">{{ selectedInvoice()?.invoiceNumber || '-' }}</td>
+                    <td class="border border-black p-1 pl-2 w-[40%] text-[12px]">Invoice No.</td>
+                    <td class="border border-black p-1 pl-2 w-[60%] font-bold">{{ selectedInvoice()?.invoiceNumber || '-' }}</td>
                   </tr>
                   <tr>
-                    <td class="p-1 pl-2 w-[40%] text-[12px]">Delivery Note</td>
-                    <td class="border-l border-black p-1 pl-2 w-[60%] text-[13px] h-6"></td>
+                    <td class="p-1 pl-2 w-[40%] text-[12px] border border-black">Delivery Note</td>
+                    <td class="border border-black p-1 pl-2 w-[60%] text-[13px] h-6"></td>
                   </tr>
                 </table>
               </td>
               <td class="w-[30%] border border-black p-0 align-top">
-                <table class="w-full h-full border-collapse bg-white">
+                <table class="w-full h-full bg-white">
                   <tr>
-                    <td class="border-b border-black p-1 pl-2 w-[35%] text-[12px]">Dated</td>
-                    <td class="border-b border-l border-black p-1 pl-2 w-[65%] font-bold">{{ selectedInvoice()?.issuedAt ? (selectedInvoice()!.issuedAt | date:'dd/MM/yyyy') : (selectedInvoice()!.createdAt | date:'dd/MM/yyyy') }}</td>
+                    <td class="border border-black p-1 pl-2 w-[35%] text-[12px]">Dated</td>
+                    <td class="border border-black p-1 pl-2 w-[65%] font-bold">{{ selectedInvoice()?.issuedAt ? (selectedInvoice()!.issuedAt | date:'dd/MM/yyyy') : (selectedInvoice()!.createdAt | date:'dd/MM/yyyy') }}</td>
                   </tr>
                   <tr>
                     <td class="p-1 pl-2 w-full text-[12px] h-6" colspan="2">Mode/Term of payment B/D</td>
@@ -194,29 +194,29 @@
 
             <!-- Row 3 -->
             <tr>
-              <td class="border border-black p-2 align-top h-[75px]">
+              <td class="border border-black p-2 align-top h-[75px]" colspan="3">
                 <p class="text-[12px]">Customer/Buyer</p>
                 <p class="font-bold uppercase mt-1">{{ selectedInvoice()?.customer?.name || '-' }}</p>
                 <p class="mt-1 text-[13px]">TIN {{ selectedInvoice()?.customer?.tin || '-' }}</p>
               </td>
-              <td class="border border-black p-2 align-top h-[75px]">
+              <!-- <td class="border border-black p-2 align-top h-[75px]">
                 <p class="text-[12px]">Origin</p>
                 <p class="font-bold uppercase mt-1 text-[13px]">DAR ES SALAAM</p>
               </td>
               <td class="border border-black p-2 align-top h-[75px]">
                 <p class="text-[12px]">Destination</p>
                 <p class="font-bold uppercase mt-1 text-[13px]">{{ selectedInvoice()?.trips[0]?.route?.name?.split('-')?.[1]?.trim() || selectedInvoice()?.trips[0]?.route?.name || '-' | uppercase }}</p>
-              </td>
+              </td> -->
             </tr>
 
             <!-- Row 4 -->
-            <tr>
+            <!-- <tr>
               <td class="border border-black p-1 align-middle h-8"></td>
               <td colspan="2" class="border border-black p-2 text-center uppercase tracking-wide">
                 <span class="font-bold text-[14px]">TRUCK:</span>&nbsp;&nbsp;
                 <span class="font-bold text-[14px]">{{ selectedInvoice()?.trucks || '-' }}</span>
               </td>
-            </tr>
+            </tr> -->
           </tbody>
         </table>
 
@@ -232,7 +232,20 @@
             </tr> 
           </thead>
           <tbody>
-            <tr class="bg-white">
+            @for(trip of selectedInvoice().trips; track trip.id; let i = $index) {
+              <tr class="bg-white">
+                <td class="border border-black p-2 align-middle text-[13px]">{{ i + 1 }}</td>
+                <td class="border border-black p-2 text-left align-top h-20 text-[13px]">
+                  {{trip.vehicle.registrationNo}}&nbsp;
+                  Transport Charges ({{trip.docNumber}}) <br>
+                  <b>({{trip.route.name}})</b>
+                </td>
+                <td class="border border-black p-2 align-middle text-[13px]">1</td>
+                <td class="border border-black p-2 align-middle text-[13px]">{{ trip.revenue | number: '1.2-2' }}</td>
+                <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ trip.revenue | number: '1.2-2' }}</td>
+              </tr>
+            }
+            <!-- <tr class="bg-white">
               <td class="border border-black p-2 align-middle text-[13px]">1</td>
               <td class="border border-black p-2 text-left align-top h-20 text-[13px]">
                 Transportation 
@@ -241,7 +254,7 @@
               <td class="border border-black p-2 align-middle text-[13px]">{{ selectedInvoice()?.quantity || 1 }}</td>
               <td class="border border-black p-2 align-middle text-[13px]">{{ (selectedInvoice()?.rate || selectedInvoice()?.amount || 0) | number: '1.2-2' }}</td>
               <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ (selectedInvoice()?.subtotal || selectedInvoice()?.amount || 0) | number: '1.2-2' }}</td>
-            </tr>
+            </tr> -->
             <tr class="font-bold bg-white h-8">
               <td class="border border-black p-2 text-left text-[14px]" colspan="4">Total</td>
               <td class="border border-black p-2 text-right pr-2 text-[14px]">{{ (selectedInvoice()?.subtotal || selectedInvoice()?.amount || 0) | number: '1.2-2' }}</td>
