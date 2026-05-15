@@ -415,23 +415,57 @@ Content-Type: application/json
   "tripDate": "2026-03-07T10:00:00.000Z",
   "endDate": "2026-03-08T10:00:00.000Z",
   "vehicleId": "vehicle-uid-123",
+  "trailerId": "trailer-uid-123",
   "driverId": "driver-uid-123",
   "routeId": "route-uid-123",
   "cargoTypeId": "cargo-type-uid-123",
+  "cargoQuantity": 30,
+  "loadedQuantity": 30,
+  "offloadedQuantity": 29,
+  "lossQuantity": 1,
+  "ratePerUnit": 50000,
+  "allowableLoss": 2,
+  "docNumber": "DOC-12345",
+  "tripDocument": "/uploads/trip-documents/doc-12345.pdf",
+  "completionDocument": "/uploads/trip-documents/completion-doc-12345.pdf",
+  "tripActualPosition": "Lat: -6.7, Lng: 39.2",
   "customerName": "Acme Corporation",
   "customerTIN": "123456789",
   "customerPhone": "+255700000000",
   "offloadingPlaceName": "Dar es Salaam Port",
   "revenue": 1500000,
+  "exchangeRate": 1,
   "paidAmount": 0,
   "income": 1200000,
-  "status": "pending"
+  "status": "Pending payment",
+  "notes": "Urgent delivery, handle with care"
 }
 ```
 
-**Status Options:** `pending`, `inprogress`, `completed`, `cancelled`
+**Status Options (use exact value):** `Pending payment`, `Inprogress`, `Completed`, `Cancelled`
 
 When creating a trip, the API checks for an existing customer using `customerTIN`. If no customer exists, it creates one. Similarly, if `offloadingPlaceName` is provided, the API checks for an existing offloading place by name. If not found, it creates one automatically. The trip, customer creation, offloading place creation, and invoice creation are saved in a single database transaction.
+
+**New Trip Columns / Fields:**
+- `trailerId` (string, optional)
+- `cargoQuantity` (number, optional)
+- `loadedQuantity` (number, optional)
+- `offloadedQuantity` (number, optional)
+- `lossQuantity` (number, optional)
+- `ratePerUnit` (number, optional)
+- `allowableLoss` (number, optional)
+- `docNumber` (string, optional)
+- `tripDocument` (string, optional)
+- `completionDocument` (string, optional)
+- `tripActualPosition` (string, optional)
+- `exchangeRate` (number, optional, defaults to `1`)
+- `notes` (string, optional)
+
+**Calculated on create/update (response fields):**
+- `tripReferenceNumber`
+- `equivalentAmount` (`revenue * exchangeRate`)
+- `vatAmount` (based on route VAT settings)
+- `subtotal`
 
 An invoice is automatically generated for every new trip with:
 - `amount` equal to the trip `revenue`
@@ -451,17 +485,30 @@ Content-Type: application/json
   "tripDate": "2026-03-07T10:00:00.000Z",
   "endDate": "2026-03-08T10:00:00.000Z",
   "vehicleId": "vehicle-uid-123",
+  "trailerId": "trailer-uid-123",
   "driverId": "driver-uid-123",
   "routeId": "route-uid-123",
   "cargoTypeId": "cargo-type-uid-123",
+  "cargoQuantity": 30,
+  "loadedQuantity": 30,
+  "offloadedQuantity": 29,
+  "lossQuantity": 1,
+  "ratePerUnit": 50000,
+  "allowableLoss": 2,
+  "docNumber": "DOC-12345",
+  "tripDocument": "/uploads/trip-documents/doc-12345.pdf",
+  "completionDocument": "/uploads/trip-documents/completion-doc-12345.pdf",
+  "tripActualPosition": "Lat: -6.7, Lng: 39.2",
   "customerName": "Acme Corporation",
   "customerTIN": "123456789",
   "offloadingPlaceName": "Dar es Salaam Port",
   "customerPhone": "+255700000000",
   "revenue": 1500000,
+  "exchangeRate": 1,
   "paidAmount": 200000,
   "income": 1200000,
-  "status": "inprogress"
+  "status": "Inprogress",
+  "notes": "Driver to submit completion document"
 }
 ```
 
@@ -495,7 +542,7 @@ This endpoint updates the actual position of a trip. The position can be stored 
   "revenue": 1500000,
   "paidAmount": 200000,
   "income": 1200000,
-  "status": "inprogress"
+  "status": "Inprogress"
 }
 ```
 
@@ -1110,9 +1157,17 @@ Content-Type: application/json
 
 {
   "name": "Perishable",
+  "unitOfMeasure": "kg",
+  "allowableLoss": 5,
   "isActive": true
 }
 ```
+
+**Notes:**
+- `unitOfMeasure` is optional and defaults to `Tons` when omitted.
+- `allowableLoss` is optional and defaults to `0` when omitted.
+
+**Response fields:** `id`, `name`, `unitOfMeasure`, `allowableLoss`, `isActive`, `createdAt`, `updatedAt`, `active`, `deleted`, `deletedAt`
 
 #### Update Cargo Type
 ```http
@@ -1122,6 +1177,8 @@ Content-Type: application/json
 {
   "id": "cargo-type-id",
   "name": "Perishable",
+  "unitOfMeasure": "kg",
+  "allowableLoss": 5,
   "isActive": true
 }
 ```
