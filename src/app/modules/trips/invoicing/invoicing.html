@@ -146,7 +146,7 @@
               <h1 class="text-[20px] font-extrabold uppercase tracking-wide">{{ companyProfile()?.companyName || 'EASY TRUCKING LIMITED' }}</h1>
               <p class="text-[14px]">PLOT NO. 128 BLOCK B</p>
               <p class="text-[14px]">GEREZANI/UHURU STREETS</p>
-              <p class="text-[14px]">P. O. BOX {{ companyProfile()?.postalAddress || '6437' }} DAR ES SALAAM</p>
+              <p class="text-[14px]">P. O. BOX {{ formatPostalAddress(companyProfile()?.postalAddress) || '6437' }} DAR ES SALAAM</p>
             </div>
           </div>
           
