@@ -210,7 +210,7 @@ export class TripForm implements OnInit {
     this.customerTIN = trip.customerTIN || trip.customer?.tin || '';
     this.customerPhone = trip.customerPhone || trip.customer?.phone || '';
     this.offloadingPlaceName = trip.offloadingPlaceName || '';
-    this.offloadingPlaceId = trip.offloadingPlaceId || '';
+    // this.offloadingPlaceId = trip.offloadingPlaceId || '';
     void this.hydrateTripDocument(trip.tripDocument);
     this.expenseRows = (trip.expenses || []).map((expense) => this.mapExpenseToDraft(expense));
     this.initialTripState.set(trip);
@@ -494,7 +494,7 @@ export class TripForm implements OnInit {
         customerTIN: this.customerTIN || undefined,
         customerPhone: this.customerPhone || undefined,
         offloadingPlaceName: this.offloadingPlaceName || undefined,
-        offloadingPlaceId: this.offloadingPlaceId || undefined,
+        // offloadingPlaceId: this.offloadingPlaceId || undefined,
         trailerId: this.trailerId || undefined,
         cargoQuantity: Number(this.cargoQuantity || 0) || undefined,
         docNumber: this.docNumber || undefined,
