@@ -215,9 +215,7 @@ export class Invoicing implements OnInit {
     }
   })
 
-  // Strips a leading "P.O. BOX" / "P.BOX" / "PO BOX" prefix (any spacing and
-  // dot variation) from the saved postal address so the template can render
-  // "P. O. BOX <value>" without producing "P. O. BOX P.BOX 6437".
+ 
   formatPostalAddress(value: string | null | undefined): string {
     if (!value) return '';
     return String(value).replace(/^\s*P\.?\s*O?\.?\s*BOX\.?\s*/i, '').trim();
