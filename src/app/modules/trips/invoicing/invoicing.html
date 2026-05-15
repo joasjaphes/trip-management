@@ -164,7 +164,10 @@
           <tbody>
             <!-- Row 1 -->
             <tr>
-              <td class="w-[36%] border border-black p-2 font-bold align-top h-10">{{ companyProfile()?.companyName || 'EASY TRUCKING LIMITED' }}</td>
+              <td class="w-[36%] border border-black p-2 align-top">
+                <p class="font-bold">{{ companyProfile()?.companyName || 'EASY TRUCKING LIMITED' }}</p>
+                <p class="text-[12px] mt-1">TIN {{ companyProfile()?.tin || '-' }}</p>
+              </td>
               <td class="w-[34%] border border-black p-0 align-top">
                 <table class="w-full h-full border-collapse bg-white">
                   <tr>
@@ -274,7 +277,7 @@
         </table>
 
         <!-- Bank Details & Signature -->
-        <table class="w-full border-collapse border border-black border-t-0 h-32 bg-white" style="margin-top: -1px; position: relative; z-index: 10;">
+        <table class="w-full border-collapse border border-black h-32 bg-white" style="margin-top: -1px; position: relative; z-index: 10;">
           <tr>
             <td class="p-3 w-[45%] align-top border-r border-black">
               <p class="font-bold text-[14px]">Bank Details</p>
