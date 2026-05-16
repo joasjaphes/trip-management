@@ -265,7 +265,7 @@
                 <td class="border border-black p-2 align-middle text-[13px]">{{ trip.route?.endLocation || '-' }}</td>
                 <td class="border border-black p-2 align-middle text-[13px]">{{ trip.ratePerUnit | number: '1.2-2' }}
                 </td>
-                <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ trip.revenue | number:
+                <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ trip.cargoQuantity | number:
                   '1.2-2' }}</td>
                 <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ (trip.loadedQuantity ||
                   0) | number: '1.2-2' }}</td>

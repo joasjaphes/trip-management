@@ -86,7 +86,7 @@
 
             <div class="col-span-2">
                 <div class="relative">
-                    <input [matDatepicker]="receiptDatePicker" [value]="toDateValue(receiptRow.receivedAt)"
+                    <input [matDatepicker]="receiptDatePicker" [value]="toDateValue(receiptRow.receivedAt)" [max]="toDateValue(maxDate)" [min]="toDateValue(invoice()?.createdAt)"
                         (dateChange)="onReceiptDateChanged(receiptRow.id, $event.value)" readonly
                         class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 pr-9 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
                     <button type="button" (click)="receiptDatePicker.open()"

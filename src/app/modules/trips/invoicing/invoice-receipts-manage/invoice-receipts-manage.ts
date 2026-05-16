@@ -50,6 +50,8 @@ export class InvoiceReceiptsManage {
   deletingRowId = signal<string | null>(null);
 
   receiptRows = signal<ReceiptDraft[]>([]);
+  maxDate = new Date();
+  minDate = new Date(this.invoice()?.issuedAt)
 
   invoiceReceipts = computed(() => {
     const invoiceId = this.invoice()?.id;
@@ -87,6 +89,7 @@ export class InvoiceReceiptsManage {
   }
 
    ngOnInit() {
+    console.log('InvoiceReceiptsManage initialized with invoice:', this.invoice());
     this.invoiceReceiptService.getAll().then();
   }
 
@@ -191,7 +194,7 @@ export class InvoiceReceiptsManage {
     );
   }
 
-  toDateValue(value: string | undefined): Date | null {
+  toDateValue(value: Date | string | undefined): Date | null {
     if (!value) {
       return null;
     }

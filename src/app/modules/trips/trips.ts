@@ -177,7 +177,7 @@ export class Trips implements OnInit {
       label: 'Review & Complete',
       key: 'reviewComplete',
       icon: 'fa-solid fa-check-circle text-green-500',
-      action: (row: any) => this.onView(row)
+      action: (row: any) => this.onComplete(row)
     },
     {
       label: 'Manage expense',
@@ -220,6 +220,16 @@ export class Trips implements OnInit {
     this.formTitle.set(`Trip details ( ${row.route} )`);
     this.formDescription.set(`View detailed information about this trip, including expenses and route details.`);
     this.viewType.set('detail');
+    this.showAddButton.set(false);
+    this.viewDetails.set(true);
+    // this.splitSize.set('half');
+  }
+
+  onComplete(row: any) {
+    this.selectedTrip.set(row._trip);
+    this.formTitle.set(`Trip details ( ${row.route} )`);
+    this.formDescription.set(`View detailed information about this trip, including expenses and route details.`);
+    this.viewType.set('complete');
     this.showAddButton.set(false);
     this.viewDetails.set(true);
     // this.splitSize.set('half');

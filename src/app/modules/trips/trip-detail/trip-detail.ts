@@ -19,6 +19,7 @@ export class TripDetail {
 
   trip = input<Trip | undefined>();
   completing = input(false);
+  shouldComplete = input(false);
   close = output();
   complete = output<Trip>();
   tripEndDate: string | undefined = this.trip()?.endDate ? this.toDateInputValue(this.trip()?.endDate) : undefined;
@@ -58,9 +59,12 @@ export class TripDetail {
   });
 
   netLoss = computed(() => {
-    const loss = this.loss();
+      const loss = this.loss();
     if (loss === null) return null;
-    return loss - this.allowableLoss();
+    if(Math.abs(loss) <= Math.abs(this.allowableLoss())) {
+      return 0;
+    }
+    return loss + (Math.abs(this.allowableLoss()));
   });
 
   chargeableLoss = computed(() => {
@@ -115,7 +119,7 @@ export class TripDetail {
 
   canComplete = computed(() => {
     const status = this.trip()?.status;
-    return (status === 'Pending payment' || status === 'Inprogress');
+    return (status === 'Pending payment' || status === 'Inprogress') && this.shouldComplete();
   });
 
   requestComplete() {

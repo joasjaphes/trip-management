@@ -36,7 +36,11 @@
     } @else if (viewType() == 'detail') {
     <app-trip-detail [trip]="selectedTrip()" [completing]="loading()" (complete)="completeTrip($event)"
       (close)="onCloseDetail()"></app-trip-detail>
-    } @else if (viewType() == 'manage-expense') {
+    }@else if (viewType() == 'complete') {
+    <app-trip-detail [trip]="selectedTrip()" [completing]="loading()" (complete)="completeTrip($event)"
+      (close)="onCloseDetail()" [shouldComplete]="true"></app-trip-detail>
+    }
+     @else if (viewType() == 'manage-expense') {
     <app-trip-expenses-manage [trip]="selectedTrip()" (saved)="onExpensesChanged()"
       (close)="onCloseDetail()"></app-trip-expenses-manage>
     } @else if (viewType() == 'manage-actual-position') {
