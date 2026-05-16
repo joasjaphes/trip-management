@@ -178,15 +178,15 @@ export class Invoicing implements OnInit {
 
   tableConfigurations: TableConfig = {
     columns: [
+      { key: 'issuedAt', label: 'Issued at' },
       { key: 'invoiceNumber', label: 'Invoice #' },
+      { key: 'customer', label: 'Customer' },
       { key: 'tripNumber', label: 'Trip #' },
       { key: 'description', label: 'Description' },
-      { key: 'customer', label: 'Customer' },
       { key: 'amount', label: 'Amount', type: 'number' },
       { key: 'paidAmount', label: 'Paid Amount', type: 'number' },
       { key: 'remainingAmount', label: 'Remaining Amount', type: 'number' },
       { key: 'paymentStatus', label: 'Payment Status', type: 'invoiceStatus' },
-      { key: 'issuedAt', label: 'Issued at' },
     ],
     actions: {
       view: true,
@@ -349,7 +349,7 @@ export class Invoicing implements OnInit {
   calculateTripTotal(trip: Trip | undefined): number {
     if (!trip) return 0;
     const chargeableLoss = this.calculateChargeableLoss(trip) ?? 0;
-    return (trip.revenue ?? 0) + chargeableLoss;
+    return (trip.income ?? 0) + chargeableLoss;
   }
 
   calculateInvoiceTotalForLitres(invoice: Invoice | undefined): number {

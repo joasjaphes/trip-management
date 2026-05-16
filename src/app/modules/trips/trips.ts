@@ -40,6 +40,8 @@ export class Trips implements OnInit {
   trips = computed(() =>
     this.tripService.allTrips().map((trip) => ({
       id: trip.id,
+      createdAt: new Date(trip.createdAt).toLocaleDateString(),
+      customerName: trip.customer?.name || trip.customerId,
       tripReferenceNumber: trip.tripReferenceNumber,
       date: trip.tripDate ? new Date(trip.tripDate).toLocaleDateString() : '-',
       paidAmount: Number(trip.paidAmount || 0),
@@ -123,8 +125,17 @@ export class Trips implements OnInit {
   tableConfigurations: TableConfig = {
     columns: [
       {
+        key: 'createdAt',
+        label: 'Created At',
+        type: 'date'
+      },
+      {
         key: 'tripReferenceNumber',
         label: 'Trip#'
+      },
+      {
+        key: 'customerName',
+        label: 'Customer'
       },
       {
         key: 'route',
