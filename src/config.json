@@ -1,6 +1,6 @@
 {
     "server": {
-        "url": "https://tripstruck.com/api",
+        "url": "/api",
         "url1": "http://localhost:3000/api",
         "imageUrl": "http://localhost:3000"
     },
