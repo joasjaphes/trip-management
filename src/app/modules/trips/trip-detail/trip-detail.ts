@@ -19,9 +19,11 @@ export class TripDetail {
 
   trip = input<Trip | undefined>();
   completing = input(false);
+  shouldComplete = input(false);
   close = output();
   complete = output<Trip>();
   tripEndDate: string | undefined = this.trip()?.endDate ? this.toDateInputValue(this.trip()?.endDate) : undefined;
+  offloadedQuantity: number | null = null;
 
   confirmingComplete = signal(false);
   attachmentPreviewUrls = signal<Record<string, string>>({});
@@ -34,6 +36,7 @@ export class TripDetail {
   completionDocumentSuccess = signal<string | null>(null);
   tripDocumentUrl = signal<string | undefined>(undefined);
   today = new Date();
+  unitOfMeasurement:string;
 
   canConfirmCompletion = computed(() => {
     return !!this.tripEndDate && !this.completing() && !this.completionDocumentUploading();
@@ -41,6 +44,40 @@ export class TripDetail {
 
   totalExpenses = computed(() => {
     return (this.trip()?.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
+  });
+
+  loss = computed(() => {
+    const trip = this.trip();
+    if (!trip?.offloadedQuantity || !trip?.loadedQuantity) {
+      return null;
+    }
+    return trip.offloadedQuantity - trip.loadedQuantity;
+  });
+
+  allowableLoss = computed(() => {
+    return this.trip()?.cargoType?.allowableLoss ?? 0;
+  });
+
+  netLoss = computed(() => {
+      const loss = this.loss();
+    if (loss === null) return null;
+    if(Math.abs(loss) <= Math.abs(this.allowableLoss())) {
+      return 0;
+    }
+    return loss + (Math.abs(this.allowableLoss()));
+  });
+
+  chargeableLoss = computed(() => {
+    const trip = this.trip();
+    const netLoss = this.netLoss();
+    if (netLoss === null || !trip?.ratePerUnit) {
+      return null;
+    }
+    return (trip.ratePerUnit * netLoss) / 1000;
+  });
+
+  isLitresCargo = computed(() => {
+    return this.trip()?.cargoType?.unitOfMeasure === 'Litres';
   });
 
   constructor() {
@@ -51,6 +88,8 @@ export class TripDetail {
     effect(() => {
       const selectedTrip = this.trip();
       this.tripEndDate = selectedTrip?.endDate ? this.toDateInputValue(selectedTrip.endDate) : undefined;
+      this.offloadedQuantity = selectedTrip?.offloadedQuantity || selectedTrip?.loadedQuantity;
+      this.unitOfMeasurement = selectedTrip.cargoType.unitOfMeasure || '';
       void this.hydrateCompletionDocument(selectedTrip?.completionDocument);
       void this.hydrateTripDocument(selectedTrip?.tripDocument);
     });
@@ -80,7 +119,7 @@ export class TripDetail {
 
   canComplete = computed(() => {
     const status = this.trip()?.status;
-    return (status === 'Pending payment' || status === 'Inprogress');
+    return (status === 'Pending payment' || status === 'Inprogress') && this.shouldComplete();
   });
 
   requestComplete() {
@@ -106,8 +145,18 @@ export class TripDetail {
     this.complete.emit({
       ...trip,
       completionDocument: this.completionDocumentPath() || undefined,
-      endDate: this.tripEndDate
+      endDate: this.tripEndDate,
+      offloadedQuantity: this.toNumericQuantity(this.offloadedQuantity)
     });
+  }
+
+  private toNumericQuantity(value: unknown): number | undefined {
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
+
+    const parsedValue = Number(String(value).replace(/,/g, '').trim());
+    return Number.isFinite(parsedValue) ? parsedValue : undefined;
   }
 
   private toDateInputValue(rawDate: Date | string | undefined): string | undefined {

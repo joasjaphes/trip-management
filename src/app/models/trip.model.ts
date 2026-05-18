@@ -4,6 +4,7 @@ import type { Route } from './route.model';
 import type { Vehicle } from './vehicle.model';
 import type { Customer } from './customer.model';
 import type { OffloadingPlace } from './offloading-place.model';
+import { CargoType } from './cargo-type.model';
 
 export interface Trip {
 	id: string;
@@ -15,6 +16,9 @@ export interface Trip {
 	trailerId?: string;
 	trailer?: Vehicle;
 	cargoQuantity?: number;
+	loadedQuantity?: number;
+	offloadedQuantity?: number;
+	ratePerUnit?: number;
 	driverId: string;
 	docNumber?: string;
 	tripDocument?: string;
@@ -25,6 +29,7 @@ export interface Trip {
 	routeId: string;
 	route?: Route;
 	cargoTypeId?: string;
+	cargoType?: CargoType;
 	customerId?: string;
 	customer?: Customer;
 	customerName?: string;
