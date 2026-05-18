@@ -259,8 +259,8 @@
                 <td class="border border-black p-2 align-middle text-[13px]">{{ i + 1 }}</td>
                 <td class="border border-black p-2 text-left align-top h-20 text-[13px]">
                   {{trip.vehicle.registrationNo}}&nbsp;
-                  Transport Charges ({{trip.docNumber}}) <br>
-                  <b>({{trip.route.name}})</b>
+                  Transport Charges ({{trip.cargoType?.name}}) <br>
+                  <b>({{trip.docNumber}})</b>
                 </td>
                 <td class="border border-black p-2 align-middle text-[13px]">{{ trip.route?.endLocation || '-' }}</td>
                 <td class="border border-black p-2 align-middle text-[13px]">{{ trip.ratePerUnit | number: '1.2-2' }}
@@ -313,8 +313,8 @@
                 <td class="border border-black p-2 align-middle text-[13px]">{{ i + 1 }}</td>
                 <td class="border border-black p-2 text-left align-top h-20 text-[13px]">
                   {{trip.vehicle.registrationNo}}&nbsp;
-                  Transport Charges ({{trip.docNumber}}) <br>
-                  <b>({{trip.route.name}})</b>
+                  Transport Charges ({{trip.cargoType?.name}}) <br>
+                  <b>({{trip.docNumber}})</b>
                 </td>
                 <td class="border border-black p-2 align-middle text-[13px]">1</td>
                 <td class="border border-black p-2 align-middle text-[13px]">{{ trip.revenue | number: '1.2-2' }}</td>
