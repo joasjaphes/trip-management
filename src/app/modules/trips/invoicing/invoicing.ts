@@ -14,6 +14,7 @@ import { CompanyProfileService } from '../../../services/company-profile.service
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
 import { HttpClientService } from '../../../services/http-client.service';
 import { InvoicePrintoutPage } from "./invoice-printout-page/invoice-printout-page";
+import { submit } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-invoicing',
@@ -100,7 +101,7 @@ export class Invoicing implements OnInit {
         actions: {
           viewReceipts: invoice.paidAmount > 0,
           manageReceipts:  remainingAmount > 0,
-          submitToCustomer: true,
+          submitToCustomer: invoice.status !== 'issued',
         }
       };
     })
@@ -222,6 +223,7 @@ export class Invoicing implements OnInit {
     more:{
       viewReceipts: ['VIEW_INVOICE_PAYMENTS'],
       manageReceipts: ['RECEIVE_PAYMENTS'],
+      submitToCustomer: ['SUBMIT_INVOICE'],
     }
   })
 
