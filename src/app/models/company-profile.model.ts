@@ -11,6 +11,10 @@ export interface CompanyProfile {
     postalAddress: string;
     logo?: string;
     logoUrl?: string;
+    stamp?: string;
+    stampUrl?: string;
+    signature?: string;
+    signatureUrl?: string;
     description?: string;
     bankName?: string;
     bankAccountNumber?: string;

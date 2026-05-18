@@ -17,8 +17,14 @@ export class CompanyProfileService {
     this.loading.set(true);
     try {
       const data: CompanyProfile = await this.http.get(this.endpoint);
-      if(data.logo){
+      if (data.logo) {
         data.logoUrl = await this.http.getImageUrl(data.logo);
+      }
+      if (data.stamp) {
+        data.stampUrl = await this.http.getImageUrl(data.stamp);
+      }
+      if (data.signature) {
+        data.signatureUrl = await this.http.getImageUrl(data.signature);
       }
       this.profile.set(data);
     } finally {

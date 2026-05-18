@@ -40,6 +40,10 @@ export class CompanyProfileForm implements OnChanges {
     description?: string;
     logo?: string;
     logoUrl?: string;
+    stamp?: string;
+    stampUrl?: string;
+    signature?: string;
+    signatureUrl?: string;
     bankName?: string;
     bankAccountNumber?: string;
     bankAccountName?: string;
@@ -48,6 +52,8 @@ export class CompanyProfileForm implements OnChanges {
 
     saveText = signal('Update company profile');
     uploadingLogo = signal(false);
+    uploadingStamp = signal(false);
+    uploadingSignature = signal(false);
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['data'] && this.data) {
@@ -68,23 +74,55 @@ export class CompanyProfileForm implements OnChanges {
             this.bankBranch = this.data.bankBranch;
             this.bankSwiftCode = this.data.bankSwiftCode;
             this.logoUrl = this.data.logoUrl;
+            this.stamp = this.data.stamp;
+            this.stampUrl = this.data.stampUrl;
+            this.signature = this.data.signature;
+            this.signatureUrl = this.data.signatureUrl;
         }
     }
 
     async uploadLogo(event: any): Promise<void> {
-        console.log('File selected for upload:', event.target.files);
         const file = event.target.files[0];
         if (!file) return;
         this.uploadingLogo.set(true);
         try {
             const res = await this.fileUploadService.uploadFile(file);
-            console.log('File uploaded successfully:', res);
             this.logoUrl = res.fileUrl;
             this.logo = res.filePath;
         } catch (error) {
             console.error('Failed to upload logo', error);
         } finally {
             this.uploadingLogo.set(false);
+        }
+    }
+
+    async uploadStamp(event: any): Promise<void> {
+        const file = event.target.files[0];
+        if (!file) return;
+        this.uploadingStamp.set(true);
+        try {
+            const res = await this.fileUploadService.uploadFile(file);
+            this.stampUrl = res.fileUrl;
+            this.stamp = res.filePath;
+        } catch (error) {
+            console.error('Failed to upload stamp', error);
+        } finally {
+            this.uploadingStamp.set(false);
+        }
+    }
+
+    async uploadSignature(event: any): Promise<void> {
+        const file = event.target.files[0];
+        if (!file) return;
+        this.uploadingSignature.set(true);
+        try {
+            const res = await this.fileUploadService.uploadFile(file);
+            this.signatureUrl = res.fileUrl;
+            this.signature = res.filePath;
+        } catch (error) {
+            console.error('Failed to upload signature', error);
+        } finally {
+            this.uploadingSignature.set(false);
         }
     }
 
@@ -103,6 +141,8 @@ export class CompanyProfileForm implements OnChanges {
             postalAddress: this.postalAddress || '',
             description: this.description || '',
             logo: this.logo || '',
+            stamp: this.stamp || '',
+            signature: this.signature || '',
             bankName: this.bankName || '',
             bankAccountNumber: this.bankAccountNumber || '',
             bankAccountName: this.bankAccountName || '',
