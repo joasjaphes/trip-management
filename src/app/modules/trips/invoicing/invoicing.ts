@@ -615,18 +615,25 @@ export class Invoicing implements OnInit {
     // Clone so we can mutate img URLs without touching the on-screen DOM.
     const clone = element.cloneNode(true) as HTMLElement;
 
-    // The CompanyProfileService resolves logos to blob: URLs, which are
-    // scoped to the original document and won't load in the new print window.
-    // Swap any blob: src (or empty/relative src) for the bundled brand logo.
+    // Swap unusable image sources for sensible alternatives in the print
+    // window: missing/blob URLs on the logo fall back to the bundled brand
+    // asset, while stamp/signature images are simply removed if their source
+    // can't be resolved (so there's no fake stamp).
     const fallbackLogo = `${window.location.origin}/assets/images/easytruckinglogo.png`;
     clone.querySelectorAll('img').forEach((img) => {
       const src = img.getAttribute('src') || '';
+      const alt = (img.getAttribute('alt') || '').toLowerCase();
+      const isLogo = alt.includes('logo');
+
       if (!src || src.startsWith('blob:')) {
-        img.setAttribute('src', fallbackLogo);
+        if (isLogo) {
+          img.setAttribute('src', fallbackLogo);
+        } else {
+          img.remove();
+        }
         return;
       }
       if (!/^(https?:|data:)/i.test(src)) {
-        // Make any other relative URLs absolute against the current origin.
         img.setAttribute('src', new URL(src, window.location.href).href);
       }
     });
