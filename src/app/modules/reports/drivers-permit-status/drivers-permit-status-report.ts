@@ -6,16 +6,16 @@ import { Layout } from '../../../shared/components/layout/layout';
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
 import { escapeCsv } from './exports-helper';
 import {
-  escapeHtml,
-  openReportPrintWindow,
-  renderBrandedHeader,
-  renderReportNote,
+    escapeHtml,
+    openReportPrintWindow,
+    renderBrandedHeader,
+    renderReportNote,
 } from '../report-print.util';
 
 @Component({
     selector: 'app-drivers-permit-status',
     standalone: true,
-    imports: [CommonModule, Layout,Placeholder],
+    imports: [CommonModule, Layout, Placeholder],
     templateUrl: './drivers-permit-status-report.html',
     styleUrl: './drivers-permit-status-report.css',
 })
@@ -91,20 +91,22 @@ export class DriversPermitStatusReport implements OnInit {
     getBadgeColor(daysRemaining: number | null | undefined): string {
         if (daysRemaining == null) return 'bg-gray-200 text-gray-800';
         if (daysRemaining >= 60) return 'bg-green-100 text-green-800';
-        if (daysRemaining >= 1 && daysRemaining <= 30) return 'bg-yellow-100 text-yellow-800';
-        return 'bg-red-100 text-red-800';
+        if (daysRemaining >= 30 && daysRemaining < 60) return 'bg-yellow-100 text-yellow-800';
+        if (daysRemaining >= 1 && daysRemaining < 30) return 'bg-orange-200 text-orange-800';
+        return 'bg-red-200 text-red-800';
     }
 
     getBadgeLabel(daysRemaining: number | null | undefined): string {
         if (daysRemaining == null) return '—';
         if (daysRemaining >= 60) return 'Good';
-        if (daysRemaining >= 1 && daysRemaining <= 30) return 'Warning';
+        if (daysRemaining >= 30 && daysRemaining < 60) return 'Warning';
+        if (daysRemaining >= 1 && daysRemaining < 30) return 'Critical';
         return 'Expired';
     }
 
     exportCsv() {
         const items: string[] = [];
-        const header = ['Driver Name','Phone','Permit','Expiry Date','Days Remaining','Status'];
+        const header = ['Driver Name', 'Phone', 'Permit', 'Expiry Date', 'Days Remaining', 'Status'];
         items.push(header.map(escapeCsv).join(','));
 
         for (const d of this.filteredDrivers()) {
@@ -122,7 +124,7 @@ export class DriversPermitStatusReport implements OnInit {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `drivers-permit-status-${new Date().toISOString().slice(0,10)}.csv`;
+        a.download = `drivers-permit-status-${new Date().toISOString().slice(0, 10)}.csv`;
         document.body.appendChild(a);
         a.click();
         a.remove();

@@ -87,14 +87,16 @@ export class VehiclesPermitStatusReport implements OnInit {
   getBadgeColor(daysRemaining: number | null | undefined): string {
     if (daysRemaining == null) return 'bg-gray-200 text-gray-800';
     if (daysRemaining >= 60) return 'bg-green-100 text-green-800';
-    if (daysRemaining >= 1 && daysRemaining <= 30) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (daysRemaining >= 30 && daysRemaining < 60) return 'bg-yellow-100 text-yellow-800';
+    if (daysRemaining >= 1 && daysRemaining < 30) return 'bg-orange-200 text-orange-800';
+    return 'bg-red-200 text-red-800';
   }
 
   getBadgeLabel(daysRemaining: number | null | undefined): string {
     if (daysRemaining == null) return '—';
     if (daysRemaining >= 60) return 'Good';
-    if (daysRemaining >= 1 && daysRemaining <= 30) return 'Warning';
+    if (daysRemaining >= 30 && daysRemaining < 60) return 'Warning';
+    if (daysRemaining >= 1 && daysRemaining < 30) return 'Critical';
     return 'Expired';
   }
 
