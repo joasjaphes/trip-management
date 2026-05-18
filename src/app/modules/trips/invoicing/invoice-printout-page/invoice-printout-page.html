@@ -1,0 +1,66 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+    <div class="max-w-[1100px] mx-auto space-y-4 py-4">
+        <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3">
+            @if (isSubmiting()) {
+            <div class="flex items-center gap-2">
+                @if(isConfirming()) {
+                <div
+                    class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] font-semibold text-amber-700 mr-2">
+                    Confirm submission: once submitted, this invoice cannot be modified.
+                </div>
+                <div>
+                    <button type="button" (click)="submitAndDownloadPdf(true)" [disabled]="submitting()"
+                        class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-5 font-extrabold text-[12px] rounded-xl">
+                        @if(submitting()) {
+                        Submitting...
+                        }
+                        @else {
+                        Yes, submit & download PDF
+                        }
+                    </button>
+                    <button type="button" (click)="isConfirming.set(false)" [disabled]="submitting()"
+                        class="btn btn-ghost border border-gray-200 text-gray-600 px-5 text-[12px] rounded-xl">
+                        No, go back
+                    </button>
+                </div>
+                }@else {
+                <button type="button" (click)="submitAndDownloadPdf()" [disabled]="submitting()"
+                    class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-5 font-extrabold text-[12px] rounded-xl">
+                    @if(submitting()) {
+                    Submitting...
+                    }
+                    @else {
+                    Submit & Download PDF
+                    }
+                </button>
+                }
+            </div>
+            }@else {
+            <div class="flex items-center gap-2">
+                <!-- <button type="button" (click)="copyShareableLink()" class="btn btn-ghost border border-gray-200 text-gray-600 px-4 text-[12px] rounded-xl">
+          Copy shareable link
+        </button> -->
+                <button type="button" (click)="printInvoice()" [disabled]="busy()"
+                    class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-5 font-extrabold text-[12px] rounded-xl">
+                    Download PDF
+                </button>
+            </div>
+
+            }
+            <button type="button" (click)="closePanel()"
+                class="btn btn-ghost border border-gray-200 text-gray-600 px-6 text-[13px] rounded-xl flex items-center gap-2 hover:bg-gray-50 transition-all active:scale-95">
+                <i class="fa-solid fa-xmark"></i>
+                Close
+            </button>
+        </div>
+
+        @if (message()) {
+        <div class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700">
+            {{ message() }}
+        </div>
+        }
+
+        <app-invoice-view [invoice]="invoice()" [companyProfile]="companyProfile()"
+            [loadingCompanyProfile]="loadingCompanyProfile()"></app-invoice-view>
+    </div>
+</div>

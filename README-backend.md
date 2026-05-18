@@ -2,6 +2,65 @@
 
 A comprehensive backend API for managing trips, customers, vendors, purchase orders, invoices, receipts, vehicles, drivers, routes, expenses, and related operations.
 
+## Backend Quick Start
+
+Minimal steps to run the backend locally for development.
+
+- Install dependencies:
+
+```bash
+npm install
+```
+
+- Start in development mode (watch):
+
+```bash
+npm run start:dev
+```
+
+- Build for production:
+
+```bash
+npm run build
+npm run start:prod
+```
+
+- Run database migrations (uses `data-source.ts`):
+
+```bash
+npm run migration:run
+```
+
+- Run the seed script:
+
+```bash
+npm run seed
+```
+
+- Lint and format:
+
+```bash
+npm run lint
+npm run format
+```
+
+- Run tests:
+
+```bash
+npm run test
+```
+
+- Using Docker (dev):
+
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+Notes:
+- The API serves Swagger docs at `http://localhost:3000/docs` when running locally.
+- Ensure your environment variables (database URL, credentials) are set before running migrations or starting in prod. See `src/data-source.ts` for configuration.
+
+
 ## Table of Contents
 - [Base Configuration](#base-configuration)
 - [Authentication](#authentication)
@@ -632,6 +691,13 @@ Content-Type: application/json
   "status": "issued"
 }
 ```
+
+#### Submit Invoice
+```http
+POST /api/invoices/:id/submit
+```
+
+This endpoint marks an invoice as submitted, sets its status to `issued`, and stamps `issuedAt` if it has not been set yet. It does not require a request body.
 
 **Invoice Status Options:** `draft`, `issued`, `paid`, `cancelled`
 

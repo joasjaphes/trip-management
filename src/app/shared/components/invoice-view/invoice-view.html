@@ -1,0 +1,182 @@
+<div id="invoice-document" class="bg-white border border-gray-200 rounded-lg shadow-sm p-8 text-black text-[13px] font-sans" style="font-family: Arial, Helvetica, sans-serif;">
+  @if (loadingCompanyProfile()) {
+  <div class="py-12 text-center text-gray-500">Loading invoice view...</div>
+  } @else if (invoice()) {
+  <div class="flex flex-col items-center justify-between border-b-[4px] border-black pb-4 mb-2 relative overflow-hidden">
+    <div class="w-full flex items-center justify-between gap-8 z-10 px-4">
+      <div class="w-1/3 flex justify-start">
+        @if(companyProfile()?.logoUrl){
+        <img [src]="companyProfile()!.logoUrl" alt="Company Logo" class="h-28 object-contain">
+        }@else {
+        <div class="h-24 w-40 flex items-center justify-center font-bold border-[3px] border-black rounded-full text-[24px] tracking-wide relative overflow-hidden bg-white">
+          <div class="absolute inset-0 border-b-4 border-red-600 rounded-full" style="transform: scale(0.9);"></div>
+          LOGO
+        </div>
+        }
+      </div>
+      <div class="w-2/3 text-left pl-6 mt-4">
+        <h1 class="text-[20px] font-extrabold uppercase tracking-wide">{{ companyProfile()?.companyName || 'EASY TRUCKING LIMITED' }}</h1>
+        <p class="text-[14px]">PLOT NO. 128 BLOCK B</p>
+        <p class="text-[14px]">GEREZANI/UHURU STREETS</p>
+        <p class="text-[14px]">P. O. BOX {{ formatPostalAddress(companyProfile()?.postalAddress) || '6437' }} DAR ES SALAAM</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="text-center font-bold text-[20px] mt-6 mb-2 leading-none">Tax Invoice</h2>
+
+  <table class="w-full border-collapse border border-black mb-0 bg-white">
+    <tbody>
+      <tr>
+        <td class="w-[36%] border border-black p-2 align-top">
+          <p class="font-bold">{{ companyProfile()?.companyName || 'EASY TRUCKING LIMITED' }}</p>
+          <p class="text-[12px] mt-1">TIN {{ companyProfile()?.tin || '-' }}</p>
+        </td>
+        <td class="w-[34%] border border-black p-0 align-top">
+          <table class="w-full h-full border-collapse bg-white">
+            <tr>
+              <td class="border-b border-black p-1 pl-2 w-[40%] text-[12px]">Invoice No.</td>
+              <td class="border-b border-l border-black p-1 pl-2 w-[60%] font-bold">{{ invoice()?.invoiceNumber || '-' }}</td>
+            </tr>
+            <tr>
+              <td class="p-1 pl-2 w-[40%] text-[12px]">Delivery Note</td>
+              <td class="border-l border-black p-1 pl-2 w-[60%] text-[13px] h-6"></td>
+            </tr>
+          </table>
+        </td>
+        <td class="w-[30%] border border-black p-0 align-top">
+          <table class="w-full h-full border-collapse bg-white">
+            <tr>
+              <td class="border-b border-black p-1 pl-2 w-[35%] text-[12px]">Dated</td>
+              <td class="border-b border-l border-black p-1 pl-2 w-[65%] font-bold">{{ invoice()?.issuedAt ? (invoice()!.issuedAt | date:'dd/MM/yyyy') : (invoice()!.createdAt | date:'dd/MM/yyyy') }}</td>
+            </tr>
+            <tr>
+              <td class="p-1 pl-2 w-full text-[12px] h-6" colspan="2">Mode/Term of payment B/D</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td class="border border-black p-2 align-top h-[75px]" colspan="3">
+          <p class="text-[12px]">Customer/Buyer</p>
+          <p class="font-bold uppercase mt-1">{{ invoice()?.customer?.name || '-' }}</p>
+          <p class="mt-1 text-[13px]">TIN {{ invoice()?.customer?.tin || '-' }}</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  @if (isLitresInvoice()) {
+  <table class="w-full border-collapse border border-black border-t-0 text-center bg-white" style="margin-top: -1px; position: relative; z-index: 10;">
+    <thead>
+      <tr class="font-bold border-b border-black bg-white">
+        <th class="border border-black p-2 w-[6%] font-bold text-[13px]">S/N</th>
+        <th class="border border-black p-2 w-[42%] font-bold text-[13px]">Description</th>
+        <th class="border border-black p-2 w-[42%] font-bold text-[13px]">Destination</th>
+        <th class="border border-black p-2 w-[14%] font-bold text-[13px]">Rate<br>(USD)</th>
+        <th class="border border-black p-2 w-[14%] font-bold text-[13px]">Amount Loaded</th>
+        <th class="border border-black p-2 w-[14%] font-bold text-[13px]">Loaded@20C</th>
+        <th class="border border-black p-2 w-[14%] font-bold text-[13px]">Offloaded@20C</th>
+        <th class="border border-black p-2 w-[14%] font-bold text-[13px]">Loss(@20C)</th>
+        <th class="border border-black p-2 w-[14%] font-bold text-[13px]">Allowable Loss(L)</th>
+        <th class="border border-black p-2 w-[14%] font-bold text-[13px]">Net Loss(L)</th>
+        <th class="border border-black p-2 w-[16%] font-bold text-[13px]">Chargeable Loss (USD)</th>
+        <th class="border border-black p-2 w-[16%] font-bold text-[13px]">Total (USD)</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for(trip of invoice()!.trips; track trip.id; let i = $index) {
+      <tr class="bg-white">
+        <td class="border border-black p-2 align-middle text-[13px]">{{ i + 1 }}</td>
+        <td class="border border-black p-2 text-left align-top h-20 text-[13px]">{{trip.vehicle.registrationNo}}&nbsp; Transport Charges ({{trip.cargoType?.name}}) <br><b>({{trip.docNumber}})</b></td>
+        <td class="border border-black p-2 align-middle text-[13px]">{{ trip.route?.endLocation || '-' }}</td>
+        <td class="border border-black p-2 align-middle text-[13px]">{{ trip.ratePerUnit | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ trip.cargoQuantity | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ (trip.loadedQuantity || 0) | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ (trip.offloadedQuantity || 0) | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]" [style.color]="calculateLoss(trip) && calculateLoss(trip)! < 0 ? 'green' : 'red'">{{ (calculateLoss(trip) ?? 0) | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ calculateAllowableLoss(trip) | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]" [style.color]="calculateNetLoss(trip) && calculateNetLoss(trip)! <= 0 ? 'green' : 'orange'">{{ (calculateNetLoss(trip) ?? 0) | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 align-middle text-right pr-2 text-[13px] font-bold text-[#f25f2f]">{{ (calculateChargeableLoss(trip) ?? 0) | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 align-middle text-right pr-2 text-[13px] font-bold">{{ calculateTripTotal(trip) | number: '1.2-2' }}</td>
+      </tr>
+      }
+      <tr class="font-bold bg-white h-8">
+        <td class="border border-black p-2 text-left text-[14px]" colspan="10">Total</td>
+        <td class="border border-black p-2 text-right pr-2 text-[14px]">{{ calculateTotalChargeableLoss(invoice()) | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 text-right pr-2 text-[14px]">{{ calculateInvoiceTotalForLitres(invoice()) | number: '1.2-2' }}</td>
+      </tr>
+    </tbody>
+  </table>
+  } @else {
+  <table class="w-full border-collapse border border-black border-t-0 text-center bg-white" style="margin-top: -1px; position: relative; z-index: 10;">
+    <thead>
+      <tr class="font-bold border-b border-black bg-white">
+        <th class="border border-black p-2 w-[6%] font-bold text-[13px]">S/N</th>
+        <th class="border border-black p-2 w-[42%] font-bold text-[13px]">Description</th>
+        <th class="border border-black p-2 w-[12%] font-bold text-[13px]">Quantity</th>
+        <th class="border border-black p-2 w-[14%] font-bold text-[13px]">Rate<br>(USD)</th>
+        <th class="border border-black p-2 w-[16%] font-bold text-[13px]">Amount (USD)</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for(trip of invoice()!.trips; track trip.id; let i = $index) {
+      <tr class="bg-white">
+        <td class="border border-black p-2 align-middle text-[13px]">{{ i + 1 }}</td>
+        <td class="border border-black p-2 text-left align-top h-20 text-[13px]">{{trip.vehicle.registrationNo}}&nbsp; Transport Charges ({{trip.cargoType?.name}}) <br><b>({{trip.docNumber}})</b></td>
+        <td class="border border-black p-2 align-middle text-[13px]">1</td>
+        <td class="border border-black p-2 align-middle text-[13px]">{{ trip.revenue | number: '1.2-2' }}</td>
+        <td class="border border-black p-2 align-middle text-right pr-2 text-[13px]">{{ trip.revenue | number: '1.2-2' }}</td>
+      </tr>
+      }
+      <tr class="font-bold bg-white h-8">
+        <td class="border border-black p-2 text-left text-[14px]" colspan="4">Total</td>
+        <td class="border border-black p-2 text-right pr-2 text-[14px]">{{ (invoice()?.subtotal || invoice()?.amount || 0) | number: '1.2-2' }}</td>
+      </tr>
+    </tbody>
+  </table>
+  }
+
+  <table class="w-full border-collapse border border-black border-t-0 bg-white" style="margin-top: -1px; position: relative; z-index: 10;">
+    <tr>
+      <td class="border border-black p-2 w-[48%] align-top" rowspan="3">
+        <p class="text-[13px]">Amount (In words)</p>
+        <br>
+        <p class="font-bold mt-2 capitalize text-[13px]">{{ numberToWords(isLitresInvoice() ? calculateInvoiceTotalForLitres(invoice()) : (invoice()?.amount || 0)) }} USD Only</p>
+      </td>
+      <td class="border border-black p-2 w-[26%] font-bold align-bottom uppercase text-[12px]">INVOICE TOTAL (USD)</td>
+      <td class="border border-black p-2 w-[26%] font-bold text-right pr-2 align-bottom relative">{{ (isLitresInvoice() ? calculateInvoiceTotalForLitres(invoice()) : (invoice()?.subtotal || invoice()?.amount || 0)) | number: '1.2-2' }}</td>
+    </tr>
+    <tr>
+      <td class="border border-black p-2 font-bold uppercase text-[12px]">VAT 18%</td>
+      <td class="border border-black p-2 font-bold text-right pr-2">{{ (invoice()?.vatAmount || 0) | number: '1.2-2' }}</td>
+    </tr>
+    <tr>
+      <td class="border border-black p-2 font-bold uppercase text-[12px]">TOTAL AMOUNT (USD)</td>
+      <td class="border border-black p-2 font-bold text-right pr-2">{{ (isLitresInvoice() ? calculateInvoiceTotalForLitres(invoice()) : (invoice()?.amount || 0)) | number: '1.2-2' }}</td>
+    </tr>
+  </table>
+
+  <table class="w-full border-collapse border border-black h-32 bg-white" style="margin-top: -1px; position: relative; z-index: 10;">
+    <tr>
+      <td class="p-3 w-[45%] align-top border-r border-black">
+        <p class="font-bold text-[14px]">Bank Details</p>
+        <p class="mt-2 text-[13px]"><span class="font-bold">Acc Name:</span> {{ companyProfile()?.bankAccountName || 'EASY TRACKING LIMITED' }}</p>
+        <p class="mt-1 text-[13px]"><span class="font-bold">Acc No:</span> {{ companyProfile()?.bankAccountNumber || '02500004JVL00' }} USD</p>
+        <p class="mt-1 text-[13px]"><span class="font-bold">Bank Branch:</span> {{ companyProfile()?.bankBranch || 'TOWER' }}</p>
+        <p class="mt-1 text-[13px]"><span class="font-bold">Bank Name:</span> {{ companyProfile()?.bankName || 'CRDB' }} BANK</p>
+        <p class="mt-1 text-[13px]"><span class="font-bold">Swift Code:</span> {{ companyProfile()?.bankSwiftCode || '-' }}</p>
+      </td>
+      <td class="p-3 w-[55%] align-top relative">
+        <div class="absolute bottom-[4.5rem] right-4 w-full text-center font-bold text-[14px]" style="padding-left: 20px;">For {{ companyProfile()?.companyName || 'Easy Trucking Limited' }}</div>
+        <div class="absolute bottom-4 right-4 w-3/4 text-center pb-1 text-[13px]" style="border-top: 1px solid black; margin-left: auto; margin-right: auto; left: 0;">Authorized Signatory</div>
+      </td>
+    </tr>
+  </table>
+
+  <div class="flex mt-8 mb-2 h-[6px]">
+    <div class="w-1/2 bg-red-600"></div>
+    <div class="w-1/2 bg-black"></div>
+  </div>
+  }
+</div>

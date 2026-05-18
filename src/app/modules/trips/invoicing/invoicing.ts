@@ -1,4 +1,4 @@
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Invoice, InvoiceStatus } from '../../../models/invoice.model';
@@ -8,15 +8,17 @@ import { TripService } from '../../../services/trip.service';
 import { ActionPermision, DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { InvoiceReceiptsManage } from './invoice-receipts-manage/invoice-receipts-manage';
+import { InvoiceView } from '../../../shared/components/invoice-view/invoice-view';
 import { InvoiceReceiptService } from '../../../services/invoice-receipt.service';
 import { CompanyProfileService } from '../../../services/company-profile.service';
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
 import { HttpClientService } from '../../../services/http-client.service';
+import { InvoicePrintoutPage } from "./invoice-printout-page/invoice-printout-page";
 
 @Component({
   selector: 'app-invoicing',
   standalone: true,
-  imports: [CommonModule, FormsModule, Layout, DataTable, InvoiceReceiptsManage, Placeholder, DecimalPipe],
+  imports: [CommonModule, FormsModule, Layout, DataTable, InvoiceReceiptsManage, Placeholder, InvoiceView, InvoicePrintoutPage],
   templateUrl: './invoicing.html',
   styleUrl: './invoicing.css',
 })
@@ -41,7 +43,7 @@ export class Invoicing implements OnInit {
   generationStatus: InvoiceStatus = 'draft';
   selectedInvoice = signal<Invoice | undefined>(undefined);
   selectedStatus: InvoiceStatus = 'draft';
-  panelMode = signal<'generate' | 'detail' | 'manage-receipts' | 'view-receipts'>('generate');
+  panelMode = signal<'generate' | 'detail' | 'manage-receipts' | 'view-receipts' | 'submit'>('generate');
   splitSize = signal<'full' | 'half'>('full');
   selectedPaymentStatusFilter = signal<'all' | 'full_paid' | 'partially_paid' | 'unpaid'>('all');
 
@@ -98,6 +100,7 @@ export class Invoicing implements OnInit {
         actions: {
           viewReceipts: invoice.paidAmount > 0,
           manageReceipts:  remainingAmount > 0,
+          submitToCustomer: true,
         }
       };
     })
@@ -207,6 +210,12 @@ export class Invoicing implements OnInit {
       icon: 'fa-solid fa-receipt text-emerald-500',
       action: (row: { _invoice: Invoice }) => this.onManageReceipt(row),
     },
+    {
+      label: 'Submit to customer',
+      key: 'submitToCustomer',
+      icon: 'fa-solid fa-paper-plane text-indigo-600',
+      action: (row: { _invoice: Invoice }) => this.onSubmitInvoice(row),
+    },
   ]);
 
   permissions = signal<ActionPermision>({
@@ -275,6 +284,15 @@ export class Invoicing implements OnInit {
     this.formTitle.set(`Manage receipts (${invoice.invoiceNumber || invoice.id})`);
     this.formDescription.set('Record, update, and remove invoice payment receipts.');
     this.panelMode.set('manage-receipts');
+    this.viewDetails.set(true);
+  }
+
+  onSubmitInvoice(row: { _invoice: Invoice }) {
+    const invoice = row._invoice;
+    this.selectedInvoice.set(invoice);
+    this.formTitle.set(`Submit Invoice (${invoice.invoiceNumber || invoice.id})`);
+    this.formDescription.set('Send invoice to customer and download PDF.');
+    this.panelMode.set('submit');
     this.viewDetails.set(true);
   }
 
@@ -375,6 +393,15 @@ export class Invoicing implements OnInit {
       this.selectedInvoice.set(refreshed);
       this.selectedStatus = refreshed.status;
     }
+  }
+
+  async onInvoiceSubmitted(invoiceId?: string) {
+    await this.invoiceService.getAll();
+    if (invoiceId) {
+      const refreshed = this.invoiceService.getById(invoiceId);
+      if (refreshed) this.selectedInvoice.set(refreshed);
+    }
+    this.viewDetails.set(false);
   }
 
   private renderPrintShell(title: string, body: string): string {
