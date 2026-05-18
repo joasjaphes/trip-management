@@ -501,8 +501,8 @@ export class Invoicing implements OnInit {
     .h-8 { height: 22px; }
     .h-10 { height: 26px; }
     .h-20 { height: 38px; }
-    .h-24 { height: 54px; }
-    .h-28 { height: 60px; }
+    .h-24 { height: 90px; }
+    .h-28 { height: 115px; }
     .h-32 { height: auto; }
     .h-\\[75px\\] { height: 44px; }
     .h-\\[6px\\] { height: 4px; }
