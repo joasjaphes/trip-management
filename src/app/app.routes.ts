@@ -7,6 +7,7 @@ import { Dashboard } from './modules/dashboard/dashboard';
 import { Notifications } from './modules/notifications/notifications';
 import { Trips } from './modules/trips/trips';
 import { Invoicing } from './modules/trips/invoicing/invoicing';
+import { InvoicePrintoutPage } from './modules/trips/invoicing/invoice-printout-page/invoice-printout-page';
 import { DriversPermitStatusReport } from './modules/reports/drivers-permit-status/drivers-permit-status-report';
 import { VehiclesPermitStatusReport } from './modules/reports/vehicles-permit-status/vehicles-permit-status-report';
 import { ExpenditureReport } from './modules/reports/expenditure-report/expenditure-report';
@@ -73,6 +74,10 @@ export const routes: Routes = [
             {
                 path: 'invoicing',
                 component: Invoicing,
+            },
+            {
+                path: 'invoices/:id/print',
+                component: InvoicePrintoutPage,
             },
             {
                 path: 'reports/drivers-permit-status',

@@ -27,6 +27,7 @@ export const PERMISSION_MODULES: PermissionModule[] = [
             { key: 'COMPLETE_TRIP', label: 'Complete Trip' },
             { key: 'RECEIVE_PAYMENTS', label: 'Receive invoice payments' },
             { key: 'VIEW_INVOICE_PAYMENTS', label: 'View Invoice Payments' },
+            { key: 'SUBMIT_INVOICE', label: 'Submit Invoice' },
 
         ],
     },

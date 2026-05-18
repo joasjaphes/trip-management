@@ -35,6 +35,7 @@ export class Customers implements OnInit {
       createdDate: customer.createdAt
         ? new Date(customer.createdAt).toLocaleDateString()
         : '-',
+      actions: { submitInvoice: true },
     }))
   );
 
@@ -46,6 +47,15 @@ export class Customers implements OnInit {
     more: {}
   });
 
+  moreActions = computed(() => [
+    {
+      label: 'Submit Invoice',
+      key: 'submitInvoice',
+      icon: 'fa-solid fa-paper-plane text-indigo-600',
+      action: (row: any) => this.onOpenSubmitForCustomer(row),
+    },
+  ]);
+
   addPermission = signal('CREATE_CUSTOMER');
 
   tableConfigurations: TableConfig = {
@@ -55,8 +65,16 @@ export class Customers implements OnInit {
       { key: 'phone', label: 'Phone' },
       { key: 'createdDate', label: 'Created date' },
     ],
-    actions: { edit: true },
+    actions: { edit: true, more: true },
   };
+
+  onOpenSubmitForCustomer(row: any) {
+    // Navigate to shareable submit component with customer prefilled
+    const id = row.id;
+    window.location.href = `${window.location.origin}${window.location.pathname}#/invoices/submit?customerId=${encodeURIComponent(
+      id
+    )}`;
+  }
 
   async ngOnInit(): Promise<void> {
     await this.customerService.getAll();
