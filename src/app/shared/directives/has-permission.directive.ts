@@ -44,7 +44,7 @@ export class HasPermissionDirective {
         userPermissions: Set<string>,
         required: string[],
     ): boolean {
-        if (!userPermissions.size || !required.length || required.includes('ALL')) {
+        if (!userPermissions.size || !required.length || userPermissions.has('ALL')) {
             return true;
         }
 
