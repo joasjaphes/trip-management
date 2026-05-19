@@ -167,28 +167,25 @@
         <p class="mt-1 text-[13px]"><span class="font-bold">Bank Name:</span> {{ companyProfile()?.bankName || 'CRDB' }} BANK</p>
         <p class="mt-1 text-[13px]"><span class="font-bold">Swift Code:</span> {{ companyProfile()?.bankSwiftCode || '-' }}</p>
       </td>
-      <td class="p-3 w-[55%] align-top text-center">
-        <p class="font-bold text-[14px]">For {{ companyProfile()?.companyName || 'Easy Trucking Limited' }}</p>
+      <td class="p-3 w-[55%] align-top">
+        <p class="font-bold text-[14px] text-center">For {{ companyProfile()?.companyName || 'Easy Trucking Limited' }}</p>
 
-        <!-- Stamp + signature overlay (signature is drawn on top of the stamp) -->
-        @if (companyProfile()?.stampUrl || companyProfile()?.signatureUrl) {
-          <div style="position: relative; margin: 6px auto 0; min-height: 70px; display: flex; align-items: center; justify-content: center;">
-            @if (companyProfile()?.stampUrl) {
-              <img [src]="companyProfile()!.stampUrl" alt="Company Stamp"
-                   style="max-height: 90px; max-width: 140px; object-fit: contain; opacity: 0.85;">
-            }
+        <div style="position: relative; margin-top: 6px;">
+          @if (companyProfile()?.stampUrl) {
+            <img [src]="companyProfile()!.stampUrl" alt="Company Stamp"
+                 style="position: absolute; right: 0; bottom: 35px; max-height: 120px; max-width: 120px; object-fit: contain;">
+          }
+
+          <div style="text-align: center; height: 100px; display: flex; align-items: flex-end; justify-content: center;">
             @if (companyProfile()?.signatureUrl) {
               <img [src]="companyProfile()!.signatureUrl" alt="Authorized Signature"
-                   style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-height: 55px; max-width: 160px; object-fit: contain;">
+                   style="max-height: 120px; max-width: 320px; object-fit: contain; margin-bottom: -6px;">
             }
           </div>
-        } @else {
-          <div style="height: 50px;"></div>
-        }
 
-        <!-- Signature line + label -->
-        <div class="text-[13px]" style="border-top: 1px solid black; width: 75%; margin: 0 auto; padding-top: 2px;">
-          Authorized Signatory
+          <div class="text-[13px] text-center" style="border-top: 1px solid black; padding-top: 3px;">
+            Authorized Signatory
+          </div>
         </div>
       </td>
     </tr>
