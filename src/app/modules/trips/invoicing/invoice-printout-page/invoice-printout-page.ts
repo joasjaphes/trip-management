@@ -314,6 +314,7 @@ export class InvoicePrintoutPage {
             this.invoiceLocal.set(refreshed);
             this.message.set('Invoice submitted and PDF downloaded. This invoice cannot be modified.');
             await this.printInvoice();
+            this.close.emit();
         } catch (err) {
             console.error(err);
             this.message.set(String(err || 'Failed to submit invoice.'));
