@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, resource, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, resource, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { User } from '../models';
@@ -6,6 +6,7 @@ import { HttpClientService } from '../services/http-client.service';
 import { TripService } from '../services/trip.service';
 import { NotificationService } from '../services/notification.service';
 import { HasPermissionDirective } from '../shared/directives/has-permission.directive';
+import { IdleTimeoutService } from '../services/idle-timeout.service';
 
 type PermissionMode = 'any' | 'all';
 
@@ -32,10 +33,11 @@ interface MenuGroup {
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
   private router = inject(Router);
   private userService = inject(UserService);
   private tripService = inject(TripService);
+  private idleTimeoutService = inject(IdleTimeoutService);
   notificationService = inject(NotificationService);
 
   isSidebarOpen = signal(true);
@@ -53,6 +55,8 @@ export class Home implements OnInit {
   tripManagementBadge = resource({
     loader: () => this.tripService.getInprogressCount(),
   })
+
+  private notificationRefreshIntervalId: ReturnType<typeof setInterval> | null = null;
 
   menuGroups: MenuGroup[] = [
     {
@@ -141,11 +145,20 @@ export class Home implements OnInit {
     this.userRole.set(currentUser?.roleName || '');
     this.userService.getUsers().then();
     void this.notificationService.loadAll();
-    setInterval(() => {
+    this.idleTimeoutService.start();
+    this.notificationRefreshIntervalId = setInterval(() => {
       this.tripManagementBadge.reload();
       // void this.notificationService.loadAll();
     }, 30000); // Refresh every 30 seconds
 
+  }
+
+  ngOnDestroy(): void {
+    this.idleTimeoutService.stop();
+    if (this.notificationRefreshIntervalId !== null) {
+      clearInterval(this.notificationRefreshIntervalId);
+      this.notificationRefreshIntervalId = null;
+    }
   }
 
   toggleSidebar() {
@@ -164,6 +177,7 @@ export class Home implements OnInit {
   }
 
   async logout() {
+    this.idleTimeoutService.stop();
     await this.userService.logout();
     this.router.navigate(['/login']);
   }
