@@ -7,7 +7,7 @@ import { UserService } from './user.service';
   providedIn: 'root',
 })
 export class IdleTimeoutService {
-  private readonly idleTimeoutMs = 5 * 60 * 1000;
+  private readonly idleTimeoutMs = 10 * 60 * 1000;
   private readonly activityEvents = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'] as const;
 
   private readonly userService = inject(UserService);
