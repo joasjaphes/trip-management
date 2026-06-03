@@ -32,7 +32,7 @@ export type DashboardSummary = {
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-  period = signal<'today' | 'weekly' | 'monthly' | 'custom'>('monthly');
+  period = signal<'today' | 'weekly' | 'monthly' | 'last-month' | 'custom'>('monthly');
   customStartDate = signal<string>('');
   customEndDate = signal<string>('');
   http = inject(HttpClientService);
@@ -70,6 +70,12 @@ export class Dashboard {
         // Current calendar month: 1st → last day of the month.
         const start = new Date(today.getFullYear(), today.getMonth(), 1);
         const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        return { start, end };
+      }
+      case 'last-month': {
+        // Previous calendar month: 1st → last day of the previous month.
+        const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const end = new Date(today.getFullYear(), today.getMonth(), 0);
         return { start, end };
       }
       case 'custom':
