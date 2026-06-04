@@ -35,3 +35,4 @@ jobs:
         run: |
           rsync -avz -e "ssh -o StrictHostKeyChecking=no -i deploy.key -p ${{ secrets.LIVE_SERVER_PORT }}" dist/trip-management/browser/* ${{ secrets.SERVER_USER }}@${{ secrets.LIVE_SERVER_HOST }}:${{secrets.LIVE_SERVER_DEPLOY_PATH}}/tripstruck/easytruck
           rsync -avz -e "ssh -o StrictHostKeyChecking=no -i deploy.key -p ${{ secrets.LIVE_SERVER_PORT }}" dist/trip-management/browser/* ${{ secrets.SERVER_USER }}@${{ secrets.LIVE_SERVER_HOST }}:${{secrets.LIVE_SERVER_DEPLOY_PATH}}/tripstruck/moshellogistic
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i deploy.key -p ${{ secrets.LIVE_SERVER_PORT }}" dist/trip-management/browser/* ${{ secrets.SERVER_USER }}@${{ secrets.LIVE_SERVER_HOST }}:${{secrets.LIVE_SERVER_DEPLOY_PATH}}/tripstruck/jokamo
