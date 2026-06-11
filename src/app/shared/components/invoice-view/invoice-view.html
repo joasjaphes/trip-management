@@ -8,7 +8,7 @@
         <img [src]="companyProfile()?.logoUrl || 'assets/images/easytruckinglogo.png'" alt="Company Logo" class="h-28 object-contain">
       </div>
       <div class="w-2/3 text-left pl-6 mt-4">
-        <h1 class="text-[20px] font-extrabold uppercase tracking-wide">{{ companyProfile()?.companyName || 'EASY TRUCKING LIMITED' }}</h1>
+        <h1 class="text-[20px] font-extrabold uppercase tracking-wide">{{ companyProfile()?.companyName }}</h1>
         <p class="text-[14px]">PLOT NO. 128 BLOCK B</p>
         <p class="text-[14px]">GEREZANI/UHURU STREETS</p>
         <p class="text-[14px]">P. O. BOX {{ formatPostalAddress(companyProfile()?.postalAddress) || '6437' }} DAR ES SALAAM</p>
@@ -22,7 +22,7 @@
     <tbody>
       <tr>
         <td class="w-[36%] border border-black p-2 align-top">
-          <p class="font-bold">{{ companyProfile()?.companyName || 'EASY TRUCKING LIMITED' }}</p>
+          <p class="font-bold">{{ companyProfile()?.companyName }}</p>
           <p class="text-[12px] mt-1">TIN {{ companyProfile()?.tin || '-' }}</p>
         </td>
         <td class="w-[34%] border border-black p-0 align-top">
@@ -154,14 +154,16 @@
     <tr>
       <td class="p-3 w-[45%] align-top border-r border-black">
         <p class="font-bold text-[14px]">Bank Details</p>
-        <p class="mt-2 text-[13px]"><span class="font-bold">Acc Name:</span> {{ companyProfile()?.bankAccountName || 'EASY TRACKING LIMITED' }}</p>
+        <p class="mt-2 text-[13px]"><span class="font-bold">Acc Name:</span> {{ companyProfile()?.bankAccountName || companyProfile()?.companyName || '-' }}</p>
         <p class="mt-1 text-[13px]"><span class="font-bold">Acc No:</span> {{ companyProfile()?.bankAccountNumber || '02500004JVL00' }} USD</p>
         <p class="mt-1 text-[13px]"><span class="font-bold">Bank Branch:</span> {{ companyProfile()?.bankBranch || 'TOWER' }}</p>
         <p class="mt-1 text-[13px]"><span class="font-bold">Bank Name:</span> {{ companyProfile()?.bankName || 'CRDB' }} BANK</p>
         <p class="mt-1 text-[13px]"><span class="font-bold">Swift Code:</span> {{ companyProfile()?.bankSwiftCode || '-' }}</p>
       </td>
       <td class="p-3 w-[55%] align-top">
-        <p class="font-bold text-[14px] text-center">For {{ companyProfile()?.companyName || 'Easy Trucking Limited' }}</p>
+        @if (companyProfile()?.companyName) {
+          <p class="font-bold text-[14px] text-center">For {{ companyProfile()?.companyName }}</p>
+        }
 
         <div style="position: relative; margin-top: 6px;">
           @if (companyProfile()?.stampUrl) {
