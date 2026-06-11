@@ -5,6 +5,7 @@ import { User } from '../models';
 import { HttpClientService } from '../services/http-client.service';
 import { TripService } from '../services/trip.service';
 import { NotificationService } from '../services/notification.service';
+import { CompanyProfileService } from '../services/company-profile.service';
 import { HasPermissionDirective } from '../shared/directives/has-permission.directive';
 import { IdleTimeoutService } from '../services/idle-timeout.service';
 
@@ -39,6 +40,8 @@ export class Home implements OnInit, OnDestroy {
   private tripService = inject(TripService);
   private idleTimeoutService = inject(IdleTimeoutService);
   notificationService = inject(NotificationService);
+  private companyProfileService = inject(CompanyProfileService);
+  companyProfile = this.companyProfileService.profile;
 
   isSidebarOpen = signal(true);
   username = signal('');
@@ -145,6 +148,9 @@ export class Home implements OnInit, OnDestroy {
     this.userRole.set(currentUser?.roleName || '');
     this.userService.getUsers().then();
     void this.notificationService.loadAll();
+    if (!this.companyProfileService.profile()) {
+      void this.companyProfileService.get();
+    }
     this.idleTimeoutService.start();
     this.notificationRefreshIntervalId = setInterval(() => {
       this.tripManagementBadge.reload();
