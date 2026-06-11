@@ -100,7 +100,7 @@ export class PurchaseOrderDetail {
       value ? datePipe.transform(value, 'dd/MM/yyyy') ?? '-' : '-';
     const formatAmount = (value: number) => numberPipe.transform(value, '1.0-2') ?? '0';
 
-    const companyName = profile?.companyName || 'EASY TRUCKING LIMITED';
+    const companyName = profile?.companyName || '';
     const companyAddress1 = profile?.street || 'PLOT NO. 128 BLOCK B';
     const companyAddress2 = profile?.region ? `${profile.region}` : 'GEREZANI/UHURU STREETS';
     const companyAddress3 = `P. O. BOX ${profile?.postalAddress || '6437'} ${profile?.country || 'DAR ES SALAAM'}`;

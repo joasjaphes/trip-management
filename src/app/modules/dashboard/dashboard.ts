@@ -6,6 +6,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { HttpClientService } from '../../services/http-client.service';
 import { TripService } from '../../services/trip.service';
+import { CompanyProfileService } from '../../services/company-profile.service';
 import moment from 'moment';
 import { Trip, TripStatus } from '../../models';
 import { Placeholder } from '../../shared/components/placeholder/placeholder';
@@ -37,6 +38,12 @@ export class Dashboard {
   customEndDate = signal<string>('');
   http = inject(HttpClientService);
   private tripService = inject(TripService);
+  private companyProfileService = inject(CompanyProfileService);
+  companyProfile = this.companyProfileService.profile;
+  showCompanyNameSetup = computed(() => {
+    const name = this.companyProfile()?.companyName?.trim();
+    return !name;
+  });
   summary = resource<DashboardSummary, { start: Date | null; end: Date | null }>({
     params: () => this.dateRange(),
     loader: async ({ params }) => {
