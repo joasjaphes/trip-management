@@ -20,7 +20,7 @@ export function escapeHtml(value: string | number | null | undefined): string {
 export function renderBrandedHeader(profile: CompanyProfile | null | undefined): string {
   const fallbackLogoUrl = `${window.location.origin}/assets/images/easytruckinglogo.png`;
   const logoUrl = profile?.logoUrl || fallbackLogoUrl;
-  const companyName = profile?.companyName || 'EASY TRUCKING LIMITED';
+  const companyName = profile?.companyName || '';
   const street = profile?.street?.trim();
   const region = profile?.region?.trim();
   const country = profile?.country?.trim();
