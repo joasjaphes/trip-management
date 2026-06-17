@@ -80,10 +80,11 @@ export class Home implements OnInit, OnDestroy {
     {
       label: 'Office Operations',
       icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
-      permission: ['VIEW_PURCHASE_ORDER', 'VIEW_EXPENSE_TRANSACTION'],
+      permission: ['VIEW_PURCHASE_ORDER', 'VIEW_EXPENSE_TRANSACTION', 'VIEW_VEHICLE_MAINTENANCE'],
       items: [
         { label: 'Purchases', icon: 'M3 4h18M3 10h18M3 16h18M3 22h18', route: '/purchases', permission: 'VIEW_PURCHASE_ORDER' },
         { label: 'Expense Transactions', icon: 'M4 7h16M4 12h16M4 17h10', route: '/expense-transactions', permission: 'VIEW_EXPENSE_TRANSACTION' },
+        { label: 'Vehicle Maintenance', icon: 'M14.7 6.3a1 1 0 010 1.4l-8.4 8.4A1 1 0 015.3 16l8.4-8.4a1 1 0 011.4 0zM19.071 4.929a3 3 0 10-4.243 4.243l.708.707-4.243 4.243a1 1 0 00-.263.5l-.5 2.5a1 1 0 001.16 1.16l2.5-.5a1 1 0 00.5-.263l4.243-4.243.707.708a3 3 0 104.243-4.243L19.07 4.93z', route: '/vehicle-maintenance', permission: 'VIEW_PURCHASE_ORDER' },
       ]
     },
     {

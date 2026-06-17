@@ -32,6 +32,7 @@ import { RouteDetail } from './modules/configurations/routes/route-detail/route-
 import { ExpenseCategories } from './modules/configurations/expense-categories/expense-categories';
 import { ExpenseTransactions } from './modules/office-operations/expense-transactions/expense-transactions';
 import { Purchases } from './modules/office-operations/purchases/purchases';
+import { VehicleMaintenancePage } from './modules/office-operations/vehicle-maintenance/vehicle-maintenance';
 import { CargoTypes } from './modules/configurations/cargo-types/cargo-types';
 import { CargoTypeForm } from './modules/configurations/cargo-types/cargo-type-form/cargo-type-form';
 import { Customers } from './modules/configurations/customers/customers';
@@ -178,6 +179,10 @@ export const routes: Routes = [
             {
                 path: 'purchases',
                 component: Purchases,
+            },
+            {
+                path: 'vehicle-maintenance',
+                component: VehicleMaintenancePage,
             },
             {
                 path: 'cargo-types',

@@ -45,6 +45,9 @@ export const PERMISSION_MODULES: PermissionModule[] = [
             { key: 'CREATE_EXPENSE_TRANSACTION', label: 'Create Expense Transaction' },
             { key: 'EDIT_EXPENSE_TRANSACTION', label: 'Edit Expense Transaction' },
             { key: 'DELETE_EXPENSE_TRANSACTION', label: 'Delete Expense Transaction' },
+            { key: 'VIEW_VEHICLE_MAINTENANCE', label: 'View Vehicle Maintenance' },
+            { key: 'CREATE_VEHICLE_MAINTENANCE', label: 'Create Vehicle Maintenance' },
+            { key: 'EDIT_VEHICLE_MAINTENANCE', label: 'Edit Vehicle Maintenance' },
         ],
     },
     {
@@ -124,5 +127,6 @@ export const DEFAULT_ROLE_PERMISSIONS = new Set<string>([
     'VIEW_TRIPS',
     'VIEW_PURCHASE_ORDER',
     'VIEW_EXPENSE_TRANSACTION',
+    'VIEW_VEHICLE_MAINTENANCE',
     'VIEW_DEBTORS_STATEMENT_REPORT',
 ]);

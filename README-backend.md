@@ -784,6 +784,56 @@ Content-Type: application/json
 
 ---
 
+### Vehicle Maintenances (`/api/vehicleMaintenance`)
+
+#### Get All Vehicle Maintenances
+```http
+GET /api/vehicleMaintenance
+```
+
+#### Get Vehicle Maintenance by ID
+```http
+GET /api/vehicleMaintenance/:id
+```
+
+#### Create Vehicle Maintenance
+```http
+POST /api/vehicleMaintenance
+Content-Type: application/json
+
+{
+  "id": "vm-uid-123",
+  "vehicleId": "vehicle-uid-123",
+  "date": "2026-06-15",
+  "description": "Engine oil and brake pad replacement",
+  "totalMaintenanceCost": 450000
+}
+```
+
+#### Update Vehicle Maintenance
+```http
+PUT /api/vehicleMaintenance
+Content-Type: application/json
+
+{
+  "id": "vm-uid-123",
+  "vehicleId": "vehicle-uid-123",
+  "date": "2026-06-18",
+  "description": "Engine oil, brake pads and filter replacement",
+  "totalMaintenanceCost": 520000
+}
+```
+
+**Frontend payload fields:**
+- `vehicleId` (string, required): UID of vehicle to link maintenance record to
+- `date` (string, required): Maintenance date in ISO format (`YYYY-MM-DD`)
+- `description` (string, required): Description of maintenance work done
+- `totalMaintenanceCost` (number, required): Total maintenance cost
+
+`vehicleType` and `vehicleRegistrationNo` are captured automatically from the linked vehicle and returned in responses.
+
+---
+
 ### Drivers (`/api/drivers`)
 
 #### Get All Drivers
@@ -1948,6 +1998,22 @@ Example Response:
   "mileagePerFullTank": "number",
   "permits": "VehiclePermitModel[]",
   "isActive": "boolean",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+### Vehicle Maintenance Model
+```typescript
+{
+  "id": "string",
+  "vehicleId": "string",
+  "vehicle": "VehicleModel",
+  "date": "string",
+  "description": "string",
+  "vehicleType": "TRUCK | TRAILER",
+  "vehicleRegistrationNo": "string",
+  "totalMaintenanceCost": "number",
   "createdAt": "string",
   "updatedAt": "string"
 }
