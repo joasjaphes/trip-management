@@ -72,7 +72,7 @@ export class VehicleMaintenancePage implements OnInit {
     tableConfigurations: TableConfig = {
         columns: [
             { key: 'maintenanceDateDisplay', label: 'Maintenance Date' },
-            { key: 'vehicleDisplay', label: 'Vehicle' },
+            { key: 'vehicleDisplay', label: 'Vehicle Reg No.' },
             { key: 'vehicleTypeDisplay', label: 'Vehicle Type' },
             { key: 'descriptionDisplay', label: 'Description' },
             { key: 'totalMaintenanceCost', label: 'Total Cost', type: 'number' },
