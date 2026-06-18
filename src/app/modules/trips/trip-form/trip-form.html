@@ -88,13 +88,13 @@
       <!-- Vehicle -->
       @if (tripDate) {
       <div class="flex flex-col gap-2">
-        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Truck*</label>
+        <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Horse*</label>
         <div class="relative">
           <select [(ngModel)]="vehicleId" name="vehicleId"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
             <option value="" disabled>Select Vehicle</option>
             @if (!trucks().length) {
-            <option value="" disabled>No trucks available</option>
+            <option value="" disabled>No horses available</option>
             }
             @for (vehicle of trucks(); track vehicle.id) {
             <option [value]="vehicle.id">{{ vehicle.registrationNo }}</option>

@@ -60,6 +60,8 @@ export const PERMISSION_MODULES: PermissionModule[] = [
             { key: 'VIEW_DEBTORS_STATEMENT_REPORT', label: 'View Debtors Report' },
             { key: 'VIEW_TRIP_REVENUE_REPORT', label: 'View Trip Revenue Report' },
             { key: 'VIEW_CASH_REPORT', label: 'View Cash Report' },
+            { key: 'VIEW_VEHICLE_MAINTENANCE_COST_REPORT', label: 'View Vehicle Maintenance Cost Report' },
+            { key: 'VIEW_VEHICLE_INCOME_VS_MAINTENANCE_REPORT', label: 'View Vehicle Income vs Maintenance Report' },
         ],
     },
     {

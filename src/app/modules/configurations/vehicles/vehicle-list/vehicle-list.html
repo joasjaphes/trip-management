@@ -5,7 +5,7 @@
     <mat-tab-group>
       <mat-tab>
         <ng-template matTabLabel>
-          Trucks ({{ trucks().length }})
+          Horse ({{ trucks().length }})
         </ng-template>
         <app-data-table [data]="trucks()" [config]="truckTableConfigurations" [loading]="loading()"
           (edit)="onEdit($event)" (view)="onView($event)" [permissions]="permissions()"></app-data-table>

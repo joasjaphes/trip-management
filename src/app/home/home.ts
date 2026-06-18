@@ -98,6 +98,8 @@ export class Home implements OnInit, OnDestroy {
         'VIEW_DEBTORS_STATEMENT_REPORT',
         'VIEW_TRIP_REVENUE_REPORT',
         'VIEW_CASH_REPORT',
+        'VIEW_VEHICLE_MAINTENANCE_COST_REPORT',
+        'VIEW_VEHICLE_INCOME_VS_MAINTENANCE_REPORT',
       ],
       items: [
         { label: 'Drivers Permit Status', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7', route: '/reports/drivers-permit-status', permission: 'VIEW_DRIVER_PERMITS_STATUS' },
@@ -106,6 +108,8 @@ export class Home implements OnInit, OnDestroy {
         { label: 'Debtors Report', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1M14.599 9C14.08 8.402 13.11 8 12 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z', route: '/reports/debtors', permission: 'VIEW_DEBTORS_STATEMENT_REPORT' },
         { label: 'Trip Revenue Report', icon: 'M13 10V3L4 14h7v7l9-11h-7z', route: '/reports/trip-revenue', permission: 'VIEW_TRIP_REVENUE_REPORT' },
         { label: 'Cash Report', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 2v8m0 0v2m0-2c-1.11 0-2.08-.402-2.599-1M14.599 9C14.08 8.402 13.11 8 12 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z', route: '/reports/cash', permission: 'VIEW_CASH_REPORT' },
+        { label: 'Vehicle Maintenance Cost', icon: 'M14.7 6.3a1 1 0 010 1.4l-8.4 8.4A1 1 0 015.3 16l8.4-8.4a1 1 0 011.4 0zM19.071 4.929a3 3 0 10-4.243 4.243l.708.707-4.243 4.243a1 1 0 00-.263.5l-.5 2.5a1 1 0 001.16 1.16l2.5-.5a1 1 0 00.5-.263l4.243-4.243.707.708a3 3 0 104.243-4.243L19.07 4.93z', route: '/reports/vehicle-maintenance-cost', permission: 'VIEW_VEHICLE_MAINTENANCE_COST_REPORT' },
+        { label: 'Vehicle Income vs Maintenance', icon: 'M13 10V3L4 14h7v7l9-11h-7z', route: '/reports/vehicle-income-vs-maintenance', permission: 'VIEW_VEHICLE_INCOME_VS_MAINTENANCE_REPORT' },
       ]
     },
     {
