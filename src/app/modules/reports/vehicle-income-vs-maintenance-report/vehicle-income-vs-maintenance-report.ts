@@ -20,6 +20,7 @@ type PeriodType = 'custom' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
 interface VehicleIncomeVsMaintenanceItem {
   truckAndTrailer?: string;
   revenue?: number;
+  tripExpenses?: number;
   maintenanceCost?: number;
   grossIncome?: number;
 }
@@ -27,6 +28,7 @@ interface VehicleIncomeVsMaintenanceItem {
 interface VehicleIncomeVsMaintenanceResponse {
   items?: VehicleIncomeVsMaintenanceItem[];
   totalRevenue?: number;
+  totalTripExpenses?: number;
   totalMaintenanceCost?: number;
   totalGrossIncome?: number;
 }
@@ -46,6 +48,7 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
   rows = signal<VehicleIncomeVsMaintenanceItem[]>([]);
   totals = signal({
     totalRevenue: 0,
+    totalTripExpenses: 0,
     totalMaintenanceCost: 0,
     totalGrossIncome: 0,
   });
@@ -135,18 +138,19 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
 
   exportCsv() {
     const items: string[] = [];
-    items.push(['Truck & Trailer', 'Revenue (TZS)', 'Maintenance Cost (TZS)', 'Gross Income (TZS)'].map(escapeCsv).join(','));
+    items.push(['Truck & Trailer', 'Revenue (TZS)', 'Trip Expenses (TZS)', 'Maintenance Cost (TZS)', 'Gross Income (TZS)'].map(escapeCsv).join(','));
 
     for (const row of this.rows()) {
       items.push([
         row.truckAndTrailer || '-',
         row.revenue || 0,
+        row.tripExpenses || 0,
         row.maintenanceCost || 0,
         row.grossIncome || 0,
       ].map(escapeCsv).join(','));
     }
 
-    items.push(['TOTAL', this.totals().totalRevenue, this.totals().totalMaintenanceCost, this.totals().totalGrossIncome].map(escapeCsv).join(','));
+    items.push(['TOTAL', this.totals().totalRevenue, this.totals().totalTripExpenses, this.totals().totalMaintenanceCost, this.totals().totalGrossIncome].map(escapeCsv).join(','));
 
     const csv = items.join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -180,11 +184,12 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
     const range = this.periodRange();
 
     const rowsHtml = this.rows().length === 0
-      ? `<tr><td class="cell center" colspan="4" style="padding:24px;color:#888;">No vehicle income records in this period.</td></tr>`
+      ? `<tr><td class="cell center" colspan="5" style="padding:24px;color:#888;">No vehicle income records in this period.</td></tr>`
       : this.rows().map((row) => `
           <tr>
             <td class="cell">${escapeHtml(row.truckAndTrailer || '-')}</td>
             <td class="cell right">${formatAmount(row.revenue)}</td>
+            <td class="cell right">${formatAmount(row.tripExpenses)}</td>
             <td class="cell right">${formatAmount(row.maintenanceCost)}</td>
             <td class="cell right">${formatAmount(row.grossIncome)}</td>
           </tr>`).join('');
@@ -201,9 +206,10 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
         <thead>
           <tr>
             <th class="cell head" style="width: 34%;">Truck & Trailer</th>
-            <th class="cell head right" style="width: 22%;">Revenue (TZS)</th>
-            <th class="cell head right" style="width: 22%;">Maintenance Cost (TZS)</th>
-            <th class="cell head right" style="width: 22%;">Gross Income (TZS)</th>
+            <th class="cell head right" style="width: 17%;">Revenue (TZS)</th>
+            <th class="cell head right" style="width: 17%;">Trip Expenses (TZS)</th>
+            <th class="cell head right" style="width: 16%;">Maintenance Cost (TZS)</th>
+            <th class="cell head right" style="width: 16%;">Gross Income (TZS)</th>
           </tr>
         </thead>
         <tbody>
@@ -211,6 +217,7 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
           <tr class="grand-total-row">
             <td class="cell bold">GRAND TOTAL (TZS)</td>
             <td class="cell right bold">${formatAmount(this.totals().totalRevenue)}</td>
+            <td class="cell right bold">${formatAmount(this.totals().totalTripExpenses)}</td>
             <td class="cell right bold">${formatAmount(this.totals().totalMaintenanceCost)}</td>
             <td class="cell right bold">${formatAmount(this.totals().totalGrossIncome)}</td>
           </tr>
@@ -264,6 +271,7 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
       this.rows.set(response?.items || []);
       this.totals.set({
         totalRevenue: response?.totalRevenue || 0,
+        totalTripExpenses: response?.totalTripExpenses || 0,
         totalMaintenanceCost: response?.totalMaintenanceCost || 0,
         totalGrossIncome: response?.totalGrossIncome || 0,
       });
@@ -272,6 +280,7 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
       this.rows.set([]);
       this.totals.set({
         totalRevenue: 0,
+        totalTripExpenses: 0,
         totalMaintenanceCost: 0,
         totalGrossIncome: 0,
       });

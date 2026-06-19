@@ -9,41 +9,42 @@
         </svg>
         <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">
           @if (isEditMode()) {
-            Edit Vehicle Maintenance
+          Edit Vehicle Maintenance
           } @else {
-            Register Vehicle Maintenance
+          Register Vehicle Maintenance
           }
         </h3>
       </div>
     </div>
 
     @if (actionMessage()) {
-      <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
-        <span class="loading loading-spinner loading-sm"></span>
-        <span>{{ actionMessage() }}</span>
-      </div>
+    <div
+      class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+      <span class="loading loading-spinner loading-sm"></span>
+      <span>{{ actionMessage() }}</span>
+    </div>
     }
 
     @if (successMessage()) {
-      <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">{{ successMessage() }}</div>
+    <div
+      class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">
+      {{ successMessage() }}</div>
     }
 
     @if (errorMessage()) {
-      <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{ errorMessage() }}</div>
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{
+      errorMessage() }}</div>
     }
 
     <div class="grid grid-cols-12 gap-4 relative z-10">
       <div class="col-span-12 md:col-span-4">
-        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Maintenance Date</label>
+        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Maintenance
+          Date</label>
         <div class="relative">
-          <input
-            [matDatepicker]="maintenanceDatePicker"
+          <input [matDatepicker]="maintenanceDatePicker"
             [value]="draft().maintenanceDate ? toDateInputValue(draft().maintenanceDate) : null"
-            (dateChange)="onMaintenanceDateChanged($event.value)"
-            [max]="today"
-            readonly
-            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors"
-          >
+            (dateChange)="onMaintenanceDateChanged($event.value)" [max]="today" readonly
+            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
           <button type="button" (click)="maintenanceDatePicker.open()"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
             aria-label="Open maintenance date picker">
@@ -58,67 +59,53 @@
       </div>
 
       <div class="col-span-12 md:col-span-8">
-        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Vehicle Reg No.</label>
-        <input
-          type="text"
-          autocomplete="off"
-          list="vehicle-options"
-          placeholder="Search by registration number or model"
-          [(ngModel)]="draft().vehicleSearchTerm"
+        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Vehicle Reg
+          No.</label>
+        <input type="text" autocomplete="off" list="vehicle-options"
+          placeholder="Search by registration number or model" [(ngModel)]="draft().vehicleSearchTerm"
           (input)="onVehicleInput($any($event.target).value)"
-          class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
-        >
+          class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
         <div class="mt-2 min-h-4 text-[11px] text-gray-500">
           @if (selectedVehicleLabel()) {
-            Matched vehicle: {{ selectedVehicleLabel() }}
+          Matched vehicle: {{ selectedVehicleLabel() }}
           } @else {
-            Select a vehicle to populate the maintenance record.
+          Select a vehicle to populate the maintenance record.
           }
         </div>
       </div>
 
       <div class="col-span-12">
         <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Description</label>
-        <textarea
-          rows="4"
-          placeholder="e.g. Engine oil and brake pad replacement"
-          [(ngModel)]="draft().description"
+        <textarea rows="4" placeholder="e.g. Engine oil and brake pad replacement" [(ngModel)]="draft().description"
           (input)="updateField('description', $any($event.target).value)"
-          class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 resize-none"
-        ></textarea>
+          class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 resize-none"></textarea>
       </div>
 
       <div class="col-span-12 md:col-span-5 lg:col-span-4">
-        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Total Maintenance Cost</label>
-        <input
-          type="text"
-          min="0"
-          step="0.01"
-          placeholder="0.00"
-          [(ngModel)]="draft().totalMaintenanceCost"
-          appNumberFormat
-          (input)="updateField('totalMaintenanceCost', $any($event.target).value)"
-          class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300"
-        >
+        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">
+          Total Maintenance Cost
+          @if(draft().totalMaintenanceCost){
+          ({{ draft().totalMaintenanceCost | number}})
+          }
+        </label>
+        <input type="text" min="0" step="0.01" placeholder="0.00" [(ngModel)]="draft().totalMaintenanceCost"
+          appNumberFormat (input)="updateField('totalMaintenanceCost', $any($event.target).value)"
+          class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
       </div>
     </div>
 
     <datalist id="vehicle-options">
       @for (vehicle of vehicleOptions(); track vehicle.id) {
-        <option [value]="vehicle.registrationNo">{{ vehicle.model || vehicle.type || 'Vehicle' }}</option>
+      <option [value]="vehicle.registrationNo">{{ vehicle.model || vehicle.type || 'Vehicle' }}</option>
       }
     </datalist>
 
     @if (vehicleOptions().length === 0) {
-      <p class="text-[12px] text-amber-600 mt-4">No vehicles found. Add at least one vehicle before recording maintenance.</p>
+    <p class="text-[12px] text-amber-600 mt-4">No vehicles found. Add at least one vehicle before recording maintenance.
+    </p>
     }
 
-    <app-save-area
-      [saveText]="isEditMode() ? 'Update Maintenance' : 'Save Maintenance'"
-      [loading]="saving()"
-      [disabled]="!canSave()"
-      (cancel)="goBack()"
-      (save)="onSubmit()"
-    ></app-save-area>
+    <app-save-area [saveText]="isEditMode() ? 'Update Maintenance' : 'Save Maintenance'" [loading]="saving()"
+      [disabled]="!canSave()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
   </div>
 </div>

@@ -92,8 +92,9 @@
             <thead>
               <tr>
                 <th class="text-left">Truck & Trailer</th>
-                <th class="text-right">Revenue (TZS)</th>
-                <th class="text-right">Maintenance Cost (TZS)</th>
+                <th class="text-right">Trip Revenue (TZS)</th>
+                <th class="text-right">Trip Expenses (TZS)</th>
+                <th class="text-right">Vehicle Maintenance Cost (TZS)</th>
                 <th class="text-right">Gross Income (TZS)</th>
               </tr>
             </thead>
@@ -102,6 +103,7 @@
                 <tr>
                   <td class="text-left">{{ row.truckAndTrailer || '-' }}</td>
                   <td class="text-right">{{ row.revenue | number: '1.2-2' }}</td>
+                  <td class="text-right">{{ row.tripExpenses | number: '1.2-2' }}</td>
                   <td class="text-right">{{ row.maintenanceCost | number: '1.2-2' }}</td>
                   <td class="text-right">{{ row.grossIncome | number: '1.2-2' }}</td>
                 </tr>
@@ -109,6 +111,7 @@
               <tr class="font-bold bg-gray-100 border-t-2 border-gray-400">
                 <td class="text-left">TOTAL</td>
                 <td class="text-right">{{ totals().totalRevenue | number: '1.2-2' }}</td>
+                <td class="text-right">{{ totals().totalTripExpenses | number: '1.2-2' }}</td>
                 <td class="text-right">{{ totals().totalMaintenanceCost | number: '1.2-2' }}</td>
                 <td class="text-right">{{ totals().totalGrossIncome | number: '1.2-2' }}</td>
               </tr>
