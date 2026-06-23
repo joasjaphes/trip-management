@@ -14,6 +14,8 @@ import { ExpenditureReport } from './modules/reports/expenditure-report/expendit
 import { DebtorsReport } from './modules/reports/debtors-report/debtors-report';
 import { TripRevenueReport } from './modules/reports/trip-revenue-report/trip-revenue-report';
 import { CashReport } from './modules/reports/cash-report/cash-report';
+import { VehicleMaintenanceCostReport } from './modules/reports/vehicle-maintenance-cost-report/vehicle-maintenance-cost-report';
+import { VehicleIncomeVsMaintenanceReport } from './modules/reports/vehicle-income-vs-maintenance-report/vehicle-income-vs-maintenance-report';
 import { TripForm } from './modules/trips/trip-form/trip-form';
 import { TripDetail } from './modules/trips/trip-detail/trip-detail';
 import { DriverList } from './modules/configurations/drivers/driver-list/driver-list';
@@ -32,6 +34,7 @@ import { RouteDetail } from './modules/configurations/routes/route-detail/route-
 import { ExpenseCategories } from './modules/configurations/expense-categories/expense-categories';
 import { ExpenseTransactions } from './modules/office-operations/expense-transactions/expense-transactions';
 import { Purchases } from './modules/office-operations/purchases/purchases';
+import { VehicleMaintenancePage } from './modules/office-operations/vehicle-maintenance/vehicle-maintenance';
 import { CargoTypes } from './modules/configurations/cargo-types/cargo-types';
 import { CargoTypeForm } from './modules/configurations/cargo-types/cargo-type-form/cargo-type-form';
 import { Customers } from './modules/configurations/customers/customers';
@@ -102,6 +105,14 @@ export const routes: Routes = [
             {
                 path: 'reports/cash',
                 component: CashReport,
+            },
+            {
+                path: 'reports/vehicle-maintenance-cost',
+                component: VehicleMaintenanceCostReport,
+            },
+            {
+                path: 'reports/vehicle-income-vs-maintenance',
+                component: VehicleIncomeVsMaintenanceReport,
             },
             {
                 path: 'trips/new',
@@ -178,6 +189,10 @@ export const routes: Routes = [
             {
                 path: 'purchases',
                 component: Purchases,
+            },
+            {
+                path: 'vehicle-maintenance',
+                component: VehicleMaintenancePage,
             },
             {
                 path: 'cargo-types',

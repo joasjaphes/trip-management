@@ -1,0 +1,111 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  <div class="bg-white border border-gray-100 rounded-2xl p-8 relative overflow-hidden shadow-sm">
+    <div class="flex items-center justify-between mb-6 relative z-10">
+      <div class="flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="w-5 h-5 text-[#f25f2f]">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M14.7 6.3a1 1 0 010 1.4l-8.4 8.4A1 1 0 015.3 16l8.4-8.4a1 1 0 011.4 0zM19.071 4.929a3 3 0 10-4.243 4.243l.708.707-4.243 4.243a1 1 0 00-.263.5l-.5 2.5a1 1 0 001.16 1.16l2.5-.5a1 1 0 00.5-.263l4.243-4.243.707.708a3 3 0 104.243-4.243L19.07 4.93z" />
+        </svg>
+        <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">
+          @if (isEditMode()) {
+          Edit Vehicle Maintenance
+          } @else {
+          Register Vehicle Maintenance
+          }
+        </h3>
+      </div>
+    </div>
+
+    @if (actionMessage()) {
+    <div
+      class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-[13px] font-semibold text-blue-700 flex items-center gap-2">
+      <span class="loading loading-spinner loading-sm"></span>
+      <span>{{ actionMessage() }}</span>
+    </div>
+    }
+
+    @if (successMessage()) {
+    <div
+      class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-700">
+      {{ successMessage() }}</div>
+    }
+
+    @if (errorMessage()) {
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold text-red-700">{{
+      errorMessage() }}</div>
+    }
+
+    <div class="grid grid-cols-12 gap-4 relative z-10">
+      <div class="col-span-12 md:col-span-4">
+        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Maintenance
+          Date</label>
+        <div class="relative">
+          <input [matDatepicker]="maintenanceDatePicker"
+            [value]="draft().maintenanceDate ? toDateInputValue(draft().maintenanceDate) : null"
+            (dateChange)="onMaintenanceDateChanged($event.value)" [max]="today" readonly
+            class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors">
+          <button type="button" (click)="maintenanceDatePicker.open()"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+            aria-label="Open maintenance date picker">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </button>
+          <mat-datepicker #maintenanceDatePicker></mat-datepicker>
+        </div>
+      </div>
+
+      <div class="col-span-12 md:col-span-8">
+        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Vehicle Reg
+          No.</label>
+        <input type="text" autocomplete="off" list="vehicle-options"
+          placeholder="Search by registration number or model" [(ngModel)]="draft().vehicleSearchTerm"
+          (input)="onVehicleInput($any($event.target).value)"
+          class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+        <div class="mt-2 min-h-4 text-[11px] text-gray-500">
+          @if (selectedVehicleLabel()) {
+          Matched vehicle: {{ selectedVehicleLabel() }}
+          } @else {
+          Select a vehicle to populate the maintenance record.
+          }
+        </div>
+      </div>
+
+      <div class="col-span-12">
+        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Description</label>
+        <textarea rows="4" placeholder="e.g. Engine oil and brake pad replacement" [(ngModel)]="draft().description"
+          (input)="updateField('description', $any($event.target).value)"
+          class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300 resize-none"></textarea>
+      </div>
+
+      <div class="col-span-12 md:col-span-5 lg:col-span-4">
+        <label class="block text-[10px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">
+          Total Maintenance Cost
+          @if(draft().totalMaintenanceCost){
+          ({{ draft().totalMaintenanceCost | number}})
+          }
+        </label>
+        <input type="text" min="0" step="0.01" placeholder="0.00" [(ngModel)]="draft().totalMaintenanceCost"
+          appNumberFormat (input)="updateField('totalMaintenanceCost', $any($event.target).value)"
+          class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+      </div>
+    </div>
+
+    <datalist id="vehicle-options">
+      @for (vehicle of vehicleOptions(); track vehicle.id) {
+      <option [value]="vehicle.registrationNo">{{ vehicle.model || vehicle.type || 'Vehicle' }}</option>
+      }
+    </datalist>
+
+    @if (vehicleOptions().length === 0) {
+    <p class="text-[12px] text-amber-600 mt-4">No vehicles found. Add at least one vehicle before recording maintenance.
+    </p>
+    }
+
+    <app-save-area [saveText]="isEditMode() ? 'Update Maintenance' : 'Save Maintenance'" [loading]="saving()"
+      [disabled]="!canSave()" (cancel)="goBack()" (save)="onSubmit()"></app-save-area>
+  </div>
+</div>

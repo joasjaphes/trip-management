@@ -151,7 +151,7 @@ export class Trips implements OnInit {
       },
       {
         key: 'vehicle',
-        label: 'Truck'
+        label: 'Horse'
       },
       {
         key: 'trailer',

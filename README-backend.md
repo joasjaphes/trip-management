@@ -784,6 +784,56 @@ Content-Type: application/json
 
 ---
 
+### Vehicle Maintenances (`/api/vehicleMaintenance`)
+
+#### Get All Vehicle Maintenances
+```http
+GET /api/vehicleMaintenance
+```
+
+#### Get Vehicle Maintenance by ID
+```http
+GET /api/vehicleMaintenance/:id
+```
+
+#### Create Vehicle Maintenance
+```http
+POST /api/vehicleMaintenance
+Content-Type: application/json
+
+{
+  "id": "vm-uid-123",
+  "vehicleId": "vehicle-uid-123",
+  "date": "2026-06-15",
+  "description": "Engine oil and brake pad replacement",
+  "totalMaintenanceCost": 450000
+}
+```
+
+#### Update Vehicle Maintenance
+```http
+PUT /api/vehicleMaintenance
+Content-Type: application/json
+
+{
+  "id": "vm-uid-123",
+  "vehicleId": "vehicle-uid-123",
+  "date": "2026-06-18",
+  "description": "Engine oil, brake pads and filter replacement",
+  "totalMaintenanceCost": 520000
+}
+```
+
+**Frontend payload fields:**
+- `vehicleId` (string, required): UID of vehicle to link maintenance record to
+- `date` (string, required): Maintenance date in ISO format (`YYYY-MM-DD`)
+- `description` (string, required): Description of maintenance work done
+- `totalMaintenanceCost` (number, required): Total maintenance cost
+
+`vehicleType` and `vehicleRegistrationNo` are captured automatically from the linked vehicle and returned in responses.
+
+---
+
 ### Drivers (`/api/drivers`)
 
 #### Get All Drivers
@@ -1545,7 +1595,7 @@ Use this file path in fields like `driverPhoto`, `licenseFrontPagePhoto`, `recei
 
 ### Reports (`/api/reports`)
 
-Reports provide aggregated insights into permit status, expenditure, trip revenue, debtors, and invoice cash collections.
+Reports provide aggregated insights into permit status, expenditure, trip revenue, debtors, invoice cash collections, vehicle maintenance, and vehicle income vs maintenance performance.
 
 #### Get Driver Permit Status Report
 ```http
@@ -1802,6 +1852,104 @@ Example Response:
 }
 ```
 
+#### Get Vehicle Maintenance Report
+
+```http
+GET /api/reports/vehicleMaintenance?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Basic <credentials>
+```
+
+Query Parameters:
+- `startDate` (optional): ISO 8601 date string (YYYY-MM-DD) to filter maintenance records by date
+- `endDate` (optional): ISO 8601 date string (YYYY-MM-DD) to filter maintenance records by date
+
+Notes:
+- Returns vehicle maintenance records aggregated by vehicle.
+- Results grouped by vehicle UID, showing vehicle type, registration number, and total maintenance cost.
+
+Example Response:
+```json
+{
+  "items": [
+    {
+      "vehicleType": "Truck",
+      "registrationNo": "T123 ABC",
+      "totalMaintenanceCost": 850000
+    },
+    {
+      "vehicleType": "Trailer",
+      "registrationNo": "TR456 XYZ",
+      "totalMaintenanceCost": 520000
+    }
+  ],
+  "totalMaintenanceCost": 1370000
+}
+```
+
+**Response Fields:**
+- `items`: Array of vehicle maintenance records
+  - `vehicleType`: Type of vehicle (Truck or Trailer)
+  - `registrationNo`: Vehicle registration number
+  - `totalMaintenanceCost`: Sum of all maintenance costs for the vehicle in the date range
+- `totalMaintenanceCost`: Sum of all maintenance costs across all vehicles
+
+#### Get Vehicle Income vs Maintenance Report
+
+```http
+GET /api/reports/vehicleIncomeVsMaintenance?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Basic <credentials>
+```
+
+Query Parameters:
+- `startDate` (optional): ISO 8601 date string (YYYY-MM-DD) to filter trips and maintenance by date
+- `endDate` (optional): ISO 8601 date string (YYYY-MM-DD) to filter trips and maintenance by date
+
+Notes:
+- Aggregates trip revenue grouped by truck and trailer pair.
+- Aggregates trip expenses for the same completed trips and includes them in the report output.
+- Combines maintenance costs for both truck and trailer assigned to each trip.
+- Only includes completed trips.
+- All monetary amounts are returned in TZS.
+- If trip revenue is in USD, it is converted to TZS using the trip's `exchangeRate`.
+
+Example Response:
+```json
+{
+  "items": [
+    {
+      "truckAndTrailer": "T123 ABC & TR456 XYZ",
+      "revenue": 5600000,
+      "tripExpenses": 280000,
+      "maintenanceCost": 1370000,
+      "grossIncome": 3950000
+    },
+    {
+      "truckAndTrailer": "T789 LMN",
+      "revenue": 3200000,
+      "tripExpenses": 150000,
+      "maintenanceCost": 420000,
+      "grossIncome": 2630000
+    }
+  ],
+  "totalRevenue": 8800000,
+  "totalTripExpenses": 430000,
+  "totalMaintenanceCost": 1790000,
+  "totalGrossIncome": 6580000
+}
+```
+
+**Response Fields:**
+- `items`: Array of vehicle income vs maintenance records
+  - `truckAndTrailer`: Human-readable identifier of truck and trailer pair (e.g., "T123 ABC & TR456 XYZ" or "T123 ABC" if no trailer)
+  - `revenue`: Total revenue from all completed trips using this truck/trailer combination
+  - `tripExpenses`: Total trip expenses for the same completed trips, converted to TZS when needed
+  - `maintenanceCost`: Total maintenance cost for both truck and trailer in the date range
+  - `grossIncome`: Revenue minus trip expenses and maintenance cost
+- `totalRevenue`: Sum of revenue across all truck/trailer combinations
+- `totalTripExpenses`: Sum of trip expenses across all truck/trailer combinations
+- `totalMaintenanceCost`: Sum of maintenance costs across all vehicles
+- `totalGrossIncome`: Total revenue minus total trip expenses and total maintenance cost
+
 ---
 
 ## Data Models
@@ -1948,6 +2096,22 @@ Example Response:
   "mileagePerFullTank": "number",
   "permits": "VehiclePermitModel[]",
   "isActive": "boolean",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+### Vehicle Maintenance Model
+```typescript
+{
+  "id": "string",
+  "vehicleId": "string",
+  "vehicle": "VehicleModel",
+  "date": "string",
+  "description": "string",
+  "vehicleType": "TRUCK | TRAILER",
+  "vehicleRegistrationNo": "string",
+  "totalMaintenanceCost": "number",
   "createdAt": "string",
   "updatedAt": "string"
 }

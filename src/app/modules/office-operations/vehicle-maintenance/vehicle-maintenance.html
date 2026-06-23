@@ -1,0 +1,15 @@
+<app-layout [title]="title()" [description]="description()" [addText]="addText()" (add)="onAdd()"
+  [(viewDetails)]="viewDetails" [formTitle]="formTitle()" [formDescription]="formDescription()"
+  [splitSize]="splitSize()" [showAddButton]="showAddButton()" [addPermission]="addPermission()">
+  <ng-container ngProjectAs="main">
+    <app-data-table [data]="maintenanceRows()" [config]="tableConfigurations" [loading]="loading()"
+      [showAddButton]="true" [addButtonText]="'Register maintenance'" (add)="onAdd()"
+      [permissions]="permissions()" (rowClick)="onEdit($event)" (edit)="onEdit($event)"></app-data-table>
+  </ng-container>
+
+  <ng-container ngProjectAs="form">
+    @if (viewType() === 'add' || viewType() === 'edit') {
+      <app-vehicle-maintenance-form [maintenance]="selectedMaintenance()" (close)="onCloseForm()"></app-vehicle-maintenance-form>
+    }
+  </ng-container>
+</app-layout>
