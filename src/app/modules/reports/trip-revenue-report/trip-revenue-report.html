@@ -1,4 +1,4 @@
-<app-layout title="Trip Revenue Report" [showAddButton]="false">
+<app-layout title="Trip Revenue Report" [showAddButton]="false" [viewDetails]="viewDetails()" [formTitle]="formTitle()" [showCloseFormButton]="true" (closeForm)="onCloseDetails()">
   <main>
     <div class="report-page">
       <!-- Legend + actions -->
@@ -99,6 +99,7 @@
                 <th class="text-right">Gross Revenue (TZS)</th>
                 <th class="text-right">Total Trip Expenses (TZS)</th>
                 <th class="text-right">Trip Revenue (TZS)</th>
+                <th class="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -111,9 +112,12 @@
                   <td class="text-right">{{ row.tripRevenue | number: '1.2-2' }}</td>
                   <td class="text-right">{{ row.totalTripExpenses | number: '1.2-2' }}</td>
                   <td class="text-right">{{ row.netIncome | number: '1.2-2' }}</td>
+                  <td class="text-center">
+                    <i class="fas fa-eye cursor-pointer" (click)="onView(row)"></i>
+                  </td>
                 </tr>
               }
-              <tr class="font-bold bg-gray-100 border-t-2 border-gray-400">
+              <tr class="font-bold border-t-2 border-gray-400">
                 <td colspan="4" class="text-left">TOTAL</td>
                 <td class="text-right">{{ totals().totalTripRevenue | number: '1.2-2' }}</td>
                 <td class="text-right">{{ totals().totalTripExpenses | number: '1.2-2' }}</td>
@@ -125,4 +129,9 @@
       }
     </div>
   </main>
+  <ng-container ngProjectAs="form">
+    @if(viewType() === 'summary') {
+      <app-trip-revenue-summary [tripId]="selectedTripId()" (close)="onCloseDetails()" [tripSummary]="selectedRow()"></app-trip-revenue-summary>
+    }
+  </ng-container>
 </app-layout>

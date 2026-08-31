@@ -1,0 +1,71 @@
+<div class="w-full bg-white p-2">
+    @if(this.trip.isLoading()) {
+    <div class="w-full" align="center">
+        <app-placeholder />
+    </div>
+    }@else if(this.trip.value()) {
+    @let tripData = this.trip.value();
+    <div class="w-full">
+        <table class="table-auto w-full border-collapse border border-gray-300">
+            <tbody>
+                <tr>
+                    <td class="font-black border border-gray-300 border-collapse p-4" colspan="2">Income</td>
+                    <td class="font-bold border border-gray-300 border-collapse text-center p-4">USD</td>
+                    <td class="font-bold border border-gray-300 border-collapse text-center p-4">TZS</td>
+                </tr>
+                <tr>
+                    <td class="text-right border border-gray-300 border-collapse p-4">{{tripData.tripDate |
+                        date}}</td>
+                    <td class="text-left border border-gray-300 border-collapse p-4">{{tripData.route.name}}</td>
+                    <td class="text-right border border-gray-300 border-collapse p-4">{{tripData.revenue |number}}</td>
+                    <td class="text-right border border-gray-300 border-collapse p-4">{{tripData.equivalentAmount
+                        |number}}</td>
+                </tr>
+                @if(tripData.additionalTrips && tripData.additionalTrips.length) {
+                @for( additionalTrip of tripData.additionalTrips; track additionalTrip.id) {
+                <tr>
+                    <td class="text-right border border-gray-300 border-collapse p-4">{{additionalTrip.startDate |
+                        date}}</td>
+                    <td class="text-left border border-gray-300 border-collapse p-4">{{additionalTrip.fromLocation}} -
+                        {{additionalTrip.toLocation}}</td>
+                    <td class="text-right border border-gray-300 border-collapse p-4"> - </td>
+                    <td class="text-right border border-gray-300 border-collapse p-4">{{additionalTrip.revenue
+                        |number}}</td>
+                </tr>
+
+                }
+                <tr>
+                    <td class=" border border-gray-300 border-collapse p-4" colspan="3"></td>
+                    <td
+                        class="font-black border border-gray-300 border-b-gray-600 border-b-2 border-t-gray-600 border-t-2 border-collapse text-right p-4">
+                        {{tripSummary.tripRevenue |number}}</td>
+                </tr>
+
+                }
+                <tr>
+                    <td class="font-black border border-gray-300 border-collapse p-4" colspan="4">Expenses</td>
+                </tr>
+                @for(expense of tripData.expenses; track expense.id) {
+                <tr>
+                    <td class="text-left border border-gray-300 border-collapse p-4" colspan="2">{{expense.expenseDescription}}</td>
+                    <td class="text-right border border-gray-300 border-collapse p-4"> - </td>
+                    <td class="text-right border border-gray-300 border-collapse p-4">{{expense.amount |number}}</td>
+                </tr>
+                }
+                <tr>
+                    <td class="font-bold border border-gray-300 border-collapse p-4" colspan="3">Total Expenses</td>
+                    <td
+                        class="font-black border border-gray-300 border-b-gray-600 border-b-2 border-t-gray-600 border-t-2 border-collapse text-right p-4">
+                        {{tripSummary.totalTripExpenses |number}}</td>
+                </tr>
+                <tr>
+                    <td class="font-bold border border-gray-300 border-collapse p-4" colspan="3">Gross Profit</td>
+                    <td
+                        class="font-black border border-gray-300 border-b-gray-600 border-b-2 border-t-gray-600 border-t-2 border-collapse text-right p-4">
+                        {{tripSummary.netIncome |number}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    }
+</div>

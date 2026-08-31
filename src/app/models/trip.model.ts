@@ -5,6 +5,8 @@ import type { Vehicle } from './vehicle.model';
 import type { Customer } from './customer.model';
 import type { OffloadingPlace } from './offloading-place.model';
 import { CargoType } from './cargo-type.model';
+import { AdditionalTrip } from './additional-trip.model';
+import {  TripVehicleMaintenanceItem } from './trip-vehicle-maintenance';
 
 export interface Trip {
 	id: string;
@@ -48,6 +50,8 @@ export interface Trip {
 	notes?: string;
 	createdAt: Date;
 	updatedAt: Date;
+	additionalTrips?: AdditionalTrip[];
+	maintenance?: TripVehicleMaintenanceItem[];
 }
 
 export enum TripStatus {

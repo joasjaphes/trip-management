@@ -10,6 +10,7 @@ export * from './permits.model';
 export * from './customer.model';
 export * from './vendor.model';
 export * from './offloading-place.model';
+export * from './additional-trip.model';
 export * from './vehicle-maintenance.model';
 export * from './invoice.model';
 export * from './purchase-order.model';

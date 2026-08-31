@@ -1,0 +1,67 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 relative overflow-hidden shadow-sm">
+        <div class="mb-6">
+            <h3 class="text-[16px] font-extrabold text-gray-900 tracking-wide">Trip Vehicle Maintenance</h3>
+            <p class="text-[12px] text-gray-500 mt-1">
+                This maintenance record is linked to: <span class="font-semibold text-gray-700">{{
+                    trip?.trailer?.registrationNo }} and {{ trip?.vehicle?.registrationNo }}
+                </span>
+            </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+
+        </div>
+
+        <div class="grid grid-cols-4 gap-x-4 mb-2 px-2 z-10 mt-4">
+            <div class=" text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Date</div>
+            <div class=" text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Item
+                Description
+            </div>
+            <div class=" text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Cost (TZS)
+            </div>
+            <div class=" text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Action</div>
+        </div>
+
+        @for(item of items; track item.id) {
+        <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-4 gap-x-4 items-center mb-3 relative z-10">
+            <div class="text-[14px] text-gray-800">{{ item.date | date }}</div>
+            <input type="text" placeholder="e.g. Oil Change" [(ngModel)]="item.description"
+                class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+            <input type="number" placeholder="e.g. 50000" [(ngModel)]="item.cost"
+                class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+            <i class="fas fa-trash-alt text-red-500 hover:text-red-700 cursor-pointer" (click)="removeItem(item.id)"
+                title="Remove item"></i>
+        </div>
+        }
+        <div class="bg-gray-50 rounded-xl p-2 grid grid-cols-4 gap-x-4 items-center mb-3 relative z-10">
+            <div class="relative">
+                <input [matDatepicker]="maintenanceDatepicker" [value]="toDateValue(date)"
+                    [min]="toDateValue(trip?.tripDate)" [max]="toDateValue(today)" readonly
+                    class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 pr-10 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+                <button type="button" (click)="maintenanceDatepicker.open()"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-[#f25f2f] hover:text-[#ff5117]"
+                    aria-label="Open end date picker">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </button>
+                <mat-datepicker #maintenanceDatepicker></mat-datepicker>
+            </div>
+            <input type="text" placeholder="e.g. Oil Change" [(ngModel)]="newItemDescription"
+                class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+            <input type="number" placeholder="e.g. 50000" [(ngModel)]="newItemCost" appNumberFormat matTooltip=""
+                matTooltipPosition="above" matTooltipClass="with-arrow"
+                class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+            <button (click)="addItem()" [disabled]="!newItemDescription || !newItemCost"
+                class="btn btn-primary text-white font-semibold py-2 px-4 rounded-lg transition-colors">Add
+                Item</button>
+        </div>
+
+        <div class="w-full mt-4">
+            <app-save-area (save)="onSave()" (cancel)="onClose()" [disabled]="!items.length || !date" [loading]="saving"></app-save-area>
+        </div>
+    </div>
+</div>

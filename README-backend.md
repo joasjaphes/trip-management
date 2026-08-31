@@ -66,6 +66,7 @@ Notes:
 - [Authentication](#authentication)
 - [Roles and Permissions](#roles-and-permissions)
 - [API Endpoints](#api-endpoints)
+- [Additional Trips](#additional-trips-apiadditional-trips)
 - [Purchase Orders](#purchaseOrders-api-purchaseOrders)
 - [Reports](#reports-api-reports)
 - [Data Models](#data-models)
@@ -518,6 +519,79 @@ When creating a trip, the API checks for an existing customer using `customerTIN
 - `completionDocument` (string, optional)
 - `tripActualPosition` (string, optional)
 - `exchangeRate` (number, optional, defaults to `1`)
+
+### Additional Trips (`/api/additional-trips`)
+
+Additional trips represent follow-up or related trip records linked back to a base trip through `referenceTripId`. One trip can have many additional trip records, but each additional trip belongs to exactly one parent trip.
+
+#### Data Model
+```json
+{
+  "id": "additional-trip-uid-123",
+  "tripReferenceNumber": "ATP-2026-0001",
+  "startDate": "2026-03-07T10:00:00.000Z",
+  "endDate": "2026-03-08T10:00:00.000Z",
+  "revenue": 1500000,
+  "referenceTripId": "trip-uid-123",
+  "fromLocation": "Dar es Salaam",
+  "toLocation": "Arusha",
+  "createdAt": "2026-03-01T10:00:00.000Z",
+  "updatedAt": "2026-03-01T10:00:00.000Z",
+  "active": true,
+  "deleted": false
+}
+```
+
+#### Get All Additional Trips
+```http
+GET /api/additional-trips
+```
+
+#### Get Additional Trip by ID
+```http
+GET /api/additional-trips/:id
+```
+
+#### Create Additional Trip
+```http
+POST /api/additional-trips
+Content-Type: application/json
+
+{
+  "id": "additional-trip-uid-123",
+  "tripReferenceNumber": "ATP-2026-0001",
+  "startDate": "2026-03-07T10:00:00.000Z",
+  "endDate": "2026-03-08T10:00:00.000Z",
+  "revenue": 1500000,
+  "referenceTripId": "trip-uid-123",
+  "fromLocation": "Dar es Salaam",
+  "toLocation": "Arusha"
+}
+```
+
+#### Update Additional Trip
+```http
+PUT /api/additional-trips
+Content-Type: application/json
+
+{
+  "id": "additional-trip-uid-123",
+  "tripReferenceNumber": "ATP-2026-0002",
+  "startDate": "2026-03-09T10:00:00.000Z",
+  "referenceTripId": "trip-uid-123",
+  "fromLocation": "Dar es Salaam",
+  "toLocation": "Dodoma",
+  "revenue": 1800000
+}
+```
+
+#### Delete Additional Trip
+```http
+DELETE /api/additional-trips/:id
+```
+
+The `referenceTripId` must match an existing trip UID. If it does not exist, the API returns a `400 Bad Request` error.
+
 - `notes` (string, optional)
 
 **Calculated on create/update (response fields):**

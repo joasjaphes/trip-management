@@ -6,17 +6,19 @@ import { TripForm } from './trip-form/trip-form';
 import { TripDetail } from './trip-detail/trip-detail';
 import { TripExpensesManage } from './trip-expenses-manage/trip-expenses-manage';
 import { TripActualPositionManage } from './trip-actual-position-manage/trip-actual-position-manage';
+import { AdditionalTripForm } from './additional-trip-form/additional-trip-form';
 import { TripService } from '../../services/trip.service';
 import { Trip, TripStatus } from '../../models/trip.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import moment from 'moment';
 import { Tabs } from '../../shared/components/tabs/tabs';
 import { MatTabsModule } from '@angular/material/tabs';
+import { TripVehicleMaintenance } from './trip-vehicle-maintenance/trip-vehicle-maintenance';
 
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, TripActualPositionManage, MatTooltipModule, MatTabsModule],
+  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, TripActualPositionManage, AdditionalTripForm, TripVehicleMaintenance, MatTooltipModule, MatTabsModule],
   templateUrl: './trips.html'
 })
 export class Trips implements OnInit {
@@ -61,7 +63,9 @@ export class Trips implements OnInit {
       actions: {
         reviewComplete: trip.status !== TripStatus.COMPLETED,
         manageExpense: trip.status !== TripStatus.COMPLETED,
-        manageActualPosition: trip.status !== TripStatus.COMPLETED
+        manageActualPosition: trip.status !== TripStatus.COMPLETED,
+        addTrip: trip.status !== TripStatus.COMPLETED,
+        addVehicleMaintenance: trip.status !== TripStatus.COMPLETED,
       }
     }))
   );
@@ -74,7 +78,9 @@ export class Trips implements OnInit {
     more: {
       reviewComplete: ['COMPLETE_TRIP'],
       manageExpense: ['ADD_TRIP_EXPENSES'],
-      manageActualPosition: ['EDIT_TRIP']
+      manageActualPosition: ['EDIT_TRIP'],
+      addTrip: ['CREATE_TRIP'],
+      addVehicleMaintenance: ['ADD_TRIP_EXPENSES'],
     }
   })
 
@@ -107,8 +113,8 @@ export class Trips implements OnInit {
     return this.trips().filter((trip: any) => !this.isTripCompleted(trip) && !trip.isOverstayed);
   });
 
-  overStayedTrips = computed(() => { 
-    return this.trips().filter((trip: any) =>  trip.isOverstayed);
+  overStayedTrips = computed(() => {
+    return this.trips().filter((trip: any) => trip.isOverstayed);
   });
 
   filteredTrips = computed(() => {
@@ -197,11 +203,24 @@ export class Trips implements OnInit {
       action: (row: any) => this.onManageExpense(row)
     },
     {
+      label: 'Manage vehicle maintenance',
+      key: 'addVehicleMaintenance',
+      icon: 'fa-solid fa-wrench text-green-500',
+      action: (row: any) => this.onAddVehicleMaintenance(row)
+    },
+    {
       label: 'Update actual position',
       key: 'manageActualPosition',
       icon: 'fa-solid fa-location-dot text-blue-500',
       action: (row: any) => this.onManageActualPosition(row)
     },
+    {
+      label: 'Add return trip',
+      key: 'addTrip',
+      icon: 'fa-solid fa-circle-plus text-indigo-500',
+      action: (row: any) => this.onAddAdditionalTrip(row)
+    },
+
   ]);
 
   async ngOnInit(): Promise<void> {
@@ -260,6 +279,23 @@ export class Trips implements OnInit {
     this.formTitle.set('Update actual position');
     this.formDescription.set('Update the current trip location/position.');
     this.viewType.set('manage-actual-position');
+    this.showAddButton.set(false);
+    this.viewDetails.set(true);
+  }
+
+  onAddAdditionalTrip(row: any) {
+    this.selectedTrip.set(row._trip);
+    this.formTitle.set('Add trip');
+    this.formDescription.set('Create an additional trip linked to this reference trip.');
+    this.viewType.set('add-additional-trip');
+    this.showAddButton.set(false);
+    this.viewDetails.set(true);
+  }
+  onAddVehicleMaintenance(row: any) {
+    this.selectedTrip.set(row._trip);
+    this.formTitle.set('Add vehicle maintenance');
+    this.formDescription.set('Add a new vehicle maintenance record for this trip.');
+    this.viewType.set('vehicle-maintenance');
     this.showAddButton.set(false);
     this.viewDetails.set(true);
   }

@@ -11,21 +11,24 @@
           <span>In Progress ({{ inProgressTrips().length }})</span>
         </ng-template>
         <app-data-table [data]="inProgressTrips()" [config]="tableConfigurations" (view)="onView($event)"
-          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
+          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"
+          [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab label="Overstayed">
         <ng-template mat-tab-label>
           <span>Overstayed ({{ overStayedTrips().length }})</span>
         </ng-template>
         <app-data-table [data]="overStayedTrips()" [config]="tableConfigurations" (view)="onView($event)"
-          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
+          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"
+          [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab label="Completed">
         <ng-template mat-tab-label>
           <span>Completed ({{ completedTrips().length }})</span>
         </ng-template>
         <app-data-table [data]="completedTrips()" [config]="tableConfigurations" (view)="onView($event)"
-          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
+          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"
+          [permissions]="permissions()"></app-data-table>
       </mat-tab>
     </mat-tab-group>
 
@@ -40,12 +43,16 @@
     <app-trip-detail [trip]="selectedTrip()" [completing]="loading()" (complete)="completeTrip($event)"
       (close)="onCloseDetail()" [shouldComplete]="true"></app-trip-detail>
     }
-     @else if (viewType() == 'manage-expense') {
+    @else if (viewType() == 'manage-expense') {
     <app-trip-expenses-manage [trip]="selectedTrip()" (saved)="onExpensesChanged()"
       (close)="onCloseDetail()"></app-trip-expenses-manage>
     } @else if (viewType() == 'manage-actual-position') {
     <app-trip-actual-position-manage [trip]="selectedTrip()" (saved)="onActualPositionChanged()"
       (close)="onCloseDetail()"></app-trip-actual-position-manage>
+    } @else if (viewType() == 'add-additional-trip') {
+    <app-additional-trip-form [trip]="selectedTrip()" (close)="onCloseDetail()"></app-additional-trip-form>
+    } @else if (viewType() == 'vehicle-maintenance') {
+    <app-trip-vehicle-maintenance [trip]="selectedTrip()" (close)="onCloseDetail()"></app-trip-vehicle-maintenance>
     }
   </ng-container>
 </app-layout>

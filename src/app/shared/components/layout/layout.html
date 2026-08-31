@@ -5,8 +5,7 @@
             <p class="text-[15px] font-medium text-gray-400 mt-1">{{description()}}</p>
         </div>
         @if (showAddButton() && !viewDetails()) {
-        <a (click)="onAdd()" 
-            *appHasPermission="addPermission()"
+        <a (click)="onAdd()" *appHasPermission="addPermission()"
             class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
@@ -19,10 +18,12 @@
     </div>
     <div class="card bg-base-100 shadow-lg">
         <div class="content-container">
-            <div class="card-body content-panel overflow-auto" [style.width]="viewDetails() ? mainContentWidth(): '100%'" [style.height]=" viewDetails() ? '100%' : 'auto'"
-                [class.slide-in-from-left]="!viewDetails()" [class.slide-out-to-left]="viewDetails()"
-                [style.opacity]="mainOpacityValue()" [style.pointer-events]="viewDetails() ? 'none' : 'auto'"
-                role="region" aria-label="Main content" [attr.aria-hidden]="viewDetails()">
+            <div class="card-body content-panel overflow-auto"
+                [style.width]="viewDetails() ? mainContentWidth(): '100%'"
+                [style.height]=" viewDetails() ? '100%' : 'auto'" [class.slide-in-from-left]="!viewDetails()"
+                [class.slide-out-to-left]="viewDetails()" [style.opacity]="mainOpacityValue()"
+                [style.pointer-events]="viewDetails() ? 'none' : 'auto'" role="region" aria-label="Main content"
+                [attr.aria-hidden]="viewDetails()">
                 <ng-content select="main"></ng-content>
             </div>
             <div class="content-panel  content-panel-overlay card-body px-8 py-6 w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800"
@@ -35,11 +36,13 @@
                         <h1 class="text-[22px] font-extrabold text-gray-900">{{formTitle()}}</h1>
                         <p class="text-[13px] font-medium text-gray-400 mt-0.5">{{formDescription()}}</p>
                     </div>
-                    <!-- <div>
+                    @if (showCloseFormButton()) {
+                    <div>
                         <a (click)="closeDetails()" class="btn btn-danger">
                             Close
                         </a>
-                    </div> -->
+                    </div>
+                    }
                 </div>
                 <ng-content select="form"></ng-content>
             </div>

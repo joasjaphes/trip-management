@@ -2,6 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { TripExpense } from '../models';
 import { HttpClientService } from './http-client.service';
 import { CommonService } from './common.service';
+import { TripVehicleMaintenanceItem } from '../models/trip-vehicle-maintenance';
 
 type TripExpenseCreatePayload = {
   tripId: string;
@@ -28,7 +29,7 @@ export class TripExpenseService {
     () => this.expenses().reduce((sum, expense) => sum + Number(expense.amount || 0), 0)
   );
 
-  constructor(private http: HttpClientService, private commonService: CommonService) {}
+  constructor(private http: HttpClientService, private commonService: CommonService) { }
 
   async getAll(): Promise<void> {
     this.isLoading.set(true);
@@ -116,5 +117,14 @@ export class TripExpenseService {
 
   getByTripId(tripId: string): TripExpense[] {
     return this.expenses().filter((expense) => expense.tripId === tripId);
+  }
+
+  async addMaintenance(items: TripVehicleMaintenanceItem[]): Promise<void> {
+    try {
+      await this.http.post('tripMaintenance', items);
+    } catch (e) {
+      console.error('Error adding maintenance items:', e);
+      throw e;
+    }
   }
 }

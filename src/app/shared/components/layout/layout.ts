@@ -37,6 +37,7 @@ export class Layout {
   formTitle = input('Add New Item');
   formDescription = input('');
   addPermission = input<string | string[]>('');
+  showCloseFormButton = input(false);
   // Split size input
   splitSize = input<SplitSize>('half'); // default to 50/50 split
 
@@ -64,12 +65,13 @@ export class Layout {
   formPanelWidth = computed(() => `${this.splitConfig().form}%`);
 
   @Output() add = new EventEmitter<void>();
+  @Output() closeForm = new EventEmitter<void>();
 
   onAdd() {
     this.add.emit();
   }
 
   closeDetails() {
-    this.viewDetails.set(false);
+    this.closeForm.emit();
   }
 }

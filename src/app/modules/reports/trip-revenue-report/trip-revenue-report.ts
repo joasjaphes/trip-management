@@ -14,13 +14,14 @@ import {
   renderPeriodMeta,
   renderReportNote,
 } from '../report-print.util';
+import { TripRevenueSummary } from './trip-revenue-summary/trip-revenue-summary';
 
 type PeriodType = 'custom' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
 
 @Component({
   selector: 'app-trip-revenue-report',
   standalone: true,
-  imports: [CommonModule, Layout, Placeholder, DecimalPipe, FormsModule],
+  imports: [CommonModule, Layout, Placeholder, DecimalPipe, FormsModule, TripRevenueSummary],
   templateUrl: './trip-revenue-report.html',
   styleUrl: './trip-revenue-report.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,6 +40,12 @@ export class TripRevenueReport implements OnInit {
   half = signal<number>(new Date().getMonth() < 6 ? 1 : 2);
   customStart = signal<string>('');
   customEnd = signal<string>('');
+
+  viewType = signal(null);
+  selectedTripId = signal<string | null>(null);
+  selectedRow = signal<any | null>(null);
+  viewDetails = signal(false);
+  formTitle = signal('Trip Revenue Report Details');
 
   // ngModel proxies for template two-way binding
   get periodModel(): PeriodType { return this.period(); }
@@ -273,5 +280,19 @@ export class TripRevenueReport implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  onView(row:any) {
+    this.selectedTripId.set(row.id);
+    this.selectedRow.set(row);
+    this.viewType.set('summary');
+    this.viewDetails.set(true);
+  }
+
+  onCloseDetails() {
+    this.selectedTripId.set(null);
+    this.selectedRow.set(null);
+    this.viewType.set(null);
+    this.viewDetails.set(false);
   }
 }
