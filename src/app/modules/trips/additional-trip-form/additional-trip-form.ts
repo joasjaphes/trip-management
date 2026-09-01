@@ -135,7 +135,7 @@ export class AdditionalTripForm {
         currency: row.currency,
         customer: row.customer.trim() || undefined,
         exchangeRate: Number(row.exchangeRate),
-        equivalentAmount: Number(row.equivalentAmount),
+        equivalentAmount: Number(row.revenue) * Number(row.exchangeRate),
       });
 
       this.successMessage.set('Additional trip saved successfully.');
