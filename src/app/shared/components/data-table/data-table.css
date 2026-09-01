@@ -429,6 +429,30 @@
   padding: 0.5rem 0.25rem;
 }
 
+.parent-row {
+  border-bottom: none !important;
+}
+
+.child-row {
+  background-color: #f9fafb;
+  border-left: 4px solid gray;
+}
+
+.child-row td {
+  padding: 0.7rem 1rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  background-color: #f9fafb;
+}
+
+.child-row td:first-child {
+  padding-left: 2.25rem;
+}
+
+.child-row:last-child {
+  border-bottom: 1px solid #e5e7eb;
+}
+
 /* Responsive Design */
 @media (max-width: 640px) {
   .data-table-container {

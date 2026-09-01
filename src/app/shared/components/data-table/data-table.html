@@ -10,8 +10,7 @@
           (input)="onSearch($any($event.target).value)" aria-label="Search table contents" />
       </div>
       @if (showAddButton()) {
-      <a (click)="onAdd()"
-        *appHasPermission="permissions()?.add"
+      <a (click)="onAdd()" *appHasPermission="permissions()?.add"
         class="btn border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-6 font-bold shadow-[0_4px_12px_rgba(240,43,60,0.25)] flex items-center gap-2 rounded-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -82,7 +81,7 @@
             }
             @else if (paginatedData().length > 0) {
             @for (row of paginatedData(); track $index) {
-            <tr (click)="onRowClick(row)" class="cursor-pointer">
+            <tr (click)="onRowClick(row)" class="cursor-pointer" [class.parent-row]="row.children && row.children.length > 0">
               <!-- Selection checkbox -->
               <!-- <td class="col-select">
             <input type="checkbox" [checked]="selectedRows().has($index)" (change)="onSelectRow($index, $event)"
@@ -108,7 +107,8 @@
                   <span class="capitalize">{{ getInvoiceStatusName(row[column.key]) }}</span>
                 </span>
                 }@else if(column.type === 'number') {
-                <span class="cell-ellipsis" [style.max-width]="column.width || '20rem'" [title]="row[column.key] | number">{{ row[column.key] | number}}</span>
+                <span class="cell-ellipsis" [style.max-width]="column.width || '20rem'"
+                  [title]="row[column.key] | number">{{ row[column.key] | number}}</span>
                 }
                 @else {
                 <span [title]="row[column.key]" class="cell-ellipsis" [style.max-width]="column.width || '20rem'">
@@ -120,16 +120,18 @@
               @if (hasActions()) {
               <td class="col-actions">
                 @if (config().actions?.edit || row.canEdit) {
-                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(row)" title="Edit" *appHasPermission="permissions()?.edit"></i>&nbsp;&nbsp;
+                <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(row)" title="Edit"
+                  *appHasPermission="permissions()?.edit"></i>&nbsp;&nbsp;
                 <!-- <button class="action-btn" (click)="onEdit(row)">Edit</button> -->
                 }
                 @if (config().actions?.view) {
-                <i class="fa-solid fa-eye cursor-pointer" (click)="onView(row)" title="View" *appHasPermission="permissions()?.view"></i>&nbsp;&nbsp;
+                <i class="fa-solid fa-eye cursor-pointer" (click)="onView(row)" title="View"
+                  *appHasPermission="permissions()?.view"></i>&nbsp;&nbsp;
                 <!-- <button class="action-btn" (click)="onView(row)">View</button> -->
                 }
                 @if (config().actions?.delete) {
-                <i class="fa-solid fa-trash text-red-500 cursor-pointer" (click)="onDelete(row)"
-                  title="Delete" *appHasPermission="permissions()?.delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                <i class="fa-solid fa-trash text-red-500 cursor-pointer" (click)="onDelete(row)" title="Delete"
+                  *appHasPermission="permissions()?.delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
 
                 <!-- <button class="action-btn" (click)="onDelete(row)">Delete</button> -->
                 }
@@ -141,12 +143,8 @@
                 </button>
                 <mat-menu #menu="matMenu" style="background-color:red">
                   @for (action of getMoreActionsForRow(row); track action.key) {
-                  <button
-                    mat-menu-item
-                    *appHasPermission="permissions()?.more?.[action.key]"
-                    (click)="onMoreMenuAction(action, row, $event)"
-                    class="cursor-pointer"
-                  >
+                  <button mat-menu-item *appHasPermission="permissions()?.more?.[action.key]"
+                    (click)="onMoreMenuAction(action, row, $event)" class="cursor-pointer">
                     <i [class]="action.icon || 'fa-solid fa-question-circle'"></i> &nbsp;
                     {{ action.label }}
                   </button>
@@ -175,6 +173,73 @@
               </td>
               }
             </tr>
+            @if(row.children && row.children.length > 0) {
+            @for (childRow of row.children; track childRow.id) {
+            <tr class="child-row" (click)="onChildRowClick(childRow)">
+              @for (column of config().columns; track column.key) {
+              <td [style.width]="column.width" [style.text-align]="column.type === 'number' ? 'right' : 'left'">
+                @if(column.type === 'status') {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getStatusColor(childRow[column.key])">
+                  <span class="capitalize">{{ childRow[column.key] }}</span>
+                </span>
+                }@else if(column.type === 'tripStatus') {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getTripStatusBadgeClass(childRow[column.key])">
+                  <span class="capitalize">{{ childRow[column.key] }}</span>
+                </span>
+                }@else if(column.type === 'invoiceStatus') {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
+                  [ngClass]="getInvoiceStatusColor(childRow[column.key])">
+                  <span class="capitalize">{{ getInvoiceStatusName(childRow[column.key]) }}</span>
+                </span>
+                }@else if(column.type === 'number') {
+                <span class="cell-ellipsis" [style.max-width]="column.width || '20rem'"
+                  [title]="childRow[column.key] | number">{{ childRow[column.key] | number}}</span>
+                }
+                @else {
+                <span [title]="childRow[column.key]" class="cell-ellipsis" [style.max-width]="column.width || '20rem'">
+                  {{ childRow[column.key] }}
+                </span>
+                }
+              </td>
+              }
+              @if (hasActions()) {
+              <td class="col-actions">
+                @if (config().actions?.edit || childRow.canEdit) {
+                <i class="fa-solid fa-pencil cursor-pointer" (click)="onChildEdit(childRow); $event.stopPropagation()"
+                  title="Edit" *appHasPermission="permissions()?.edit"></i>&nbsp;&nbsp;
+                }
+                @if (config().actions?.view) {
+                <i class="fa-solid fa-eye cursor-pointer" (click)="onChildView(childRow); $event.stopPropagation()"
+                  title="View" *appHasPermission="permissions()?.view"></i>&nbsp;&nbsp;
+                }
+                @if (config().actions?.delete) {
+                <i class="fa-solid fa-trash text-red-500 cursor-pointer"
+                  (click)="onChildDelete(childRow); $event.stopPropagation()" title="Delete"
+                  *appHasPermission="permissions()?.delete"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                }
+                @if (config().actions?.more || getMoreActionsForRow(childRow).length > 0) {
+                <button matIconButton [matMenuTriggerFor]="childMenu" aria-label="More child row actions"
+                  class="cursor-pointer" (click)="$event.stopPropagation()">
+                  <i class="fa-solid fa-ellipsis-v"></i>
+                </button>
+                <mat-menu #childMenu="matMenu">
+                  @for (action of getMoreActionsForRow(childRow); track action.key) {
+                  <button mat-menu-item *appHasPermission="permissions()?.more?.[action.key]"
+                    (click)="onChildMoreMenuAction(action, childRow, $event); $event.stopPropagation()"
+                    class="cursor-pointer">
+                    <i [class]="action.icon || 'fa-solid fa-question-circle'"></i> &nbsp;
+                    {{ action.label }}
+                  </button>
+                  }
+                </mat-menu>
+                }
+              </td>
+              }
+            </tr>
+            }
+            }
             }
             }
             @else {

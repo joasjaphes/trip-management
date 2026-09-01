@@ -88,6 +88,13 @@ export class DataTable {
   delete = output<any>();
   view = output<any>();
   more = output<any>();
+
+  childRowClick = output<any>();
+  childEdit = output<any>();
+  childDelete = output<any>();
+  childView = output<any>();
+  childMore = output<any>();
+
   rowSelect = output<any[]>();
   sortChange = output<{ column: string; direction: 'asc' | 'desc' }>();
 
@@ -205,6 +212,10 @@ export class DataTable {
     this.rowClick.emit(row);
   }
 
+  onChildRowClick(row: any) {
+    this.childRowClick.emit(row);
+  }
+
   onSelectRow(index: number, event: Event) {
     event.stopPropagation();
     const selected = new Set(this.selectedRows());
@@ -256,16 +267,32 @@ export class DataTable {
     this.edit.emit(row);
   }
 
+  onChildEdit(row: any) {
+    this.childEdit.emit(row);
+  }
+
   onDelete(row: any) {
     this.delete.emit(row);
+  }
+
+  onChildDelete(row: any) {
+    this.childDelete.emit(row);
   }
 
   onView(row: any) {
     this.view.emit(row);
   }
 
+  onChildView(row: any) {
+    this.childView.emit(row);
+  }
+
   onMore(row: any) {
     this.more.emit(row);
+  }
+
+  onChildMore(row: any) {
+    this.childMore.emit(row);
   }
 
   toggleMoreMenu(index: number, event: Event) {
@@ -286,6 +313,17 @@ export class DataTable {
     // event.stopPropagation();
     action.action(row);
     this.more.emit({ key: action.key, row });
+    this.openMoreMenuRow.set(null);
+  }
+
+  onChildMoreMenuAction(
+    action: { label: string; key: string; action: (row: any) => void },
+    row: any,
+    event: Event
+  ) {
+    event.stopPropagation();
+    action.action(row);
+    this.childMore.emit({ key: action.key, row });
     this.openMoreMenuRow.set(null);
   }
 
