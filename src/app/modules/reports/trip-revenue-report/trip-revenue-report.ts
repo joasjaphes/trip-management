@@ -46,6 +46,7 @@ export class TripRevenueReport implements OnInit {
   selectedRow = signal<any | null>(null);
   viewDetails = signal(false);
   formTitle = signal('Trip Revenue Report Details');
+  description = signal('Detailed view of trip revenue, expenses, and net income for the selected trip.');
 
   // ngModel proxies for template two-way binding
   get periodModel(): PeriodType { return this.period(); }
@@ -108,10 +109,11 @@ export class TripRevenueReport implements OnInit {
     return out;
   });
 
-  totals = signal<{ totalTripRevenue: number; totalTripExpenses: number; totalNetIncome: number }>({
+  totals = signal<{ totalTripRevenue: number; totalTripExpenses: number; totalNetIncome: number; totalMaintenanceCost: number; }>({
     totalTripRevenue: 0,
     totalTripExpenses: 0,
     totalNetIncome: 0,
+    totalMaintenanceCost: 0,
   });
 
   exportCsv() {
@@ -273,6 +275,7 @@ export class TripRevenueReport implements OnInit {
         totalTripRevenue: resp?.totalTripRevenue || 0,
         totalTripExpenses: resp?.totalTripExpenses || 0,
         totalNetIncome: resp?.totalNetIncome || 0,
+        totalMaintenanceCost: resp?.totalVehicleMaintenanceCost || 0,
       });
     } catch (error) {
       console.error('Error loading trip revenue report:', error);
@@ -282,8 +285,10 @@ export class TripRevenueReport implements OnInit {
     }
   }
 
-  onView(row:any) {
+  onView(row: any) {
     this.selectedTripId.set(row.id);
+    this.formTitle.set(`Trip Revenue Report Details - ${row.tripNumber || '-'}`);
+    this.description.set(`${row.route || '-'} | ${row.customerName || '-'}`);
     this.selectedRow.set(row);
     this.viewType.set('summary');
     this.viewDetails.set(true);

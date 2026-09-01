@@ -57,6 +57,7 @@ export class AdditionalTripService {
     return this.additionalTrips().find((item) => item.id === id);
   }
 
+
   async create(payload: AdditionalTripWritePayload): Promise<string> {
     this.isLoading.set(true);
     this.error.set(null);

@@ -14,6 +14,7 @@ import moment from 'moment';
 import { Tabs } from '../../shared/components/tabs/tabs';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TripVehicleMaintenance } from './trip-vehicle-maintenance/trip-vehicle-maintenance';
+import { AdditionalTrip } from '../../models';
 
 @Component({
   selector: 'app-trips',
@@ -33,6 +34,7 @@ export class Trips implements OnInit {
   formDescription = signal('');
   splitSize = signal<SplitSize>('full');
   selectedTrip = signal<Trip | undefined>(undefined);
+  selectedAdditionalTrip = signal<AdditionalTrip | undefined>(undefined);
   showAddButton = signal(true);
   loading = this.tripService.loading;
   tabs = ['In Progress', 'Completed']
@@ -78,6 +80,7 @@ export class Trips implements OnInit {
         offloadingPlaceName: '-',
         offloadingPlaceId: '-',
         status: trip.status,
+        _parent:trip,
         _trip: childTrip,
         canEdit: trip.status !== TripStatus.COMPLETED,
       })),
@@ -262,6 +265,17 @@ export class Trips implements OnInit {
     this.viewType.set('edit');
     this.formTitle.set(`Edit trip ( ${row.route} )`);
     this.formDescription.set('Update trip details and optionally add new expense rows.');
+    this.showAddButton.set(false);
+    this.viewDetails.set(true);
+  }
+
+  onEditAdditionalTrip(row: any) {
+    console.log('Editing additional trip:', row);
+    this.selectedAdditionalTrip.set(row._trip);
+    this.selectedTrip.set(row._parent);
+    this.viewType.set('edit-additional-trip');
+    this.formTitle.set(`Edit additional trip ( ${row.route} )`);
+    this.formDescription.set('Update additional trip details and optionally add new expense rows.');
     this.showAddButton.set(false);
     this.viewDetails.set(true);
   }

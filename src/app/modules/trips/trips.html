@@ -11,7 +11,7 @@
           <span>In Progress ({{ inProgressTrips().length }})</span>
         </ng-template>
         <app-data-table [data]="inProgressTrips()" [config]="tableConfigurations" (view)="onView($event)"
-          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"
+          (edit)="onEdit($event)" (childEdit)="onEditAdditionalTrip($event)" [moreActions]="moreActions()" [loading]="loading()"
           [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab label="Overstayed">
@@ -49,10 +49,10 @@
     } @else if (viewType() == 'manage-actual-position') {
     <app-trip-actual-position-manage [trip]="selectedTrip()" (saved)="onActualPositionChanged()"
       (close)="onCloseDetail()"></app-trip-actual-position-manage>
-    } @else if (viewType() == 'add-additional-trip') {
-    <app-additional-trip-form [trip]="selectedTrip()" (close)="onCloseDetail()"></app-additional-trip-form>
+    } @else if (viewType() == 'add-additional-trip' || viewType() == 'edit-additional-trip') {
+    <app-additional-trip-form [trip]="selectedTrip()" (close)="onCloseForm()" [currentAdditionalTrip]="selectedAdditionalTrip()"></app-additional-trip-form>
     } @else if (viewType() == 'vehicle-maintenance') {
-    <app-trip-vehicle-maintenance [trip]="selectedTrip()" (close)="onCloseDetail()"></app-trip-vehicle-maintenance>
+    <app-trip-vehicle-maintenance [trip]="selectedTrip()" (close)="onCloseForm()"></app-trip-vehicle-maintenance>
     }
   </ng-container>
 </app-layout>

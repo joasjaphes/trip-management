@@ -1,4 +1,11 @@
 <div class="w-full bg-white p-2">
+    <div class="flex items-center justify-end gap-2 mb-3">
+        <button type="button" (click)="exportExcel()"
+            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export Excel</button>
+        <button type="button" (click)="exportPdf()"
+            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Export PDF</button>
+    </div>
+
     @if(this.trip.isLoading()) {
     <div class="w-full" align="center">
         <app-placeholder />
@@ -17,7 +24,13 @@
                     <td class="text-right border border-gray-300 border-collapse p-4">{{tripData.tripDate |
                         date}}</td>
                     <td class="text-left border border-gray-300 border-collapse p-4">{{tripData.route.name}}</td>
-                    <td class="text-right border border-gray-300 border-collapse p-4">{{tripData.revenue |number}}</td>
+                    <td class="text-right border border-gray-300 border-collapse p-4">
+                        @if(tripData.route.routeCurrency === 'USD') {
+                        {{tripData.revenue |number}}
+                        } @else {
+                        -
+                        }
+                    </td>
                     <td class="text-right border border-gray-300 border-collapse p-4">{{tripData.equivalentAmount
                         |number}}</td>
                 </tr>
@@ -28,8 +41,15 @@
                         date}}</td>
                     <td class="text-left border border-gray-300 border-collapse p-4">{{additionalTrip.fromLocation}} -
                         {{additionalTrip.toLocation}}</td>
-                    <td class="text-right border border-gray-300 border-collapse p-4"> - </td>
-                    <td class="text-right border border-gray-300 border-collapse p-4">{{additionalTrip.revenue
+                    <td class="text-right border border-gray-300 border-collapse p-4">
+                        @if(additionalTrip.currency === 'USD') {
+                        {{additionalTrip.revenue |number}}
+                        } @else {
+                        -
+                        }
+                    </td>
+                    <td class="text-right border border-gray-300 border-collapse p-4">
+                        {{additionalTrip.equivalentAmount
                         |number}}</td>
                 </tr>
 
@@ -47,19 +67,37 @@
                 </tr>
                 @for(expense of tripData.expenses; track expense.id) {
                 <tr>
-                    <td class="text-left border border-gray-300 border-collapse p-4" colspan="2">{{expense.expenseDescription}}</td>
+                    <td class="text-left border border-gray-300 border-collapse p-4" colspan="2">
+                        {{expense.expenseDescription}}</td>
                     <td class="text-right border border-gray-300 border-collapse p-4"> - </td>
                     <td class="text-right border border-gray-300 border-collapse p-4">{{expense.amount |number}}</td>
                 </tr>
                 }
                 <tr>
-                    <td class="font-bold border border-gray-300 border-collapse p-4" colspan="3">Total Expenses</td>
+                    <td class="font-bold border border-gray-300 border-collapse p-4" colspan="3"></td>
                     <td
                         class="font-black border border-gray-300 border-b-gray-600 border-b-2 border-t-gray-600 border-t-2 border-collapse text-right p-4">
                         {{tripSummary.totalTripExpenses |number}}</td>
                 </tr>
                 <tr>
-                    <td class="font-bold border border-gray-300 border-collapse p-4" colspan="3">Gross Profit</td>
+                    <td class="font-black border border-gray-300 border-collapse p-4" colspan="4">Maintenance Cost</td>
+                </tr>
+                @for(expense of tripData.vehicleMaintenance; track expense.id) {
+                <tr>
+                    <td class="text-left border border-gray-300 border-collapse p-4" colspan="2">{{expense.description}}
+                    </td>
+                    <td class="text-right border border-gray-300 border-collapse p-4"> - </td>
+                    <td class="text-right border border-gray-300 border-collapse p-4">{{expense.cost |number}}</td>
+                </tr>
+                }
+                <tr>
+                    <td class="font-bold border border-gray-300 border-collapse p-4" colspan="3"></td>
+                    <td
+                        class="font-black border border-gray-300 border-b-gray-600 border-b-2 border-t-gray-600 border-t-2 border-collapse text-right p-4">
+                        {{tripSummary.vehicleMaintenanceCost |number}}</td>
+                </tr>
+                <tr>
+                    <td class="font-bold border border-gray-300 border-collapse p-4" colspan="3">Grand Total</td>
                     <td
                         class="font-black border border-gray-300 border-b-gray-600 border-b-2 border-t-gray-600 border-t-2 border-collapse text-right p-4">
                         {{tripSummary.netIncome |number}}</td>

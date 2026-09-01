@@ -51,7 +51,7 @@ export interface Trip {
 	createdAt: Date;
 	updatedAt: Date;
 	additionalTrips?: AdditionalTrip[];
-	maintenance?: TripVehicleMaintenanceItem[];
+	vehicleMaintenance?: TripVehicleMaintenanceItem[];
 }
 
 export enum TripStatus {

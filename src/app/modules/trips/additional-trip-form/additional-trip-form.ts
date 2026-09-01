@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Trip } from '../../../models/trip.model';
 import { AdditionalTripService } from '../../../services/additional-trip.service';
 import { SaveArea } from '../../../shared/components/save-area/save-area';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FileUploadService } from '../../../services/file-upload.service';
+import { AdditionalTrip } from '../../../models';
+import moment from 'moment';
 
 
 type AdditionalTripDraft = {
@@ -28,12 +30,13 @@ type AdditionalTripDraft = {
   imports: [CommonModule, FormsModule, SaveArea, MatDatepickerModule],
   templateUrl: './additional-trip-form.html',
 })
-export class AdditionalTripForm {
+export class AdditionalTripForm implements OnInit {
   private additionalTripService = inject(AdditionalTripService);
   private fileUploadService = inject(FileUploadService);
 
 
   trip = input<Trip | undefined>();
+  currentAdditionalTrip = input<AdditionalTrip | undefined>();
   close = output<void>();
   minDate = computed(() => this.trip()?.tripDate || '');
   maxDate = signal(new Date());
@@ -82,6 +85,30 @@ export class AdditionalTripForm {
     return currentTrip.tripReferenceNumber || currentTrip.route?.name || currentTrip.id;
   });
 
+  ngOnInit(): void {
+    const currentTrip = this.currentAdditionalTrip();
+    console.log('Current additional trip:', currentTrip);
+    if (currentTrip) {
+      this.draft.update((draft) => ({
+        ...draft,
+        customer: currentTrip.customer || '',
+        fromLocation: currentTrip.fromLocation || '',
+        toLocation: currentTrip.toLocation || '',
+        revenue: Number(currentTrip.revenue || 0),
+        currency: currentTrip.currency || 'TZS',
+        exchangeRate: Number(currentTrip.exchangeRate || 1),
+        equivalentAmount: Number(currentTrip.equivalentAmount || 0),
+        description: currentTrip.description || '',
+        docNumber: currentTrip.docNumber || '',
+        attachment: currentTrip.attachment || '',
+        tripReferenceNumber: currentTrip.tripReferenceNumber || '',
+        startDate: moment(currentTrip.startDate).format('YYYY-MM-DD') || '',
+        endDate: moment(currentTrip.endDate).format('YYYY-MM-DD') || '',
+      }));
+    }
+  }
+
+
   updateField(field: keyof AdditionalTripDraft, value: string): void {
     this.draft.update((draft) => ({
       ...draft,
@@ -122,6 +149,26 @@ export class AdditionalTripForm {
 
     try {
       const row = this.draft();
+      if(this.currentAdditionalTrip()) {
+        await this.additionalTripService.update(this.currentAdditionalTrip()!.id, {
+          startDate: row.startDate,
+          endDate: row.endDate || undefined,
+          revenue: Number(row.revenue),
+          referenceTripId: currentTrip.id,
+          fromLocation: row.fromLocation.trim(),
+          toLocation: row.toLocation.trim(),
+          description: row.description.trim() || undefined,
+          docNumber: row.docNumber.trim() || undefined,
+          attachment: this.tripDocumentPath() || '',
+          currency: row.currency,
+          customer: row.customer.trim() || undefined,
+          exchangeRate: Number(row.exchangeRate),
+          equivalentAmount: Number(row.revenue) * Number(row.exchangeRate),
+        });
+        this.successMessage.set('Additional trip updated successfully.');
+        this.close.emit();
+        return;
+      }
       await this.additionalTripService.create({
         startDate: row.startDate,
         endDate: row.endDate || undefined,

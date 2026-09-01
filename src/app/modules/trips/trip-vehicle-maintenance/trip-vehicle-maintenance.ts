@@ -43,8 +43,8 @@ export class TripVehicleMaintenance implements OnInit {
   constructor(private httpService: HttpClientService, private commonService: CommonService, private tripExpenseService: TripExpenseService) { }
 
   ngOnInit() {
-    if (this.trip && this.trip.maintenance) {
-      this.items = [...this.trip.maintenance];
+    if (this.trip && this.trip.vehicleMaintenance) {
+      this.items = [...this.trip.vehicleMaintenance];
     }
     if (this.expenseCategoryService.allCategories().length === 0) {
       void this.expenseCategoryService.getAll();
