@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output, resource } from '@angular/core';
 import { Trip } from '../../../../models/trip.model';
+import { CompanyProfileService } from '../../../../services/company-profile.service';
 import { HttpClientService } from '../../../../services/http-client.service';
 import { Placeholder } from '../../../../shared/components/placeholder/placeholder';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { escapeCsv } from '../../drivers-permit-status/exports-helper';
 import {
   escapeHtml,
@@ -13,7 +14,7 @@ import {
 
 @Component({
   selector: 'app-trip-revenue-summary',
-  imports: [Placeholder, DecimalPipe, DatePipe],
+  imports: [Placeholder, DecimalPipe, DatePipe, NgClass],
   templateUrl: './trip-revenue-summary.html',
   styleUrl: './trip-revenue-summary.css',
 })
@@ -22,7 +23,10 @@ export class TripRevenueSummary implements OnInit {
   @Input() tripSummary:any | null = null;
   @Output() close = new EventEmitter<void>();
 
-  constructor(private httpService:HttpClientService) {}
+  constructor(
+    private httpService: HttpClientService,
+    private companyService: CompanyProfileService,
+  ) {}
 
   trip = resource<Trip, string>( 
     {
@@ -83,6 +87,33 @@ export class TripRevenueSummary implements OnInit {
             padding: 8px;
             box-sizing: border-box;
           }
+          .report-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 4px solid #000;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+          }
+          .header-left {
+            width: 30%;
+          }
+          .header-right {
+            width: 70%;
+            padding-left: 12px;
+          }
+          .company-name {
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin: 0;
+          }
+          .company-line {
+            font-size: 13px;
+            margin: 2px 0;
+          }
           .summary-export h2 {
             margin: 0 0 16px;
             font-size: 18px;
@@ -135,6 +166,7 @@ export class TripRevenueSummary implements OnInit {
       </head>
       <body>
         <div class="summary-export">
+          ${renderBrandedHeader(this.companyService.profile())}
           ${tableHtml}
         </div>
       </body>
@@ -161,7 +193,7 @@ export class TripRevenueSummary implements OnInit {
 
     const summary = this.tripSummary || {};
     const additionalTrips = tripData.additionalTrips || [];
-    const expenses = tripData.expenses || [];
+    const expenses = (tripData.expenses || []).filter((expense: any) => !expense.parentId);
     const maintenance = tripData.vehicleMaintenance || [];
 
     const cellStyle = 'border:1px solid #d1d5db; padding:12px; vertical-align:middle; font-size:12px; color:#111827;';
@@ -173,24 +205,25 @@ export class TripRevenueSummary implements OnInit {
 
     const usdValue = (currency: string | undefined, value: unknown) =>
       currency === 'USD' ? escapeHtml(fmt(value)) : '-';
+    const returnTripLabel = tripData.includesReturnTrip ? `<span style="font-size:11px; font-weight:bold; color:#9ca3af;">(Return Trip)</span>` : '';
 
     const incomeRows = [
       `<tr>
-        <td style="${rightStyle}">${escapeHtml(fmtDate(tripData.tripDate))}</td>
-        <td style="${leftStyle}">${escapeHtml(tripData.route?.name || '-')}</td>
+        <td style="${leftStyle}">${escapeHtml(fmtDate(tripData.tripDate))}</td>
+        <td style="${leftStyle}">${escapeHtml(tripData.route?.name || '-')} ${returnTripLabel}</td>
         <td style="${rightStyle}">${usdValue(tripData.route?.routeCurrency, tripData.revenue)}</td>
         <td style="${rightStyle}">${escapeHtml(fmt(tripData.equivalentAmount))}</td>
       </tr>`,
       ...additionalTrips.map((additionalTrip: any) => `
         <tr>
-          <td style="${rightStyle}">${escapeHtml(fmtDate(additionalTrip.startDate))}</td>
+          <td style="${leftStyle}">${escapeHtml(fmtDate(additionalTrip.startDate))}</td>
           <td style="${leftStyle}">${escapeHtml(`${additionalTrip.fromLocation || '-'} - ${additionalTrip.toLocation || '-'}`)}</td>
           <td style="${rightStyle}">${usdValue(additionalTrip.currency, additionalTrip.revenue)}</td>
           <td style="${rightStyle}">${escapeHtml(fmt(additionalTrip.equivalentAmount))}</td>
         </tr>
       `),
       `<tr>
-        <td colspan="3" style="${cellStyle}">&nbsp;</td>
+        <td colspan="3" style="${cellStyle} font-weight:700;">Trip Gross Revenue</td>
         <td style="${totalStyle}">${escapeHtml(fmt(summary.tripRevenue))}</td>
       </tr>`,
     ].join('');
@@ -237,7 +270,11 @@ export class TripRevenueSummary implements OnInit {
             <td style="${totalStyle}">${escapeHtml(fmt(summary.vehicleMaintenanceCost))}</td>
           </tr>
           <tr>
-            <td colspan="3" style="${cellStyle} font-weight:700;">Grand Total</td>
+            <td colspan="3" style="${cellStyle} font-weight:700;">Total Expenses (Expenses + Maintenance Cost)</td>
+            <td style="${totalStyle}">${escapeHtml(fmt(Number(summary.totalTripExpenses) + Number(summary.vehicleMaintenanceCost)))}</td>
+          </tr>
+          <tr>
+            <td colspan="3" style="${cellStyle} font-weight:700;">Trip Net Revenue (Trip Gross Revenue - Total Expenses)</td>
             <td style="${totalStyle}">${escapeHtml(fmt(summary.netIncome))}</td>
           </tr>
         </tbody>

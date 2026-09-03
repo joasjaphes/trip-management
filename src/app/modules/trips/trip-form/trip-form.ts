@@ -24,6 +24,7 @@ type ExpenseDraft = {
   id: string;
   expenseRecordId?: string;
   expenseId: string;
+  parentId?: string;
   amount: string;
   date: string;
   attachment?: string;
@@ -95,8 +96,9 @@ export class TripForm implements OnInit {
   expenseCategories = computed(() =>
     this.expenseCategoryService
       .allCategories()
-      .filter((category) => (category.isActive || category.status === 'Active') && category.type === 'TRIP')
+      .filter((category) => (category.isActive || category.status === 'Active') && category.type === 'TRIP' && !category.parentId)
   );
+  expandedCategoryRows = signal<Record<string, boolean>>({});
   loading = computed(() => this.tripService.loading() || this.tripExpenseService.loading());
   pendingUploads = signal(0);
   busy = computed(() => this.loading() || this.pendingUploads() > 0 || this.tripDocumentUploading());
@@ -114,6 +116,7 @@ export class TripForm implements OnInit {
   tripDocumentUploading = signal(false);
   tripDocumentError = signal<string | null>(null);
   tripDocumentSuccess = signal<string | null>(null);
+  hasReturnTrip = signal(false);
 
   today = moment(new Date()).format('YYYY-MM-DD');
 
@@ -216,9 +219,10 @@ export class TripForm implements OnInit {
     this.customerTIN = trip.customerTIN || trip.customer?.tin || '';
     this.customerPhone = trip.customerPhone || trip.customer?.phone || '';
     this.offloadingPlaceName = trip.offloadingPlaceName || '';
+    this.hasReturnTrip.set(trip.includesReturnTrip);
     // this.offloadingPlaceId = trip.offloadingPlaceId || '';
     void this.hydrateTripDocument(trip.tripDocument);
-    this.expenseRows = (trip.expenses || []).map((expense) => this.mapExpenseToDraft(expense));
+    this.expenseRows = (trip.expenses || []).filter((expense) => !expense.parentId).map((expense) => this.mapExpenseToDraft(expense));
     this.initialTripState.set(trip);
   }
 
@@ -410,6 +414,118 @@ export class TripForm implements OnInit {
     return resolvedUrl;
   }
 
+  hasChildCategories(categoryId?: string): boolean {
+    if (!categoryId) {
+      return false;
+    }
+
+    return this.expenseCategoryService
+      .allCategories()
+      .some((category) => category.type === 'TRIP' && category.parentId === categoryId && (category.isActive || category.status === 'Active'));
+  }
+
+  getChildCategories(categoryId?: string) {
+    if (!categoryId) {
+      return [];
+    }
+
+    return this.expenseCategoryService
+      .allCategories()
+      .filter((category) => category.type === 'TRIP' && category.parentId === categoryId && (category.isActive || category.status === 'Active'));
+  }
+
+  getSelectedCategoryId(row: ExpenseDraft): string {
+    if (row.parentId) {
+      return row.parentId;
+    }
+
+    if (!row.expenseId) {
+      return '';
+    }
+
+    const category = this.expenseCategoryService.allCategories().find((item) => item.id === row.expenseId);
+    return category?.parentId ?? row.expenseId;
+  }
+
+  getSelectedChildCategoryId(row: ExpenseDraft): string {
+    return row.parentId ? row.expenseId : '';
+  }
+
+  private ensureExpandedChildSelection(rowId: string, parentCategoryId: string) {
+    const row = this.expenseRows.find((item) => item.id === rowId);
+    if (!row) {
+      return;
+    }
+
+    const childCategories = this.getChildCategories(parentCategoryId);
+    if (!childCategories.length) {
+      row.parentId = undefined;
+      row.expenseId = parentCategoryId;
+      return;
+    }
+
+    row.parentId = parentCategoryId;
+    const selectedChildId = row.expenseId;
+    const hasValidChildSelection = !!selectedChildId && childCategories.some((category) => category.id === selectedChildId);
+
+    if (!hasValidChildSelection) {
+      row.expenseId = childCategories[0].id;
+    }
+  }
+
+  toggleCategoryChildren(rowId: string) {
+    const row = this.expenseRows.find((item) => item.id === rowId);
+    if (!row) {
+      return;
+    }
+
+    const parentCategoryId = this.getSelectedCategoryId(row);
+    const shouldExpand = !(this.expandedCategoryRows()[rowId] ?? false);
+
+    if (shouldExpand && parentCategoryId) {
+      this.ensureExpandedChildSelection(rowId, parentCategoryId);
+    }
+
+    this.expandedCategoryRows.update((state) => ({
+      ...state,
+      [rowId]: shouldExpand,
+    }));
+  }
+
+  onParentCategoryChanged(rowId: string, categoryId: string) {
+    const row = this.expenseRows.find((item) => item.id === rowId);
+    if (!row) {
+      return;
+    }
+
+    const childCategories = this.getChildCategories(categoryId);
+    if (childCategories.length > 0) {
+      row.parentId = categoryId;
+      row.expenseId = row.expenseId && childCategories.some((category) => category.id === row.expenseId)
+        ? row.expenseId
+        : childCategories[0].id;
+    } else {
+      row.parentId = undefined;
+      row.expenseId = categoryId;
+    }
+
+    this.expandedCategoryRows.update((state) => ({
+      ...state,
+      [rowId]: childCategories.length > 0,
+    }));
+  }
+
+  onChildCategoryChanged(rowId: string, categoryId: string) {
+    const row = this.expenseRows.find((item) => item.id === rowId);
+    if (!row) {
+      return;
+    }
+
+    const parentCategoryId = row.parentId ?? this.getSelectedCategoryId(row);
+    row.parentId = parentCategoryId || undefined;
+    row.expenseId = categoryId;
+  }
+
   addExpenseRow() {
     this.expenseRows = [...this.expenseRows, this.createExpenseRow()];
   }
@@ -532,6 +648,7 @@ export class TripForm implements OnInit {
         customerTIN: this.customerTIN || undefined,
         customerPhone: this.customerPhone || undefined,
         offloadingPlaceName: this.offloadingPlaceName || undefined,
+        includesReturnTrip: this.hasReturnTrip() || false,
         // offloadingPlaceId: this.offloadingPlaceId || undefined,
         trailerId: this.trailerId || undefined,
         cargoQuantity: Number(this.cargoQuantity || 0) || undefined,
@@ -580,6 +697,7 @@ export class TripForm implements OnInit {
         expensesToSave.map((row) => {
           const parsedAmount = row.amount ? Number(row.amount) : undefined;
           const expensePayload = {
+            id: row.id,
             tripId,
             expenseId: row.expenseId,
             amount:
@@ -641,6 +759,7 @@ export class TripForm implements OnInit {
       || this.loadedQuantity !== ((initial as any)?.loadedQuantity || null)
       || this.ratePerUnit !== String((initial as any)?.ratePerUnit ?? '')
       || this.docNumber !== (initial?.docNumber || null)
+      || this.hasReturnTrip() !== (initial?.includesReturnTrip || false)
       || this.tripDocumentPath() !== (initial?.tripDocument || undefined)
       || JSON.stringify(this.expenseRows) !== JSON.stringify((initial?.expenses || []).map((expense) => this.mapExpenseToDraft(expense)))
     ) {

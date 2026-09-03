@@ -46,6 +46,10 @@ export class TripDetail {
     return (this.trip()?.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
   });
 
+  totalMaintenanceCost = computed(() => {
+    return (this.trip()?.vehicleMaintenance || []).reduce((sum, item) => sum + (item.cost || 0), 0);
+  });
+
   loss = computed(() => {
     const trip = this.trip();
     if (!trip?.offloadedQuantity || !trip?.loadedQuantity) {

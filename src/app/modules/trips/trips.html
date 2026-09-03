@@ -11,15 +11,15 @@
           <span>In Progress ({{ inProgressTrips().length }})</span>
         </ng-template>
         <app-data-table [data]="inProgressTrips()" [config]="tableConfigurations" (view)="onView($event)"
-          (edit)="onEdit($event)" (childEdit)="onEditAdditionalTrip($event)" [moreActions]="moreActions()" [loading]="loading()"
-          [permissions]="permissions()"></app-data-table>
+          (edit)="onEdit($event)" (childEdit)="onEditAdditionalTrip($event)" (childView)="onViewAdditionalTrip($event)"
+          [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab label="Overstayed">
         <ng-template mat-tab-label>
           <span>Overstayed ({{ overStayedTrips().length }})</span>
         </ng-template>
         <app-data-table [data]="overStayedTrips()" [config]="tableConfigurations" (view)="onView($event)"
-          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"
+          (edit)="onEdit($event)" (childView)="onViewAdditionalTrip($event)" [moreActions]="moreActions()" [loading]="loading()"
           [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab label="Completed">
@@ -27,7 +27,7 @@
           <span>Completed ({{ completedTrips().length }})</span>
         </ng-template>
         <app-data-table [data]="completedTrips()" [config]="tableConfigurations" (view)="onView($event)"
-          (edit)="onEdit($event)" [moreActions]="moreActions()" [loading]="loading()"
+          (edit)="onEdit($event)" (childView)="onViewAdditionalTrip($event)" [moreActions]="moreActions()" [loading]="loading()"
           [permissions]="permissions()"></app-data-table>
       </mat-tab>
     </mat-tab-group>
@@ -42,6 +42,9 @@
     }@else if (viewType() == 'complete') {
     <app-trip-detail [trip]="selectedTrip()" [completing]="loading()" (complete)="completeTrip($event)"
       (close)="onCloseDetail()" [shouldComplete]="true"></app-trip-detail>
+    } @else if (viewType() == 'detail-additional-trip') {
+    <app-additional-trip-detail [additionalTrip]="selectedAdditionalTrip()" [trip]="selectedTrip()"
+      (close)="onCloseDetail()"></app-additional-trip-detail>
     }
     @else if (viewType() == 'manage-expense') {
     <app-trip-expenses-manage [trip]="selectedTrip()" (saved)="onExpensesChanged()"

@@ -1,0 +1,108 @@
+<div class="w-full h-full overflow-y-auto bg-[#f3f4f6] text-gray-800">
+  <div class="space-y-8 p-2">
+    <div class="flex items-center justify-between gap-4">
+      <button type="button" (click)="goBack()"
+        class="btn btn-ghost border border-gray-200 hover:bg-gray-50 text-gray-500 px-5 font-bold flex items-center gap-2 text-[13px] rounded-xl transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Trips
+      </button>
+      <span class="border border-blue-200 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-[11px] font-extrabold tracking-widest uppercase">
+        Additional Trip
+      </span>
+    </div>
+
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
+      <div class="flex items-center gap-3 mb-8">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">Additional Trip Details</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Reference Trip</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ getReferenceLabel() || '-' }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Trip Number</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ additionalTrip()?.tripReferenceNumber || '-' }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Start Date</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ additionalTrip()?.startDate ? (additionalTrip()!.startDate | date:'MMM d, yyyy') : '-' }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">End Date</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ additionalTrip()?.endDate ? (additionalTrip()!.endDate | date:'MMM d, yyyy') : '-' }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Revenue</span>
+          <span class="text-[20px] font-extrabold text-[#f25f2f]">{{ (additionalTrip()?.revenue || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Currency</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ additionalTrip()?.currency || '-' }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">From</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ additionalTrip()?.fromLocation || '-' }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">To</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ additionalTrip()?.toLocation || '-' }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Container / Document Number</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ additionalTrip()?.docNumber || '-' }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Customer</span>
+          <span class="text-[16px] font-bold text-gray-900">{{ additionalTrip()?.customer || '-' }}</span>
+        </div>
+
+        @if (additionalTrip()?.description) {
+        <div class="md:col-span-2 flex flex-col gap-2">
+          <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Description</span>
+          <span class="text-[16px] font-medium text-gray-700 leading-relaxed">{{ additionalTrip()?.description }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
+      <div class="flex items-center gap-3 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7a2 2 0 012-2h6a2 2 0 012 2v10a2 2 0 01-2 2H9a2 2 0 01-2-2V7z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6M9 15h4" />
+        </svg>
+        <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">Attachment</h2>
+      </div>
+
+      @if (!additionalTrip()?.attachment) {
+      <p class="text-[14px] text-gray-500">No attachment uploaded for this additional trip.</p>
+      } @else {
+      <div class="rounded-xl border border-orange-100 bg-orange-50 px-4 py-4">
+        <p class="text-[13px] font-bold text-gray-900 truncate mb-3">
+          {{ additionalTrip()?.attachment?.split('/').pop() || 'Attachment' }}
+        </p>
+        <button type="button" (click)="openAttachment()"
+          class="btn min-h-0 h-9 border-none bg-[#f25f2f] hover:bg-[#ff5117] text-white px-4 text-[12px] font-extrabold rounded-lg">
+          Preview Attachment
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+</div>

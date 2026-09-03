@@ -43,6 +43,7 @@ export interface Trip {
 	revenue: number;
 	exchangeRate?: number;
 	equivalentAmount?: number;
+	includesReturnTrip?: boolean;
 	paidAmount?: number;
 	income?: number;
 	expenses: TripExpense[];
@@ -67,6 +68,7 @@ export interface TripExpense {
 	expenseId: string;
 	expenseDescription?: string;
 	category?: ExpenseCategory;
+	parentId?: string;
 	amount: number;
 	receiptAttachment?: string;
 	date: string;

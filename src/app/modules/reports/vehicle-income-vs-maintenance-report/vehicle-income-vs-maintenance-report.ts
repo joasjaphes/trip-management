@@ -18,6 +18,7 @@ import {
 type PeriodType = 'custom' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
 
 interface VehicleIncomeVsMaintenanceItem {
+  registrationNo?: string;
   truckAndTrailer?: string;
   revenue?: number;
   tripExpenses?: number;
@@ -45,6 +46,7 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
   private companyService = inject(CompanyProfileService);
 
   loading = signal(false);
+  searchTerm = signal('');
   rows = signal<VehicleIncomeVsMaintenanceItem[]>([]);
   totals = signal({
     totalRevenue: 0,
@@ -60,6 +62,28 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
   half = signal<number>(new Date().getMonth() < 6 ? 1 : 2);
   customStart = signal<string>('');
   customEnd = signal<string>('');
+
+  filteredRows = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    if (!term) return this.rows();
+
+    return this.rows().filter((row) => {
+      const registration = row.registrationNo || row.truckAndTrailer || '';
+      return registration.toLowerCase().includes(term);
+    });
+  });
+
+  filteredTotals = computed(() => this.filteredRows().reduce((totals, row) => ({
+    totalRevenue: totals.totalRevenue + (row.revenue || 0),
+    totalTripExpenses: totals.totalTripExpenses + (row.tripExpenses || 0),
+    totalMaintenanceCost: totals.totalMaintenanceCost + (row.maintenanceCost || 0),
+    totalGrossIncome: totals.totalGrossIncome + (row.grossIncome || 0),
+  }), {
+    totalRevenue: 0,
+    totalTripExpenses: 0,
+    totalMaintenanceCost: 0,
+    totalGrossIncome: 0,
+  }));
 
   get periodModel(): PeriodType { return this.period(); }
   set periodModel(v: PeriodType) { this.period.set(v); }
@@ -136,28 +160,34 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
     await this.loadReport();
   }
 
+  updateSearchTerm(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.searchTerm.set(target?.value ?? '');
+  }
+
   exportCsv() {
     const items: string[] = [];
-    items.push(['Truck & Trailer', 'Revenue (TZS)', 'Trip Expenses (TZS)', 'Maintenance Cost (TZS)', 'Gross Income (TZS)'].map(escapeCsv).join(','));
+    const totals = this.filteredTotals();
+    items.push(['Truck & Trailer', 'Trip Revenue (TZS)', 'Vehicle Maintenance Cost (TZS)', 'Trip Expenses (TZS)', 'Gross Income (TZS)'].map(escapeCsv).join(','));
 
-    for (const row of this.rows()) {
+    for (const row of this.filteredRows()) {
       items.push([
         row.truckAndTrailer || '-',
         row.revenue || 0,
-        row.tripExpenses || 0,
         row.maintenanceCost || 0,
+        row.tripExpenses || 0,
         row.grossIncome || 0,
       ].map(escapeCsv).join(','));
     }
 
-    items.push(['TOTAL', this.totals().totalRevenue, this.totals().totalTripExpenses, this.totals().totalMaintenanceCost, this.totals().totalGrossIncome].map(escapeCsv).join(','));
+    items.push(['TOTAL', totals.totalRevenue, totals.totalMaintenanceCost, totals.totalTripExpenses, totals.totalGrossIncome].map(escapeCsv).join(','));
 
     const csv = items.join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `vehicle-income-vs-maintenance-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `vehicle-income-vs-expenses-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -174,7 +204,7 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
       customStart: this.customStart(),
       customEnd: this.customEnd(),
     });
-    openReportPrintWindow(`Vehicle Income vs Maintenance Report - ${label}`, this.renderReportBody(label));
+    openReportPrintWindow(`Vehicle Income vs Expenses Report - ${label}`, this.renderReportBody(label));
   }
 
   private renderReportBody(periodLabel: string): string {
@@ -182,33 +212,35 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
     const numberPipe = new DecimalPipe('en-US');
     const formatAmount = (v: unknown) => numberPipe.transform(Number(v) || 0, '1.2-2') ?? '0.00';
     const range = this.periodRange();
+    const rows = this.filteredRows();
+    const totals = this.filteredTotals();
 
-    const rowsHtml = this.rows().length === 0
-      ? `<tr><td class="cell center" colspan="5" style="padding:24px;color:#888;">No vehicle income records in this period.</td></tr>`
-      : this.rows().map((row) => `
+    const rowsHtml = rows.length === 0
+      ? `<tr><td class="cell center" colspan="5" style="padding:24px;color:#888;">No vehicle income data available</td></tr>`
+      : rows.map((row) => `
           <tr>
             <td class="cell">${escapeHtml(row.truckAndTrailer || '-')}</td>
             <td class="cell right">${formatAmount(row.revenue)}</td>
-            <td class="cell right">${formatAmount(row.tripExpenses)}</td>
             <td class="cell right">${formatAmount(row.maintenanceCost)}</td>
+            <td class="cell right">${formatAmount(row.tripExpenses)}</td>
             <td class="cell right">${formatAmount(row.grossIncome)}</td>
           </tr>`).join('');
 
-    return `
+    return `            
     <div class="report-document">
       ${renderBrandedHeader(profile)}
 
-      <h2 class="report-title">Vehicle Income vs Maintenance Report</h2>
+      <h2 class="report-title">Vehicle Income vs Expenses Report</h2>
 
       ${renderPeriodMeta(periodLabel, range.start, range.end)}
 
       <table class="items-table">
         <thead>
           <tr>
-            <th class="cell head" style="width: 34%;">Truck & Trailer</th>
-            <th class="cell head right" style="width: 17%;">Revenue (TZS)</th>
-            <th class="cell head right" style="width: 17%;">Trip Expenses (TZS)</th>
-            <th class="cell head right" style="width: 16%;">Maintenance Cost (TZS)</th>
+            <th class="cell head" style="width: 34%;">Vehicle</th>
+            <th class="cell head right" style="width: 17%;">Trips Revenue (TZS)</th>
+            <th class="cell head right" style="width: 17%;">Vehicle Maintenance Cost (TZS)</th>
+            <th class="cell head right" style="width: 16%;">Trips Expenses (TZS)</th>
             <th class="cell head right" style="width: 16%;">Gross Income (TZS)</th>
           </tr>
         </thead>
@@ -216,10 +248,10 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
           ${rowsHtml}
           <tr class="grand-total-row">
             <td class="cell bold">GRAND TOTAL (TZS)</td>
-            <td class="cell right bold">${formatAmount(this.totals().totalRevenue)}</td>
-            <td class="cell right bold">${formatAmount(this.totals().totalTripExpenses)}</td>
-            <td class="cell right bold">${formatAmount(this.totals().totalMaintenanceCost)}</td>
-            <td class="cell right bold">${formatAmount(this.totals().totalGrossIncome)}</td>
+            <td class="cell right bold">${formatAmount(totals.totalRevenue)}</td>
+            <td class="cell right bold">${formatAmount(totals.totalMaintenanceCost)}</td>
+            <td class="cell right bold">${formatAmount(totals.totalTripExpenses)}</td>
+            <td class="cell right bold">${formatAmount(totals.totalGrossIncome)}</td>
           </tr>
         </tbody>
       </table>
@@ -276,7 +308,7 @@ export class VehicleIncomeVsMaintenanceReport implements OnInit {
         totalGrossIncome: response?.totalGrossIncome || 0,
       });
     } catch (error) {
-      console.error('Error loading vehicle income vs maintenance report:', error);
+      console.error('Error loading vehicle income vs expenses report:', error);
       this.rows.set([]);
       this.totals.set({
         totalRevenue: 0,

@@ -16,6 +16,7 @@ type TripWritePayload = {
   trailerId?: string;
   cargoQuantity?: number;
   loadedQuantity?: number;
+  includesReturnTrip?: boolean;
   offloadedQuantity?: number;
   ratePerUnit?: number;
   docNumber?: string;

@@ -182,13 +182,11 @@
           <div class="grid grid-cols-2 md:grid-cols-2 gap-x-8 gap-y-10 relative z-10">
             <div class="flex flex-col gap-2">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Trip Date</span>
-              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.tripDate ? (trip()!.tripDate | date:'MMM
-                d,yyyy') : '-' }}</span>
+              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.tripDate ? (trip()!.tripDate | date:'MMM d,yyyy') : '-' }}</span>
             </div>
             <div class="flex flex-col gap-2">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">End Date</span>
-              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.endDate ? (trip()!.endDate | date:'MMM
-                d,yyyy') : '-' }}</span>
+              <span class="text-[16px] font-bold text-gray-900">{{ trip()?.endDate ? (trip()!.endDate | date:'MMM d,yyyy') : '-' }}</span>
             </div>
             <div class="flex flex-col gap-2 relative">
               <span class="text-[10px] font-extrabold tracking-widest text-gray-400 uppercase">Revenue</span>
@@ -333,7 +331,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
-              @for (expense of trip()!.expenses; track expense.id) {
+              @for (expense of trip()!.expenses.filter((e) => !e.parentId); track expense.id) {
               <tr class="transition-colors hover:bg-gray-50">
                 <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ expense.date ? (expense.date |
                   date:'MMM d, yyyy') : '-' }}</td>
@@ -391,6 +389,55 @@
           </div>
           }
 
+        </div>
+
+        <!-- Vehicle Maintenance Cost Table Card -->
+        <div class="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f25f2f]" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 6V4m0 16v-2m8-8h-2M6 12H4m13.657 6.343l-1.414-1.414M8.757 8.757L7.343 7.343m9.314 0l-1.414 1.414M8.757 15.243l-1.414 1.414M12 8a4 4 0 110 8 4 4 0 010-8z" />
+              </svg>
+              <h2 class="text-xl font-extrabold text-gray-900 tracking-wide">Vehicle Maintenance Cost</h2>
+            </div>
+          </div>
+
+          @if (trip()?.vehicleMaintenance && trip()!.vehicleMaintenance.length > 0) {
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b border-gray-100">
+                <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[20%]">Date</th>
+                <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[45%]">Description</th>
+                <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[20%]">Item</th>
+                <th class="py-3 px-2 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase w-[15%] text-right">Cost</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              @for (maintenance of trip()!.vehicleMaintenance; track maintenance.id) {
+              <tr class="transition-colors hover:bg-gray-50">
+                <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ maintenance.date ? (maintenance.date | date:'MMM d, yyyy') : '-' }}</td>
+                <td class="py-4 px-2 text-[14px] text-gray-600">{{ maintenance.description || '-' }}</td>
+                <td class="py-4 px-2 text-[14px] text-gray-600">{{ maintenance.itemName || '-' }}</td>
+                <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900 text-right">{{ (maintenance.cost || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+          <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-6 items-center pr-[12%]">
+            <span class="text-[14px] font-extrabold text-gray-900 tracking-wide">Total Maintenance Cost:</span>
+            <span class="text-[18px] font-extrabold text-[#f25f2f]">{{ totalMaintenanceCost().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+          </div>
+          } @else {
+          <div class="py-12 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2m-8 0h8m-8 0h8a2 2 0 012 2v8a2 2 0 01-2 2H7a2 2 0 01-2-2v-8a2 2 0 012-2z" />
+            </svg>
+            <p class="text-gray-400 text-[14px] font-medium">No vehicle maintenance cost recorded for this trip yet</p>
+          </div>
+          }
         </div>
 
       </div>
@@ -546,4 +593,4 @@
     </div>
 
   </div>
-</div>
+</div>  

@@ -17,6 +17,7 @@ export type ExpenseDraft = {
     id: string;
     expenseRecordId?: string;
     expenseId: string;
+    parentId?: string;
     description: string;
     amount: string;
     date: string;
@@ -45,8 +46,10 @@ export class TripExpensesManage {
     expenseCategories = computed(() =>
         this.expenseCategoryService
             .allCategories()
-            .filter((category) => (category.isActive || category.status === 'Active') && category.type === 'TRIP')
+            .filter((category) => (category.isActive || category.status === 'Active') && category.type === 'TRIP' && !category.parentId)
     );
+
+    expandedCategoryRows = signal<Record<string, boolean>>({});
 
     loading = computed(() => this.tripExpenseService.loading());
     pendingUploads = signal(0);
@@ -81,6 +84,7 @@ export class TripExpensesManage {
                 amount: this.normalizeAmount(row.amount ?? ''),
                 date: row.date ?? '',
                 attachment: row.attachment ?? '',
+                parentId: row.parentId ?? '',
             }))
         );
     }
@@ -93,21 +97,23 @@ export class TripExpensesManage {
         await this.expenseCategoryService.getAll();
     }
 
-    private createExpenseRow(): ExpenseDraft {
+    private createExpenseRow(expenseId?: string, parentId?: string): ExpenseDraft {
         return {
             id: this.commonService.makeid(),
-            expenseId: '',
+            expenseId: expenseId || '',
             description: '',
             amount: '',
             date: '',
             attachment: undefined,
             attachmentName: undefined,
             attachmentUrl: undefined,
+            parentId: parentId,
             isUploading: false,
         };
     }
 
     private syncRowsFromTrip(trip: Trip | undefined) {
+        console.log('trip expenses', trip?.expenses);
         const existing = (trip?.expenses || []).map((expense) => this.mapExpenseToDraft(expense));
         const rows = existing.length > 0 ? existing : [this.createExpenseRow()];
         this.expenseRows.set(rows);
@@ -139,8 +145,140 @@ export class TripExpensesManage {
             attachment: expense.receiptAttachment,
             attachmentName: this.fileUploadService.getFileName(expense.receiptAttachment),
             attachmentUrl: undefined,
+            parentId: expense.parentId,
             isUploading: false,
         };
+    }
+
+    hasChildCategories(categoryId?: string): boolean {
+        if (!categoryId) {
+            return false;
+        }
+
+        return this.expenseCategoryService
+            .allCategories()
+            .some((category) => category.type === 'TRIP' && category.parentId === categoryId && (category.isActive || category.status === 'Active'));
+    }
+
+    getChildCategories(categoryId?: string) {
+        if (!categoryId) {
+            return [];
+        }
+
+        return this.expenseCategoryService
+            .allCategories()
+            .filter((category) => category.type === 'TRIP' && category.parentId === categoryId && (category.isActive || category.status === 'Active'));
+    }
+
+    getSelectedCategoryId(row: ExpenseDraft): string {
+        return row.expenseId;
+        // if (row.parentId) {
+        //     return row.parentId;
+        // }
+
+        // if (!row.expenseId) {
+        //     return '';
+        // }
+
+        // const category = this.expenseCategoryService.allCategories().find((item) => item.id === row.expenseId);
+        // return category?.parentId ?? row.expenseId;
+    }
+
+    getSelectedChildCategoryId(row: ExpenseDraft): string {
+        return row.expenseId;
+    }
+
+    private ensureExpandedChildSelection(rowId: string, parentCategoryId: string) {
+        const row = this.expenseRows().find((item) => item.id === rowId);
+        if (!row) {
+            return;
+        }
+
+        const childCategories = this.getChildCategories(parentCategoryId);
+        // if (!childCategories.length) {
+        //     row.parentId = undefined;
+        //     row.expenseId = parentCategoryId;
+        //     return;
+        // }
+
+        // row.parentId = parentCategoryId;
+        // const selectedChildId = row.expenseId;
+        // const hasValidChildSelection = !!selectedChildId && childCategories.some((category) => category.id === selectedChildId);
+
+        // if (!hasValidChildSelection) {
+        //     row.expenseId = childCategories[0].id;
+        // }
+    }
+
+    toggleCategoryChildren(rowId: string) {
+        const row = this.expenseRows().find((item) => item.id === rowId);
+        if (!row) {
+            return;
+        }
+
+        const parentCategoryId = this.getSelectedCategoryId(row);
+        const shouldExpand = !(this.expandedCategoryRows()[rowId] ?? false);
+
+        if (shouldExpand && parentCategoryId) {
+            this.ensureExpandedChildSelection(rowId, parentCategoryId);
+        }
+
+        this.expandedCategoryRows.update((state) => ({
+            ...state,
+            [rowId]: shouldExpand,
+        }));
+    }
+
+    getParentRows() {
+        return this.expenseRows().filter((row) => !row.parentId);
+    }
+
+    getChildRows(parentRowId: string) {
+        return this.expenseRows().filter((row) => row.parentId === parentRowId);
+    }
+
+    onParentCategoryChanged(rowId: string, categoryId: string) {
+        const row = this.expenseRows().find((item) => item.id === rowId);
+        if (!row) {
+            return;
+        }
+        row.expenseId = categoryId;
+
+        const childCategories = this.getChildCategories(categoryId);
+        console.log('Child categories for parent', rowId, childCategories);
+        for(const child of childCategories) {
+            const payload = this.createExpenseRow(child.id, rowId);
+            console.log('Adding child expense row for parent category change:', payload);
+            this.expenseRows.update((rows) => [...rows, payload]);
+
+        }
+
+        console.log('Updated expense rows after parent category change:', this.getChildRows(rowId));
+        // if (childCategories.length > 0) {
+        //     row.parentId = categoryId;
+        //     row.expenseId = row.expenseId && childCategories.some((category) => category.id === row.expenseId)
+        //         ? row.expenseId
+        //         : childCategories[0].id;
+        // } else {
+        //     row.parentId = undefined;
+        //     row.expenseId = categoryId;
+        // }
+
+        // this.expandedCategoryRows.update((state) => ({
+        //     ...state,
+        //     [rowId]: childCategories.length > 0,
+        // }));
+    }
+
+    onChildCategoryChanged(rowId: string, categoryId: string) {
+        const row = this.expenseRows().find((item) => item.id === rowId);
+        if (!row) {
+            return;
+        }
+
+        const parentCategoryId = row.parentId ?? this.getSelectedCategoryId(row);
+        row.parentId = parentCategoryId || undefined;
+        row.expenseId = categoryId;
     }
 
     addExpenseRow() {
@@ -277,7 +415,6 @@ export class TripExpensesManage {
                     : row
             )
         );
-
         try {
             const uploadedFile = await this.fileUploadService.uploadFile(file);
             this.expenseRows.update((rows) =>
@@ -356,11 +493,13 @@ export class TripExpensesManage {
                 rowsToSave.map((row) => {
                     const parsedAmount = row.amount ? Number(row.amount) : undefined;
                     const amount = parsedAmount !== undefined && !Number.isNaN(parsedAmount) ? parsedAmount : undefined;
+                    
 
                     if (row.expenseRecordId) {
                         return this.tripExpenseService.update(row.expenseRecordId, {
                             tripId: trip.id,
                             expenseId: row.expenseId,
+                            parentId: row.parentId,
                             expenseDescription: row.description || undefined,
                             amount,
                             date: row.date || undefined,
@@ -369,8 +508,10 @@ export class TripExpensesManage {
                     }
 
                     return this.tripExpenseService.create({
+                        id: row.id,
                         tripId: trip.id,
                         expenseId: row.expenseId,
+                        parentId: row.parentId,
                         expenseDescription: row.description || undefined,
                         amount,
                         date: row.date || undefined,

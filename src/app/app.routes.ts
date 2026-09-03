@@ -14,7 +14,7 @@ import { ExpenditureReport } from './modules/reports/expenditure-report/expendit
 import { DebtorsReport } from './modules/reports/debtors-report/debtors-report';
 import { TripRevenueReport } from './modules/reports/trip-revenue-report/trip-revenue-report';
 import { CashReport } from './modules/reports/cash-report/cash-report';
-import { VehicleMaintenanceCostReport } from './modules/reports/vehicle-maintenance-cost-report/vehicle-maintenance-cost-report';
+// import { VehicleMaintenanceCostReport } from './modules/reports/vehicle-maintenance-cost-report/vehicle-maintenance-cost-report';
 import { VehicleIncomeVsMaintenanceReport } from './modules/reports/vehicle-income-vs-maintenance-report/vehicle-income-vs-maintenance-report';
 import { TripForm } from './modules/trips/trip-form/trip-form';
 import { TripDetail } from './modules/trips/trip-detail/trip-detail';
@@ -106,10 +106,10 @@ export const routes: Routes = [
                 path: 'reports/cash',
                 component: CashReport,
             },
-            {
-                path: 'reports/vehicle-maintenance-cost',
-                component: VehicleMaintenanceCostReport,
-            },
+            // {
+            //     path: 'reports/vehicle-maintenance-cost',
+            //     component: VehicleMaintenanceCostReport,
+            // },
             {
                 path: 'reports/vehicle-income-vs-maintenance',
                 component: VehicleIncomeVsMaintenanceReport,

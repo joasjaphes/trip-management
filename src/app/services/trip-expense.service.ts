@@ -5,8 +5,10 @@ import { CommonService } from './common.service';
 import { TripVehicleMaintenanceItem } from '../models/trip-vehicle-maintenance';
 
 type TripExpenseCreatePayload = {
+  id: string;
   tripId: string;
   expenseId: string;
+  parentId?: string;
   expenseDescription?: string;
   amount?: number;
   receiptAttachment?: string;
@@ -56,9 +58,10 @@ export class TripExpenseService {
 
     try {
       await this.http.post('trip-expenses', {
-        id: this.commonService.makeid(),
+        id: expense.id,
         tripId: expense.tripId,
         expenseId: expense.expenseId,
+        parentId: expense.parentId,
         expenseDescription: expense.expenseDescription,
         amount: expense.amount,
         receiptAttachment: expense.receiptAttachment,
@@ -84,6 +87,7 @@ export class TripExpenseService {
         id,
         tripId: expense.tripId ?? existing?.tripId,
         expenseId: expense.expenseId ?? existing?.expenseId,
+        parentId: expense.parentId ?? existing?.parentId,
         expenseDescription: expense.expenseDescription ?? existing?.expenseDescription,
         amount: expense.amount ?? existing?.amount,
         receiptAttachment: expense.receiptAttachment ?? existing?.receiptAttachment,

@@ -12,7 +12,8 @@ export class InvoiceView {
   invoice = input<Invoice | undefined>(undefined);
   companyProfile = input<any>(null);
   loadingCompanyProfile = input(false);
-
+  trip = input<any>(null);
+  
   isLitresInvoice = computed(() =>
     this.invoice()?.trips?.[0]?.cargoType?.unitOfMeasure === 'Litres'
   );

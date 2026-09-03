@@ -14,12 +14,13 @@ import moment from 'moment';
 import { Tabs } from '../../shared/components/tabs/tabs';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TripVehicleMaintenance } from './trip-vehicle-maintenance/trip-vehicle-maintenance';
+import { AdditionalTripDetail } from './additional-trip-detail/additional-trip-detail';
 import { AdditionalTrip } from '../../models';
 
 @Component({
   selector: 'app-trips',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, TripActualPositionManage, AdditionalTripForm, TripVehicleMaintenance, MatTooltipModule, MatTabsModule],
+  imports: [CommonModule, DataTable, Layout, TripForm, TripDetail, TripExpensesManage, TripActualPositionManage, AdditionalTripForm, TripVehicleMaintenance, AdditionalTripDetail, MatTooltipModule, MatTabsModule],
   templateUrl: './trips.html'
 })
 export class Trips implements OnInit {
@@ -290,6 +291,16 @@ export class Trips implements OnInit {
     // this.splitSize.set('half');
   }
 
+  onViewAdditionalTrip(row: any) {
+    this.selectedAdditionalTrip.set(row._trip);
+    this.selectedTrip.set(row._parent);
+    this.formTitle.set(`Additional trip details ( ${row.route} )`);
+    this.formDescription.set('View detailed information about this additional trip.');
+    this.viewType.set('detail-additional-trip');
+    this.showAddButton.set(false);
+    this.viewDetails.set(true);
+  }
+
   onComplete(row: any) {
     this.selectedTrip.set(row._trip);
     this.formTitle.set(`Trip details ( ${row.route} )`);
@@ -301,6 +312,7 @@ export class Trips implements OnInit {
   }
 
   onManageExpense(row: any) {
+    console.log('Managing expenses for trip:', row);
     this.selectedTrip.set(row._trip);
     this.formTitle.set(`Manage expenses`);
     this.formDescription.set('Add, update, or remove expenses for this trip.');
@@ -341,6 +353,7 @@ export class Trips implements OnInit {
     this.formTitle.set('');
     this.formDescription.set('');
     this.selectedTrip.set(undefined);
+    this.selectedAdditionalTrip.set(undefined);
     this.splitSize.set('full');
     this.showAddButton.set(true);
     await this.tripService.getAll();
@@ -399,6 +412,7 @@ export class Trips implements OnInit {
     this.viewDetails.set(false);
     this.viewType.set('');
     this.selectedTrip.set(undefined);
+    this.selectedAdditionalTrip.set(undefined);
     this.showAddButton.set(true);
     this.splitSize.set('full');
   }

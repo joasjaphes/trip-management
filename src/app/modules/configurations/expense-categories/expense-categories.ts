@@ -42,15 +42,27 @@ export class ExpenseCategories implements OnInit {
     }))
   );
 
+  private buildCategoryTree(categories: ExpenseCategory[]): ExpenseCategory[] {
+    return categories
+      .filter((category) => !category.parentId)
+      .map((category) => {
+        const children = categories.filter((child) => child.parentId === category.id);
+        return {
+          ...category,
+          children: children.length > 0 ? children : (category.children ?? [])
+        };
+      });
+  }
+
   tripCategories = computed(() =>
-    this.categories().filter((cat) => cat.type === 'TRIP')
+    this.buildCategoryTree(this.categories().filter((cat) => cat.type === 'TRIP'))
   );
   officeCategories = computed(() =>
-    this.categories().filter((cat) => cat.type === 'OFFICE' && !cat.isPurchase && !cat.parentId)
+    this.buildCategoryTree(this.categories().filter((cat) => cat.type === 'OFFICE' && !cat.isPurchase))
   );
 
   purchaseCategories = computed(() =>
-    this.categories().filter((cat) => cat.isPurchase && !cat.parentId)
+    this.buildCategoryTree(this.categories().filter((cat) => cat.isPurchase))
   );
 
   loading = this.expenseCategoryService.loading;
@@ -146,7 +158,7 @@ export class ExpenseCategories implements OnInit {
   }
 
   async addNewExpense(categoryId: string) {
-    const expenseCategory = this.officeCategories().find(cat => cat.id === categoryId);
+    const expenseCategory = this.categories().find(cat => cat.id === categoryId);
     if (!expenseCategory) {
       console.error('Parent category not found for id:', categoryId);
       return;

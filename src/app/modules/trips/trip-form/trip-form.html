@@ -191,6 +191,32 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-2">
+        <div>
+          <h3 class="text-[15px] font-extrabold text-gray-900">Includes return trip</h3>
+          <p class="text-[13px] text-gray-400 mt-0.5">Allow this if the revenue entered includes a return trip.</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [checked]="hasReturnTrip()" (change)="hasReturnTrip.set(!hasReturnTrip())" class="sr-only peer">
+          <div
+            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f25f2f]">
+          </div>
+        </label>
+        <!-- <div class="relative">
+          <select [(ngModel)]="routeId" name="routeId"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors appearance-none cursor-pointer">
+            <option value="" disabled>Select Route</option>
+            @for (route of routes(); track route.id) {
+            <option [value]="route.id">{{ route.name }}</option>
+            }
+          </select>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div> -->
+      </div>
+
       <!-- Offloading Place (Autocomplete) -->
       <div class="flex flex-col gap-2">
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Offloading Place</label>
@@ -249,8 +275,8 @@
         <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Loaded Amount</label>
         <div class="relative">
           <input type="text" [(ngModel)]="loadedQuantity" name="loadedQuantity" placeholder="0.00" appNumberFormat
-            (ngModelChange)="onLoadedQuantityChanged()"
-            matTooltip="" matTooltipPosition="above" matTooltipClass="with-arrow"
+            (ngModelChange)="onLoadedQuantityChanged()" matTooltip="" matTooltipPosition="above"
+            matTooltipClass="with-arrow"
             class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">{{
             unitOfMeasurement }}</div>
@@ -262,8 +288,8 @@
           }})</label>
         <div class="relative">
           <input type="text" [(ngModel)]="ratePerUnit" name="ratePerUnit" placeholder="0.00" appNumberFormat
-            (ngModelChange)="onRatePerUnitChanged()"
-            matTooltip="" matTooltipPosition="above" matTooltipClass="with-arrow"
+            (ngModelChange)="onRatePerUnitChanged()" matTooltip="" matTooltipPosition="above"
+            matTooltipClass="with-arrow"
             class="w-full bg-white border border-gray-200 rounded-lg pl-2 pr-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">{{
             currency }}</div>

@@ -21,9 +21,14 @@
                     <td class="font-bold border border-gray-300 border-collapse text-center p-4">TZS</td>
                 </tr>
                 <tr>
-                    <td class="text-right border border-gray-300 border-collapse p-4">{{tripData.tripDate |
+                    <td class="text-left border border-gray-300 border-collapse p-4">{{tripData.tripDate |
                         date}}</td>
-                    <td class="text-left border border-gray-300 border-collapse p-4">{{tripData.route.name}}</td>
+                    <td class="text-left border border-gray-300 border-collapse p-4">
+                        {{tripData.route.name}}
+                        @if(tripData.includesReturnTrip) {
+                        <span class="text-[11px] font-bold text-gray-400">(Return Trip)</span>
+                        }
+                    </td>
                     <td class="text-right border border-gray-300 border-collapse p-4">
                         @if(tripData.route.routeCurrency === 'USD') {
                         {{tripData.revenue |number}}
@@ -37,7 +42,7 @@
                 @if(tripData.additionalTrips && tripData.additionalTrips.length) {
                 @for( additionalTrip of tripData.additionalTrips; track additionalTrip.id) {
                 <tr>
-                    <td class="text-right border border-gray-300 border-collapse p-4">{{additionalTrip.startDate |
+                    <td class="text-left border border-gray-300 border-collapse p-4">{{additionalTrip.startDate |
                         date}}</td>
                     <td class="text-left border border-gray-300 border-collapse p-4">{{additionalTrip.fromLocation}} -
                         {{additionalTrip.toLocation}}</td>
@@ -55,7 +60,8 @@
 
                 }
                 <tr>
-                    <td class=" border border-gray-300 border-collapse p-4" colspan="3"></td>
+                    <td class="font-medium border border-gray-300 border-collapse p-4" colspan="3">Trip Gross Revenue
+                    </td>
                     <td
                         class="font-black border border-gray-300 border-b-gray-600 border-b-2 border-t-gray-600 border-t-2 border-collapse text-right p-4">
                         {{tripSummary.tripRevenue |number}}</td>
@@ -65,7 +71,7 @@
                 <tr>
                     <td class="font-black border border-gray-300 border-collapse p-4" colspan="4">Expenses</td>
                 </tr>
-                @for(expense of tripData.expenses; track expense.id) {
+                @for(expense of (tripData.expenses.filter((e) => !e.parentId)); track expense.id) {
                 <tr>
                     <td class="text-left border border-gray-300 border-collapse p-4" colspan="2">
                         {{expense.expenseDescription}}</td>
@@ -97,9 +103,17 @@
                         {{tripSummary.vehicleMaintenanceCost |number}}</td>
                 </tr>
                 <tr>
-                    <td class="font-bold border border-gray-300 border-collapse p-4" colspan="3">Grand Total</td>
+                    <td class="font-medium border border-gray-300 border-collapse p-4" colspan="3">Total Expenses
+                        (Expenses + Maintenance Cost)</td>
                     <td
                         class="font-black border border-gray-300 border-b-gray-600 border-b-2 border-t-gray-600 border-t-2 border-collapse text-right p-4">
+                        {{(tripSummary.vehicleMaintenanceCost + tripSummary.totalTripExpenses) |number}}</td>
+                </tr>
+                <tr>
+                    <td class="font-bold border border-gray-300 border-collapse p-4" colspan="3">Trip Net Revenue (Trip
+                        Gross Revenue - Total Expenses)</td>
+                    <td class="font-black border border-gray-300 border-b-gray-600 border-b-2 border-t-gray-600 border-t-2 border-collapse text-right p-4"
+                        [ngClass]="{'text-green-500': tripSummary.netIncome > 0, 'text-red-500': tripSummary.netIncome <= 0}">
                         {{tripSummary.netIncome |number}}</td>
                 </tr>
             </tbody>
