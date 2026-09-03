@@ -35,6 +35,7 @@ export class TripDetail {
   completionDocumentError = signal<string | null>(null);
   completionDocumentSuccess = signal<string | null>(null);
   tripDocumentUrl = signal<string | undefined>(undefined);
+  expandedParentExpenseIds = signal<Set<string>>(new Set());
   today = new Date();
   unitOfMeasurement:string;
 
@@ -45,6 +46,30 @@ export class TripDetail {
   totalExpenses = computed(() => {
     return (this.trip()?.expenses || []).reduce((sum, expense) => sum + expense.amount, 0);
   });
+
+  getChildExpenses(parentId: string): TripExpense[] {
+    return (this.trip()?.expenses || []).filter((expense) => expense.parentId === parentId);
+  }
+
+  hasChildExpenses(expense: TripExpense): boolean {
+    return this.getChildExpenses(expense.id).length > 0;
+  }
+
+  isParentExpenseExpanded(expenseId: string): boolean {
+    return this.expandedParentExpenseIds().has(expenseId);
+  }
+
+  toggleParentExpense(expenseId: string): void {
+    this.expandedParentExpenseIds.update((expandedIds) => {
+      const nextExpandedIds = new Set(expandedIds);
+      if (nextExpandedIds.has(expenseId)) {
+        nextExpandedIds.delete(expenseId);
+      } else {
+        nextExpandedIds.add(expenseId);
+      }
+      return nextExpandedIds;
+    });
+  }
 
   totalMaintenanceCost = computed(() => {
     return (this.trip()?.vehicleMaintenance || []).reduce((sum, item) => sum + (item.cost || 0), 0);

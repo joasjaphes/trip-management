@@ -335,7 +335,29 @@
               <tr class="transition-colors hover:bg-gray-50">
                 <td class="py-4 px-2 text-[14px] font-extrabold text-gray-900">{{ expense.date ? (expense.date |
                   date:'MMM d, yyyy') : '-' }}</td>
-                <td class="py-4 px-2 text-[14px] text-gray-600">{{ expense.expenseDescription || '-' }}</td>
+                <td class="py-4 px-2 text-[14px] text-gray-600">
+                  <div class="flex items-center gap-2">
+                    @if (hasChildExpenses(expense)) {
+                    <button type="button" (click)="toggleParentExpense(expense.id)"
+                      class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-gray-200 text-gray-500 hover:border-[#f25f2f] hover:text-[#f25f2f]"
+                      [attr.aria-expanded]="isParentExpenseExpanded(expense.id)"
+                      [attr.aria-label]="(isParentExpenseExpanded(expense.id) ? 'Collapse' : 'Expand') + ' child expenses for ' + (expense.expenseDescription || 'parent expense')">
+                      @if (isParentExpenseExpanded(expense.id)) {
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
+                      </svg>
+                      } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14" />
+                      </svg>
+                      }
+                    </button>
+                    }
+                    <span>{{ expense.expenseDescription || '-' }}</span>
+                  </div>
+                </td>
                 <td class="py-4 px-2">
                   <span
                     [class]="'border px-2 py-0.5 rounded text-[10px] font-extrabold tracking-widest uppercase ' + getExpenseCategoryColor(expense)">
@@ -370,6 +392,47 @@
                   }
                 </td>
               </tr>
+              @if (isParentExpenseExpanded(expense.id)) {
+              @for (childExpense of getChildExpenses(expense.id); track childExpense.id) {
+              <tr class="bg-gray-50/60 transition-colors hover:bg-gray-100">
+                <td class="py-3 px-2 pl-10 text-[13px] text-gray-600">{{ childExpense.date ? (childExpense.date |
+                  date:'MMM d, yyyy') : '-' }}</td>
+                <td class="py-3 px-2 pl-10 text-[13px] text-gray-600">{{ childExpense.expenseDescription || '-' }}</td>
+                <td class="py-3 px-2">
+                  <span
+                    [class]="'border px-2 py-0.5 rounded text-[10px] font-extrabold tracking-widest uppercase ' + getExpenseCategoryColor(childExpense)">
+                    {{ getExpenseCategoryName(childExpense) }}
+                  </span>
+                </td>
+                <td class="py-3 px-2 text-[13px] font-extrabold text-gray-700">{{ childExpense.amount.toLocaleString('en-US',
+                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
+                <td class="py-3 px-2 text-center"
+                  [class]="childExpense.receiptAttachment ? 'text-[#f25f2f]' : 'text-gray-300'">
+                  @if (childExpense.receiptAttachment) {
+                  <button type="button" (click)="previewAttachment(childExpense)"
+                    [disabled]="!attachmentPreviewUrls()[childExpense.id]"
+                    class="inline-flex items-center gap-2 rounded-lg border border-orange-100 bg-orange-50 px-3 py-1.5 text-[11px] font-extrabold tracking-wide text-[#f25f2f] hover:bg-orange-100 disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-300 disabled:cursor-not-allowed"
+                    [title]="getExpenseAttachmentName(childExpense)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <span>Preview</span>
+                  </button>
+                  } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="inline w-5 h-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636" />
+                  </svg>
+                  }
+                </td>
+              </tr>
+              }
+              }
               }
             </tbody>
           </table>
