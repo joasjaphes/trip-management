@@ -91,4 +91,9 @@ export class VehicleMaintenanceService {
       this.isLoading.set(false);
     }
   }
+
+  async delete(id: string): Promise<void> {
+    await this.http.delete(`vehicleMaintenance/${id}`);
+    this.maintenances.update((maintenances) => maintenances.filter((maintenance) => maintenance.id !== id));
+  }
 }

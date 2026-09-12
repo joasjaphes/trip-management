@@ -5,6 +5,7 @@ import { Layout } from '../../../shared/components/layout/layout';
 import { CustomerService } from '../../../services/customer.service';
 import { CustomerForm } from './customer-form/customer-form';
 import { Customer } from '../../../models/customer.model';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-customers',
@@ -14,6 +15,7 @@ import { Customer } from '../../../models/customer.model';
 })
 export class Customers implements OnInit {
   private customerService = inject(CustomerService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Customers');
   description = signal('Manage customer records used for trips and invoices.');
@@ -65,7 +67,7 @@ export class Customers implements OnInit {
       { key: 'phone', label: 'Phone' },
       { key: 'createdDate', label: 'Created date' },
     ],
-    actions: { edit: true, more: true },
+    actions: { edit: true, delete: true, more: true },
   };
 
   onOpenSubmitForCustomer(row: any) {
@@ -95,6 +97,12 @@ export class Customers implements OnInit {
     this.formTitle.set('Edit customer');
     this.formDescription.set(`Editing: ${row.name}`);
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; name: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Customer', message: `Delete customer "${row.name}"? This action cannot be undone.` })) {
+      await this.customerService.delete(row.id);
+    }
   }
 
   async onCloseForm() {

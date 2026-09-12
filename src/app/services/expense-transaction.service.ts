@@ -104,4 +104,9 @@ export class ExpenseTransactionService {
       this.isLoading.set(false);
     }
   }
+
+  async delete(id: string): Promise<void> {
+    await this.http.delete(`expenseTransactions/${id}`);
+    this.transactions.update((transactions) => transactions.filter((transaction) => transaction.id !== id));
+  }
 }

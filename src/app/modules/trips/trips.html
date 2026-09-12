@@ -10,8 +10,9 @@
         <ng-template mat-tab-label>
           <span>In Progress ({{ inProgressTrips().length }})</span>
         </ng-template>
-        <app-data-table [data]="inProgressTrips()" [config]="tableConfigurations" (view)="onView($event)"
+        <app-data-table [data]="inProgressTrips()" [config]="inProgressTableConfigurations" (view)="onView($event)"
           (edit)="onEdit($event)" (childEdit)="onEditAdditionalTrip($event)" (childView)="onViewAdditionalTrip($event)"
+          (delete)="onDelete($event)" (childDelete)="onDeleteAdditionalTrip($event)"
           [moreActions]="moreActions()" [loading]="loading()" [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab label="Overstayed">

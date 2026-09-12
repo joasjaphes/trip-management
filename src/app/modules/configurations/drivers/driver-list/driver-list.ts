@@ -6,6 +6,7 @@ import { DriverForm } from '../driver-form/driver-form';
 import { DriverDetail } from '../driver-detail/driver-detail';
 import { DriverService } from '../../../../services/driver.service';
 import { Driver } from '../../../../models/driver.model';
+import { DeleteConfirmService } from '../../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-driver-list',
@@ -15,6 +16,7 @@ import { Driver } from '../../../../models/driver.model';
 })
 export class DriverList implements OnInit {
   private driverService = inject(DriverService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Drivers management');
   description = signal('Monitor fleet compliance, driver status, and contact information');
@@ -67,7 +69,7 @@ export class DriverList implements OnInit {
         type: 'status',
       }
     ],
-    actions: { edit: true, view: true },
+    actions: { edit: true, view: true, delete: true },
   };
 
   async ngOnInit(): Promise<void> {
@@ -98,6 +100,12 @@ export class DriverList implements OnInit {
     this.formTitle.set('Driver details');
     this.formDescription.set(`Viewing: ${row.firstName} ${row.lastName}`);
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; firstName: string; lastName: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Driver', message: `Delete driver "${row.firstName} ${row.lastName}"? This action cannot be undone.` })) {
+      await this.driverService.delete(row.id);
+    }
   }
 
   async onCloseForm() {

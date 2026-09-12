@@ -5,6 +5,7 @@ import { Layout } from '../../../shared/components/layout/layout';
 import { OffloadingPlaceService } from '../../../services/offloading-place.service';
 import { OffloadingPlaceForm } from './offloading-place-form/offloading-place-form';
 import { OffloadingPlace } from '../../../models/offloading-place.model';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-offloading-places',
@@ -14,6 +15,7 @@ import { OffloadingPlace } from '../../../models/offloading-place.model';
 })
 export class OffloadingPlaces implements OnInit {
   private offloadingPlaceService = inject(OffloadingPlaceService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Offloading Places');
   description = signal('Manage offloading places used for trip destination details.');
@@ -53,7 +55,7 @@ export class OffloadingPlaces implements OnInit {
       { key: 'longitude', label: 'Longitude' },
       { key: 'createdDate', label: 'Created date' },
     ],
-    actions: { edit: true },
+    actions: { edit: true, delete: true },
   };
 
   async ngOnInit(): Promise<void> {
@@ -75,6 +77,12 @@ export class OffloadingPlaces implements OnInit {
     this.formTitle.set('Edit offloading place');
     this.formDescription.set(`Editing: ${row.name}`);
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; name: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Offloading Place', message: `Delete offloading place "${row.name}"? This action cannot be undone.` })) {
+      await this.offloadingPlaceService.delete(row.id);
+    }
   }
 
   async onCloseForm() {

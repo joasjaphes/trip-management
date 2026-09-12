@@ -5,6 +5,7 @@ import { Layout } from '../../../shared/components/layout/layout';
 import { IssuingBodyForm } from './issuing-body-form/issuing-body-form';
 import { IssuingBodyService } from '../../../services/issuing-body.service';
 import { IssuingBody } from '../../../models/issuing-body.model';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-issuing-body',
@@ -14,6 +15,7 @@ import { IssuingBody } from '../../../models/issuing-body.model';
 })
 export class IssuingBodyComponent implements OnInit {
   private issuingBodyService = inject(IssuingBodyService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Issuing bodies');
   description = signal('Manage issuing bodies used in trip planning.');
@@ -55,7 +57,7 @@ export class IssuingBodyComponent implements OnInit {
       { key: 'status', label: 'Status', type: 'status' },
       { key: 'createdDate', label: 'Created date' },
     ],
-    actions: { edit: true },
+    actions: { edit: true, delete: true },
   };
 
   async ngOnInit(): Promise<void> {
@@ -77,6 +79,12 @@ export class IssuingBodyComponent implements OnInit {
     this.formTitle.set('Edit issuing body');
     this.formDescription.set(`Editing: ${row.name}`);
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; name: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Issuing Body', message: `Delete issuing body "${row.name}"? This action cannot be undone.` })) {
+      await this.issuingBodyService.delete(row.id);
+    }
   }
 
   async onCloseForm() {

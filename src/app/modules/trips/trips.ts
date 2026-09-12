@@ -16,6 +16,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { TripVehicleMaintenance } from './trip-vehicle-maintenance/trip-vehicle-maintenance';
 import { AdditionalTripDetail } from './additional-trip-detail/additional-trip-detail';
 import { AdditionalTrip } from '../../models';
+import { AdditionalTripService } from '../../services/additional-trip.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmDialog } from '../../shared/components/delete-confirm-dialog/delete-confirm-dialog';
 
 @Component({
   selector: 'app-trips',
@@ -25,6 +28,8 @@ import { AdditionalTrip } from '../../models';
 })
 export class Trips implements OnInit {
   private tripService = inject(TripService);
+  private additionalTripService = inject(AdditionalTripService);
+  private dialog = inject(MatDialog);
 
   title = signal('Trips management');
   description = signal('Overview and management of all logistics trips');
@@ -84,6 +89,7 @@ export class Trips implements OnInit {
         _parent:trip,
         _trip: childTrip,
         canEdit: trip.status !== TripStatus.COMPLETED,
+        canDelete: trip.status !== TripStatus.COMPLETED,
       })),
       actions: {
         reviewComplete: trip.status !== TripStatus.COMPLETED,
@@ -214,6 +220,11 @@ export class Trips implements OnInit {
     }
   };
 
+  inProgressTableConfigurations: TableConfig = {
+    ...this.tableConfigurations,
+    actions: { ...this.tableConfigurations.actions, delete: true },
+  };
+
   moreActions = computed(() => [
     {
       label: 'Review & Complete',
@@ -299,6 +310,45 @@ export class Trips implements OnInit {
     this.viewType.set('detail-additional-trip');
     this.showAddButton.set(false);
     this.viewDetails.set(true);
+  }
+
+  onDelete(row: any) {
+    if (!row?.id || this.isTripCompleted(row)) {
+      return;
+    }
+
+    this.dialog.open(DeleteConfirmDialog, {
+      width: '400px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Delete Trip',
+        message: `Are you sure you want to delete trip "${row.tripReferenceNumber || row.id}"? This action cannot be undone.`,
+      },
+    }).afterClosed().subscribe(async (confirmed: boolean) => {
+      if (confirmed) {
+        await this.tripService.delete(row.id);
+      }
+    });
+  }
+
+  onDeleteAdditionalTrip(row: any) {
+    if (!row?.id || this.isTripCompleted(row._parent)) {
+      return;
+    }
+
+    this.dialog.open(DeleteConfirmDialog, {
+      width: '400px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Delete Additional Trip',
+        message: `Are you sure you want to delete additional trip "${row.tripReferenceNumber || row.id}"? This action cannot be undone.`,
+      },
+    }).afterClosed().subscribe(async (confirmed: boolean) => {
+      if (confirmed) {
+        await this.additionalTripService.delete(row.id);
+        await this.tripService.getAll();
+      }
+    });
   }
 
   onComplete(row: any) {

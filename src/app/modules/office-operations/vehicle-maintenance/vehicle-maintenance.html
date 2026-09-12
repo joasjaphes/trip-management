@@ -4,7 +4,7 @@
   <ng-container ngProjectAs="main">
     <app-data-table [data]="maintenanceRows()" [config]="tableConfigurations" [loading]="loading()"
       [showAddButton]="true" [addButtonText]="'Register maintenance'" (add)="onAdd()"
-      [permissions]="permissions()" (rowClick)="onEdit($event)" (edit)="onEdit($event)"></app-data-table>
+      [permissions]="permissions()" (rowClick)="onEdit($event)" (edit)="onEdit($event)" (delete)="onDelete($event)"></app-data-table>
   </ng-container>
 
   <ng-container ngProjectAs="form">

@@ -106,4 +106,9 @@ export class VendorService {
       this.isLoading.set(false);
     }
   }
+
+  async delete(id: string): Promise<void> {
+    await this.http.delete(`vendors/${id}`);
+    this.vendors.update((vendors) => vendors.filter((vendor) => vendor.id !== id));
+  }
 }

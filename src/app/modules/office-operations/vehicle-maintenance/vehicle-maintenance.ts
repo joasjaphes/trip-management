@@ -6,6 +6,7 @@ import { VehicleMaintenanceService } from '../../../services/vehicle-maintenance
 import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { VehicleMaintenanceForm } from './vehicle-maintenance-form/vehicle-maintenance-form';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 @Component({
     selector: 'app-vehicle-maintenance',
@@ -16,6 +17,7 @@ import { VehicleMaintenanceForm } from './vehicle-maintenance-form/vehicle-maint
 export class VehicleMaintenancePage implements OnInit {
     private vehicleMaintenanceService = inject(VehicleMaintenanceService);
     private vehicleService = inject(VehicleService);
+    private deleteConfirm = inject(DeleteConfirmService);
 
     title = signal('Vehicle Maintenance');
     description = signal('Track repairs, servicing, and maintenance costs for company vehicles.');
@@ -79,6 +81,7 @@ export class VehicleMaintenancePage implements OnInit {
         ],
         actions: {
             edit: true,
+            delete: true,
         },
     };
 
@@ -108,6 +111,12 @@ export class VehicleMaintenancePage implements OnInit {
         this.formTitle.set('Edit Vehicle Maintenance');
         this.formDescription.set('Update maintenance date, vehicle, description, or cost.');
         this.viewDetails.set(true);
+    }
+
+    async onDelete(row: { id: string; vehicleDisplay: string }): Promise<void> {
+        if (await this.deleteConfirm.confirm({ title: 'Delete Vehicle Maintenance', message: `Delete maintenance for ${row.vehicleDisplay}? This action cannot be undone.` })) {
+            await this.vehicleMaintenanceService.delete(row.id);
+        }
     }
 
     async onCloseForm(): Promise<void> {

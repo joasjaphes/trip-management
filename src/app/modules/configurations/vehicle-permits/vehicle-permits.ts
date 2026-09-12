@@ -6,6 +6,7 @@ import { PermitForm } from './permit-form/permit-form';
 import { PermitDetail } from './permit-detail/permit-detail';
 import { PermitRegistrationService } from '../../../services/permit-registration.service';
 import { Permit } from '../../../models/permits.model';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-vehicle-permits',
@@ -15,6 +16,7 @@ import { Permit } from '../../../models/permits.model';
 })
 export class VehiclePermits implements OnInit {
   private permitRegistrationService = inject(PermitRegistrationService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Permits management');
   description = signal('Manage and track regulatory permits for your fleet');
@@ -60,7 +62,7 @@ export class VehiclePermits implements OnInit {
       { key: 'status', label: 'Status', type: 'status' },
       { key: 'createdDate', label: 'Created date' }
     ],
-    actions: { edit: true, view: true }
+    actions: { edit: true, view: true, delete: true }
   };
 
   onAdd() {
@@ -92,6 +94,12 @@ export class VehiclePermits implements OnInit {
     this.formDescription.set(permit.name);
     this.splitSize.set('full');
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; name: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Permit', message: `Delete permit "${row.name}"? This action cannot be undone.` })) {
+      await this.permitRegistrationService.delete(row.id);
+    }
   }
 
   async onCloseForm() {

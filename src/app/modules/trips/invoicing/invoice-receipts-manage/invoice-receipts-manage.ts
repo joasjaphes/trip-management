@@ -9,6 +9,8 @@ import { NumberFormatDirective } from '../../../../shared/directives/number-form
 import { MatTooltip, MatTooltipModule } from "@angular/material/tooltip";
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmDialog } from '../../../../shared/components/delete-confirm-dialog/delete-confirm-dialog';
 
 type ReceiptDraft = {
   id: string;
@@ -34,6 +36,7 @@ type ReceiptDraft = {
 export class InvoiceReceiptsManage {
   private invoiceReceiptService = inject(InvoiceReceiptService);
   private fileUploadService = inject(FileUploadService);
+  private dialog = inject(MatDialog);
 
   invoice = input<Invoice | undefined>();
   close = output();
@@ -307,26 +310,33 @@ export class InvoiceReceiptsManage {
       return;
     }
 
-    const confirmed = window.confirm('Remove this receipt?');
-    if (!confirmed) {
-      return;
-    }
+    this.dialog.open(DeleteConfirmDialog, {
+      width: '400px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Remove Receipt',
+        message: 'Are you sure you want to remove this receipt? This action cannot be undone.',
+        confirmText: 'Remove',
+      },
+    }).afterClosed().subscribe(async (confirmed: boolean) => {
+      if (!confirmed) return;
 
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
-    this.actionMessage.set('Removing receipt...');
-    this.deletingRowId.set(rowId);
+      this.errorMessage.set(null);
+      this.successMessage.set(null);
+      this.actionMessage.set('Removing receipt...');
+      this.deletingRowId.set(rowId);
 
-    try {
-      await this.invoiceReceiptService.delete(row.receiptRecordId);
-      this.successMessage.set('Receipt removed successfully.');
-      this.saved.emit();
-    } catch (error) {
-      this.errorMessage.set(String(error || 'Could not remove receipt. Please try again.'));
-    } finally {
-      this.deletingRowId.set(null);
-      this.actionMessage.set(null);
-    }
+      try {
+        await this.invoiceReceiptService.delete(row.receiptRecordId!);
+        this.successMessage.set('Receipt removed successfully.');
+        this.saved.emit();
+      } catch (error) {
+        this.errorMessage.set(String(error || 'Could not remove receipt. Please try again.'));
+      } finally {
+        this.deletingRowId.set(null);
+        this.actionMessage.set(null);
+      }
+    });
   }
 
   goBack() {

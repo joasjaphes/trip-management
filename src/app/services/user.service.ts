@@ -98,6 +98,11 @@ export class UserService {
     this.loadingUsers.set(false);
   }
 
+  async delete(id: string): Promise<void> {
+    await this.http.delete(`users/${id}`);
+    this.users.update((users) => users.filter((user) => user.id !== id));
+  }
+
   // getCurrentUserAuthorities(): string[] {
   //   let authorities = [];
   //   const currentUser: User = JSON.parse(localStorage.getItem('trip-management-user'));

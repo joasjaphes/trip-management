@@ -105,6 +105,11 @@ export class OffloadingPlaceService {
 		}
 	}
 
+	async delete(id: string): Promise<void> {
+		await this.http.delete(`offloading-places/${id}`);
+		this.offloadingPlaces.update((places) => places.filter((place) => place.id !== id));
+	}
+
 	get all() {
 		return this.allOffloadingPlaces;
 	}
