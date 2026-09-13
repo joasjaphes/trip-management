@@ -8,14 +8,14 @@
           Horse ({{ trucks().length }})
         </ng-template>
         <app-data-table [data]="trucks()" [config]="truckTableConfigurations" [loading]="loading()"
-          (edit)="onEdit($event)" (view)="onView($event)" [permissions]="permissions()"></app-data-table>
+          (edit)="onEdit($event)" (view)="onView($event)" (delete)="onDelete($event)" [permissions]="permissions()"></app-data-table>
       </mat-tab>
       <mat-tab>
         <ng-template matTabLabel>
           Trailers ({{ trailers().length }})
         </ng-template>
         <app-data-table [data]="trailers()" [config]="trailerTableConfigurations" [loading]="loading()"
-          (edit)="onEdit($event)" (view)="onView($event)" [permissions]="permissions()"></app-data-table>
+          (edit)="onEdit($event)" (view)="onView($event)" (delete)="onDelete($event)" [permissions]="permissions()"></app-data-table>
       </mat-tab>
     </mat-tab-group>
   </ng-container>

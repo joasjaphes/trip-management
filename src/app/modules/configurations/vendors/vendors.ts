@@ -6,6 +6,7 @@ import { Layout } from '../../../shared/components/layout/layout';
 import { Vendor } from '../../../models/vendor.model';
 import { VendorService } from '../../../services/vendor.service';
 import { VendorFormDialog, VendorFormDialogData } from './vendor-form/vendor-form';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-vendors',
@@ -17,6 +18,7 @@ import { VendorFormDialog, VendorFormDialogData } from './vendor-form/vendor-for
 export class Vendors implements OnInit {
   private vendorService = inject(VendorService);
   private dialog = inject(MatDialog);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Vendors');
   description = signal('Manage supplier records used when posting expense transactions.');
@@ -42,7 +44,7 @@ export class Vendors implements OnInit {
       { key: 'vendorAddress', label: 'Address' },
       { key: 'createdDate', label: 'Created date' },
     ],
-    actions: { edit: true },
+    actions: { edit: true, delete: true },
   };
 
   permissions = signal({
@@ -77,6 +79,12 @@ export class Vendors implements OnInit {
       description: `Editing: ${vendor.vendorName}`,
       vendor,
     });
+  }
+
+  async onDelete(row: { id: string; vendorName: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Vendor', message: `Delete vendor "${row.vendorName}"? This action cannot be undone.` })) {
+      await this.vendorService.delete(row.id);
+    }
   }
 
   private openVendorDialog(data: VendorFormDialogData) {

@@ -5,6 +5,7 @@ import { User } from '../../../models';
 import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { UserForm } from '../user-form/user-form';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-user-list',
@@ -14,6 +15,7 @@ import { UserForm } from '../user-form/user-form';
 })
 export class UserList {
   private userService = inject(UserService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('User management');
   description = signal('Manage system users');
@@ -60,6 +62,7 @@ export class UserList {
     ],
     actions: {
       edit: true,
+      delete: true,
     },
   }
 
@@ -77,6 +80,12 @@ export class UserList {
     this.formTitle.set('Edit user');
     this.formDescription.set('Update user details or change the password separately.');
     this.viewDetails.set(true);
+  }
+
+  async onDelete(user: User) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete User', message: `Delete user "${user.username}"? This action cannot be undone.` })) {
+      await this.userService.delete(user.id);
+    }
   }
 
   onCloseForm() {

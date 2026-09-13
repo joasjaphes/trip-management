@@ -5,6 +5,7 @@ import { Layout } from '../../../shared/components/layout/layout';
 import { CargoTypeService } from '../../../services/cargo-type.service';
 import { CargoTypeForm } from './cargo-type-form/cargo-type-form';
 import { CargoType } from '../../../models/cargo-type.model';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-cargo-types',
@@ -14,6 +15,7 @@ import { CargoType } from '../../../models/cargo-type.model';
 })
 export class CargoTypes implements OnInit {
   private cargoTypeService = inject(CargoTypeService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Cargo types');
   description = signal('Manage cargo classifications used in trip planning.');
@@ -54,7 +56,7 @@ export class CargoTypes implements OnInit {
       { key: 'status', label: 'Status', type: 'status' },
       { key: 'createdDate', label: 'Created date' },
     ],
-    actions: { edit: true },
+    actions: { edit: true, delete: true },
   };
 
   async ngOnInit(): Promise<void> {
@@ -76,6 +78,12 @@ export class CargoTypes implements OnInit {
     this.formTitle.set('Edit cargo type');
     this.formDescription.set(`Editing: ${row.name}`);
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; name: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Cargo Type', message: `Delete cargo type "${row.name}"? This action cannot be undone.` })) {
+      await this.cargoTypeService.delete(row.id);
+    }
   }
 
   async onCloseForm() {

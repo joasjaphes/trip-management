@@ -103,4 +103,9 @@ export class CustomerService {
       this.isLoading.set(false);
     }
   }
+
+  async delete(id: string): Promise<void> {
+    await this.http.delete(`customers/${id}`);
+    this.customers.update((customers) => customers.filter((customer) => customer.id !== id));
+  }
 }

@@ -6,6 +6,7 @@ import { RoleService } from '../../../services/role.service';
 import { RoleForm } from './role-form';
 import { PERMISSION_MODULES, DEFAULT_ROLE_PERMISSIONS } from './permission-modules';
 import { UserRole } from '../../../models';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 interface PermissionItem {
   key: string;
@@ -36,6 +37,7 @@ interface RoleRow {
 })
 export class UserRoles implements OnInit {
   private roleService = inject(RoleService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('User roles');
   description = signal('Manage system roles and the permissions attached to each role.');
@@ -61,6 +63,7 @@ export class UserRoles implements OnInit {
     ],
     actions: {
       edit: true,
+      delete: true,
     }
   };
 
@@ -99,6 +102,12 @@ export class UserRoles implements OnInit {
     this.selectedPermissions.set(new Set(role.permissions ?? []));
     this.viewType = 'edit';
     this.viewDetails.set(true);
+  }
+
+  async onDelete(role: UserRole) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Role', message: `Delete role "${role.name}"? This action cannot be undone.` })) {
+      await this.roleService.deleteRole(role.id);
+    }
   }
 
   onCloseForm(shouldRefresh = false) {

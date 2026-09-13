@@ -4,6 +4,8 @@ import { Vehicle } from '../../../../models/vehicle.model';
 import { VehicleService } from '../../../../services/vehicle.service';
 import { VehiclePermitService } from '../../../../services/vehicle-permit.service';
 import { FileUploadService } from '../../../../services/file-upload.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmDialog } from '../../../../shared/components/delete-confirm-dialog/delete-confirm-dialog';
 
 @Component({
   selector: 'app-vehicle-detail',
@@ -15,6 +17,7 @@ export class VehicleDetail {
   private vehicleService = inject(VehicleService);
   private vehiclePermitService = inject(VehiclePermitService);
   private fileUploadService = inject(FileUploadService);
+  private dialog = inject(MatDialog);
 
   vehicle = input<Vehicle | undefined>(undefined);
   close = output();
@@ -64,26 +67,32 @@ export class VehicleDetail {
     const v = this.vehicle();
     if (!v?.id) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete vehicle ${v.registrationNo}? This action cannot be undone.`
-    );
-    if (!confirmed) return;
+    this.dialog.open(DeleteConfirmDialog, {
+      width: '400px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Delete Vehicle',
+        message: `Are you sure you want to delete vehicle ${v.registrationNo}? This action cannot be undone.`,
+      },
+    }).afterClosed().subscribe(async (confirmed: boolean) => {
+      if (!confirmed) return;
 
-    this.isDeleting.set(true);
-    this.errorMessage.set(null);
-    this.actionMessage.set('Deleting vehicle...');
+      this.isDeleting.set(true);
+      this.errorMessage.set(null);
+      this.actionMessage.set('Deleting vehicle...');
 
-    try {
-      await this.vehicleService.delete(v.id);
-      this.actionMessage.set('Vehicle deleted successfully.');
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      this.close.emit();
-    } catch (err) {
-      this.errorMessage.set(String(err || 'Could not delete vehicle. Please try again.'));
-    } finally {
-      this.isDeleting.set(false);
-      this.actionMessage.set(null);
-    }
+      try {
+        await this.vehicleService.delete(v.id);
+        this.actionMessage.set('Vehicle deleted successfully.');
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        this.close.emit();
+      } catch (err) {
+        this.errorMessage.set(String(err || 'Could not delete vehicle. Please try again.'));
+      } finally {
+        this.isDeleting.set(false);
+        this.actionMessage.set(null);
+      }
+    });
   }
 
   goBack() {

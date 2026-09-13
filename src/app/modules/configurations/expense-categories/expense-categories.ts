@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
+import { TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { ExpenseCategoryForm } from './expense-category-form/expense-category-form';
 import { ExpenseCategoryService } from '../../../services/expense-category.service';
@@ -8,15 +8,18 @@ import { ExpenseCategory } from '../../../models/expense-category.model';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormsModule } from '@angular/forms';
 import { SaveArea } from '../../../shared/components/save-area/save-area';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
+import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 
 @Component({
   selector: 'app-expense-categories',
   standalone: true,
-  imports: [CommonModule, DataTable, Layout, ExpenseCategoryForm, MatTabsModule, FormsModule],
+  imports: [CommonModule, Layout, ExpenseCategoryForm, MatTabsModule, FormsModule, HasPermissionDirective],
   templateUrl: './expense-categories.html',
 })
 export class ExpenseCategories implements OnInit {
   private expenseCategoryService = inject(ExpenseCategoryService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Expenses');
   description = signal('Configure and manage trip expenses');
@@ -132,6 +135,12 @@ export class ExpenseCategories implements OnInit {
     this.formTitle.set(category.isPurchase ? 'Edit item' : 'Edit expense');
     this.formDescription.set(`Updating ${category.name}`);
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; name: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Expense Category', message: `Delete expense category "${row.name}"? This action cannot be undone.` })) {
+      await this.expenseCategoryService.delete(row.id);
+    }
   }
 
   setExpandedCategory(categoryId: string) {

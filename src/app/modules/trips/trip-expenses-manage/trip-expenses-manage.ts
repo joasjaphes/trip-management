@@ -11,6 +11,8 @@ import { NumberFormatDirective } from '../../../shared/directives/number-format'
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmDialog } from '../../../shared/components/delete-confirm-dialog/delete-confirm-dialog';
 import moment from 'moment';
 
 export type ExpenseDraft = {
@@ -38,6 +40,7 @@ export class TripExpensesManage {
     private expenseCategoryService = inject(ExpenseCategoryService);
     private commonService = inject(CommonService);
     private fileUploadService = inject(FileUploadService);
+    private dialog = inject(MatDialog);
 
     trip = input<Trip | undefined>();
     close = output();
@@ -302,30 +305,37 @@ export class TripExpensesManage {
             return;
         }
 
-        const confirmed = window.confirm('Remove this expense?');
-        if (!confirmed) {
-            return;
-        }
+        this.dialog.open(DeleteConfirmDialog, {
+            width: '400px',
+            maxWidth: '95vw',
+            data: {
+                title: 'Remove Expense',
+                message: 'Are you sure you want to remove this expense? This action cannot be undone.',
+                confirmText: 'Remove',
+            },
+        }).afterClosed().subscribe(async (confirmed: boolean) => {
+            if (!confirmed) return;
 
-        this.deletingRowId.set(rowId);
-        this.error.set(null);
-        this.successMessage.set(null);
-        this.actionMessage.set('Deleting expense...');
+            this.deletingRowId.set(rowId);
+            this.error.set(null);
+            this.successMessage.set(null);
+            this.actionMessage.set('Deleting expense...');
 
-        try {
-            await this.tripExpenseService.delete(row.expenseRecordId);
-            this.expenseRows.update((rows) => {
-                const updated = rows.filter((item) => item.id !== rowId);
-                return updated.length > 0 ? updated : [this.createExpenseRow()];
-            });
-            this.successMessage.set('Expense removed successfully.');
-            this.saved.emit();
-        } catch (err) {
-            this.error.set(String(err || 'Could not remove the expense. Please try again.'));
-        } finally {
-            this.actionMessage.set(null);
-            this.deletingRowId.set(null);
-        }
+            try {
+                await this.tripExpenseService.delete(row.expenseRecordId!);
+                this.expenseRows.update((rows) => {
+                    const updated = rows.filter((item) => item.id !== rowId);
+                    return updated.length > 0 ? updated : [this.createExpenseRow()];
+                });
+                this.successMessage.set('Expense removed successfully.');
+                this.saved.emit();
+            } catch (err) {
+                this.error.set(String(err || 'Could not remove the expense. Please try again.'));
+            } finally {
+                this.actionMessage.set(null);
+                this.deletingRowId.set(null);
+            }
+        });
     }
 
     updateRowField(rowId: string, field: keyof ExpenseDraft, value: string | undefined) {

@@ -7,6 +7,7 @@ import { VehicleDetail } from '../vehicle-detail/vehicle-detail';
 import { VehicleService } from '../../../../services/vehicle.service';
 import { Vehicle } from '../../../../models/vehicle.model';
 import { MatTabsModule } from '@angular/material/tabs';
+import { DeleteConfirmService } from '../../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-vehicle-list',
@@ -16,6 +17,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 })
 export class VehicleList implements OnInit {
   private vehicleService = inject(VehicleService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Vehicles management');
   description = signal('Real-time monitoring and lifecycle management of your fleet');
@@ -64,7 +66,7 @@ export class VehicleList implements OnInit {
       { key: 'permitExpiry', label: 'Permit expiry' },
       { key: 'status', label: 'Status',type: 'status' },
     ],
-    actions: { edit: true, view: true },
+    actions: { edit: true, view: true, delete: true },
   };
 
   truckTableConfigurations: TableConfig = {
@@ -77,7 +79,7 @@ export class VehicleList implements OnInit {
       { key: 'permitExpiry', label: 'Permit expiry' },
       { key: 'status', label: 'Status',type: 'status' },
     ],
-    actions: { edit: true, view: true },
+    actions: { edit: true, view: true, delete: true },
   };
 
   trailerTableConfigurations: TableConfig = {
@@ -88,7 +90,7 @@ export class VehicleList implements OnInit {
       { key: 'trailerType', label: 'Trailer type' },
       { key: 'status', label: 'Status',type: 'status' },
     ],
-    actions: { edit: true, view: true },
+    actions: { edit: true, view: true, delete: true },
   };
 
   permissions = signal({
@@ -134,6 +136,12 @@ export class VehicleList implements OnInit {
     this.formDescription.set(vehicle.registrationNo);
     this.splitSize.set('full');
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; registrationNo: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Vehicle', message: `Delete vehicle ${row.registrationNo}? This action cannot be undone.` })) {
+      await this.vehicleService.delete(row.id);
+    }
   }
 
   async onCloseForm() {

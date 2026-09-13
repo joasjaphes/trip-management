@@ -8,6 +8,7 @@ import { VendorService } from '../../../services/vendor.service';
 import { DataTable, TableConfig } from '../../../shared/components/data-table/data-table';
 import { Layout } from '../../../shared/components/layout/layout';
 import { ExpenseTransactionForm } from './expense-transaction-form/expense-transaction-form';
+import { DeleteConfirmService } from '../../../services/delete-confirm.service';
 
 type ExpenseCategoryWithChildrens = ExpenseCategory & {
   childrens?: ExpenseCategory[];
@@ -23,6 +24,7 @@ export class ExpenseTransactions implements OnInit {
   private expenseCategoryService = inject(ExpenseCategoryService);
   private expenseTransactionService = inject(ExpenseTransactionService);
   private vendorService = inject(VendorService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Office Expenses');
   description = signal('Post and manage office expense transactions.');
@@ -71,7 +73,8 @@ export class ExpenseTransactions implements OnInit {
       // { key: 'attachmentName', label: 'Attachment' },
     ],
     actions: {
-      edit:true,
+      edit: true,
+      delete: true,
     }
   };
 
@@ -112,6 +115,12 @@ export class ExpenseTransactions implements OnInit {
     this.formTitle.set('Edit office expense');
     this.formDescription.set('Update office expense details.');
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; descriptionDisplay: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Office Expense', message: `Delete this office expense${row.descriptionDisplay ? ` (${row.descriptionDisplay})` : ''}? This action cannot be undone.` })) {
+      await this.expenseTransactionService.delete(row.id);
+    }
   }
 
   async onCloseForm() {

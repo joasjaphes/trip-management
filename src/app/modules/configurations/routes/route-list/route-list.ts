@@ -5,6 +5,7 @@ import { Layout } from '../../../../shared/components/layout/layout';
 import { RouteForm } from '../route-form/route-form';
 import { RouteService } from '../../../../services/route.service';
 import { Route } from '../../../../models/route.model';
+import { DeleteConfirmService } from '../../../../services/delete-confirm.service';
 
 @Component({
   selector: 'app-route-list',
@@ -14,6 +15,7 @@ import { Route } from '../../../../models/route.model';
 })
 export class RouteList implements OnInit {
   private routeService = inject(RouteService);
+  private deleteConfirm = inject(DeleteConfirmService);
 
   title = signal('Routes management');
   description = signal('Configure and track operational transport lanes across the region');
@@ -74,7 +76,7 @@ export class RouteList implements OnInit {
         type: 'status'
       }
     ],
-    actions: { edit: true }
+    actions: { edit: true, delete: true }
   };
 
   async ngOnInit(): Promise<void> {
@@ -100,6 +102,12 @@ export class RouteList implements OnInit {
     this.formTitle.set('Edit route');
     this.formDescription.set(`Updating ${route.name}`);
     this.viewDetails.set(true);
+  }
+
+  async onDelete(row: { id: string; name: string }) {
+    if (await this.deleteConfirm.confirm({ title: 'Delete Route', message: `Delete route "${row.name}"? This action cannot be undone.` })) {
+      await this.routeService.delete(row.id);
+    }
   }
 
   async onCloseForm() {

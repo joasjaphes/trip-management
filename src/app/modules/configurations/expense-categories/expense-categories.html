@@ -47,6 +47,7 @@
               </div>
               <div class="col-span-1 text-center">
                 <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(category)" title="Edit"></i>
+                <i class="fa-solid fa-trash text-red-500 cursor-pointer ml-3" (click)="onDelete(category)" title="Delete" *appHasPermission="permissions().delete"></i>
               </div>
             </div>
             @if(expandedCategoryId() === category.id) {
@@ -66,6 +67,7 @@
               </div>
               <div class="col-span-1 text-center">
                 <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(expense)" title="Edit"></i>
+                <i class="fa-solid fa-trash text-red-500 cursor-pointer ml-3" (click)="onDelete(expense)" title="Delete" *appHasPermission="permissions().delete"></i>
               </div>
             </div>
             }
@@ -159,6 +161,7 @@
               </div>
               <div class="col-span-1 text-center">
                 <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(category)" title="Edit"></i>
+                <i class="fa-solid fa-trash text-red-500 cursor-pointer ml-3" (click)="onDelete(category)" title="Delete" *appHasPermission="permissions().delete"></i>
               </div>
             </div>
             @if(expandedCategoryId() === category.id) {
@@ -185,6 +188,7 @@
               </div>
               <div class="col-span-1 text-center">
                 <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(expense)" title="Edit"></i>
+                <i class="fa-solid fa-trash text-red-500 cursor-pointer ml-3" (click)="onDelete(expense)" title="Delete" *appHasPermission="permissions().delete"></i>
               </div>
             </div>
             }
@@ -282,6 +286,7 @@
               </div>
               <div class="col-span-1 text-center">
                 <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(category)" title="Edit"></i>
+                <i class="fa-solid fa-trash text-red-500 cursor-pointer ml-3" (click)="onDelete(category)" title="Delete" *appHasPermission="permissions().delete"></i>
               </div>
             </div>
             @if(expandedCategoryId() === category.id) {
@@ -308,6 +313,7 @@
               </div>
               <div class="col-span-1 text-center">
                 <i class="fa-solid fa-pencil cursor-pointer" (click)="onEdit(expense)" title="Edit"></i>
+                <i class="fa-solid fa-trash text-red-500 cursor-pointer ml-3" (click)="onDelete(expense)" title="Delete" *appHasPermission="permissions().delete"></i>
               </div>
             </div>
             }
