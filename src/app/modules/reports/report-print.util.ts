@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { CompanyProfile } from '../../models/company-profile.model';
+import { companyAddressLines } from '../../shared/utils/company-address';
 
 /** HTML-escape an arbitrary value for safe interpolation into a print template. */
 export function escapeHtml(value: string | number | null | undefined): string {
@@ -21,13 +22,9 @@ export function renderBrandedHeader(profile: CompanyProfile | null | undefined):
   const fallbackLogoUrl = `${window.location.origin}/assets/images/easytruckinglogo.png`;
   const logoUrl = profile?.logoUrl || fallbackLogoUrl;
   const companyName = profile?.companyName || '';
-  const street = profile?.street?.trim();
-  const region = profile?.region?.trim();
-  const country = profile?.country?.trim();
-  const postal = profile?.postalAddress?.trim();
-  const addressLine = postal || country
-    ? `P. O. BOX ${postal || ''}${country ? ' ' + country : ''}`.trim()
-    : '';
+  const addressBlock = companyAddressLines(profile)
+    .map((line) => `<p class="company-line">${escapeHtml(line)}</p>`)
+    .join('\n        ');
   const tin = profile?.tin ? `TIN ${profile.tin}` : '';
   const vrn = profile?.vrn ? `VRN ${profile.vrn}` : '';
   const taxLine = tin || vrn
@@ -41,9 +38,7 @@ export function renderBrandedHeader(profile: CompanyProfile | null | undefined):
       </div>
       <div class="header-right">
         <h1 class="company-name">${escapeHtml(companyName)}</h1>
-        ${street ? `<p class="company-line">${escapeHtml(street)}</p>` : ''}
-        ${region ? `<p class="company-line">${escapeHtml(region)}</p>` : ''}
-        ${addressLine ? `<p class="company-line">${escapeHtml(addressLine)}</p>` : ''}
+        ${addressBlock}
         ${taxLine ? `<p class="company-line">${taxLine}</p>` : ''}
       </div>
     </div>

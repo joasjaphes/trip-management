@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 import { Invoice } from '../../../models/invoice.model';
+import { companyAddressLines } from '../../utils/company-address';
 
 @Component({
   selector: 'app-invoice-view',
@@ -18,10 +19,7 @@ export class InvoiceView {
     this.invoice()?.trips?.[0]?.cargoType?.unitOfMeasure === 'Litres'
   );
 
-  formatPostalAddress(value: string | null | undefined): string {
-    if (!value) return '';
-    return String(value).replace(/^\s*P\.?\s*O?\.?\s*BOX\.?\s*/i, '').trim();
-  }
+  companyAddressLines = computed(() => companyAddressLines(this.companyProfile()));
 
   numberToWords(amount: number): string {
     if (!amount) return 'zero';

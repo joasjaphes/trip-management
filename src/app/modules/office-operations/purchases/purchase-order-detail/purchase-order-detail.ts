@@ -4,6 +4,7 @@ import { PurchaseOrder, PurchaseOrderItem } from '../../../../models/purchase-or
 import { CompanyProfileService } from '../../../../services/company-profile.service';
 import { ExpenseCategoryService } from '../../../../services/expense-category.service';
 import { FileUploadService } from '../../../../services/file-upload.service';
+import { companyAddressLines } from '../../../../shared/utils/company-address';
 
 @Component({
   selector: 'app-purchase-order-detail',
@@ -101,9 +102,9 @@ export class PurchaseOrderDetail {
     const formatAmount = (value: number) => numberPipe.transform(value, '1.0-2') ?? '0';
 
     const companyName = profile?.companyName || '';
-    const companyAddress1 = profile?.street || 'PLOT NO. 128 BLOCK B';
-    const companyAddress2 = profile?.region ? `${profile.region}` : 'GEREZANI/UHURU STREETS';
-    const companyAddress3 = `P. O. BOX ${profile?.postalAddress || '6437'} ${profile?.country || 'DAR ES SALAAM'}`;
+    const addressBlock = companyAddressLines(profile)
+      .map((line) => `<p class="company-line">${this.escape(line)}</p>`)
+      .join('\n          ');
     const companyTIN = profile?.tin ? `TIN ${profile.tin}` : '';
     const companyVRN = profile?.vrn ? `VRN ${profile.vrn}` : '';
 
@@ -133,9 +134,7 @@ export class PurchaseOrderDetail {
         <div class="po-header-left">${logoBlock}</div>
         <div class="po-header-right">
           <h1 class="company-name">${this.escape(companyName)}</h1>
-          <p class="company-line">${this.escape(companyAddress1)}</p>
-          <p class="company-line">${this.escape(companyAddress2)}</p>
-          <p class="company-line">${this.escape(companyAddress3)}</p>
+          ${addressBlock}
           ${companyTIN ? `<p class="company-line">${this.escape(companyTIN)}${companyVRN ? ' &nbsp; • &nbsp; ' + this.escape(companyVRN) : ''}</p>` : ''}
         </div>
       </div>
