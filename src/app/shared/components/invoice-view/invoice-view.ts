@@ -1,13 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ViewEncapsulation } from '@angular/core';
 import { Invoice } from '../../../models/invoice.model';
 import { companyAddressLines } from '../../utils/company-address';
+import { INVOICE_STYLES } from './invoice-styles';
 
 @Component({
   selector: 'app-invoice-view',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './invoice-view.html',
+  // Unencapsulated so the screen gets exactly the same CSS the print windows receive.
+  styles: [INVOICE_STYLES],
+  encapsulation: ViewEncapsulation.None,
 })
 export class InvoiceView {
   invoice = input<Invoice | undefined>(undefined);

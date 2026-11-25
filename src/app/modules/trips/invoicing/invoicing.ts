@@ -9,6 +9,7 @@ import { ActionPermision, DataTable, TableConfig } from '../../../shared/compone
 import { Layout } from '../../../shared/components/layout/layout';
 import { InvoiceReceiptsManage } from './invoice-receipts-manage/invoice-receipts-manage';
 import { InvoiceView } from '../../../shared/components/invoice-view/invoice-view';
+import { withInvoiceStyles } from '../../../shared/components/invoice-view/invoice-styles';
 import { InvoiceReceiptService } from '../../../services/invoice-receipt.service';
 import { CompanyProfileService } from '../../../services/company-profile.service';
 import { Placeholder } from '../../../shared/components/placeholder/placeholder';
@@ -638,7 +639,7 @@ export class Invoicing implements OnInit {
       }
     });
 
-    this.openPrintWindow(`Invoice ${invoice.invoiceNumber || invoice.id}`, clone.innerHTML);
+    this.openPrintWindow(`Invoice ${invoice.invoiceNumber || invoice.id}`, withInvoiceStyles(clone.innerHTML));
   }
 
   printReceipt(receipt: any) {

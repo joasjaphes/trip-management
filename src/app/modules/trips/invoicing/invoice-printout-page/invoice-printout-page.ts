@@ -5,6 +5,7 @@ import { Invoice } from '../../../../models/invoice.model';
 import { CompanyProfileService } from '../../../../services/company-profile.service';
 import { InvoiceService } from '../../../../services/invoice.service';
 import { InvoiceView } from '../../../../shared/components/invoice-view/invoice-view';
+import { withInvoiceStyles } from '../../../../shared/components/invoice-view/invoice-styles';
 
 declare const jsPDF: any;
 
@@ -95,7 +96,7 @@ export class InvoicePrintoutPage {
             }
         });
 
-        this.openPrintWindow(`Invoice ${invoice.invoiceNumber || invoice.id}`, clone.innerHTML);
+        this.openPrintWindow(`Invoice ${invoice.invoiceNumber || invoice.id}`, withInvoiceStyles(clone.innerHTML));
     }
 
     private renderPrintShell(title: string, body: string): string {
