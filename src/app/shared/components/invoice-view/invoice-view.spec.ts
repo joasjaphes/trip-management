@@ -257,6 +257,22 @@ describe('InvoiceView layout', () => {
     }
   });
 
+  it('applies the loss formulas with the recorded price per unit', async () => {
+    const lossTrip = {
+      ...trip('Litres'),
+      cargoType: { name: 'AGO', unitOfMeasure: 'Litres', allowableLoss: 0.3 },
+      offloadedQuantity: 38500,
+      pricePerUnit: 800,
+    };
+    await render({ ...litresInvoice, trips: [lossTrip] });
+
+    const cells = Array.from(root().querySelectorAll('.inv-items tbody tr:first-child td')).map((td) =>
+      (td.textContent ?? '').trim()
+    );
+    expect(cells.slice(7)).toEqual(['211.40', '117.00', '94.40', '75.52', '3,408.51']);
+    expect(root().querySelector('.inv-grand-total')?.textContent).toContain('3,408.51');
+  });
+
   it('renders without a company profile or customer', async () => {
     await render({ ...otherInvoice, customer: undefined }, null);
 

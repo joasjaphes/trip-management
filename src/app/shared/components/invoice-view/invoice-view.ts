@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, input, ViewEncapsulation } from '@angular/core';
 import { Invoice } from '../../../models/invoice.model';
 import { companyAddressLines } from '../../utils/company-address';
+import { tripAllowableLoss, tripChargeableLoss, tripLoss, tripNetLoss, tripTotal } from '../../utils/trip-loss';
 import { INVOICE_STYLES } from './invoice-styles';
 
 @Component({
@@ -44,37 +45,23 @@ export class InvoiceView {
   }
 
   calculateLoss(trip: any): number | null {
-    if (!trip?.offloadedQuantity || !trip?.loadedQuantity) {
-      return null;
-    }
-    return trip.offloadedQuantity - trip.loadedQuantity;
+    return tripLoss(trip);
   }
 
   calculateAllowableLoss(trip: any): number {
-    return trip?.cargoType?.allowableLoss ?? 0;
+    return tripAllowableLoss(trip);
   }
 
   calculateNetLoss(trip: any): number | null {
-    const loss = this.calculateLoss(trip);
-    if (loss === null) return null;
-    if (Math.abs(loss) <= Math.abs(this.calculateAllowableLoss(trip))) {
-      return 0;
-    }
-    return loss + Math.abs(this.calculateAllowableLoss(trip));
+    return tripNetLoss(trip);
   }
 
   calculateChargeableLoss(trip: any): number | null {
-    const netLoss = this.calculateNetLoss(trip);
-    if (netLoss === null || !trip?.ratePerUnit) {
-      return null;
-    }
-    return (trip.ratePerUnit * netLoss) / 1000;
+    return tripChargeableLoss(trip);
   }
 
   calculateTripTotal(trip: any): number {
-    if (!trip) return 0;
-    const chargeableLoss = this.calculateChargeableLoss(trip) ?? 0;
-    return (trip.income ?? trip.revenue ?? 0) + chargeableLoss;
+    return tripTotal(trip);
   }
 
   calculateInvoiceTotalForLitres(invoice: Invoice | undefined): number {

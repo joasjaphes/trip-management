@@ -40,9 +40,10 @@
         </div>
         @if (unitOfMeasurement == 'Litres') {
         <div class="flex flex-col gap-2  md:col-span-2">
-          <label class="text-[13px] font-bold text-gray-700">Allowable loss (L)</label>
-          <input type="number" min="0" step="0.01" placeholder="e.g. 5" [(ngModel)]="allowableLoss" name="allowableLoss"
+          <label class="text-[13px] font-bold text-gray-700">Allowable loss (%)</label>
+          <input type="number" min="0" step="0.01" placeholder="e.g. 0.3" [(ngModel)]="allowableLoss" name="allowableLoss"
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <p class="text-[11px] text-gray-400">Percentage of the Amount Loaded, e.g. 0.3 for diesel (AGO) and 0.5 for petrol.</p>
         </div>
         }
       </div>

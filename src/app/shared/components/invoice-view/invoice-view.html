@@ -87,9 +87,9 @@
           <td class="inv-num">{{ trip.cargoQuantity | number: '1.2-2' }}</td>
           <td class="inv-num">{{ (trip.loadedQuantity || 0) | number: '1.2-2' }}</td>
           <td class="inv-num">{{ (trip.offloadedQuantity || 0) | number: '1.2-2' }}</td>
-          <td class="inv-num" [style.color]="calculateLoss(trip) && calculateLoss(trip)! < 0 ? 'green' : 'red'">{{ (calculateLoss(trip) ?? 0) | number: '1.2-2' }}</td>
+          <td class="inv-num" [style.color]="(calculateLoss(trip) ?? 0) > 0 ? 'red' : 'green'">{{ (calculateLoss(trip) ?? 0) | number: '1.2-2' }}</td>
           <td class="inv-num">{{ calculateAllowableLoss(trip) | number: '1.2-2' }}</td>
-          <td class="inv-num" [style.color]="calculateNetLoss(trip) && calculateNetLoss(trip)! <= 0 ? 'green' : 'orange'">{{ (calculateNetLoss(trip) ?? 0) | number: '1.2-2' }}</td>
+          <td class="inv-num" [style.color]="(calculateNetLoss(trip) ?? 0) > 0 ? 'orange' : 'green'">{{ (calculateNetLoss(trip) ?? 0) | number: '1.2-2' }}</td>
           <td class="inv-num inv-strong inv-accent">{{ (calculateChargeableLoss(trip) ?? 0) | number: '1.2-2' }}</td>
           <td class="inv-num inv-strong">{{ calculateTripTotal(trip) | number: '1.2-2' }}</td>
         </tr>

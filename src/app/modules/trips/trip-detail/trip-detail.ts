@@ -6,6 +6,13 @@ import { FileUploadService } from '../../../services/file-upload.service';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import {
+  tripAllowableLoss,
+  tripChargeableLoss,
+  tripLoss,
+  tripNetLoss,
+  tripTotal as calculateTripTotal,
+} from '../../../shared/utils/trip-loss';
 
 @Component({
   selector: 'app-trip-detail',
@@ -24,6 +31,7 @@ export class TripDetail {
   complete = output<Trip>();
   tripEndDate: string | undefined = this.trip()?.endDate ? this.toDateInputValue(this.trip()?.endDate) : undefined;
   offloadedQuantity: number | null = null;
+  pricePerUnit: number | null = null;
 
   confirmingComplete = signal(false);
   attachmentPreviewUrls = signal<Record<string, string>>({});
@@ -75,35 +83,15 @@ export class TripDetail {
     return (this.trip()?.vehicleMaintenance || []).reduce((sum, item) => sum + (item.cost || 0), 0);
   });
 
-  loss = computed(() => {
-    const trip = this.trip();
-    if (!trip?.offloadedQuantity || !trip?.loadedQuantity) {
-      return null;
-    }
-    return trip.offloadedQuantity - trip.loadedQuantity;
-  });
+  loss = computed(() => tripLoss(this.trip()));
 
-  allowableLoss = computed(() => {
-    return this.trip()?.cargoType?.allowableLoss ?? 0;
-  });
+  allowableLoss = computed(() => tripAllowableLoss(this.trip()));
 
-  netLoss = computed(() => {
-      const loss = this.loss();
-    if (loss === null) return null;
-    if(Math.abs(loss) <= Math.abs(this.allowableLoss())) {
-      return 0;
-    }
-    return loss + (Math.abs(this.allowableLoss()));
-  });
+  netLoss = computed(() => tripNetLoss(this.trip()));
 
-  chargeableLoss = computed(() => {
-    const trip = this.trip();
-    const netLoss = this.netLoss();
-    if (netLoss === null || !trip?.ratePerUnit) {
-      return null;
-    }
-    return (trip.ratePerUnit * netLoss) / 1000;
-  });
+  chargeableLoss = computed(() => tripChargeableLoss(this.trip()));
+
+  tripTotal = computed(() => calculateTripTotal(this.trip()));
 
   isLitresCargo = computed(() => {
     return this.trip()?.cargoType?.unitOfMeasure === 'Litres';
@@ -118,6 +106,7 @@ export class TripDetail {
       const selectedTrip = this.trip();
       this.tripEndDate = selectedTrip?.endDate ? this.toDateInputValue(selectedTrip.endDate) : undefined;
       this.offloadedQuantity = selectedTrip?.offloadedQuantity || selectedTrip?.loadedQuantity;
+      this.pricePerUnit = selectedTrip?.pricePerUnit ?? null;
       this.unitOfMeasurement = selectedTrip.cargoType.unitOfMeasure || '';
       void this.hydrateCompletionDocument(selectedTrip?.completionDocument);
       void this.hydrateTripDocument(selectedTrip?.tripDocument);
@@ -175,7 +164,8 @@ export class TripDetail {
       ...trip,
       completionDocument: this.completionDocumentPath() || undefined,
       endDate: this.tripEndDate,
-      offloadedQuantity: this.toNumericQuantity(this.offloadedQuantity)
+      offloadedQuantity: this.toNumericQuantity(this.offloadedQuantity),
+      pricePerUnit: this.toNumericQuantity(this.pricePerUnit)
     });
   }
 

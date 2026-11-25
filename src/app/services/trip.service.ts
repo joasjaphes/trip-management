@@ -19,6 +19,7 @@ type TripWritePayload = {
   includesReturnTrip?: boolean;
   offloadedQuantity?: number;
   ratePerUnit?: number;
+  pricePerUnit?: number;
   docNumber?: string;
   revenue: number;
   income?: number;

@@ -101,6 +101,13 @@
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
           <p class="text-[11px] text-gray-400">Defaults to the loaded amount for this trip.</p>
         </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase">Price per Unit (per 1,000 L)</label>
+          <input type="number" min="0" step="0.01" [(ngModel)]="pricePerUnit" name="pricePerUnit"
+            placeholder="e.g. 800"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-gray-800 focus:outline-none focus:border-[#f25f2f] transition-colors placeholder-gray-300">
+          <p class="text-[11px] text-gray-400">Used to charge for losses above the allowance. Leave empty if not known yet.</p>
+        </div>
         }
       </div>
       <div class="mt-6 border-t border-gray-100 pt-6">
@@ -260,40 +267,47 @@
                 <p class="text-[11px] font-extrabold tracking-widest text-gray-400 uppercase mb-2">Offloaded Amount</p>
                 <p class="text-[16px] font-bold text-gray-900">{{ (trip()?.offloadedQuantity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} L</p>
               </div>
-              <div [class]="'rounded-lg p-4 border ' + (loss() && loss()! < 0 ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100')">
-                <p class="text-[11px] font-extrabold tracking-widest uppercase mb-2" [class]="loss() && loss()! < 0 ? 'text-emerald-600' : 'text-red-600'">Loss (Offloaded - Loaded)</p>
-                <p [class]="'text-[16px] font-bold ' + (loss() && loss()! < 0 ? 'text-emerald-900' : 'text-red-900')">{{ (loss() ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} L</p>
+              <div [class]="'rounded-lg p-4 border ' + ((loss() ?? 0) > 0 ? 'bg-red-50 border-red-100' : 'bg-emerald-50 border-emerald-100')">
+                <p class="text-[11px] font-extrabold tracking-widest uppercase mb-2" [class]="(loss() ?? 0) > 0 ? 'text-red-600' : 'text-emerald-600'">Loss (Loaded&#64;20 − Offloaded&#64;20)</p>
+                <p [class]="'text-[16px] font-bold ' + ((loss() ?? 0) > 0 ? 'text-red-900' : 'text-emerald-900')">{{ (loss() ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} L</p>
               </div>
               <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                <p class="text-[11px] font-extrabold tracking-widest text-blue-600 uppercase mb-2">Allowable Loss</p>
+                <p class="text-[11px] font-extrabold tracking-widest text-blue-600 uppercase mb-2">Allowable Loss ({{ trip()?.cargoType?.allowableLoss || 0 }}% of Amount Loaded)</p>
                 <p class="text-[16px] font-bold text-blue-900">{{ allowableLoss().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} L</p>
               </div>
             </div>
 
             <div class="border-t border-gray-100 pt-4 mt-4">
-              <div class="grid grid-cols-2 gap-4">
-                <div [class]="'rounded-lg p-4 border ' + (netLoss() && netLoss()! <= 0 ? 'bg-emerald-50 border-emerald-100' : 'bg-orange-50 border-orange-100')">
-                  <p class="text-[11px] font-extrabold tracking-widest uppercase mb-2" [class]="netLoss() && netLoss()! <= 0 ? 'text-emerald-600' : 'text-orange-600'">Net Loss (Loss - Allowable)</p>
-                  <p [class]="'text-[16px] font-bold ' + (netLoss() && netLoss()! <= 0 ? 'text-emerald-900' : 'text-orange-900')">{{ (netLoss() ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} L</p>
+              <div class="grid grid-cols-3 gap-4">
+                <div [class]="'rounded-lg p-4 border ' + ((netLoss() ?? 0) > 0 ? 'bg-orange-50 border-orange-100' : 'bg-emerald-50 border-emerald-100')">
+                  <p class="text-[11px] font-extrabold tracking-widest uppercase mb-2" [class]="(netLoss() ?? 0) > 0 ? 'text-orange-600' : 'text-emerald-600'">Net Loss (Loss − Allowable)</p>
+                  <p [class]="'text-[16px] font-bold ' + ((netLoss() ?? 0) > 0 ? 'text-orange-900' : 'text-emerald-900')">{{ (netLoss() ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} L</p>
                 </div>
                 <div class="rounded-lg p-4 border border-purple-100 bg-purple-50">
-                  <p class="text-[11px] font-extrabold tracking-widest text-purple-600 uppercase mb-2">Rate per Litre</p>
+                  <p class="text-[11px] font-extrabold tracking-widest text-purple-600 uppercase mb-2">Rate (per 1,000 L)</p>
                   <p class="text-[16px] font-bold text-purple-900">{{ trip()?.ratePerUnit?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '-' }}</p>
+                </div>
+                <div class="rounded-lg p-4 border border-purple-100 bg-purple-50">
+                  <p class="text-[11px] font-extrabold tracking-widest text-purple-600 uppercase mb-2">Price per Unit (per 1,000 L)</p>
+                  <p class="text-[16px] font-bold text-purple-900">{{ trip()?.pricePerUnit?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '-' }}</p>
                 </div>
               </div>
             </div>
 
             <div class="border-t border-gray-100 pt-4 mt-4">
               <div class="rounded-lg p-4 border-2 border-[#f25f2f] bg-orange-50">
-                <p class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase mb-2">Chargeable Loss (Rate × Net Loss ÷ 1000)</p>
+                <p class="text-[11px] font-extrabold tracking-widest text-[#f25f2f] uppercase mb-2">Chargeable Loss (Net Loss ÷ 1000 × Price per Unit)</p>
                 <p class="text-[20px] font-extrabold text-[#f25f2f]">{{ (chargeableLoss() ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
+                @if (trip()?.pricePerUnit == null) {
+                <p class="text-[11px] text-gray-500 mt-1">No price per unit recorded, so no loss is charged.</p>
+                }
               </div>
             </div>
 
             <div class="border-t border-gray-100 pt-4 mt-4">
               <div class="rounded-lg p-4 border border-emerald-100 bg-emerald-50">
-                <p class="text-[11px] font-extrabold tracking-widest text-emerald-600 uppercase mb-2">Total Revenue</p>
-                <p class="text-[20px] font-extrabold text-emerald-900">{{ (trip()?.revenue || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
+                <p class="text-[11px] font-extrabold tracking-widest text-emerald-600 uppercase mb-2">Total (Loaded&#64;20 × Rate ÷ 1000 − Chargeable Loss)</p>
+                <p class="text-[20px] font-extrabold text-emerald-900">{{ tripTotal().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
               </div>
             </div>
           </div>

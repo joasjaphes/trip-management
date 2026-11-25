@@ -21,6 +21,8 @@ export interface Trip {
 	loadedQuantity?: number;
 	offloadedQuantity?: number;
 	ratePerUnit?: number;
+	/** Product price per 1,000 litres, recorded when the trip is completed; used to charge for losses above the allowance. */
+	pricePerUnit?: number;
 	driverId: string;
 	docNumber?: string;
 	tripDocument?: string;
